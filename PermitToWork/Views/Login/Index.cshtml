@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Unicorn Admin</title>
+		<meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="@Url.Content("~/Content/bootstrap.min.css")" />
+		<link rel="stylesheet" href="@Url.Content("~/Content/bootstrap-responsive.min.css")" />
+        <link rel="stylesheet" href="@Url.Content("~/Content/unicorn.login.css")" />
+    </head>
+    <body>
+        <div id="logo">
+            <img src="img/logo.png" alt="" />
+        </div>
+        <div id="loginbox">            
+            <form id="loginform" class="form-vertical" action="Home">
+				<p>Enter username and password to continue.</p>
+                <div class="control-group">
+                    <div class="controls">
+                        <div class="input-prepend">
+                            <span class="add-on"><i class="icon-user"></i></span><input type="text" placeholder="Username" />
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="controls">
+                        <div class="input-prepend">
+                            <span class="add-on"><i class="icon-lock"></i></span><input type="password" placeholder="Password" />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <span class="pull-right"><input type="submit" class="btn btn-inverse" value="Login" /></span>
+                </div>
+            </form>
+        </div>
+        
+        <script src="@Url.Content("~/Scripts/jquery.min.js")"></script>  
+        <script src="@Url.Content("~/Scripts/unicorn.login.js")"></script> 
+    </body>
+</html>

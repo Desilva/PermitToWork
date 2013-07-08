@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewBag.Title</title>
+    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/bootstrap.min.css")" />
+	<link rel="stylesheet" href="@Url.Content("~/Content/bootstrap-responsive.min.css")" />
+	<link rel="stylesheet" href="@Url.Content("~/Content/fullcalendar.css")" />	
+	<link rel="stylesheet" href="@Url.Content("~/Content/unicorn.main.css")" />
+	<link rel="stylesheet" href="@Url.Content("~/Content/unicorn.grey.css")" class="skin-color" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/kendo.common.min.css")" class="skin-color" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/kendo.metro.min.css")" class="skin-color" />
+
+   
+    <script src="@Url.Content("~/Scripts/excanvas.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/jquery.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/jquery-ui.custom.js")"></script>
+    <script src="@Url.Content("~/Scripts/bootstrap.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/jquery.flot.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/jquery.flot.resize.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/jquery.peity.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/fullcalendar.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/unicorn.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo.all.min.js")"></script>
+
+</head>
+
+<body>
+    <div id="header">
+		<h1><a href="Home">Permit To Work</a></h1>		
+		</div>
+		
+		<div id="search">
+			<input type="text" placeholder="Search here..."/><button type="submit" class="tip-right" title="Search"><i class="icon-search icon-white"></i></button>
+		</div>
+		<div id="user-nav" class="navbar navbar-inverse">
+            <ul class="nav btn-group">
+                <li class="btn btn-inverse" ><a title="" href="#"><i class="icon icon-user"></i> <span class="text">Profile</span></a></li>
+                <li class="btn btn-inverse"><a title="" href="Login"><i class="icon icon-share-alt"></i> <span class="text">Logout</span></a></li>
+            </ul>
+        </div>
+            
+		<div id="sidebar">
+			<a href="#" class="visible-phone"><i class="icon icon-home"></i> Dashboard</a>
+			<ul>
+				<li id="home" class="active"><a href="#"><i class="icon icon-home"></i> <span>Dashboard</span></a></li>
+				<li class="submenu open">
+					<a href="#"><i class="icon icon-th-list"></i> <span>Permit To Work</span> <span class="label">3</span></a>
+					<ul>
+                        <li id="ptw"><a href="#">Permit To Work</a></li>
+						<li id="safety"><a href="safetybriefing">Safety Briefing</a></li>
+						<li id="hira"><a href="hira">Hira</a></li>
+					</ul>
+				</li>
+			</ul>
+		
+		</div>
+        <div id="content">
+            @RenderBody()
+        </div>
+</body>
+</html>
