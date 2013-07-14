@@ -1,0 +1,659 @@
+﻿<script>
+    $(document).ready(function () {
+        addHandlerMenu();
+
+        $('#InputExtensionPtw').css('display', 'none');
+        $('#area').css('display', 'none');
+
+        $('input[name = "extensionPtw"]').change(function(){
+            if(($(this).val() == 1)){
+                $('#InputExtensionPtw').css('display','block');
+            }else{
+                $('#InputExtensionPtw').css('display','none');
+            }
+        });
+
+        $('input[name = "area"]').change(function () {
+            if (($(this).val() == 0)) {
+                $('#area').css('display', 'block');
+            } else {
+                $('#area').css('display', 'none');
+            }
+        });
+
+        function startChange() {
+            var startDate = start.value();
+
+            if (startDate) {
+                startDate = new Date(startDate);
+                startDate.setDate(startDate.getDate());
+                end.min(startDate);
+            }
+        }
+
+        function endChange() {
+            var endDate = end.value();
+
+            if (endDate) {
+                endDate = new Date(endDate);
+                endDate.setDate(endDate.getDate());
+                start.max(endDate);
+            }
+        }
+
+        var start = $("#datetimepickerFrom").kendoDateTimePicker({
+            change: startChange,
+            parseFormats: ["MM/dd/yyyy"]
+        }).data("kendoDateTimePicker");
+
+        var end = $("#datetimepickerUntil").kendoDateTimePicker({
+            change: endChange,
+            parseFormats: ["MM/dd/yyyy"]
+        }).data("kendoDateTimePicker");
+
+        start.max(end.value());
+        end.min(start.value());
+
+
+        $("#files").kendoUpload({
+            async: {
+                saveUrl: "save",
+                removeUrl: "remove",
+                autoUpload: true
+            }
+        });
+
+        function startChangeValidity() {
+            var startDate = startValidity.value();
+
+            if (startDate) {
+                startDate = new Date(startDate);
+                startDate.setDate(startDate.getDate());
+                endValidity.min(startDate);
+            }
+        }
+
+        function endChangeValidity() {
+            var endDate = endValidity.value();
+
+            if (endDate) {
+                endDate = new Date(endDate);
+                endDate.setDate(endDate.getDate());
+                startValidity.max(endDate);
+            }
+        }
+
+        var startValidity = $("#validityFrom").kendoDateTimePicker({
+            change: startChangeValidity,
+            parseFormats: ["MM/dd/yyyy"]
+        }).data("kendoDateTimePicker");
+
+        var endValidity = $("#validityUntil").kendoDateTimePicker({
+            change: endChangeValidity,
+            parseFormats: ["MM/dd/yyyy"]
+        }).data("kendoDateTimePicker");
+
+        startValidity.max(endValidity.value());
+        endValidity.min(startValidity.value());
+
+        $("#cancelationDate").kendoDateTimePicker().data("kendoDateTimePicker");
+
+        //checkbox
+        $('#loto').change(function () {
+            changeContent('loto/create');
+        })
+        $('#csep').change(function () {
+            changeContent('csep/create');
+        })
+        $('#hw').change(function () {
+            changeContent('hw/create');
+        })
+        $('#fi').change(function () {
+            changeContent('fi/create');
+        })
+        $('#ex').change(function () {
+            changeContent('ex/create');
+        })
+        $('#wh').change(function () {
+            changeContent('wh/create');
+        })
+        $('#rg').change(function () {
+            changeContent('rg/create');
+        })
+
+    })
+</script>
+
+<div id="content-header">
+	<h1>Permit To Work</h1>
+</div>
+<div id="breadcrumb">
+	<a href="#" title="Go to Home" class="tip-bottom home"><i class="icon-home"></i> Home</a>
+	<a href="#"  class="tip-bottom ptw">Permit To Work </a>
+    <a href="#" class="current">Create</a>
+</div>
+
+<div class="container-fluid header-form">
+    <div class="row-fluid">
+        <div class="span3 logo">
+            <img src="../../Img/logo-clean.png" />
+        </div>
+        <div class="span6 title">
+            <b>PERMIT TO WORK</b><br />
+            Star Energy Geothermal (Wayang Windu) Limited
+        </div>
+
+        <div class="span3 no">
+            No <button class="btn">SAFETY BRIEFING</button>
+            <br /><i>PTW No : PTW/20131212/001</i>
+        </div>
+    </div>
+    <div class="row-fluid separator">
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row-fluid">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="title-form" colspan="4"><b>1.  GENERAL INFORMATION </b><span><i>(Filled by requestor prior to submit PTW request to Facility Owner)</i></span></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Propose Period <small><i>(max 1 week)</i></small></td>
+                    <td>From : <input id="datetimepickerFrom" class="datetimepicker" value="10/10/2011 12:00 AM" /></td>
+                    <td>Until : <input id="datetimepickerUntil" class="datetimepicker" value="10/10/2011 12:00 AM" /></td>
+                    <td>
+                        <ul class="inline table-ul">
+                            <li>Extension PTW? </li>
+                            <li><label class="radio"><input name="extensionPtw" type="radio" value="1"/> yes</label>
+                            </li>
+                            <li><label class="radio"><input name="extensionPtw" type="radio" value="0"/> no</label>
+                            </li>
+                        </ul>
+                        <div id="InputExtensionPtw">
+                            <input  class="table-input table-input-170" type="text">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Dept. of Requestor : <br /><input class="table-input table-input-170" id="deptRequestor" type="text"></td>
+                    <td colspan="2">Section / Total number crew : <input class="table-input table-input-120" id="section" type="text"> / <input class="table-input table-input-120" id="crew" type="text"></td>
+                    <td>Requestor's PTW holder no. :<br /> <input class="table-input table-input-170" id="ptwHolder" type="text"></td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        <ul class="inline table-ul">
+                            <li>AREA : </li>
+                            <li><label class="radio"><input name="area" type="radio" />Power Station</label></li>
+                            <li> <label class="radio"><input name="area" type="radio" />Steam Field</label></li>
+                            <li> <label class="radio"><input name="area" value="0" type="radio" />Others</li>
+                            <li></label><input class="table-input table-input-170" id="area" type="text"></li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td <td colspan="2">Work Location : <input class="table-input table-input-120" id="workLocation" type="text"> , Area Code : <input class="table-input table-input-120" id="areaCode" type="text"></td>
+                    <td colspan="2">Work Order No: <input class="table-input table-input-170" id="workOrder" type="text"></td>
+                </tr>
+                <tr>
+                    <td colspan="4">Work Description : <br/>
+                        <textarea class="table-textarea" id="workDescription" type="text" />
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <td colspan="4"><strong>Specify Clearance Permit Require</strong> <em><small>(All clearance and Hira must be completed prior to PTW approval)</small></em>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td-centre"><strong>Check</strong></td>
+                    <td class="td-centre"><strong>Clearance Permit Require</strong></td>
+                    <td class="td-centre"><strong>Minimum Document Required</strong></td>
+                    <td class="td-centre"><strong>Form to be Completed and Enclosed</strong></td>
+                </tr>
+                <tr>
+                    <td class="td-centre"><input id="loto" type="checkbox"/></td>
+                    <td class="small">Lock Out Tag Out (LOTO)</td>
+                    <td class="small">Requestor's supervisor LOTO point proposal</td>
+                    <td class="small">Lock Appllication Form (102a): description, drawing references, supervisor LOTO point proposal LOTO permit form (102b): general info</td>
+                </tr>
+                <tr>
+                    <td class="td-centre"><input id="csep" type="checkbox"/></td>
+                    <td class="small">Confined Space Entry Permit (CSEP)</td>
+                    <td class="small">Confined space emergency evacuation plan</td>
+                    <td class="small">CSEP form(103a) : general info, spv initial hazard screening  emergency evacuation form(101c) Approved emergency evacuation plan</td>
+                </tr>
+                <tr>
+                    <td class="td-centre"><input id="hw" type="checkbox"/></td>
+                    <td class="small">Hot Work (HW)</td>
+                    <td class="small">Emergency evacuation plan, competence fire attendance</td>
+                    <td class="small">HW form(104a) : general info, initial hazard screening  emergency evacuation form(101c) Approved emergency evacuation plan</td>
+                </tr>
+                <tr>
+                    <td class="td-centre"><input id="fi" type="checkbox"/></td>
+                    <td class="small">Fire Impairment (FI)</td>
+                    <td class="small">Fire operation system back up plan</td>
+                    <td class="small">FI form(105a) : general info, clearance from spv, ERT leader, safety officer</td>
+                </tr>
+                <tr>
+                    <td class="td-centre"><input id="ex" type="checkbox"/></td>
+                    <td class="small">Excavation (Ex)</td>
+                    <td class="small">Excavation clearance from facility + E&I officer</td>
+                    <td class="small">Ex form(106a) : general info, clearance from facility + E&I officer</td>
+                </tr>
+                <tr>
+                    <td class="td-centre"><input id="wh" type="checkbox"/></td>
+                    <td class="small">Working at Height (WH)</td>
+                    <td class="small">Working at height emergency evacuation plan, scafolder certificate (for scafolding erection)</td>
+                    <td class="small">WH form(107a) : general info, supervisor assesment</td>
+                </tr>
+                <tr>
+                    <td class="td-centre"><input id="rg" type="checkbox"/></td>
+                    <td class="small">RadioGraphic (Rg)</td>
+                    <td class="small">Copy of certificate of competences: radiographic (engineer, operator, safety), emergency rescue plan, radioactive equipment & material manifest</td>
+                    <td class="small">Rad form (108a) : general info, initial assesment (spv, engineer, operator, safety officer)</td>
+                </tr>
+                <tr>
+                    <td colspan="4">
+                        HIRA no : <em><small>(choose HIRA number and copy of HIRA must be attach)</small></em>                          
+                        <input name="files" id="files" type="file" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="row-fluid separator-dash">
+        </div>
+        <br />
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="title-form" colspan="4"><strong>2.  PRE-JOB SCREENING </strong><span></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td rowspan="2"><strong>No</strong></td>
+                    <td rowspan="2"><strong>Description<br/> </strong><em><small>(Answer the screening items with Yes, No or N/A)</small></em></td>
+                    <td colspan="2" class="td-centre"><strong>Assesments (Y, No, N/A)</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Requestor's Supervisor</strong></td>
+                    <td><strong>Facility Owner</strong></td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td class="small">Are the <strong>clearance permit</strong> (see refer to above clearance requirement checked) completed and attach to the permit?</td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td class="small">Are person to do this job qualified?</td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td class="small">Are the works changing the system or design available this time?</td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td class="small">Is there a valid written procedure (SOP) for the work?</td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td class="small">Are tools suitable and in good condition?</td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td class="small">Is the safety equipments required available and reliable to use?</td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td class="small">Have all identified hazards been controlled</td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="small">
+                        Note: <em>write any concern related to these assesment and attach other check sheet if necessary; Spv: requestor's 
+                                supervisor project maanger; FO : Facility owner; All parties have right to stop work when control method is not adequate to control the hazard
+                              </em><br />
+                        <textarea class="table-textarea"/>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="title-form" colspan="2"><strong>3. ACCEPTANCE & VALIDATION</strong></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        Validity period, from :  <input id="validityFrom" class="datetimepicker" value="10/10/2011 12:00 AM" />
+                    </td>
+                    <td>
+                        Validity period, to :  <input id="validityUntil" class="datetimepicker" value="10/10/2011 12:00 AM" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="td-centre">
+                        <strong><u></u>Accepted by,</u></strong><br/>
+                        <small><em>(I am satisfied that the work site is safe for work to start. I will brief all parties and supervise the work)</em></small>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td-centre">
+                        <button class="btn" type="button">Accept</button><br />
+                        <strong><u>PTW Requestor</u></strong>
+                    </td>
+                    <td class="td-centre">
+                        <button class="btn" type="button">Accept</button><br />
+                        <strong><u>Supervisor / Project manager</u></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="td-centre">
+                        <strong><u>Authorized by,</u></strong><br/>
+                        <small><em>(I am satisfied that the work site is safe for work to start. I will brief all parties and supervise the work)</em></small><br />
+                        <button class="btn" type="button">Accept</button><br />
+                        <strong><u>Facility Owner</u></strong>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="title-form" colspan="4"><strong>4. CANCELATION SCREENING </strong><span></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td rowspan="2"><strong>No</strong></td>
+                    <td rowspan="2"><strong>Description<br/> </strong><em><small>(Answer the screening items with Yes, No or N/A)</small></em></td>
+                    <td colspan="2" class="td-centre"><strong>Assesments (Y, No, N/A)</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Requestor's Supervisor</strong></td>
+                    <td><strong>Facility Owner</strong></td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td class="small">Have work completed?</td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td class="small">Have the Clearance Permit(s) canceled?</td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td class="small">Personnel(s) have been notified that this PTW is cancelled</td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td class="small">Worksite and equipment affected left in safe condition</td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td class="small">Is the work performed / construction accepted by work requestor?</td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td class="small">Are the current procedure(s) required to revise</td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td class="small">Have the worksite clear, clean and tidy (housekeeping satisfactory)?</td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select>
+                          <option>Yes</option>
+                          <option>No</option>
+                          <option>N/A</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="4" class="small">
+                        Note: <em>write any concern related to cancellation PTW, attach other check sheet if necessary
+                              </em><br />
+                        <textarea class="table-textarea"/>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="title-form" colspan="2"><strong>5. CANCELATION</strong></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="2">
+                        Cancelation date :  <input id="cancelationDate" class="datetimepicker" value="10/10/2011 12:00 AM" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="td-centre">
+                        <strong><u>Permit return by,</u></strong>                        
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td-centre" style="width:50%">
+                        <button class="btn" type="button" >Accept</button><br />
+                        <strong><u>PTW Requestor</u></strong>
+                    </td>
+                    <td class="td-centre">
+                        <button class="btn" type="button">Accept</button><br />
+                        <strong><u>Supervisor / Project manager</u></strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="td-centre">
+                        <strong><u> Permit cancelled by,</u></strong><br />
+                        <button class="btn" type="button">Accept</button><br />
+                        <strong><u>Facility Owner</u></strong>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <br />
+        <button class="btn">Save</button>
+    </div>
+</div>
+
+

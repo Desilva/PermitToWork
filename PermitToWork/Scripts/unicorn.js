@@ -134,11 +134,29 @@ $(document).ready(function(){
 });
 
 function addHandlerMenu() {
-    $('#home').click(function () {
+    $('.home').click(function () {
         $('#content').load('home/PartialIndex');
+        setActiveMenu('home');
     });
 
-    $('#ptw').click(function () {
-        $('#content').load('ptw/index');
+    $('.ptw').click(function () {
+        $('#content').load('ptw/create');
+        setActiveMenu('submenu-ptw')
     });
+
+    $('.safety').click(function () {
+        $('#content').load('safetybriefing/create');
+        setActiveMenu('submenu-ptw')
+    });
+}
+
+function setActiveMenu(id) {
+    $('#submenu-ptw').removeClass('active');
+    $('#home').removeClass('active');
+
+    $('#' + id).addClass('active');
+}
+
+function changeContent(url) {
+    $('#content').load(url);
 }

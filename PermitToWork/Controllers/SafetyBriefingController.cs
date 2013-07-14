@@ -6,17 +6,18 @@ using System.Web.Mvc;
 
 namespace PermitToWork.Controllers
 {
-    public class PtwController : Controller
+    public class SafetyBriefingController : Controller
     {
         //
-        // GET: /Ptw/
+        // GET: /SafetyBriefing/
 
         public ActionResult Index()
         {
-            return PartialView();
+            return View();
         }
 
-        public ActionResult Create() {
+        public ActionResult Create()
+        {
             return PartialView();
         }
 

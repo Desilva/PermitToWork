@@ -1,19 +1,4 @@
-﻿body
-{
-    font-size: .85em;
-    font-family: "Trebuchet MS", Verdana, Helvetica, Sans-Serif;
-    color: #232323;
-    background-color: #fff;
-}
-
-header,
-footer,
-nav,
-section {
-    display: block;
-}
-
-/* Styles for basic forms
+﻿/* Styles for basic forms
 -----------------------------------------------------------*/
 
 fieldset 
@@ -82,6 +67,10 @@ textarea
     background: url('/img/clientsDb.png') no-repeat 0 0;
 }
 
+.content-table {
+    margin: 0 0 0 30px;
+}
+
 .grid-title {
     margin-top: -48px;
     margin-left: 40px;
@@ -91,3 +80,117 @@ textarea
 .grid{
     margin-top : 18px;
 }
+
+.container-fluid .logo img
+{
+    height:50px;
+}
+
+.container-fluid .title
+{
+    text-align:center;
+}
+
+.container-fluid .no
+{
+    text-align:right;
+}
+
+.separator
+{
+    margin-top :5px;
+    border-bottom : 2px solid;
+}
+
+.separator-dash
+{
+    margin-top :5px;
+    border-bottom : 1px dashed;
+    opacity : 0.5;
+}
+
+.small
+{
+    font-size:75% !important;
+}
+
+.warning
+{
+    text-align:center;
+    border:4px solid red;
+    padding-right :1px;
+    width : 99%;
+}
+
+.no-border
+{
+    border:none !important;
+}
+
+/*table*/
+.title-form 
+{
+    font-size :12px !important;
+    text-align:left !important;
+    font-weight : normal !important;
+}
+
+.k-datetimepicker
+{
+    width : 155px;
+}
+
+.k-datetimepicker .k-input
+{
+    font-size : 11px;
+}
+
+.table-ul
+{
+    margin :0px;
+}
+
+.table-input
+{
+    margin : 0px !important;
+    height : 15px !important;
+}
+
+.table-input-180
+{
+    width : 170px !important;
+}
+
+.table-input-120
+{
+    width : 120px !important;
+}
+
+.table-input-30
+{
+    width : 30px !important;
+}
+
+.table-textarea
+{
+    width : 98%;
+    margin : 0px;
+    resize: none;
+}
+
+.td-centre
+{
+   text-align:center !important;
+   font-size : small;
+}
+
+.th-centre
+{
+   text-align:center !important;
+}
+
+.table-select
+{
+    width:auto !important;
+}
+
