@@ -148,6 +148,26 @@ function addHandlerMenu() {
         $('#content').load('safetybriefing/create');
         setActiveMenu('submenu-ptw')
     });
+
+    $('.lotto1').click(function () {
+        $('#content').load('lotto/create');
+        setActiveMenu('submenu-ptw')
+    });
+
+    $('.lotto2').click(function () {
+        $('#content').load('lotto/create1');
+        setActiveMenu('submenu-ptw')
+    });
+
+    $('.lotto3').click(function () {
+        $('#content').load('lotto/create2');
+        setActiveMenu('submenu-ptw')
+    });
+
+    $('.csep').click(function () {
+        $('#content').load('csep/create');
+        setActiveMenu('submenu-ptw')
+    });
 }
 
 function setActiveMenu(id) {
