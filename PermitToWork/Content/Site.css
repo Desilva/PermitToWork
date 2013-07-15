@@ -187,6 +187,7 @@ textarea
 .th-centre
 {
    text-align:center !important;
+   vertical-align : middle !important;
 }
 
 .table-select

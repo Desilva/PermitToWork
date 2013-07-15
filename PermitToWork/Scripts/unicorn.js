@@ -168,6 +168,11 @@ function addHandlerMenu() {
         $('#content').load('csep/create');
         setActiveMenu('submenu-ptw')
     });
+
+    $('.ex').click(function () {
+        $('#content').load('excavation/create');
+        setActiveMenu('submenu-ptw')
+    });
 }
 
 function setActiveMenu(id) {

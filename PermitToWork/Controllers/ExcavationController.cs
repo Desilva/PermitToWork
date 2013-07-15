@@ -6,10 +6,10 @@ using System.Web.Mvc;
 
 namespace PermitToWork.Controllers
 {
-    public class CsepController : Controller
+    public class ExcavationController : Controller
     {
         //
-        // GET: /Csep/
+        // GET: /Excavation/
 
         public ActionResult Index()
         {
@@ -17,11 +17,6 @@ namespace PermitToWork.Controllers
         }
 
         public ActionResult Create()
-        {
-            return PartialView();
-        }
-
-        public ActionResult GasTestCreate()
         {
             return PartialView();
         }
