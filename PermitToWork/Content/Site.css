@@ -29,6 +29,11 @@ textarea
     margin:0.5em 0 0 0;
 }
 
+input[type="file"] 
+{
+    width:200px !important;
+}
+
 
 /* Styles for validation helpers
 -----------------------------------------------------------*/
@@ -166,6 +171,11 @@ textarea
     width : 120px !important;
 }
 
+.table-input-100
+{
+    width : 100px !important;
+}
+
 .table-input-30
 {
     width : 30px !important;
@@ -194,4 +204,28 @@ textarea
 {
     width:auto !important;
 }
+
+/* --------------------START radiography------------------------- */
+
+.radigraphy-title 
+{
+    text-align:center;
+}
+
+.radigraphy-number
+{
+    text-align:right;
+}
+
+.radio-title-form 
+{
+    text-align:center;
+}
+
+.radiography-select 
+{
+    width:75px;
+}
+
+/* --------------------END radiography------------------------- */
 

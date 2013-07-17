@@ -173,6 +173,16 @@ function addHandlerMenu() {
         $('#content').load('excavation/create');
         setActiveMenu('submenu-ptw')
     });
+
+    $('.radiography').click(function () {
+        $('#content').load('radiography/create');
+        setActiveMenu('submenu-ptw')
+    });
+
+    $('.workingHeight').click(function () {
+        $('#content').load('workingHeight/create');
+        setActiveMenu('submenu-ptw')
+    });
 }
 
 function setActiveMenu(id) {

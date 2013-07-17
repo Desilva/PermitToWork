@@ -1,0 +1,711 @@
+﻿<script>
+    $(document).ready(function () {
+        addHandlerMenu();
+
+        $('#InputExtensionPtw').css('display', 'none');
+        $('#area').css('display', 'none');
+
+        $('input[name = "extensionPtw"]').change(function(){
+            if(($(this).val() == 1)){
+                $('#InputExtensionPtw').css('display','block');
+            }else{
+                $('#InputExtensionPtw').css('display','none');
+            }
+        });
+
+        $('input[name = "area"]').change(function () {
+            if (($(this).val() == 0)) {
+                $('#area').css('display', 'block');
+            } else {
+                $('#area').css('display', 'none');
+            }
+        });
+
+        function startChange() {
+            var startDate = start.value();
+
+            if (startDate) {
+                startDate = new Date(startDate);
+                startDate.setDate(startDate.getDate());
+                end.min(startDate);
+            }
+        }
+
+        function endChange() {
+            var endDate = end.value();
+
+            if (endDate) {
+                endDate = new Date(endDate);
+                endDate.setDate(endDate.getDate());
+                start.max(endDate);
+            }
+        }
+
+        var start = $("#datetimepickerFrom").kendoDateTimePicker({
+            change: startChange,
+            parseFormats: ["MM/dd/yyyy"]
+        }).data("kendoDateTimePicker");
+
+        var end = $("#datetimepickerUntil").kendoDateTimePicker({
+            change: endChange,
+            parseFormats: ["MM/dd/yyyy"]
+        }).data("kendoDateTimePicker");
+
+        start.max(end.value());
+        end.min(start.value());
+    })
+</script>
+
+<div id="content-header">
+	<h1>Radiography</h1>
+</div>
+<div id="breadcrumb">
+	<a href="#" title="Go to Home" class="tip-bottom home"><i class="icon-home"></i> Home</a>
+	<a href="#"  class="tip-bottom ptw">Radiography </a>
+    <a href="#" class="current">Create</a>
+</div>
+
+<div class="container-fluid header-form">
+    <div class="row-fluid">
+        <div class="span3 logo">
+            <img src="../../Img/logo-clean.png" />
+        </div>
+        <div class="span6 title">
+            <b>RADIOGRAPHY PERMIT</b><br />
+            Star Energy Geothermal (Wayang Windu) Limited
+        </div>
+
+        <div class="span3">
+            &nbsp;
+        </div>
+    </div>
+    <div class="row-fluid separator">
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span6 offset3 radiography-title">
+            <b>GENERAL INFORMATION </b>
+        </div>
+        <div class="span3 radiography-number">
+            Permit No: RT-xxx/xxx/xxx
+        </div>
+    </div>
+    <div class="row-fluid">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="title-form"><b>No </b></th>
+                    <th class="title-form"><b>Description </b></th>
+                    <th class="title-form" colspan="2"><b>Remark </b></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Work location</td>
+                    <td colspan="2">: <input class="table-input table-input-170" id="workLocation" type="text"></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Radiographer Level 2 <small>(Ahli Radiographic)</small></td>
+                    <td>: <input class="table-input table-input-120" id="radiographerLvl2" type="text"></td>
+                    <td>Licensed number: <input class="table-input table-input-120" id="radiographerLvl2LicenseNumber" type="text">&nbsp;<input name="files" id="filesRadiographyLvl2" type="file" /><br />
+                        Contact number: &nbsp;&nbsp;<input class="table-input table-input-120" id="radiographerLvl2ContactNumber" type="text">
+                    </td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Radiographer Level 1 <small>(Operator Radiographic)</small></td>
+                    <td>: <input class="table-input table-input-120" id="radiographerLvl1" type="text"></td>
+                    <td>Licensed number: <input class="table-input table-input-120" id="radiographerLvl1LicenseNumber" type="text">&nbsp;<input name="files" id="filesRadiographyLvl1" type="file" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>Radiation Protection Officer </td>
+                    <td>: <input class="table-input table-input-120" id="radiationPO" type="text"></td>
+                    <td>Licensed number: <input class="table-input table-input-120" id="radiationPOLicenseNumber" type="text">&nbsp;<input name="files" id="filesRadiationPO" type="file" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>Potential area affected </td>
+                    <td colspan="2">: <input class="table-input table-input-170" id="potentialAreaAffected" type="text">&nbsp;<input name="files" id="filesPotentialAreaAffected" type="file" /></td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>Total crew involve </td>
+                    <td colspan="2">: <input class="table-input table-input-170" id="totalCrewInvolve" type="text"></td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>Supervisor <small>(project manager)</small> </td>
+                    <td colspan="2">: <input class="table-input table-input-170" id="supervisor" type="text"></td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td>Type of radiographic source </td>
+                    <td colspan="2">
+                        <ul class="inline table-ul">
+                            <li><label class="radio"><input name="radioSource" type="radio" />X ray</label></li>
+                            <li> <label class="radio"><input name="radioSource" type="radio" />Gamma ray</label></li>
+                            <li> <label class="radio"><input name="radioSource" value="0" type="radio" />Others</label></li>
+                            <li><input class="table-input table-input-170" id="radioSource" type="text"></li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>9</td>
+                    <td>Estimate time <small>(dd:mm:yyyy hh:mm)</small></td>
+                    <td>From : <input id="datetimepickerFrom" class="datetimepicker" value="10/10/2011 12:00 AM" /></td>
+                    <td>Until : <input id="datetimepickerUntil" class="datetimepicker" value="10/10/2011 12:00 AM" /></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="row-fluid">
+        <div class="span12 title">
+            <b>HAZARD SCREENING</b><br />
+            <small>It must be completed by certified radiographer Level 2. If any of the below can't be satisfied the work will not be permitted. Project manager acknowledge at the ack column as agreement with hazard screening<br />
+                Fill : yes if agree, no if disagree, N/A if not applicable with statement on description column; Spv : Supervisor; Rad : Radiographic engineer / level-2; FO : facility owner
+            </small>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="radio-title-form"><strong>No</strong></th>
+                    <th class="radio-title-form"><strong>Description</strong></th>
+                    <th class="radio-title-form"><strong>SPV</strong></th>
+                    <th class="radio-title-form"><strong>RAD</strong></th>
+                    <th class="radio-title-form"><strong>FO</strong></th>
+                    <th class="radio-title-form"><strong>Remark</strong><br /><em><small>(Write any controlling method shall be apply)</small></em></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Warning sign will be posted around relevant potential area of exposure <small>(attached copy sample of sign if there apply)</small></td>
+                    <td>
+                        <select class="radiography-select" id="spv1">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="rad1">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="fo1">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input class="table-input table-input-170" id="remark1" type="text">
+                    </td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Safety line will be provided at working area boundary</td>
+                    <td>
+                        <select class="radiography-select" id="spv2">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="rad2">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="fo2">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input class="table-input table-input-170" id="remark2" type="text">
+                    </td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Sufficient illumination <small>(if work on night)</small></td>
+                    <td>
+                        <select class="radiography-select" id="spv3">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="rad3">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="fo3">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input class="table-input table-input-170" id="remark3" type="text">
+                    </td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>Rotary lamp applied</td>
+                    <td>
+                        <select class="radiography-select" id="spv4">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="rad4">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="fo4">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input class="table-input table-input-170" id="remark4" type="text">
+                    </td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>Is emergency procedure available? <small>(attached if any, emergency shall be approved by WW SHE Official)</small></td>
+                    <td>
+                        <select class="radiography-select" id="spv5">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="rad5">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="fo5">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input class="table-input table-input-170" id="remark5" type="text">
+                    </td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>Other workers within potential area have been evacuated</td>
+                    <td>
+                        <select class="radiography-select" id="spv6">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="rad6">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="fo6">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input class="table-input table-input-170" id="remark6" type="text">
+                    </td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>Available radio communication with facility owner</td>
+                    <td>
+                        <select class="radiography-select" id="spv7">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="rad7">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="fo7">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input class="table-input table-input-170" id="remark7" type="text">
+                    </td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td>Available valid RT procedure <small>(copy must be attached)</small></td>
+                    <td>
+                        <select class="radiography-select" id="spv8">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="rad8">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="fo8">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input class="table-input table-input-170" id="remark8" type="text">
+                    </td>
+                </tr>
+                <tr>
+                    <td>9</td>
+                    <td>Available radiation survey meter with valid calibration record <small>(copy of certificate must be attached)</small></td>
+                    <td>
+                        <select class="radiography-select" id="spv9">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="rad9">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="fo9">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input class="table-input table-input-170" id="remark9" type="text">
+                    </td>
+                </tr>
+                <tr>
+                    <td>10</td>
+                    <td>Available "film badge exposure recorder" from Batan</td>
+                    <td>
+                        <select class="radiography-select" id="spv10">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="rad10">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="fo10">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input class="table-input table-input-170" id="remark10" type="text">
+                    </td>
+                </tr>
+                <tr>
+                    <td>11</td>
+                    <td>Available "Surat Ijin Pemanfaatan Tenaga Nuklir" from Bapeten <small>(copy must be attached)</small></td>
+                    <td>
+                        <select class="radiography-select" id="spv11">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="rad11">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="fo11">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input class="table-input table-input-170" id="remark11" type="text">
+                    </td>
+                </tr>
+                <tr>
+                    <td>12</td>
+                    <td>Available "Quality Control Certificate" of radiographic source from Batan <small>(copy must be attached)</small></td>
+                    <td>
+                        <select class="radiography-select" id="spv12">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="rad12">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="fo12">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input class="table-input table-input-170" id="remark12" type="text">
+                    </td>
+                </tr>
+                <tr>
+                    <td>13</td>
+                    <td>Available proper "protection container" from save storage & handling of radiographic source</td>
+                    <td>
+                        <select class="radiography-select" id="spv13">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="rad13">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="fo13">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input class="table-input table-input-170" id="remark13" type="text">
+                    </td>
+                </tr>
+                <tr>
+                    <td>14</td>
+                    <td>Available proper storage & handling of Hazardous (B3) waste of Fixer & Developer chemical, incl.: MSDS <small>(copy must be attached)</small></td>
+                    <td>
+                        <select class="radiography-select" id="spv14">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="rad14">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="fo14">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input class="table-input table-input-170" id="remark14W" type="text">
+                    </td>
+                </tr>
+                <tr>
+                    <td>15</td>
+                    <td>Radiographic can be done safely</td>
+                    <td>
+                        <select class="radiography-select" id="spv15">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="rad15">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select" id="fo15">
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                          <option value="">N/A</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input class="table-input table-input-170" id="remark15" type="text">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="row-fluid">
+        <div class="span12 title">
+            <b>APPROVAL</b>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <td colspan="2" class="td-centre">
+                        <strong>Radiographic</strong>
+                    </td>
+                    <td rowspan="2" class="td-centre">
+                        <strong>Supervisor</strong>
+                    </td>
+                    <td rowspan="2" class="td-centre">
+                        <strong>Facility Owner</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td-centre">
+                        <strong>Operator</strong>
+                    </td>
+                    <td class="td-centre">
+                        <strong>Level 2</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td-centre">
+                        <button class="btn" type="button">Accept</button>
+                    </td>
+                    <td class="td-centre">
+                        <button class="btn" type="button">Accept</button>
+                    </td>
+                    <td class="td-centre">
+                        <button class="btn" type="button">Accept</button>
+                    </td>
+                    <td class="td-centre">
+                        <button class="btn" type="button">Accept</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="row-fluid">
+        <div class="span12 title">
+            <b>CLOSED</b><br />
+            <small>Radiographic engineer have been declare that all radiation material have been secure in proper condition and work area have been clear from radiographic potential hazard</small>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <td colspan="2" class="td-centre">
+                        <strong>Radiographic</strong>
+                    </td>
+                    <td rowspan="2" class="td-centre">
+                        <strong>Supervisor</strong>
+                    </td>
+                    <td rowspan="2" class="td-centre">
+                        <strong>Facility Owner</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td-centre">
+                        <strong>Operator</strong>
+                    </td>
+                    <td class="td-centre">
+                        <strong>Level 2</strong>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td-centre">
+                        <button class="btn" type="button">Accept</button>
+                    </td>
+                    <td class="td-centre">
+                        <button class="btn" type="button">Accept</button>
+                    </td>
+                    <td class="td-centre">
+                        <button class="btn" type="button">Accept</button>
+                    </td>
+                    <td class="td-centre">
+                        <button class="btn" type="button">Accept</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="row-fluid">
+        <div class="span12">
+            NOTE: <br />
+            <small>Radiographer Level 2 responsible to proper disposal any radiation material and documentation of usage radiation material</small>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <br />
+        <button class="btn">Save</button>
+    </div>
+</div>
