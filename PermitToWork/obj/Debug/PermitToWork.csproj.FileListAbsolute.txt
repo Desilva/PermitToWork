@@ -19,3 +19,23 @@ D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\Permit
 D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\PermitToWork\PermitToWork\obj\Debug\PermitToWork.csprojResolveAssemblyReference.cache
 D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\PermitToWork\PermitToWork\obj\Debug\PermitToWork.dll
 D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\PermitToWork\PermitToWork\obj\Debug\PermitToWork.pdb
+C:\Users\yosef\Documents\Project\ONGOING\StarEnergiWW\PTW\Solution\PermitToWork\PermitToWork\obj\Debug\PermitToWork.csprojResolveAssemblyReference.cache
+C:\Users\yosef\Documents\Project\ONGOING\StarEnergiWW\PTW\Solution\PermitToWork\PermitToWork\bin\PermitToWork.dll
+C:\Users\yosef\Documents\Project\ONGOING\StarEnergiWW\PTW\Solution\PermitToWork\PermitToWork\bin\PermitToWork.pdb
+C:\Users\yosef\Documents\Project\ONGOING\StarEnergiWW\PTW\Solution\PermitToWork\PermitToWork\bin\Microsoft.Web.Infrastructure.dll
+C:\Users\yosef\Documents\Project\ONGOING\StarEnergiWW\PTW\Solution\PermitToWork\PermitToWork\bin\System.Web.Helpers.dll
+C:\Users\yosef\Documents\Project\ONGOING\StarEnergiWW\PTW\Solution\PermitToWork\PermitToWork\bin\System.Web.Mvc.dll
+C:\Users\yosef\Documents\Project\ONGOING\StarEnergiWW\PTW\Solution\PermitToWork\PermitToWork\bin\System.Web.Razor.dll
+C:\Users\yosef\Documents\Project\ONGOING\StarEnergiWW\PTW\Solution\PermitToWork\PermitToWork\bin\System.Web.WebPages.Deployment.dll
+C:\Users\yosef\Documents\Project\ONGOING\StarEnergiWW\PTW\Solution\PermitToWork\PermitToWork\bin\System.Web.WebPages.dll
+C:\Users\yosef\Documents\Project\ONGOING\StarEnergiWW\PTW\Solution\PermitToWork\PermitToWork\bin\System.Web.WebPages.Razor.dll
+C:\Users\yosef\Documents\Project\ONGOING\StarEnergiWW\PTW\Solution\PermitToWork\PermitToWork\bin\EntityFramework.xml
+C:\Users\yosef\Documents\Project\ONGOING\StarEnergiWW\PTW\Solution\PermitToWork\PermitToWork\bin\Microsoft.Web.Infrastructure.xml
+C:\Users\yosef\Documents\Project\ONGOING\StarEnergiWW\PTW\Solution\PermitToWork\PermitToWork\bin\System.Web.Helpers.xml
+C:\Users\yosef\Documents\Project\ONGOING\StarEnergiWW\PTW\Solution\PermitToWork\PermitToWork\bin\System.Web.Mvc.xml
+C:\Users\yosef\Documents\Project\ONGOING\StarEnergiWW\PTW\Solution\PermitToWork\PermitToWork\bin\System.Web.Razor.xml
+C:\Users\yosef\Documents\Project\ONGOING\StarEnergiWW\PTW\Solution\PermitToWork\PermitToWork\bin\System.Web.WebPages.xml
+C:\Users\yosef\Documents\Project\ONGOING\StarEnergiWW\PTW\Solution\PermitToWork\PermitToWork\bin\System.Web.WebPages.Deployment.xml
+C:\Users\yosef\Documents\Project\ONGOING\StarEnergiWW\PTW\Solution\PermitToWork\PermitToWork\bin\System.Web.WebPages.Razor.xml
+C:\Users\yosef\Documents\Project\ONGOING\StarEnergiWW\PTW\Solution\PermitToWork\PermitToWork\obj\Debug\PermitToWork.dll
+C:\Users\yosef\Documents\Project\ONGOING\StarEnergiWW\PTW\Solution\PermitToWork\PermitToWork\obj\Debug\PermitToWork.pdb
