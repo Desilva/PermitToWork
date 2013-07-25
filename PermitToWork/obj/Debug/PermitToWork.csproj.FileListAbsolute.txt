@@ -1,0 +1,61 @@
+D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\PermitToWork\PermitToWork\bin\PermitToWork.dll
+D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\PermitToWork\PermitToWork\bin\PermitToWork.pdb
+D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\PermitToWork\PermitToWork\bin\EntityFramework.dll
+D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\PermitToWork\PermitToWork\bin\Microsoft.Web.Infrastructure.dll
+D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\PermitToWork\PermitToWork\bin\System.Web.Helpers.dll
+D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\PermitToWork\PermitToWork\bin\System.Web.Mvc.dll
+D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\PermitToWork\PermitToWork\bin\System.Web.Providers.dll
+D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\PermitToWork\PermitToWork\bin\System.Web.Razor.dll
+D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\PermitToWork\PermitToWork\bin\System.Web.WebPages.Deployment.dll
+D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\PermitToWork\PermitToWork\bin\System.Web.WebPages.dll
+D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\PermitToWork\PermitToWork\bin\System.Web.WebPages.Razor.dll
+D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\PermitToWork\PermitToWork\bin\EntityFramework.xml
+D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\PermitToWork\PermitToWork\bin\System.Web.Helpers.xml
+D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\PermitToWork\PermitToWork\bin\System.Web.Mvc.xml
+D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\PermitToWork\PermitToWork\bin\System.Web.Razor.xml
+D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\PermitToWork\PermitToWork\bin\System.Web.WebPages.xml
+D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\PermitToWork\PermitToWork\bin\System.Web.WebPages.Deployment.xml
+D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\PermitToWork\PermitToWork\bin\System.Web.WebPages.Razor.xml
+D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\PermitToWork\PermitToWork\obj\Debug\PermitToWork.csprojResolveAssemblyReference.cache
+D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\PermitToWork\PermitToWork\obj\Debug\PermitToWork.dll
+D:\kerjaan\Project\4Sync\My Documents\PROJECT\ONGOING\Star Energi Geo\PTW\PermitToWork\PermitToWork\obj\Debug\PermitToWork.pdb
+D:\Informatics\proyek\ptw\PermitToWork\PermitToWork\obj\Debug\PermitToWork.csprojResolveAssemblyReference.cache
+D:\Informatics\proyek\ptw\PermitToWork\PermitToWork\bin\PermitToWork.dll
+D:\Informatics\proyek\ptw\PermitToWork\PermitToWork\bin\PermitToWork.pdb
+D:\Informatics\proyek\ptw\PermitToWork\PermitToWork\bin\Microsoft.Web.Infrastructure.dll
+D:\Informatics\proyek\ptw\PermitToWork\PermitToWork\bin\System.Web.Helpers.dll
+D:\Informatics\proyek\ptw\PermitToWork\PermitToWork\bin\System.Web.Mvc.dll
+D:\Informatics\proyek\ptw\PermitToWork\PermitToWork\bin\System.Web.Razor.dll
+D:\Informatics\proyek\ptw\PermitToWork\PermitToWork\bin\System.Web.WebPages.Deployment.dll
+D:\Informatics\proyek\ptw\PermitToWork\PermitToWork\bin\System.Web.WebPages.dll
+D:\Informatics\proyek\ptw\PermitToWork\PermitToWork\bin\System.Web.WebPages.Razor.dll
+D:\Informatics\proyek\ptw\PermitToWork\PermitToWork\bin\EntityFramework.xml
+D:\Informatics\proyek\ptw\PermitToWork\PermitToWork\bin\Microsoft.Web.Infrastructure.xml
+D:\Informatics\proyek\ptw\PermitToWork\PermitToWork\bin\System.Web.Helpers.xml
+D:\Informatics\proyek\ptw\PermitToWork\PermitToWork\bin\System.Web.Mvc.xml
+D:\Informatics\proyek\ptw\PermitToWork\PermitToWork\bin\System.Web.Razor.xml
+D:\Informatics\proyek\ptw\PermitToWork\PermitToWork\bin\System.Web.WebPages.xml
+D:\Informatics\proyek\ptw\PermitToWork\PermitToWork\bin\System.Web.WebPages.Deployment.xml
+D:\Informatics\proyek\ptw\PermitToWork\PermitToWork\bin\System.Web.WebPages.Razor.xml
+D:\Informatics\proyek\ptw\PermitToWork\PermitToWork\obj\Debug\PermitToWork.dll
+D:\Informatics\proyek\ptw\PermitToWork\PermitToWork\obj\Debug\PermitToWork.pdb
+D:\Informatics\Proyek\PermitToWork\PermitToWork\bin\PermitToWork.dll
+D:\Informatics\Proyek\PermitToWork\PermitToWork\bin\PermitToWork.pdb
+D:\Informatics\Proyek\PermitToWork\PermitToWork\bin\Microsoft.Web.Infrastructure.dll
+D:\Informatics\Proyek\PermitToWork\PermitToWork\bin\System.Web.Helpers.dll
+D:\Informatics\Proyek\PermitToWork\PermitToWork\bin\System.Web.Mvc.dll
+D:\Informatics\Proyek\PermitToWork\PermitToWork\bin\System.Web.Razor.dll
+D:\Informatics\Proyek\PermitToWork\PermitToWork\bin\System.Web.WebPages.Deployment.dll
+D:\Informatics\Proyek\PermitToWork\PermitToWork\bin\System.Web.WebPages.dll
+D:\Informatics\Proyek\PermitToWork\PermitToWork\bin\System.Web.WebPages.Razor.dll
+D:\Informatics\Proyek\PermitToWork\PermitToWork\bin\EntityFramework.xml
+D:\Informatics\Proyek\PermitToWork\PermitToWork\bin\Microsoft.Web.Infrastructure.xml
+D:\Informatics\Proyek\PermitToWork\PermitToWork\bin\System.Web.Helpers.xml
+D:\Informatics\Proyek\PermitToWork\PermitToWork\bin\System.Web.Mvc.xml
+D:\Informatics\Proyek\PermitToWork\PermitToWork\bin\System.Web.Razor.xml
+D:\Informatics\Proyek\PermitToWork\PermitToWork\bin\System.Web.WebPages.xml
+D:\Informatics\Proyek\PermitToWork\PermitToWork\bin\System.Web.WebPages.Deployment.xml
+D:\Informatics\Proyek\PermitToWork\PermitToWork\bin\System.Web.WebPages.Razor.xml
+D:\Informatics\Proyek\PermitToWork\PermitToWork\obj\Debug\PermitToWork.csprojResolveAssemblyReference.cache
+D:\Informatics\Proyek\PermitToWork\PermitToWork\obj\Debug\PermitToWork.dll
+D:\Informatics\Proyek\PermitToWork\PermitToWork\obj\Debug\PermitToWork.pdb
