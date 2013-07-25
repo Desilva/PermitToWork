@@ -79,8 +79,7 @@
             <b>WORKING AT HEIGHT PERMIT</b><br />
             Star Energy Geothermal (Wayang Windu) Limited
         </div>
-
-        <div class="span3">
+        <div class="span3 no">
             No: WH-xxx-xxx/xxx/xxx
         </div>
     </div>
@@ -90,12 +89,14 @@
 
 <div class="container-fluid">
     <div class="row-fluid">
-        <div class="span12">
-            <b>1) GENERAL INFORMATION </b><small><i>(Fill by requestor review by Facility Owner)</i></small>
-        </div>
-    </div>
-    <div class="row-fluid">
         <table class="table">
+            <thead>
+                <tr>
+                    <th colspan="4" class="title-form">
+                        <b>1. GENERAL INFORMATION</b> <span><i>(Fill by requestor review by Facility Owner)</i></span>
+                    </th>
+                </tr>
+            </thead>
             <tbody>
                 <tr>
                     <td>Description of Work at<br />height task</td>
@@ -116,13 +117,15 @@
         </table>
     </div>
     <div class="row-fluid">
-        <div class="span12">
-            <b>2) ACCESS TO WORK LOCATION AT HEIGHT </b><small><i>(Fill by supervisor review by Facility Owner)</i></small>
-        </div>
-    </div>
-    <div class="row-fluid">
         <table class="table">
-            <tbody>
+            <thead>
+                <tr>
+                    <th colspan="3" class="title-form">
+                        <b>2. ACCESS TO WORK LOCATION AT HEIGHT</b> <span><i>(Fill by supervisor review by Facility Owner)</i></span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="span6 wh-no-margin">
                 <tr>
                     <td><input type="checkbox" id="workBox" value="1"/></td>
                     <td><strong>WORK BOX</strong> <small>(man basket: for lifting purpose needs other lifting equipment)</small></td>
@@ -281,6 +284,8 @@
                         </select>
                     </td>
                 </tr>
+            </tbody>
+            <tbody class="span6">
                 <tr>
                     <td><input type="checkbox" id="scaffolding" value="1"/></td>
                     <td><strong>SCAFFOLDING</strong> <small>(if selected form HW 107b must be attached, for install and dismantle erector must be as permit holder)</small></td>
@@ -389,17 +394,24 @@
                 </tr>
                 <tr>
                     <td><input type="checkbox" id="other" value="1"/></td>
-                    <td><strong>*OTHER</strong> <input class="table-input table-input-180" id="otherText" type="text"><br /><small><i>(* Must be approved by safety officer)</i></small></td>
+                    <td colspan="2"><strong>*OTHER</strong> <input class="table-input table-input-180" id="otherText" type="text"><br /><small><i>(* Must be approved by safety officer)</i></small></td>
                 </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="row-fluid">
+        <table class="table">
+            <tbody>
                 <tr>
-                    <td colspan="2"><strong>FALL PREVENTION</strong></td>
-                    <td> Yes N/A </td>
+                    <td colspan="3"><strong>FALL PREVENTION</strong></td>
                 </tr>
+            </tbody>
+            <tbody class="span6 wh-no-margin">
                 <tr>
                     <td>1) </td>
-                    <td>Mandatory Fall prevention system </td>
+                    <td class="span6">Mandatory Fall prevention system </td>
                     <td>
-                        &nbsp;
+                         Yes N/A 
                     </td>
                 </tr>
                 <tr>
@@ -415,7 +427,7 @@
                 </tr>
                 <tr>
                     <td>&nbsp;</td>
-                    <td>a. Safety net</td>
+                    <td>b. Safety net</td>
                     <td>
                         <select class="radiography-select" id="">
                           <option value="1">Yes</option>
@@ -434,6 +446,12 @@
                           <option value="">N/A</option>
                         </select>
                     </td>
+                </tr>
+            </tbody>
+            <tbody class="span6">
+                <tr>
+                    <td colspan="2">&nbsp;</td>
+                    <td> Yes N/A </td>
                 </tr>
                 <tr>
                     <td>2) </td>
@@ -472,43 +490,43 @@
         </table>
     </div>
     <div class="row-fluid">
-        <div class="span12">
-            <b>3) WORKING AT HEIGHT SCREENING </b><small><i>(Fill assessment with yes, no, or N/A; Spv: Supervisor; SO: Safety Officer; FO: Facility Owner)</i></small>
-        </div>
-    </div>
-    <div class="row-fluid">
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th class="radio-title-form" rowspan="2"><b>No</b></th>
-                    <th class="radio-title-form" rowspan="2"><b>Description</b></th>
-                    <th class="radio-title-form" colspan="3"><b>Assessment</b></th>
+                    <th class="title-form" colspan="5"><b>3. WORKING AT HEIGHT SCREENING</b> <span><i>(Fill assessment with yes, no, or N/A; Spv: Supervisor; SO: Safety Officer; FO: Facility Owner)</i></span></th>
+                    
                 </tr>
-                <tr>
-                    <th class="radio-title-form">SPV</th>
-                    <th class="radio-title-form">SO</th>
-                    <th class="radio-title-form">FO</th>
-                </tr>
+                
             </thead>
             <tbody>
                 <tr>
+                    <td rowspan="2" class="radio-title-form"><b>No</b></td>
+                    <td rowspan="2" class="radio-title-form"><b>Description</b></td>
+                    <td colspan="3" class="radio-title-form"><b>Assessment</b></td>
+                </tr>
+                <tr>
+                    <td class="radio-title-form">SPV</td>
+                    <td class="radio-title-form">SO</td>
+                    <td class="radio-title-form">FO</td>
+                </tr>
+                <tr>
                     <td>1</td>
                     <td>Worker assign the task are competent in working at height</td>
-                    <td>
+                    <td class="radio-title-form">
                         <select class="radiography-select" id="spv1">
                           <option value="1">Yes</option>
                           <option value="0">No</option>
                           <option value="">N/A</option>
                         </select>
                     </td>
-                    <td>
+                    <td class="radio-title-form">
                         <select class="radiography-select" id="so1">
                           <option value="1">Yes</option>
                           <option value="0">No</option>
                           <option value="">N/A</option>
                         </select>
                     </td>
-                    <td>
+                    <td class="radio-title-form">
                         <select class="radiography-select" id="fo1">
                           <option value="1">Yes</option>
                           <option value="0">No</option>
@@ -519,21 +537,21 @@
                 <tr>
                     <td>2</td>
                     <td>Work area safe for energize power lines <small><i>(safe clearance available)</i></small></td>
-                    <td>
+                    <td class="radio-title-form">
                         <select class="radiography-select" id="spv2">
                           <option value="1">Yes</option>
                           <option value="0">No</option>
                           <option value="">N/A</option>
                         </select>
                     </td>
-                    <td>
+                    <td class="radio-title-form">
                         <select class="radiography-select" id="so2">
                           <option value="1">Yes</option>
                           <option value="0">No</option>
                           <option value="">N/A</option>
                         </select>
                     </td>
-                    <td>
+                    <td class="radio-title-form">
                         <select class="radiography-select" id="fo2">
                           <option value="1">Yes</option>
                           <option value="0">No</option>
@@ -544,21 +562,21 @@
                 <tr>
                     <td>3</td>
                     <td>Emergency rescue plan available <small><i>(Form xxx attached)</i></small></td>
-                    <td>
+                    <td class="radio-title-form">
                         <select class="radiography-select" id="spv3">
                           <option value="1">Yes</option>
                           <option value="0">No</option>
                           <option value="">N/A</option>
                         </select>
                     </td>
-                    <td>
+                    <td class="radio-title-form">
                         <select class="radiography-select" id="so3">
                           <option value="1">Yes</option>
                           <option value="0">No</option>
                           <option value="">N/A</option>
                         </select>
                     </td>
-                    <td>
+                    <td class="radio-title-form">
                         <select class="radiography-select" id="fo3">
                           <option value="1">Yes</option>
                           <option value="0">No</option>
@@ -569,21 +587,21 @@
                 <tr>
                     <td>4</td>
                     <td>Working at height can be done with safely way</td>
-                    <td>
+                    <td class="radio-title-form">
                         <select class="radiography-select" id="spv4">
                           <option value="1">Yes</option>
                           <option value="0">No</option>
                           <option value="">N/A</option>
                         </select>
                     </td>
-                    <td>
+                    <td class="radio-title-form">
                         <select class="radiography-select" id="so4">
                           <option value="1">Yes</option>
                           <option value="0">No</option>
                           <option value="">N/A</option>
                         </select>
                     </td>
-                    <td>
+                    <td class="radio-title-form">
                         <select class="radiography-select" id="fo4">
                           <option value="1">Yes</option>
                           <option value="0">No</option>
@@ -600,12 +618,14 @@
         </table>
     </div>
     <div class="row-fluid">
-        <div class="span12">
-            <b>4) APPROVAL </b>
-        </div>
-    </div>
-    <div class="row-fluid">
         <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th colspan="4" class="title-form">
+                        <b>4. APPROVAL</b>
+                    </th>
+                </tr>
+            </thead>
             <tbody>
                 <tr>
                     <td class="td-centre">
@@ -629,12 +649,15 @@
         </table>
     </div>
     <div class="row-fluid">
-        <div class="span12">
-            <b>4) WORKING AT HEIGHT PERMIT CANCELATION </b>
-        </div>
-        <div class="span12 title">
-            <small><i>(Worker supervisor responsible to completed assessments prior cancellations review by safety officer & facility owner)</i></small>
-        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="title-form">
+                        <b>5. WORKING AT HEIGHT PERMIT CANCELATION </b><span><i>(Worker supervisor responsible to completed assessments prior cancellations review by safety officer & facility owner)</i></span>
+                    </th>
+                </tr>
+            </thead>
+        </table>
     </div>
     <div class="row-fluid">
         <div class="span12">

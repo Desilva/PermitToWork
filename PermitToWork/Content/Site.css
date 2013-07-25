@@ -181,6 +181,11 @@ input[type="file"]
     width : 30px !important;
 }
 
+.table-input-50
+{
+    width : 50px !important;
+}
+
 .table-textarea
 {
     width : 98%;
@@ -219,7 +224,7 @@ input[type="file"]
 
 .radio-title-form 
 {
-    text-align:center;
+    text-align:center !important;
 }
 
 .radiography-select 
@@ -227,5 +232,29 @@ input[type="file"]
     width:75px;
 }
 
+.radiography-file 
+{
+    display:inline;
+}
+
 /* --------------------END radiography------------------------- */
+
+/* --------------------BEGIN working height-------------------- */
+
+.wh-no-margin 
+{
+    margin-left:0px !important;
+}
+
+.design-center 
+{
+    text-align:center !important;
+}
+
+.bg-grey 
+{
+    background:grey;
+}
+
+/* --------------------END working height--------------------- */
 

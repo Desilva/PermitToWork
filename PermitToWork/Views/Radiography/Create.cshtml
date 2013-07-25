@@ -21,6 +21,39 @@
             }
         });
 
+        $("#filesRadiographyLvl2").kendoUpload({
+            async: {
+                saveUrl: "save",
+                removeUrl: "remove",
+                autoUpload: true
+            }
+        });
+
+        $("#filesRadiographyLvl1").kendoUpload({
+            async: {
+                saveUrl: "save",
+                removeUrl: "remove",
+                autoUpload: true,
+
+            }
+        });
+
+        $("#filesRadiationPO").kendoUpload({
+            async: {
+                saveUrl: "save",
+                removeUrl: "remove",
+                autoUpload: true
+            }
+        });
+
+        $("#filesPotentialAreaAffected").kendoUpload({
+            async: {
+                saveUrl: "save",
+                removeUrl: "remove",
+                autoUpload: true
+            }
+        });
+
         function startChange() {
             var startDate = start.value();
 
@@ -75,8 +108,8 @@
             Star Energy Geothermal (Wayang Windu) Limited
         </div>
 
-        <div class="span3">
-            &nbsp;
+        <div class="span3 no">
+            Permit No: RT-xxx/xxx/xxx
         </div>
     </div>
     <div class="row-fluid separator">
@@ -85,23 +118,18 @@
 
 <div class="container-fluid">
     <div class="row-fluid">
-        <div class="span6 offset3 radiography-title">
-            <b>GENERAL INFORMATION </b>
-        </div>
-        <div class="span3 radiography-number">
-            Permit No: RT-xxx/xxx/xxx
-        </div>
-    </div>
-    <div class="row-fluid">
         <table class="table">
             <thead>
                 <tr>
-                    <th class="title-form"><b>No </b></th>
-                    <th class="title-form"><b>Description </b></th>
-                    <th class="title-form" colspan="2"><b>Remark </b></th>
+                    <th class="title-form" colspan="4"><b>1.  GENERAL INFORMATION </b></th>
                 </tr>
             </thead>
             <tbody>
+                <tr>
+                    <td><b>No </b></td>
+                    <td><b>Description </b></td>
+                    <td colspan="2"><b>Remark </b></td>
+                </tr>
                 <tr>
                     <td>1</td>
                     <td>Work location</td>
@@ -111,7 +139,7 @@
                     <td>2</td>
                     <td>Radiographer Level 2 <small>(Ahli Radiographic)</small></td>
                     <td>: <input class="table-input table-input-120" id="radiographerLvl2" type="text"></td>
-                    <td>Licensed number: <input class="table-input table-input-120" id="radiographerLvl2LicenseNumber" type="text">&nbsp;<input name="files" id="filesRadiographyLvl2" type="file" /><br />
+                    <td>Licensed number: <input class="table-input table-input-120" id="radiographerLvl2LicenseNumber" type="text">&nbsp;<input name="files" id="filesRadiographyLvl2" type="file" class="radiography-file" /><br />
                         Contact number: &nbsp;&nbsp;<input class="table-input table-input-120" id="radiographerLvl2ContactNumber" type="text">
                     </td>
                 </tr>
@@ -119,14 +147,14 @@
                     <td>3</td>
                     <td>Radiographer Level 1 <small>(Operator Radiographic)</small></td>
                     <td>: <input class="table-input table-input-120" id="radiographerLvl1" type="text"></td>
-                    <td>Licensed number: <input class="table-input table-input-120" id="radiographerLvl1LicenseNumber" type="text">&nbsp;<input name="files" id="filesRadiographyLvl1" type="file" />
+                    <td>Licensed number: <input class="table-input table-input-120" id="radiographerLvl1LicenseNumber" type="text">&nbsp;<input name="files" id="filesRadiographyLvl1" type="file" class="radiography-file" />
                     </td>
                 </tr>
                 <tr>
                     <td>4</td>
                     <td>Radiation Protection Officer </td>
                     <td>: <input class="table-input table-input-120" id="radiationPO" type="text"></td>
-                    <td>Licensed number: <input class="table-input table-input-120" id="radiationPOLicenseNumber" type="text">&nbsp;<input name="files" id="filesRadiationPO" type="file" />
+                    <td>Licensed number: <input class="table-input table-input-120" id="radiationPOLicenseNumber" type="text">&nbsp;<input name="files" id="filesRadiationPO" type="file" class="radiography-file" />
                     </td>
                 </tr>
                 <tr>
@@ -166,26 +194,25 @@
         </table>
     </div>
     <div class="row-fluid">
-        <div class="span12 title">
-            <b>HAZARD SCREENING</b><br />
-            <small>It must be completed by certified radiographer Level 2. If any of the below can't be satisfied the work will not be permitted. Project manager acknowledge at the ack column as agreement with hazard screening<br />
-                Fill : yes if agree, no if disagree, N/A if not applicable with statement on description column; Spv : Supervisor; Rad : Radiographic engineer / level-2; FO : facility owner
-            </small>
-        </div>
-    </div>
-    <div class="row-fluid">
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th class="radio-title-form"><strong>No</strong></th>
-                    <th class="radio-title-form"><strong>Description</strong></th>
-                    <th class="radio-title-form"><strong>SPV</strong></th>
-                    <th class="radio-title-form"><strong>RAD</strong></th>
-                    <th class="radio-title-form"><strong>FO</strong></th>
-                    <th class="radio-title-form"><strong>Remark</strong><br /><em><small>(Write any controlling method shall be apply)</small></em></th>
+                    <th class="title-form" colspan="6">
+                        <b>2. HAZARD SCREENING</b> <span><i>It must be completed by certified radiographer Level 2. If any of the below can't be satisfied the work will not be permitted. Project manager acknowledge at the ack column as agreement with hazard screening. 
+                            Fill : yes if agree, no if disagree, N/A if not applicable with statement on description column; Spv : Supervisor; Rad : Radiographic engineer / level-2; FO : facility owner</i></span>
+                    </th>
+                    
                 </tr>
             </thead>
             <tbody>
+                <tr>
+                    <td><strong>No</strong></td>
+                    <td><strong>Description</strong></td>
+                    <td><strong>SPV</strong></td>
+                    <td><strong>RAD</strong></td>
+                    <td><strong>FO</strong></td>
+                    <td><strong>Remark</strong><br /><em><small>(Write any controlling method shall be apply)</small></em></td>
+                </tr>
                 <tr>
                     <td>1</td>
                     <td>Warning sign will be posted around relevant potential area of exposure <small>(attached copy sample of sign if there apply)</small></td>
@@ -610,12 +637,14 @@
         </table>
     </div>
     <div class="row-fluid">
-        <div class="span12 title">
-            <b>APPROVAL</b>
-        </div>
-    </div>
-    <div class="row-fluid">
         <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th colspan="4" class="title-form">
+                        <b>3. APPROVAL</b>
+                    </th>
+                </tr>
+            </thead>
             <tbody>
                 <tr>
                     <td colspan="2" class="td-centre">
@@ -654,13 +683,14 @@
         </table>
     </div>
     <div class="row-fluid">
-        <div class="span12 title">
-            <b>CLOSED</b><br />
-            <small>Radiographic engineer have been declare that all radiation material have been secure in proper condition and work area have been clear from radiographic potential hazard</small>
-        </div>
-    </div>
-    <div class="row-fluid">
         <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th colspan="4" class="title-form">
+                        <b>4. CLOSED</b> <span><i>Radiographic engineer have been declare that all radiation material have been secure in proper condition and work area have been clear from radiographic potential hazard</i></span>
+                    </th>
+                </tr>
+            </thead>
             <tbody>
                 <tr>
                     <td colspan="2" class="td-centre">

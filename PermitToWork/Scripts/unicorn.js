@@ -173,6 +173,16 @@ function addHandlerMenu() {
         $('#content').load('excavation/create');
         setActiveMenu('submenu-ptw')
     });
+
+    $('.design').click(function () {
+        $('#content').load('WorkingHeight/ScaffoldingDesign');
+        setActiveMenu('submenu-ptw')
+    });
+
+    $('.inspection').click(function () {
+        $('#content').load('WorkingHeight/ScaffoldingInspection');
+        setActiveMenu('submenu-ptw')
+    });
 }
 
 function setActiveMenu(id) {

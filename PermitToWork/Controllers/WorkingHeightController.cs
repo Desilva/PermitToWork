@@ -21,5 +21,15 @@ namespace PermitToWork.Controllers
         {
             return PartialView();
         }
+
+        public ActionResult ScaffoldingDesign()
+        {
+            return PartialView();
+        }
+
+        public ActionResult ScaffoldingInspection()
+        {
+            return PartialView();
+        }
     }
 }
