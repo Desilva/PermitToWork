@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PermitToWork.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
@@ -17,6 +18,7 @@ namespace PermitToWork
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
             filters.Add(new HandleErrorAttribute());
+            filters.Add(new LogActionFilter());
         }
 
         public static void RegisterRoutes(RouteCollection routes)
@@ -26,7 +28,7 @@ namespace PermitToWork
             routes.MapRoute(
                 "Default", // Route name
                 "{controller}/{action}/{id}", // URL with parameters
-                new { controller = "Home", action = "Index", id = UrlParameter.Optional } // Parameter defaults
+                new { controller = "Login", action = "Index", id = UrlParameter.Optional } // Parameter defaults
             );
 
         }

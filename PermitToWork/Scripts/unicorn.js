@@ -140,7 +140,7 @@ function addHandlerMenu() {
     });
 
     $('.ptw').click(function () {
-        $('#content').load('ptw/create');
+        $('#content').load('ptw/index');
         setActiveMenu('submenu-ptw')
     });
 

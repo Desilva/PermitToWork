@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@{
+    string m = ViewBag.m as string;
+}
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <title>Unicorn Admin</title>
@@ -12,20 +15,26 @@
         <div id="logo">
             <img src="img/logo.png" alt="" />
         </div>
+        <div class="alert alert-error text-center" style="display:none" id="fail">
+          <strong>Error!</strong> <span id="errorMessage"></span>
+        </div>
+        <div class="alert alert-success text-center" style="display:none" id="success">
+          <strong>Success!</strong> Login Successful! Please wait while being redirected to home.
+        </div>
         <div id="loginbox">            
-            <form id="loginform" class="form-vertical" action="Home">
+            <form id="loginform" class="form-vertical" method="post" action="Login/ValidateLogin" name="formLogin">
 				<p>Enter username and password to continue.</p>
                 <div class="control-group">
                     <div class="controls">
                         <div class="input-prepend">
-                            <span class="add-on"><i class="icon-user"></i></span><input type="text" placeholder="Username" />
+                            <span class="add-on"><i class="icon-user"></i></span><input type="text" placeholder="Username" name="username" id="username" />
                         </div>
                     </div>
                 </div>
                 <div class="control-group">
                     <div class="controls">
                         <div class="input-prepend">
-                            <span class="add-on"><i class="icon-lock"></i></span><input type="password" placeholder="Password" />
+                            <span class="add-on"><i class="icon-lock"></i></span><input type="password" placeholder="Password" name="password" id="password" />
                         </div>
                     </div>
                 </div>
@@ -36,6 +45,35 @@
         </div>
         
         <script src="@Url.Content("~/Scripts/jquery.min.js")"></script>  
+        <script src="@Url.Content("~/Scripts/jquery-ui-1.8.20.js")"></script> 
         <script src="@Url.Content("~/Scripts/unicorn.login.js")"></script> 
+        <script src="@Url.Content("~/Scripts/bootstrap-alert.js")"></script> 
+        <script type="text/javascript">
+            // when the DOM is ready
+            $(document).ready(function () {
+                if ('@m' != '') {
+                    $('#errorMessage').html('@m');
+                    $('#fail').show(300);
+                    setTimeout(function () { $('#fail').hide(300) }, 3000);
+                }
+
+                // bind some code to the form's onsubmit handler
+                $('form[name=formLogin]').submit(function (e) {
+                    // $.post makes a POST XHR request, the first parameter takes the form's
+                    // specified action
+                    e.preventDefault();
+                    $.post("Login/ValidateLogin", {username: $('#username').val(), password: $('#password').val()}, function (resp) {
+                        if (resp.status == "200") {
+                            $('#success').show(300);
+                            setTimeout(function () { window.location = "/Home"; }, 2000);
+                        } else if (resp.status == "500") {
+                            $('#errorMessage').html(resp.message);
+                            $('#fail').show(300);
+                            setTimeout(function () { $('#fail').hide(300) }, 3000);
+                        }
+                    });
+                });
+            });
+</script>
     </body>
 </html>

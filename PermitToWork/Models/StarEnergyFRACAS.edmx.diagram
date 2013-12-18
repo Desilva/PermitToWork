@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="d553614e9c514655b8b6c704fef3d6f1" Name="Diagram1">
+        <EntityTypeShape EntityType="star_energi_geoModel.audit" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.audit_log" Width="1.5" PointX="3" PointY="8.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.audit_log_clause" Width="1.5" PointX="5.25" PointY="9.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.bom" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.comms_rbi" Width="1.5" PointX="10.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.component" Width="1.5" PointX="29.5" PointY="49.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.daily_log" Width="1.5" PointX="0.75" PointY="34.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.daily_log_last_plant_status" Width="1.5" PointX="3" PointY="49.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.daily_log_maintainence" Width="1.5" PointX="3" PointY="52.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.daily_log_operation_warning" Width="1.5" PointX="12.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.daily_log_power_stations" Width="1.5" PointX="3" PointY="55.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.daily_log_pro" Width="1.5" PointX="3" PointY="58.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.daily_log_sags" Width="1.5" PointX="3" PointY="61.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.daily_log_sap" Width="1.5" PointX="3" PointY="64.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.daily_log_weekly_target" Width="1.5" PointX="2.75" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.daily_log_wpnb" Width="1.5" PointX="12.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.discipline" Width="1.5" PointX="22" PointY="47.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.employee" Width="1.5" PointX="15.25" PointY="25.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.employee_dept" Width="1.5" PointX="13" PointY="27.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.equipment_daily_report" Width="1.5" PointX="10.75" PointY="12.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.equipment_daily_report_table" Width="1.5" PointX="13" PointY="11" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.equipment_event" Width="1.5" PointX="24.25" PointY="46.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.equipment_groups" Width="1.5" PointX="19.75" PointY="52.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.equipment_paf" Width="1.5" PointX="24.25" PointY="52.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.equipment_part" Width="1.5" PointX="27.25" PointY="51.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.equipment_read_nav_note" Width="1.5" PointX="12.75" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.equipment_readiness_nav" Width="1.5" PointX="24.25" PointY="63.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.equipment" Width="1.5" PointX="22" PointY="49.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.event_descriptions" Width="1.5" PointX="14.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.failure_causes" Width="1.5" PointX="14.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.failure_effects" Width="1.5" PointX="14.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.failure_modes" Width="1.5" PointX="22" PointY="43.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.foc_op_avail" Width="1.5" PointX="15.25" PointY="36.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.foc_paf" Width="1.5" PointX="15.25" PointY="40.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.foc_target_paf" Width="1.5" PointX="15.25" PointY="43.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.foc" Width="1.5" PointX="13" PointY="47.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.iir_recommendations" Width="1.5" PointX="6" PointY="12.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.immediate_actions" Width="1.5" PointX="8.75" PointY="14.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.incident_report" Width="1.5" PointX="15.75" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.incident_report_log" Width="1.5" PointX="10.75" PointY="15.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.investigation_report" Width="1.5" PointX="3.75" PointY="23.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.investigation_report_log" Width="1.5" PointX="12.75" PointY="15.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.ir_KPI_log" Width="1.5" PointX="16.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.long_term_actions" Width="1.5" PointX="16.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.ma" Width="1.5" PointX="15.25" PointY="46.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.monthly_project_activity" Width="1.5" PointX="16.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.monthly_project_outstanding_activity" Width="1.5" PointX="7.75" PointY="17.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.monthly_project_she_report" Width="1.5" PointX="7.75" PointY="20.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.monthly_she_contractor" Width="1.5" PointX="17.75" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.part_unit_event" Width="1.5" PointX="29.5" PointY="52.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.part" Width="1.5" PointX="25" PointY="56.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.pir" Width="1.5" PointX="0.75" PointY="7.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.pir_clause" Width="1.5" PointX="3" PointY="5.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.pir_log" Width="1.5" PointX="3" PointY="16.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.plant" Width="1.5" PointX="10.75" PointY="40" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.process_owner" Width="1.5" PointX="17.75" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.rca" Width="1.5" PointX="8" PointY="2.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.rca_analisys_type" Width="1.5" PointX="5.75" PointY="0.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.rca_building" Width="1.5" PointX="5.75" PointY="3.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.rca_csf" Width="1.5" PointX="17.75" PointY="15.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.rca_csf_conector" Width="1.5" PointX="10.25" PointY="4.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.rca_department" Width="1.5" PointX="3.5" PointY="19.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.rca_desc" Width="1.5" PointX="18.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.rca_facility" Width="1.5" PointX="5.75" PointY="5.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.rca_fishbone_master" Width="1.5" PointX="18.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.rca_floor" Width="1.5" PointX="5.75" PointY="16.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.rca_graph_metric" Width="1.5" PointX="18.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.rca_implementation" Width="1.5" PointX="17.5" PointY="25.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.rca_pre_task" Width="1.5" PointX="20.5" PointY="27" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.rca_preserve_category" Width="1.5" PointX="18.25" PointY="29.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.rca_section" Width="1.5" PointX="5.75" PointY="19.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.rca_team_connector" Width="1.5" PointX="10.25" PointY="7.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.rca_template" Width="1.5" PointX="9.75" PointY="18.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.safe_man_hours" Width="1.5" PointX="11.75" PointY="18.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.safe_man_hours_incident" Width="1.5" PointX="17.75" PointY="18.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.secondary_effects" Width="1.5" PointX="0.75" PointY="19.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.she_illness_report" Width="1.5" PointX="19.75" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.she_injury_report" Width="1.5" PointX="21.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.she_KPI_target" Width="1.5" PointX="13.75" PointY="19.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.she_obs_category" Width="1.5" PointX="21.75" PointY="13.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.she_obs_KPI_log" Width="1.5" PointX="15.75" PointY="21.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.she_obs_sub_category" Width="1.5" PointX="21.75" PointY="16.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.she_observation" Width="1.5" PointX="22.75" PointY="19.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.she_observation_undian" Width="1.5" PointX="0.75" PointY="22.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.she_observation_undian_exception" Width="1.5" PointX="23.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.she_observation_undian_reward" Width="1.5" PointX="23.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.she_observation_undian_winner" Width="1.5" PointX="23.75" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.sub_component" Width="1.5" PointX="31.75" PointY="49.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.system_paf" Width="1.5" PointX="19.75" PointY="55.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.system" Width="1.5" PointX="17.5" PointY="51.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.tag_types" Width="1.5" PointX="19.75" PointY="49.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.trouble_shooting" Width="1.5" PointX="23.75" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.trouble_shooting_log" Width="1.5" PointX="23.75" PointY="16.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.unit_paf" Width="1.5" PointX="17.5" PointY="58.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.unit" Width="1.5" PointX="15.25" PointY="55" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.user_per_role" Width="1.5" PointX="19.75" PointY="32.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.user_role" Width="1.5" PointX="19.75" PointY="23.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="star_energi_geoModel.user" Width="1.5" PointX="17.5" PointY="32.25" IsExpanded="true" />
+        <AssociationConnector Association="star_energi_geoModel.FK_audit_log_clause_audit_log" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_audit_log_pir" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_audit_log_clause_pir_clause" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_component_equipment_part" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_sub_component_component" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_daily_log_last_plant_status_daily_log" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_daily_log_maintainence_daily_log" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_daily_log_power_stations_daily_log" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_daily_log_pro_daily_log" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_daily_log_sags_daily_log" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_daily_log_sap_daily_log" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_disciplines_tag_types" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_employee_employee" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_employee_employee_dept" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_rca_implementation_employee" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_rca_pre_task_employee" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_users_employee" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_employee_dept_plants" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_equipment_daily_report_table_equipment_daily_report" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_equipment_event_equipments" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_equipments_equipment_groups" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_rm_equipment_group_rm_system" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_equipment_paf_equipments" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_equipment_part_equipments" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_equipment_part_parts" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_part_unit_event_equipment_part" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_equipment_readiness_nav_equipments" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_equipments_tag_types" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_failure_modes_tag_types" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_foc_op_avail_focs" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_foc_paf_focs" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_foc_target_paf_focs" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_focs_plants" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_masd_focs" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_rm_unit_rm_foc" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_iir_recommendations_investigation_report" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_iir_recommendations_pir" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_pir_log_pir" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_rca_pir" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_rca_csf_conector_rca" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_rca_rca_analisys_type" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_rca_rca_building" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_rca_rca_facility" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_rca_rca_floor" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_rca_rca_section" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_rca_team_connector_rca" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_rca_division_rca_facility" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_rca_section_rca_department" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_rca_pre_task_rca_preserve_category" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_system_paf_systems" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_rm_system_rm_unit" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_unit_paf_units" ManuallyRouted="false" />
+        <AssociationConnector Association="star_energi_geoModel.FK_user_per_role_users" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

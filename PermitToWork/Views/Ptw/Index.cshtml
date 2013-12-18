@@ -3,144 +3,152 @@
         addHandlerMenu();
     })
 </script>
-
+@{
+    var requestor = Session["user"] as PermitToWork.Models.User.UserEntity;
+    string m = ViewBag.m as string;
+}
 <div id="content-header">
-	<h1>Permit To Work</h1>
+	<h1>Permit To Work List</h1>
 </div>
 <div id="breadcrumb">
-	<a href="#" title="Go to Home" class="tip-bottom home"><i class="icon-home"></i> Home</a>
-	<a href="#" class="current ptw">Permit To Work</a>
+	<a href="#"><i class="icon-home"></i> Home</a>
+	<a href="#" class="current">Permit To Work</a>
 </div>
-<br/>
-
-<div id="ClientsDb">
-    <div class="grid-title">
-        <h4>Permit To Work List</h4>
+<div class="alert alert-error text-center" style="display:none" id="fail">
+    <strong>Error!</strong> <span id="errorMessage"></span>
+</div>
+<div id="content-hazard">
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span12">
+                <input class="btn" type="button" value="Add New Record" onclick="createPtw();" /><br />
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="widget-box">
+		            <div class="widget-title">
+			            <span class="icon">
+				            <i class="icon-align-justify"></i>									
+			            </span>
+			            <h5>Permit To Work List</h5>
+		            </div>
+		            <div class="widget-content nopadding">
+                        <div id="grid-ptw" class="span12"></div>
+		            </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div id="grid-ptw" class="grid"></div>
 </div>
-
-
+<script type="text/x-kendo-template" id="extend-template">
+    @if (requestor.roles.Exists(p => p.role == (int)PermitToWork.Models.User.UserEntity.role.ADMINMASTERSHE)) {
+    <text><input type="button" class="btn btn-primary" value="Edit" onclick="editPtw(#= id #)"/>
+    #if (status == 4) {#
+    <input type="button" class="btn btn-warning" value="Extend" onclick="extendPtw(#= id #)"/>
+    #}#</text>
+    }
+</script>
 <script>
-    var firstNames = ["Nancy", "Andrew", "Janet", "Margaret", "Steven", "Michael", "Robert", "Laura", "Anne", "Nige"],
-    lastNames = ["Davolio", "Fuller", "Leverling", "Peacock", "Buchanan", "Suyama", "King", "Callahan", "Dodsworth", "White"],
-    cities = ["Seattle", "Tacoma", "Kirkland", "Redmond", "London", "Philadelphia", "New York", "Seattle", "London", "Boston"],
-    titles = ["Accountant", "Vice President, Sales", "Sales Representative", "Technical Support", "Sales Manager", "Web Designer",
-    "Software Developer", "Inside Sales Coordinator", "Chief Techical Officer", "Chief Execute Officer"],
-    birthDates = [new Date("1948/12/08"), new Date("1952/02/19"), new Date("1963/08/30"), new Date("1937/09/19"), new Date("1955/03/04"), new Date("1963/07/02"), new Date("1960/05/29"), new Date("1958/01/09"), new Date("1966/01/27"), new Date("1966/03/27")];
-
-    function createRandomData(count) {
-        var data = [],
-            now = new Date();
-        for (var i = 0; i < count; i++) {
-            var firstName = firstNames[Math.floor(Math.random() * firstNames.length)],
-                lastName = lastNames[Math.floor(Math.random() * lastNames.length)],
-                city = cities[Math.floor(Math.random() * cities.length)],
-                title = titles[Math.floor(Math.random() * titles.length)],
-                birthDate = birthDates[Math.floor(Math.random() * birthDates.length)],
-                age = now.getFullYear() - birthDate.getFullYear();
-
-            data.push({
-                Id: i + 1,
-                FirstName: firstName,
-                LastName: lastName,
-                City: city,
-                Title: title,
-                BirthDate: birthDate,
-                Age: age
-            });
-        }
-        return data;
-    }
-
-    function generatePeople(itemCount, callback) {
-        var data = [],
-            delay = 25,
-            interval = 500,
-            starttime;
-
-        var now = new Date();
-        setTimeout(function () {
-            starttime = +new Date();
-            do {
-                var firstName = firstNames[Math.floor(Math.random() * firstNames.length)],
-                    lastName = lastNames[Math.floor(Math.random() * lastNames.length)],
-                    city = cities[Math.floor(Math.random() * cities.length)],
-                    title = titles[Math.floor(Math.random() * titles.length)],
-                    birthDate = birthDates[Math.floor(Math.random() * birthDates.length)],
-                    age = now.getFullYear() - birthDate.getFullYear();
-
-                data.push({
-                    Id: data.length + 1,
-                    FirstName: firstName,
-                    LastName: lastName,
-                    City: city,
-                    Title: title,
-                    BirthDate: birthDate,
-                    Age: age
-                });
-            } while (data.length < itemCount && +new Date() - starttime < interval);
-
-            if (data.length < itemCount) {
-                setTimeout(arguments.callee, delay);
-            } else {
-                callback(data);
-            }
-        }, delay);
-    }
-
-
     $(document).ready(function () {
-        $("#grid-ptw").kendoGrid({
-            dataSource: {
-                data: createRandomData(50),
+        var crudServiceBaseUrl = "Ptw",
+            dataSourceIn = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: crudServiceBaseUrl + "/Binding",
+                        type: "POST"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return { models: kendo.stringify(options.models) };
+                        }
+                    }
+                },
+                batch: true,
+                pageSize: 30,
                 schema: {
                     model: {
+                        id: "id",
                         fields: {
-                            FirstName: { type: "string" },
-                            LastName: { type: "string" },
-                            City: { type: "string" },
-                            Title: { type: "string" },
-                            BirthDate: { type: "date" },
-                            Age: { type: "number" }
+                            id: { editable: false },
+                            ptw_no: { type: "string", nullable: "true" },
+                            ptw_status: { type: "string", nullable: "true", editable: false },
+                            status: { type: "number", editable: false },
                         }
                     }
                 },
                 pageSize: 10
-            },
-            //height: 250,
-            scrollable: true,
+            });
+
+        $("#grid-ptw").kendoGrid({
+            dataSource: dataSourceIn,
+            pageable: true,
             sortable: true,
             filterable: true,
-            pageable: true,
             columns: [
-                {
-                    field: "FirstName",
-                    title: "First Name",
-                    width: 100
-                },
-                {
-                    field: "LastName",
-                    title: "Last Name",
-                    width: 100
-                },
-                {
-                    field: "City",
-                    width: 100
-                },
-                {
-                    field: "Title"
-                },
-                {
-                    field: "BirthDate",
-                    title: "Birth Date",
-                    template: '#= kendo.toString(BirthDate,"MM/dd/yyyy") #'
-                },
-                {
-                    field: "Age",
-                    width: 50
-                }
-            ]
+                { field: "ptw_no", title: "PTW Number", type: "string" },
+                { field: "ptw_status", title: "PTW Status", type: "string" },
+                { title: "Command", template: kendo.template($("#extend-template").html()), width: 180 },
+            ],
+            height: 400
         });
+
+        function getDataRowGrid(e) {
+            return $(e.target).closest("tr");
+        }
+
+        //function editPtw(e) {
+        //    var data = this.dataItem(getDataRowGrid(e));
+        //    $('#content').load('Ptw/Edit/', { id: data.id });
+        //}
+
+        //function extendPtw(e) {
+        //    var r = confirm('Are you sure want to extend this Permit To Work?');
+        //    if (r == true) {
+        //        var data = this.dataItem(getDataRowGrid(e));
+        //        $.post('Ptw/Extends', { id: data.id }, function (resp) {
+        //            if (resp.status == "401" || resp.status == "402" || resp.status == "403") {
+
+        //            } else {
+        //                $('#content').load('Ptw/Extend/' + data.id);
+        //            }
+        //        });
+        //    } else {
+                
+        //    }
+        //}
+
+        if ('@m' != '') {
+            $('#errorMessage').html('@m');
+            $('#fail').show(300);
+            setTimeout(function () { $('#fail').hide(300) }, 3000);
+        }
     });
+
+    function editPtw(e) {
+        //var data = this.dataItem(getDataRowGrid(e));
+        var data = e;
+        $('#content').load('Ptw/Edit/', { id: e });
+    }
+
+    function extendPtw(e) {
+        var r = confirm('Are you sure want to extend this Permit To Work?');
+        if (r == true) {
+            //var data = this.dataItem(getDataRowGrid(e));
+            var data = e;
+            $.post('Ptw/Extends', { id: data }, function (resp) {
+                if (resp.status == "401" || resp.status == "402" || resp.status == "403") {
+
+                } else {
+                    $('#content').load('Ptw/Extend/' + data.id);
+                }
+            });
+        } else {
+
+        }
+    }
+
+    function createPtw() {
+        $('#content').load('Ptw/Create');
+    }
 </script>

@@ -1,0 +1,973 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="star_energy_ptwModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityContainer Name="star_energy_ptwModelStoreContainer">
+          <EntitySet Name="hira_document" EntityType="star_energy_ptwModel.Store.hira_document" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="hot_work" EntityType="star_energy_ptwModel.Store.hot_work" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="permit_log" EntityType="star_energy_ptwModel.Store.permit_log" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="permit_to_work" EntityType="star_energy_ptwModel.Store.permit_to_work" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="FK_hira_document_permit_to_work" Association="star_energy_ptwModel.Store.FK_hira_document_permit_to_work">
+            <End Role="permit_to_work" EntitySet="permit_to_work" />
+            <End Role="hira_document" EntitySet="hira_document" />
+          </AssociationSet>
+          <AssociationSet Name="FK_hot_work_permit_to_work" Association="star_energy_ptwModel.Store.FK_hot_work_permit_to_work">
+            <End Role="permit_to_work" EntitySet="permit_to_work" />
+            <End Role="hot_work" EntitySet="hot_work" />
+          </AssociationSet>
+          <AssociationSet Name="FK_permit_to_work_permit_to_work" Association="star_energy_ptwModel.Store.FK_permit_to_work_permit_to_work">
+            <End Role="permit_to_work" EntitySet="permit_to_work" />
+            <End Role="permit_to_work1" EntitySet="permit_to_work" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="hira_document">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="location" Type="varchar" MaxLength="255" />
+          <Property Name="filename" Type="varchar" MaxLength="255" />
+          <Property Name="id_ptw" Type="int" />
+        </EntityType>
+        <EntityType Name="hot_work">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="hw_no" Type="varchar" MaxLength="50" />
+          <Property Name="fire_watch" Type="varchar" MaxLength="255" />
+          <Property Name="purpose" Type="text" />
+          <Property Name="work_leader" Type="varchar" MaxLength="255" />
+          <Property Name="validity_period_start" Type="datetime" />
+          <Property Name="validity_period_end" Type="datetime" />
+          <Property Name="screening_spv" Type="varchar" MaxLength="50" />
+          <Property Name="screening_fo" Type="varchar" MaxLength="50" />
+          <Property Name="screening_1" Type="varchar" MaxLength="50" />
+          <Property Name="screening_2" Type="varchar" MaxLength="50" />
+          <Property Name="screening_3" Type="varchar" MaxLength="50" />
+          <Property Name="screening_4" Type="varchar" MaxLength="50" />
+          <Property Name="screening_5" Type="varchar" MaxLength="50" />
+          <Property Name="screening_6" Type="varchar" MaxLength="50" />
+          <Property Name="screening_7" Type="varchar" MaxLength="50" />
+          <Property Name="id_ptw" Type="int" />
+          <Property Name="notes" Type="text" />
+          <Property Name="methane_result" Type="varchar" MaxLength="50" />
+          <Property Name="o2_result" Type="varchar" MaxLength="50" />
+          <Property Name="h2s_result" Type="varchar" MaxLength="50" />
+          <Property Name="co_result" Type="varchar" MaxLength="50" />
+          <Property Name="other_gas" Type="varchar" MaxLength="255" />
+          <Property Name="other_result" Type="varchar" MaxLength="255" />
+          <Property Name="acc_work_leader_approve" Type="varchar" MaxLength="255" />
+          <Property Name="acc_supervisor_approve" Type="varchar" MaxLength="255" />
+          <Property Name="acc_supervisor" Type="varchar" MaxLength="255" />
+          <Property Name="acc_supervisor_delegate" Type="varchar" MaxLength="255" />
+          <Property Name="acc_fire_watch" Type="varchar" MaxLength="255" />
+          <Property Name="acc_fire_watch_delegate" Type="varchar" MaxLength="255" />
+          <Property Name="acc_fire_watch_approve" Type="varchar" MaxLength="255" />
+          <Property Name="acc_fo" Type="varchar" MaxLength="255" />
+          <Property Name="acc_fo_delegate" Type="varchar" MaxLength="255" />
+          <Property Name="acc_fo_approve" Type="varchar" MaxLength="255" />
+          <Property Name="acc_gas_tester" Type="varchar" MaxLength="255" />
+          <Property Name="acc_gas_tester_approve" Type="varchar" MaxLength="255" />
+          <Property Name="acc_work_representative_approve" Type="varchar" MaxLength="255" />
+          <Property Name="can_work_leader_approve" Type="varchar" MaxLength="255" />
+          <Property Name="can_supervisor_approve" Type="varchar" MaxLength="255" />
+          <Property Name="can_supervisor" Type="varchar" MaxLength="255" />
+          <Property Name="can_supervisor_delegate" Type="varchar" MaxLength="255" />
+          <Property Name="can_fire_watch" Type="varchar" MaxLength="255" />
+          <Property Name="can_fire_watch_delegate" Type="varchar" MaxLength="255" />
+          <Property Name="can_fire_watch_approve" Type="varchar" MaxLength="255" />
+          <Property Name="can_fo" Type="varchar" MaxLength="255" />
+          <Property Name="can_fo_delegate" Type="varchar" MaxLength="255" />
+          <Property Name="can_fo_approve" Type="varchar" MaxLength="255" />
+          <Property Name="ext_datetime_1" Type="datetime" />
+          <Property Name="ext_lel_1" Type="varchar" MaxLength="50" />
+          <Property Name="ext_o2_1" Type="varchar" MaxLength="50" />
+          <Property Name="ext_h2s_1" Type="varchar" MaxLength="50" />
+          <Property Name="ext_co_1" Type="varchar" MaxLength="50" />
+          <Property Name="ext_other_1" Type="varchar" MaxLength="255" />
+          <Property Name="ext_gas_tester_1" Type="varchar" MaxLength="50" />
+          <Property Name="ext_gas_tester_approve_1" Type="varchar" MaxLength="50" />
+          <Property Name="ext_work_leader_1" Type="varchar" MaxLength="50" />
+          <Property Name="ext_work_leader_approve_1" Type="varchar" MaxLength="50" />
+          <Property Name="ext_fo_1" Type="varchar" MaxLength="50" />
+          <Property Name="ext_fo_delegate_1" Type="varchar" MaxLength="50" />
+          <Property Name="ext_fo_approve_1" Type="varchar" MaxLength="255" />
+          <Property Name="ext_new_validity_1" Type="datetime" />
+          <Property Name="ext_remark_1" Type="text" />
+          <Property Name="ext_datetime_2" Type="datetime" />
+          <Property Name="ext_lel_2" Type="varchar" MaxLength="50" />
+          <Property Name="ext_o2_2" Type="varchar" MaxLength="50" />
+          <Property Name="ext_h2s_2" Type="varchar" MaxLength="50" />
+          <Property Name="ext_co_2" Type="varchar" MaxLength="50" />
+          <Property Name="ext_other_2" Type="varchar" MaxLength="255" />
+          <Property Name="ext_gas_tester_2" Type="varchar" MaxLength="50" />
+          <Property Name="ext_gas_tester_approve_2" Type="varchar" MaxLength="50" />
+          <Property Name="ext_work_leader_2" Type="varchar" MaxLength="50" />
+          <Property Name="ext_work_leader_approve_2" Type="varchar" MaxLength="50" />
+          <Property Name="ext_fo_2" Type="varchar" MaxLength="50" />
+          <Property Name="ext_fo_delegate_2" Type="varchar" MaxLength="50" />
+          <Property Name="ext_fo_approve_2" Type="varchar" MaxLength="255" />
+          <Property Name="ext_new_validity_2" Type="datetime" />
+          <Property Name="ext_remark_2" Type="text" />
+          <Property Name="ext_datetime_3" Type="datetime" />
+          <Property Name="ext_lel_3" Type="varchar" MaxLength="50" />
+          <Property Name="ext_o2_3" Type="varchar" MaxLength="50" />
+          <Property Name="ext_h2s_3" Type="varchar" MaxLength="50" />
+          <Property Name="ext_co_3" Type="varchar" MaxLength="50" />
+          <Property Name="ext_other_3" Type="varchar" MaxLength="255" />
+          <Property Name="ext_gas_tester_3" Type="varchar" MaxLength="50" />
+          <Property Name="ext_gas_tester_approve_3" Type="varchar" MaxLength="50" />
+          <Property Name="ext_work_leader_3" Type="varchar" MaxLength="50" />
+          <Property Name="ext_work_leader_approve_3" Type="varchar" MaxLength="50" />
+          <Property Name="ext_fo_3" Type="varchar" MaxLength="50" />
+          <Property Name="ext_fo_delegate_3" Type="varchar" MaxLength="50" />
+          <Property Name="ext_fo_approve_3" Type="varchar" MaxLength="255" />
+          <Property Name="ext_new_validity_3" Type="datetime" />
+          <Property Name="ext_remark_3" Type="text" />
+          <Property Name="ext_datetime_4" Type="datetime" />
+          <Property Name="ext_lel_4" Type="varchar" MaxLength="50" />
+          <Property Name="ext_o2_4" Type="varchar" MaxLength="50" />
+          <Property Name="ext_h2s_4" Type="varchar" MaxLength="50" />
+          <Property Name="ext_co_4" Type="varchar" MaxLength="50" />
+          <Property Name="ext_other_4" Type="varchar" MaxLength="255" />
+          <Property Name="ext_gas_tester_4" Type="varchar" MaxLength="50" />
+          <Property Name="ext_gas_tester_approve_4" Type="varchar" MaxLength="50" />
+          <Property Name="ext_work_leader_4" Type="varchar" MaxLength="50" />
+          <Property Name="ext_work_leader_approve_4" Type="varchar" MaxLength="50" />
+          <Property Name="ext_fo_4" Type="varchar" MaxLength="50" />
+          <Property Name="ext_fo_delegate_4" Type="varchar" MaxLength="50" />
+          <Property Name="ext_fo_approve_4" Type="varchar" MaxLength="255" />
+          <Property Name="ext_new_validity_4" Type="datetime" />
+          <Property Name="ext_remark_4" Type="text" />
+          <Property Name="ext_datetime_5" Type="datetime" />
+          <Property Name="ext_lel_5" Type="varchar" MaxLength="50" />
+          <Property Name="ext_o2_5" Type="varchar" MaxLength="50" />
+          <Property Name="ext_h2s_5" Type="varchar" MaxLength="50" />
+          <Property Name="ext_co_5" Type="varchar" MaxLength="50" />
+          <Property Name="ext_other_5" Type="varchar" MaxLength="255" />
+          <Property Name="ext_gas_tester_5" Type="varchar" MaxLength="50" />
+          <Property Name="ext_gas_tester_approve_5" Type="varchar" MaxLength="50" />
+          <Property Name="ext_work_leader_5" Type="varchar" MaxLength="50" />
+          <Property Name="ext_work_leader_approve_5" Type="varchar" MaxLength="50" />
+          <Property Name="ext_fo_5" Type="varchar" MaxLength="50" />
+          <Property Name="ext_fo_delegate_5" Type="varchar" MaxLength="50" />
+          <Property Name="ext_fo_approve_5" Type="varchar" MaxLength="255" />
+          <Property Name="ext_new_validity_5" Type="datetime" />
+          <Property Name="ext_remark_5" Type="text" />
+          <Property Name="ext_datetime_6" Type="datetime" />
+          <Property Name="ext_lel_6" Type="varchar" MaxLength="50" />
+          <Property Name="ext_o2_6" Type="varchar" MaxLength="50" />
+          <Property Name="ext_h2s_6" Type="varchar" MaxLength="50" />
+          <Property Name="ext_co_6" Type="varchar" MaxLength="50" />
+          <Property Name="ext_other_6" Type="varchar" MaxLength="255" />
+          <Property Name="ext_gas_tester_6" Type="varchar" MaxLength="50" />
+          <Property Name="ext_gas_tester_approve_6" Type="varchar" MaxLength="50" />
+          <Property Name="ext_work_leader_6" Type="varchar" MaxLength="50" />
+          <Property Name="ext_work_leader_approve_6" Type="varchar" MaxLength="50" />
+          <Property Name="ext_fo_6" Type="varchar" MaxLength="50" />
+          <Property Name="ext_fo_delegate_6" Type="varchar" MaxLength="50" />
+          <Property Name="ext_fo_approve_6" Type="varchar" MaxLength="255" />
+          <Property Name="ext_new_validity_6" Type="datetime" />
+          <Property Name="ext_remark_6" Type="text" />
+          <Property Name="ext_datetime_7" Type="datetime" />
+          <Property Name="ext_lel_7" Type="varchar" MaxLength="50" />
+          <Property Name="ext_o2_7" Type="varchar" MaxLength="50" />
+          <Property Name="ext_h2s_7" Type="varchar" MaxLength="50" />
+          <Property Name="ext_co_7" Type="varchar" MaxLength="50" />
+          <Property Name="ext_other_7" Type="varchar" MaxLength="255" />
+          <Property Name="ext_gas_tester_7" Type="varchar" MaxLength="50" />
+          <Property Name="ext_gas_tester_approve_7" Type="varchar" MaxLength="50" />
+          <Property Name="ext_work_leader_7" Type="varchar" MaxLength="50" />
+          <Property Name="ext_work_leader_approve_7" Type="varchar" MaxLength="50" />
+          <Property Name="ext_fo_7" Type="varchar" MaxLength="50" />
+          <Property Name="ext_fo_delegate_7" Type="varchar" MaxLength="50" />
+          <Property Name="ext_fo_approve_7" Type="varchar" MaxLength="255" />
+          <Property Name="ext_new_validity_7" Type="datetime" />
+          <Property Name="ext_remark_7" Type="text" />
+          <Property Name="status" Type="int" />
+        </EntityType>
+        <EntityType Name="permit_log">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="id_permit" Type="int" />
+          <Property Name="datetime" Type="datetime" />
+          <Property Name="user_id" Type="int" />
+          <Property Name="status" Type="varchar" MaxLength="255" />
+          <Property Name="comment" Type="text" />
+          <Property Name="permit_type" Type="int" />
+        </EntityType>
+        <EntityType Name="permit_to_work">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="ptw_no" Type="varchar" MaxLength="50" />
+          <Property Name="proposed_period_start" Type="datetime" />
+          <Property Name="proposed_period_end" Type="datetime" />
+          <Property Name="dept_requestor" Type="varchar" MaxLength="255" />
+          <Property Name="section" Type="varchar" MaxLength="50" />
+          <Property Name="total_crew" Type="varchar" MaxLength="50" />
+          <Property Name="requestor_ptw_holder_no" Type="varchar" MaxLength="255" />
+          <Property Name="area" Type="varchar" MaxLength="255" />
+          <Property Name="work_location" Type="varchar" MaxLength="255" />
+          <Property Name="area_code" Type="varchar" MaxLength="50" />
+          <Property Name="work_order_no" Type="varchar" MaxLength="50" />
+          <Property Name="work_description" Type="text" />
+          <Property Name="notes" Type="text" />
+          <Property Name="pre_job_1_spv" Type="tinyint" />
+          <Property Name="pre_job_2_spv" Type="tinyint" />
+          <Property Name="pre_job_3_spv" Type="tinyint" />
+          <Property Name="pre_job_4_spv" Type="tinyint" />
+          <Property Name="pre_job_5_spv" Type="tinyint" />
+          <Property Name="pre_job_6_spv" Type="tinyint" />
+          <Property Name="pre_job_7_spv" Type="tinyint" />
+          <Property Name="pre_job_1_fo" Type="tinyint" />
+          <Property Name="pre_job_2_fo" Type="tinyint" />
+          <Property Name="pre_job_3_fo" Type="tinyint" />
+          <Property Name="pre_job_4_fo" Type="tinyint" />
+          <Property Name="pre_job_5_fo" Type="tinyint" />
+          <Property Name="pre_job_6_fo" Type="tinyint" />
+          <Property Name="pre_job_7_fo" Type="tinyint" />
+          <Property Name="cancel_1_spv" Type="tinyint" />
+          <Property Name="cancel_2_spv" Type="tinyint" />
+          <Property Name="cancel_3_spv" Type="tinyint" />
+          <Property Name="cancel_4_spv" Type="tinyint" />
+          <Property Name="cancel_5_spv" Type="tinyint" />
+          <Property Name="cancel_6_spv" Type="tinyint" />
+          <Property Name="cancel_7_spv" Type="tinyint" />
+          <Property Name="cancel_1_fo" Type="tinyint" />
+          <Property Name="cancel_2_fo" Type="tinyint" />
+          <Property Name="cancel_3_fo" Type="tinyint" />
+          <Property Name="cancel_4_fo" Type="tinyint" />
+          <Property Name="cancel_5_fo" Type="tinyint" />
+          <Property Name="cancel_6_fo" Type="tinyint" />
+          <Property Name="cancel_7_fo" Type="tinyint" />
+          <Property Name="pre_job_notes" Type="text" />
+          <Property Name="cancel_notes" Type="text" />
+          <Property Name="validity_period_start" Type="date" />
+          <Property Name="validity_period_end" Type="date" />
+          <Property Name="cancellation_date" Type="date" />
+          <Property Name="loto_id" Type="int" />
+          <Property Name="loto_status" Type="int" />
+          <Property Name="csep_id" Type="int" />
+          <Property Name="csep_status" Type="int" />
+          <Property Name="hw_id" Type="int" />
+          <Property Name="hw_status" Type="int" />
+          <Property Name="fi_id" Type="int" />
+          <Property Name="fi_status" Type="int" />
+          <Property Name="ex_id" Type="int" />
+          <Property Name="ex_status" Type="int" />
+          <Property Name="wh_id" Type="int" />
+          <Property Name="wh_status" Type="int" />
+          <Property Name="rad_id" Type="int" />
+          <Property Name="rad_status" Type="int" />
+          <Property Name="acc_ptw_requestor" Type="varchar" MaxLength="50" />
+          <Property Name="acc_ptw_requestor_approve" Type="varchar" MaxLength="255" />
+          <Property Name="acc_supervisor" Type="varchar" MaxLength="50" />
+          <Property Name="acc_supervisor_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="acc_supervisor_approve" Type="varchar" MaxLength="255" />
+          <Property Name="acc_assessor" Type="varchar" MaxLength="50" />
+          <Property Name="acc_assessor_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="acc_assessor_approve" Type="varchar" MaxLength="50" />
+          <Property Name="acc_fo" Type="varchar" MaxLength="50" />
+          <Property Name="acc_fo_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="acc_fo_approve" Type="varchar" MaxLength="50" />
+          <Property Name="can_ptw_requestor" Type="varchar" MaxLength="50" />
+          <Property Name="can_ptw_requestor_approve" Type="varchar" MaxLength="255" />
+          <Property Name="can_supervisor" Type="varchar" MaxLength="50" />
+          <Property Name="can_supervisor_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="can_supervisor_approve" Type="varchar" MaxLength="255" />
+          <Property Name="can_assessor" Type="varchar" MaxLength="50" />
+          <Property Name="can_assessor_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="can_assessor_approve" Type="varchar" MaxLength="50" />
+          <Property Name="can_fo" Type="varchar" MaxLength="50" />
+          <Property Name="can_fo_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="can_fo_approve" Type="varchar" MaxLength="50" />
+          <Property Name="id_parent_ptw" Type="int" />
+          <Property Name="status" Type="int" />
+        </EntityType>
+        <Association Name="FK_hira_document_permit_to_work">
+          <End Role="permit_to_work" Type="star_energy_ptwModel.Store.permit_to_work" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="hira_document" Type="star_energy_ptwModel.Store.hira_document" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="permit_to_work">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="hira_document">
+              <PropertyRef Name="id_ptw" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_hot_work_permit_to_work">
+          <End Role="permit_to_work" Type="star_energy_ptwModel.Store.permit_to_work" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="hot_work" Type="star_energy_ptwModel.Store.hot_work" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="permit_to_work">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="hot_work">
+              <PropertyRef Name="id_ptw" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_permit_to_work_permit_to_work">
+          <End Role="permit_to_work" Type="star_energy_ptwModel.Store.permit_to_work" Multiplicity="0..1" />
+          <End Role="permit_to_work1" Type="star_energy_ptwModel.Store.permit_to_work" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="permit_to_work">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="permit_to_work1">
+              <PropertyRef Name="id_parent_ptw" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="star_energy_ptwModel" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="star_energy_ptwEntities" p1:LazyLoadingEnabled="true">
+          <EntitySet Name="hira_document" EntityType="star_energy_ptwModel.hira_document" />
+          <EntitySet Name="hot_work" EntityType="star_energy_ptwModel.hot_work" />
+          <EntitySet Name="permit_to_work" EntityType="star_energy_ptwModel.permit_to_work" />
+          <AssociationSet Name="FK_hira_document_permit_to_work" Association="star_energy_ptwModel.FK_hira_document_permit_to_work">
+            <End Role="permit_to_work" EntitySet="permit_to_work" />
+            <End Role="hira_document" EntitySet="hira_document" />
+          </AssociationSet>
+          <AssociationSet Name="FK_hot_work_permit_to_work" Association="star_energy_ptwModel.FK_hot_work_permit_to_work">
+            <End Role="permit_to_work" EntitySet="permit_to_work" />
+            <End Role="hot_work" EntitySet="hot_work" />
+          </AssociationSet>
+          <AssociationSet Name="FK_permit_to_work_permit_to_work" Association="star_energy_ptwModel.FK_permit_to_work_permit_to_work">
+            <End Role="permit_to_work" EntitySet="permit_to_work" />
+            <End Role="permit_to_work1" EntitySet="permit_to_work" />
+          </AssociationSet>
+          <EntitySet Name="permit_log" EntityType="star_energy_ptwModel.permit_log" />
+          </EntityContainer>
+        <EntityType Name="hira_document">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="location" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="filename" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="id_ptw" />
+          <NavigationProperty Name="permit_to_work" Relationship="star_energy_ptwModel.FK_hira_document_permit_to_work" FromRole="hira_document" ToRole="permit_to_work" />
+        </EntityType>
+        <EntityType Name="hot_work">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="hw_no" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="fire_watch" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="purpose" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="work_leader" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="validity_period_start" Precision="3" />
+          <Property Type="DateTime" Name="validity_period_end" Precision="3" />
+          <Property Type="String" Name="screening_spv" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="screening_fo" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="screening_1" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="screening_2" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="screening_3" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="screening_4" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="screening_5" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="screening_6" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="screening_7" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="id_ptw" />
+          <Property Type="String" Name="notes" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="methane_result" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="o2_result" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="h2s_result" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="co_result" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="other_gas" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="other_result" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_work_leader_approve" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_supervisor_approve" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_supervisor" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_supervisor_delegate" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_fire_watch" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_fire_watch_delegate" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_fire_watch_approve" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_fo" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_fo_delegate" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_fo_approve" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_gas_tester" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_gas_tester_approve" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_work_representative_approve" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_work_leader_approve" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_supervisor_approve" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_supervisor" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_supervisor_delegate" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_fire_watch" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_fire_watch_delegate" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_fire_watch_approve" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_fo" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_fo_delegate" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_fo_approve" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="ext_datetime_1" Precision="3" />
+          <Property Type="String" Name="ext_lel_1" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_o2_1" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_h2s_1" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_co_1" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_other_1" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_gas_tester_1" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_gas_tester_approve_1" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_work_leader_1" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_work_leader_approve_1" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_fo_1" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_fo_delegate_1" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_fo_approve_1" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="ext_new_validity_1" Precision="3" />
+          <Property Type="String" Name="ext_remark_1" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="ext_datetime_2" Precision="3" />
+          <Property Type="String" Name="ext_lel_2" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_o2_2" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_h2s_2" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_co_2" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_other_2" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_gas_tester_2" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_gas_tester_approve_2" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_work_leader_2" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_work_leader_approve_2" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_fo_2" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_fo_delegate_2" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_fo_approve_2" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="ext_new_validity_2" Precision="3" />
+          <Property Type="String" Name="ext_remark_2" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="ext_datetime_3" Precision="3" />
+          <Property Type="String" Name="ext_lel_3" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_o2_3" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_h2s_3" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_co_3" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_other_3" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_gas_tester_3" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_gas_tester_approve_3" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_work_leader_3" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_work_leader_approve_3" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_fo_3" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_fo_delegate_3" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_fo_approve_3" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="ext_new_validity_3" Precision="3" />
+          <Property Type="String" Name="ext_remark_3" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="ext_datetime_4" Precision="3" />
+          <Property Type="String" Name="ext_lel_4" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_o2_4" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_h2s_4" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_co_4" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_other_4" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_gas_tester_4" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_gas_tester_approve_4" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_work_leader_4" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_work_leader_approve_4" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_fo_4" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_fo_delegate_4" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_fo_approve_4" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="ext_new_validity_4" Precision="3" />
+          <Property Type="String" Name="ext_remark_4" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="ext_datetime_5" Precision="3" />
+          <Property Type="String" Name="ext_lel_5" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_o2_5" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_h2s_5" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_co_5" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_other_5" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_gas_tester_5" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_gas_tester_approve_5" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_work_leader_5" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_work_leader_approve_5" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_fo_5" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_fo_delegate_5" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_fo_approve_5" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="ext_new_validity_5" Precision="3" />
+          <Property Type="String" Name="ext_remark_5" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="ext_datetime_6" Precision="3" />
+          <Property Type="String" Name="ext_lel_6" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_o2_6" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_h2s_6" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_co_6" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_other_6" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_gas_tester_6" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_gas_tester_approve_6" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_work_leader_6" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_work_leader_approve_6" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_fo_6" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_fo_delegate_6" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_fo_approve_6" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="ext_new_validity_6" Precision="3" />
+          <Property Type="String" Name="ext_remark_6" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="ext_datetime_7" Precision="3" />
+          <Property Type="String" Name="ext_lel_7" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_o2_7" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_h2s_7" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_co_7" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_other_7" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_gas_tester_7" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_gas_tester_approve_7" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_work_leader_7" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_work_leader_approve_7" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_fo_7" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_fo_delegate_7" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ext_fo_approve_7" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="ext_new_validity_7" Precision="3" />
+          <Property Type="String" Name="ext_remark_7" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="status" />
+          <NavigationProperty Name="permit_to_work" Relationship="star_energy_ptwModel.FK_hot_work_permit_to_work" FromRole="hot_work" ToRole="permit_to_work" />
+        </EntityType>
+        <EntityType Name="permit_to_work">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="ptw_no" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="proposed_period_start" Precision="3" />
+          <Property Type="DateTime" Name="proposed_period_end" Precision="3" />
+          <Property Type="String" Name="dept_requestor" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="section" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="total_crew" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="requestor_ptw_holder_no" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="area" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="work_location" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="area_code" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="work_order_no" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="work_description" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="notes" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="Byte" Name="pre_job_1_spv" />
+          <Property Type="Byte" Name="pre_job_2_spv" />
+          <Property Type="Byte" Name="pre_job_3_spv" />
+          <Property Type="Byte" Name="pre_job_4_spv" />
+          <Property Type="Byte" Name="pre_job_5_spv" />
+          <Property Type="Byte" Name="pre_job_6_spv" />
+          <Property Type="Byte" Name="pre_job_7_spv" />
+          <Property Type="Byte" Name="pre_job_1_fo" />
+          <Property Type="Byte" Name="pre_job_2_fo" />
+          <Property Type="Byte" Name="pre_job_3_fo" />
+          <Property Type="Byte" Name="pre_job_4_fo" />
+          <Property Type="Byte" Name="pre_job_5_fo" />
+          <Property Type="Byte" Name="pre_job_6_fo" />
+          <Property Type="Byte" Name="pre_job_7_fo" />
+          <Property Type="Byte" Name="cancel_1_spv" />
+          <Property Type="Byte" Name="cancel_2_spv" />
+          <Property Type="Byte" Name="cancel_3_spv" />
+          <Property Type="Byte" Name="cancel_4_spv" />
+          <Property Type="Byte" Name="cancel_5_spv" />
+          <Property Type="Byte" Name="cancel_6_spv" />
+          <Property Type="Byte" Name="cancel_7_spv" />
+          <Property Type="Byte" Name="cancel_1_fo" />
+          <Property Type="Byte" Name="cancel_2_fo" />
+          <Property Type="Byte" Name="cancel_3_fo" />
+          <Property Type="Byte" Name="cancel_4_fo" />
+          <Property Type="Byte" Name="cancel_5_fo" />
+          <Property Type="Byte" Name="cancel_6_fo" />
+          <Property Type="Byte" Name="cancel_7_fo" />
+          <Property Type="String" Name="pre_job_notes" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="cancel_notes" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="validity_period_start" Precision="0" />
+          <Property Type="DateTime" Name="validity_period_end" Precision="0" />
+          <Property Type="DateTime" Name="cancellation_date" Precision="0" />
+          <Property Type="Int32" Name="loto_id" />
+          <Property Type="Int32" Name="loto_status" />
+          <Property Type="Int32" Name="csep_id" />
+          <Property Type="Int32" Name="csep_status" />
+          <Property Type="Int32" Name="hw_id" />
+          <Property Type="Int32" Name="hw_status" />
+          <Property Type="Int32" Name="fi_id" />
+          <Property Type="Int32" Name="fi_status" />
+          <Property Type="Int32" Name="ex_id" />
+          <Property Type="Int32" Name="ex_status" />
+          <Property Type="Int32" Name="wh_id" />
+          <Property Type="Int32" Name="wh_status" />
+          <Property Type="Int32" Name="rad_id" />
+          <Property Type="Int32" Name="rad_status" />
+          <Property Type="String" Name="acc_ptw_requestor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_ptw_requestor_approve" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_supervisor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_supervisor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_supervisor_approve" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_assessor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_assessor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_assessor_approve" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_fo" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_fo_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_fo_approve" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_ptw_requestor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_ptw_requestor_approve" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_supervisor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_supervisor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_supervisor_approve" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_assessor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_assessor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_assessor_approve" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_fo" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_fo_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_fo_approve" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="id_parent_ptw" />
+          <Property Type="Int32" Name="status" />
+          <NavigationProperty Name="hira_document" Relationship="star_energy_ptwModel.FK_hira_document_permit_to_work" FromRole="permit_to_work" ToRole="hira_document" />
+          <NavigationProperty Name="hot_work" Relationship="star_energy_ptwModel.FK_hot_work_permit_to_work" FromRole="permit_to_work" ToRole="hot_work" />
+          <NavigationProperty Name="permit_to_work1" Relationship="star_energy_ptwModel.FK_permit_to_work_permit_to_work" FromRole="permit_to_work" ToRole="permit_to_work1" />
+          <NavigationProperty Name="permit_to_work2" Relationship="star_energy_ptwModel.FK_permit_to_work_permit_to_work" FromRole="permit_to_work1" ToRole="permit_to_work" />
+        </EntityType>
+        <Association Name="FK_hira_document_permit_to_work">
+          <End Type="star_energy_ptwModel.permit_to_work" Role="permit_to_work" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="star_energy_ptwModel.hira_document" Role="hira_document" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="permit_to_work">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="hira_document">
+              <PropertyRef Name="id_ptw" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_hot_work_permit_to_work">
+          <End Type="star_energy_ptwModel.permit_to_work" Role="permit_to_work" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="star_energy_ptwModel.hot_work" Role="hot_work" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="permit_to_work">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="hot_work">
+              <PropertyRef Name="id_ptw" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_permit_to_work_permit_to_work">
+          <End Type="star_energy_ptwModel.permit_to_work" Role="permit_to_work" Multiplicity="0..1" />
+          <End Type="star_energy_ptwModel.permit_to_work" Role="permit_to_work1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="permit_to_work">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="permit_to_work1">
+              <PropertyRef Name="id_parent_ptw" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="permit_log">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="id_permit" />
+          <Property Type="DateTime" Name="datetime" Precision="3" />
+          <Property Type="Int32" Name="user_id" />
+          <Property Type="String" Name="status" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="comment" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="permit_type" />
+        </EntityType>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="star_energy_ptwModelStoreContainer" CdmEntityContainer="star_energy_ptwEntities">
+          <EntitySetMapping Name="hira_document">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.hira_document">
+              <MappingFragment StoreEntitySet="hira_document">
+                <ScalarProperty Name="id_ptw" ColumnName="id_ptw" />
+                <ScalarProperty Name="filename" ColumnName="filename" />
+                <ScalarProperty Name="location" ColumnName="location" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="hot_work">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.hot_work">
+              <MappingFragment StoreEntitySet="hot_work">
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="ext_remark_7" ColumnName="ext_remark_7" />
+                <ScalarProperty Name="ext_new_validity_7" ColumnName="ext_new_validity_7" />
+                <ScalarProperty Name="ext_fo_approve_7" ColumnName="ext_fo_approve_7" />
+                <ScalarProperty Name="ext_fo_delegate_7" ColumnName="ext_fo_delegate_7" />
+                <ScalarProperty Name="ext_fo_7" ColumnName="ext_fo_7" />
+                <ScalarProperty Name="ext_work_leader_approve_7" ColumnName="ext_work_leader_approve_7" />
+                <ScalarProperty Name="ext_work_leader_7" ColumnName="ext_work_leader_7" />
+                <ScalarProperty Name="ext_gas_tester_approve_7" ColumnName="ext_gas_tester_approve_7" />
+                <ScalarProperty Name="ext_gas_tester_7" ColumnName="ext_gas_tester_7" />
+                <ScalarProperty Name="ext_other_7" ColumnName="ext_other_7" />
+                <ScalarProperty Name="ext_co_7" ColumnName="ext_co_7" />
+                <ScalarProperty Name="ext_h2s_7" ColumnName="ext_h2s_7" />
+                <ScalarProperty Name="ext_o2_7" ColumnName="ext_o2_7" />
+                <ScalarProperty Name="ext_lel_7" ColumnName="ext_lel_7" />
+                <ScalarProperty Name="ext_datetime_7" ColumnName="ext_datetime_7" />
+                <ScalarProperty Name="ext_remark_6" ColumnName="ext_remark_6" />
+                <ScalarProperty Name="ext_new_validity_6" ColumnName="ext_new_validity_6" />
+                <ScalarProperty Name="ext_fo_approve_6" ColumnName="ext_fo_approve_6" />
+                <ScalarProperty Name="ext_fo_delegate_6" ColumnName="ext_fo_delegate_6" />
+                <ScalarProperty Name="ext_fo_6" ColumnName="ext_fo_6" />
+                <ScalarProperty Name="ext_work_leader_approve_6" ColumnName="ext_work_leader_approve_6" />
+                <ScalarProperty Name="ext_work_leader_6" ColumnName="ext_work_leader_6" />
+                <ScalarProperty Name="ext_gas_tester_approve_6" ColumnName="ext_gas_tester_approve_6" />
+                <ScalarProperty Name="ext_gas_tester_6" ColumnName="ext_gas_tester_6" />
+                <ScalarProperty Name="ext_other_6" ColumnName="ext_other_6" />
+                <ScalarProperty Name="ext_co_6" ColumnName="ext_co_6" />
+                <ScalarProperty Name="ext_h2s_6" ColumnName="ext_h2s_6" />
+                <ScalarProperty Name="ext_o2_6" ColumnName="ext_o2_6" />
+                <ScalarProperty Name="ext_lel_6" ColumnName="ext_lel_6" />
+                <ScalarProperty Name="ext_datetime_6" ColumnName="ext_datetime_6" />
+                <ScalarProperty Name="ext_remark_5" ColumnName="ext_remark_5" />
+                <ScalarProperty Name="ext_new_validity_5" ColumnName="ext_new_validity_5" />
+                <ScalarProperty Name="ext_fo_approve_5" ColumnName="ext_fo_approve_5" />
+                <ScalarProperty Name="ext_fo_delegate_5" ColumnName="ext_fo_delegate_5" />
+                <ScalarProperty Name="ext_fo_5" ColumnName="ext_fo_5" />
+                <ScalarProperty Name="ext_work_leader_approve_5" ColumnName="ext_work_leader_approve_5" />
+                <ScalarProperty Name="ext_work_leader_5" ColumnName="ext_work_leader_5" />
+                <ScalarProperty Name="ext_gas_tester_approve_5" ColumnName="ext_gas_tester_approve_5" />
+                <ScalarProperty Name="ext_gas_tester_5" ColumnName="ext_gas_tester_5" />
+                <ScalarProperty Name="ext_other_5" ColumnName="ext_other_5" />
+                <ScalarProperty Name="ext_co_5" ColumnName="ext_co_5" />
+                <ScalarProperty Name="ext_h2s_5" ColumnName="ext_h2s_5" />
+                <ScalarProperty Name="ext_o2_5" ColumnName="ext_o2_5" />
+                <ScalarProperty Name="ext_lel_5" ColumnName="ext_lel_5" />
+                <ScalarProperty Name="ext_datetime_5" ColumnName="ext_datetime_5" />
+                <ScalarProperty Name="ext_remark_4" ColumnName="ext_remark_4" />
+                <ScalarProperty Name="ext_new_validity_4" ColumnName="ext_new_validity_4" />
+                <ScalarProperty Name="ext_fo_approve_4" ColumnName="ext_fo_approve_4" />
+                <ScalarProperty Name="ext_fo_delegate_4" ColumnName="ext_fo_delegate_4" />
+                <ScalarProperty Name="ext_fo_4" ColumnName="ext_fo_4" />
+                <ScalarProperty Name="ext_work_leader_approve_4" ColumnName="ext_work_leader_approve_4" />
+                <ScalarProperty Name="ext_work_leader_4" ColumnName="ext_work_leader_4" />
+                <ScalarProperty Name="ext_gas_tester_approve_4" ColumnName="ext_gas_tester_approve_4" />
+                <ScalarProperty Name="ext_gas_tester_4" ColumnName="ext_gas_tester_4" />
+                <ScalarProperty Name="ext_other_4" ColumnName="ext_other_4" />
+                <ScalarProperty Name="ext_co_4" ColumnName="ext_co_4" />
+                <ScalarProperty Name="ext_h2s_4" ColumnName="ext_h2s_4" />
+                <ScalarProperty Name="ext_o2_4" ColumnName="ext_o2_4" />
+                <ScalarProperty Name="ext_lel_4" ColumnName="ext_lel_4" />
+                <ScalarProperty Name="ext_datetime_4" ColumnName="ext_datetime_4" />
+                <ScalarProperty Name="ext_remark_3" ColumnName="ext_remark_3" />
+                <ScalarProperty Name="ext_new_validity_3" ColumnName="ext_new_validity_3" />
+                <ScalarProperty Name="ext_fo_approve_3" ColumnName="ext_fo_approve_3" />
+                <ScalarProperty Name="ext_fo_delegate_3" ColumnName="ext_fo_delegate_3" />
+                <ScalarProperty Name="ext_fo_3" ColumnName="ext_fo_3" />
+                <ScalarProperty Name="ext_work_leader_approve_3" ColumnName="ext_work_leader_approve_3" />
+                <ScalarProperty Name="ext_work_leader_3" ColumnName="ext_work_leader_3" />
+                <ScalarProperty Name="ext_gas_tester_approve_3" ColumnName="ext_gas_tester_approve_3" />
+                <ScalarProperty Name="ext_gas_tester_3" ColumnName="ext_gas_tester_3" />
+                <ScalarProperty Name="ext_other_3" ColumnName="ext_other_3" />
+                <ScalarProperty Name="ext_co_3" ColumnName="ext_co_3" />
+                <ScalarProperty Name="ext_h2s_3" ColumnName="ext_h2s_3" />
+                <ScalarProperty Name="ext_o2_3" ColumnName="ext_o2_3" />
+                <ScalarProperty Name="ext_lel_3" ColumnName="ext_lel_3" />
+                <ScalarProperty Name="ext_datetime_3" ColumnName="ext_datetime_3" />
+                <ScalarProperty Name="ext_remark_2" ColumnName="ext_remark_2" />
+                <ScalarProperty Name="ext_new_validity_2" ColumnName="ext_new_validity_2" />
+                <ScalarProperty Name="ext_fo_approve_2" ColumnName="ext_fo_approve_2" />
+                <ScalarProperty Name="ext_fo_delegate_2" ColumnName="ext_fo_delegate_2" />
+                <ScalarProperty Name="ext_fo_2" ColumnName="ext_fo_2" />
+                <ScalarProperty Name="ext_work_leader_approve_2" ColumnName="ext_work_leader_approve_2" />
+                <ScalarProperty Name="ext_work_leader_2" ColumnName="ext_work_leader_2" />
+                <ScalarProperty Name="ext_gas_tester_approve_2" ColumnName="ext_gas_tester_approve_2" />
+                <ScalarProperty Name="ext_gas_tester_2" ColumnName="ext_gas_tester_2" />
+                <ScalarProperty Name="ext_other_2" ColumnName="ext_other_2" />
+                <ScalarProperty Name="ext_co_2" ColumnName="ext_co_2" />
+                <ScalarProperty Name="ext_h2s_2" ColumnName="ext_h2s_2" />
+                <ScalarProperty Name="ext_o2_2" ColumnName="ext_o2_2" />
+                <ScalarProperty Name="ext_lel_2" ColumnName="ext_lel_2" />
+                <ScalarProperty Name="ext_datetime_2" ColumnName="ext_datetime_2" />
+                <ScalarProperty Name="ext_remark_1" ColumnName="ext_remark_1" />
+                <ScalarProperty Name="ext_new_validity_1" ColumnName="ext_new_validity_1" />
+                <ScalarProperty Name="ext_fo_approve_1" ColumnName="ext_fo_approve_1" />
+                <ScalarProperty Name="ext_fo_delegate_1" ColumnName="ext_fo_delegate_1" />
+                <ScalarProperty Name="ext_fo_1" ColumnName="ext_fo_1" />
+                <ScalarProperty Name="ext_work_leader_approve_1" ColumnName="ext_work_leader_approve_1" />
+                <ScalarProperty Name="ext_work_leader_1" ColumnName="ext_work_leader_1" />
+                <ScalarProperty Name="ext_gas_tester_approve_1" ColumnName="ext_gas_tester_approve_1" />
+                <ScalarProperty Name="ext_gas_tester_1" ColumnName="ext_gas_tester_1" />
+                <ScalarProperty Name="ext_other_1" ColumnName="ext_other_1" />
+                <ScalarProperty Name="ext_co_1" ColumnName="ext_co_1" />
+                <ScalarProperty Name="ext_h2s_1" ColumnName="ext_h2s_1" />
+                <ScalarProperty Name="ext_o2_1" ColumnName="ext_o2_1" />
+                <ScalarProperty Name="ext_lel_1" ColumnName="ext_lel_1" />
+                <ScalarProperty Name="ext_datetime_1" ColumnName="ext_datetime_1" />
+                <ScalarProperty Name="can_fo_approve" ColumnName="can_fo_approve" />
+                <ScalarProperty Name="can_fo_delegate" ColumnName="can_fo_delegate" />
+                <ScalarProperty Name="can_fo" ColumnName="can_fo" />
+                <ScalarProperty Name="can_fire_watch_approve" ColumnName="can_fire_watch_approve" />
+                <ScalarProperty Name="can_fire_watch_delegate" ColumnName="can_fire_watch_delegate" />
+                <ScalarProperty Name="can_fire_watch" ColumnName="can_fire_watch" />
+                <ScalarProperty Name="can_supervisor_delegate" ColumnName="can_supervisor_delegate" />
+                <ScalarProperty Name="can_supervisor" ColumnName="can_supervisor" />
+                <ScalarProperty Name="can_supervisor_approve" ColumnName="can_supervisor_approve" />
+                <ScalarProperty Name="can_work_leader_approve" ColumnName="can_work_leader_approve" />
+                <ScalarProperty Name="acc_work_representative_approve" ColumnName="acc_work_representative_approve" />
+                <ScalarProperty Name="acc_gas_tester_approve" ColumnName="acc_gas_tester_approve" />
+                <ScalarProperty Name="acc_gas_tester" ColumnName="acc_gas_tester" />
+                <ScalarProperty Name="acc_fo_approve" ColumnName="acc_fo_approve" />
+                <ScalarProperty Name="acc_fo_delegate" ColumnName="acc_fo_delegate" />
+                <ScalarProperty Name="acc_fo" ColumnName="acc_fo" />
+                <ScalarProperty Name="acc_fire_watch_approve" ColumnName="acc_fire_watch_approve" />
+                <ScalarProperty Name="acc_fire_watch_delegate" ColumnName="acc_fire_watch_delegate" />
+                <ScalarProperty Name="acc_fire_watch" ColumnName="acc_fire_watch" />
+                <ScalarProperty Name="acc_supervisor_delegate" ColumnName="acc_supervisor_delegate" />
+                <ScalarProperty Name="acc_supervisor" ColumnName="acc_supervisor" />
+                <ScalarProperty Name="acc_supervisor_approve" ColumnName="acc_supervisor_approve" />
+                <ScalarProperty Name="acc_work_leader_approve" ColumnName="acc_work_leader_approve" />
+                <ScalarProperty Name="other_result" ColumnName="other_result" />
+                <ScalarProperty Name="other_gas" ColumnName="other_gas" />
+                <ScalarProperty Name="co_result" ColumnName="co_result" />
+                <ScalarProperty Name="h2s_result" ColumnName="h2s_result" />
+                <ScalarProperty Name="o2_result" ColumnName="o2_result" />
+                <ScalarProperty Name="methane_result" ColumnName="methane_result" />
+                <ScalarProperty Name="notes" ColumnName="notes" />
+                <ScalarProperty Name="id_ptw" ColumnName="id_ptw" />
+                <ScalarProperty Name="screening_7" ColumnName="screening_7" />
+                <ScalarProperty Name="screening_6" ColumnName="screening_6" />
+                <ScalarProperty Name="screening_5" ColumnName="screening_5" />
+                <ScalarProperty Name="screening_4" ColumnName="screening_4" />
+                <ScalarProperty Name="screening_3" ColumnName="screening_3" />
+                <ScalarProperty Name="screening_2" ColumnName="screening_2" />
+                <ScalarProperty Name="screening_1" ColumnName="screening_1" />
+                <ScalarProperty Name="screening_fo" ColumnName="screening_fo" />
+                <ScalarProperty Name="screening_spv" ColumnName="screening_spv" />
+                <ScalarProperty Name="validity_period_end" ColumnName="validity_period_end" />
+                <ScalarProperty Name="validity_period_start" ColumnName="validity_period_start" />
+                <ScalarProperty Name="work_leader" ColumnName="work_leader" />
+                <ScalarProperty Name="purpose" ColumnName="purpose" />
+                <ScalarProperty Name="fire_watch" ColumnName="fire_watch" />
+                <ScalarProperty Name="hw_no" ColumnName="hw_no" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="permit_to_work">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.permit_to_work">
+              <MappingFragment StoreEntitySet="permit_to_work">
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="id_parent_ptw" ColumnName="id_parent_ptw" />
+                <ScalarProperty Name="can_fo_approve" ColumnName="can_fo_approve" />
+                <ScalarProperty Name="can_fo_delegate" ColumnName="can_fo_delegate" />
+                <ScalarProperty Name="can_fo" ColumnName="can_fo" />
+                <ScalarProperty Name="can_assessor_approve" ColumnName="can_assessor_approve" />
+                <ScalarProperty Name="can_assessor_delegate" ColumnName="can_assessor_delegate" />
+                <ScalarProperty Name="can_assessor" ColumnName="can_assessor" />
+                <ScalarProperty Name="can_supervisor_approve" ColumnName="can_supervisor_approve" />
+                <ScalarProperty Name="can_supervisor_delegate" ColumnName="can_supervisor_delegate" />
+                <ScalarProperty Name="can_supervisor" ColumnName="can_supervisor" />
+                <ScalarProperty Name="can_ptw_requestor_approve" ColumnName="can_ptw_requestor_approve" />
+                <ScalarProperty Name="can_ptw_requestor" ColumnName="can_ptw_requestor" />
+                <ScalarProperty Name="acc_fo_approve" ColumnName="acc_fo_approve" />
+                <ScalarProperty Name="acc_fo_delegate" ColumnName="acc_fo_delegate" />
+                <ScalarProperty Name="acc_fo" ColumnName="acc_fo" />
+                <ScalarProperty Name="acc_assessor_approve" ColumnName="acc_assessor_approve" />
+                <ScalarProperty Name="acc_assessor_delegate" ColumnName="acc_assessor_delegate" />
+                <ScalarProperty Name="acc_assessor" ColumnName="acc_assessor" />
+                <ScalarProperty Name="acc_supervisor_approve" ColumnName="acc_supervisor_approve" />
+                <ScalarProperty Name="acc_supervisor_delegate" ColumnName="acc_supervisor_delegate" />
+                <ScalarProperty Name="acc_supervisor" ColumnName="acc_supervisor" />
+                <ScalarProperty Name="acc_ptw_requestor_approve" ColumnName="acc_ptw_requestor_approve" />
+                <ScalarProperty Name="acc_ptw_requestor" ColumnName="acc_ptw_requestor" />
+                <ScalarProperty Name="rad_status" ColumnName="rad_status" />
+                <ScalarProperty Name="rad_id" ColumnName="rad_id" />
+                <ScalarProperty Name="wh_status" ColumnName="wh_status" />
+                <ScalarProperty Name="wh_id" ColumnName="wh_id" />
+                <ScalarProperty Name="ex_status" ColumnName="ex_status" />
+                <ScalarProperty Name="ex_id" ColumnName="ex_id" />
+                <ScalarProperty Name="fi_status" ColumnName="fi_status" />
+                <ScalarProperty Name="fi_id" ColumnName="fi_id" />
+                <ScalarProperty Name="hw_status" ColumnName="hw_status" />
+                <ScalarProperty Name="hw_id" ColumnName="hw_id" />
+                <ScalarProperty Name="csep_status" ColumnName="csep_status" />
+                <ScalarProperty Name="csep_id" ColumnName="csep_id" />
+                <ScalarProperty Name="loto_status" ColumnName="loto_status" />
+                <ScalarProperty Name="loto_id" ColumnName="loto_id" />
+                <ScalarProperty Name="cancellation_date" ColumnName="cancellation_date" />
+                <ScalarProperty Name="validity_period_end" ColumnName="validity_period_end" />
+                <ScalarProperty Name="validity_period_start" ColumnName="validity_period_start" />
+                <ScalarProperty Name="cancel_notes" ColumnName="cancel_notes" />
+                <ScalarProperty Name="pre_job_notes" ColumnName="pre_job_notes" />
+                <ScalarProperty Name="cancel_7_fo" ColumnName="cancel_7_fo" />
+                <ScalarProperty Name="cancel_6_fo" ColumnName="cancel_6_fo" />
+                <ScalarProperty Name="cancel_5_fo" ColumnName="cancel_5_fo" />
+                <ScalarProperty Name="cancel_4_fo" ColumnName="cancel_4_fo" />
+                <ScalarProperty Name="cancel_3_fo" ColumnName="cancel_3_fo" />
+                <ScalarProperty Name="cancel_2_fo" ColumnName="cancel_2_fo" />
+                <ScalarProperty Name="cancel_1_fo" ColumnName="cancel_1_fo" />
+                <ScalarProperty Name="cancel_7_spv" ColumnName="cancel_7_spv" />
+                <ScalarProperty Name="cancel_6_spv" ColumnName="cancel_6_spv" />
+                <ScalarProperty Name="cancel_5_spv" ColumnName="cancel_5_spv" />
+                <ScalarProperty Name="cancel_4_spv" ColumnName="cancel_4_spv" />
+                <ScalarProperty Name="cancel_3_spv" ColumnName="cancel_3_spv" />
+                <ScalarProperty Name="cancel_2_spv" ColumnName="cancel_2_spv" />
+                <ScalarProperty Name="cancel_1_spv" ColumnName="cancel_1_spv" />
+                <ScalarProperty Name="pre_job_7_fo" ColumnName="pre_job_7_fo" />
+                <ScalarProperty Name="pre_job_6_fo" ColumnName="pre_job_6_fo" />
+                <ScalarProperty Name="pre_job_5_fo" ColumnName="pre_job_5_fo" />
+                <ScalarProperty Name="pre_job_4_fo" ColumnName="pre_job_4_fo" />
+                <ScalarProperty Name="pre_job_3_fo" ColumnName="pre_job_3_fo" />
+                <ScalarProperty Name="pre_job_2_fo" ColumnName="pre_job_2_fo" />
+                <ScalarProperty Name="pre_job_1_fo" ColumnName="pre_job_1_fo" />
+                <ScalarProperty Name="pre_job_7_spv" ColumnName="pre_job_7_spv" />
+                <ScalarProperty Name="pre_job_6_spv" ColumnName="pre_job_6_spv" />
+                <ScalarProperty Name="pre_job_5_spv" ColumnName="pre_job_5_spv" />
+                <ScalarProperty Name="pre_job_4_spv" ColumnName="pre_job_4_spv" />
+                <ScalarProperty Name="pre_job_3_spv" ColumnName="pre_job_3_spv" />
+                <ScalarProperty Name="pre_job_2_spv" ColumnName="pre_job_2_spv" />
+                <ScalarProperty Name="pre_job_1_spv" ColumnName="pre_job_1_spv" />
+                <ScalarProperty Name="notes" ColumnName="notes" />
+                <ScalarProperty Name="work_description" ColumnName="work_description" />
+                <ScalarProperty Name="work_order_no" ColumnName="work_order_no" />
+                <ScalarProperty Name="area_code" ColumnName="area_code" />
+                <ScalarProperty Name="work_location" ColumnName="work_location" />
+                <ScalarProperty Name="area" ColumnName="area" />
+                <ScalarProperty Name="requestor_ptw_holder_no" ColumnName="requestor_ptw_holder_no" />
+                <ScalarProperty Name="total_crew" ColumnName="total_crew" />
+                <ScalarProperty Name="section" ColumnName="section" />
+                <ScalarProperty Name="dept_requestor" ColumnName="dept_requestor" />
+                <ScalarProperty Name="proposed_period_end" ColumnName="proposed_period_end" />
+                <ScalarProperty Name="proposed_period_start" ColumnName="proposed_period_start" />
+                <ScalarProperty Name="ptw_no" ColumnName="ptw_no" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="permit_log">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.permit_log">
+              <MappingFragment StoreEntitySet="permit_log">
+                <ScalarProperty Name="permit_type" ColumnName="permit_type" />
+                <ScalarProperty Name="comment" ColumnName="comment" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="datetime" ColumnName="datetime" />
+                <ScalarProperty Name="id_permit" ColumnName="id_permit" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

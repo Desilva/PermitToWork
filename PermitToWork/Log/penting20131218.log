@@ -1,0 +1,595 @@
+12/18/2013 10:36:06 AM : (0) accessing /Login/Index
+Raw Url : /
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=CF62DF28EC33709BA85DFCEFF39B4A0FF931409A4A7BEF04DC77184BD2826839C9569A81C10BA195492673608149F3611B50668354DEA7AC9BB6EAADADE167CE6F6B036E349D716C891D13246065A235B7DDE117AE699CDCB697A947E0898B9E269723FD903147E84419028968E3DA09C08772718ACBC02AA89560D0BBFBA6EE;Host=localhost:7865;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 10:36:16 AM : (0) accessing /Login/ValidateLogin
+Raw Url : /Login/ValidateLogin
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=39;Content-Type=application/x-www-form-urlencoded; charset=UTF-8;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=CF62DF28EC33709BA85DFCEFF39B4A0FF931409A4A7BEF04DC77184BD2826839C9569A81C10BA195492673608149F3611B50668354DEA7AC9BB6EAADADE167CE6F6B036E349D716C891D13246065A235B7DDE117AE699CDCB697A947E0898B9E269723FD903147E84419028968E3DA09C08772718ACBC02AA89560D0BBFBA6EE;Host=localhost:7865;Referer=http://localhost:7865/;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : username=admin+data+master&
+===========================================
+
+12/18/2013 10:36:19 AM : (0) accessing /Login/ValidateLogin
+Raw Url : /Login/ValidateLogin
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=39;Content-Type=application/x-www-form-urlencoded; charset=UTF-8;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=CF62DF28EC33709BA85DFCEFF39B4A0FF931409A4A7BEF04DC77184BD2826839C9569A81C10BA195492673608149F3611B50668354DEA7AC9BB6EAADADE167CE6F6B036E349D716C891D13246065A235B7DDE117AE699CDCB697A947E0898B9E269723FD903147E84419028968E3DA09C08772718ACBC02AA89560D0BBFBA6EE;Host=localhost:7865;Referer=http://localhost:7865/;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : username=admin+data+master&
+===========================================
+
+12/18/2013 10:36:26 AM : Vacant(318) accessing /Home/Index
+Raw Url : /Home
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=087EA3589494DB1A56FFF7B8F829C62F05046F9CB622F823E96F8ED5B827B9E92A00C1FD412A9645DC0234CD87E9C32C519790C2271DA437F9BAAD2D68C3FC71157D837D3910354007ECD4276DA47C47C265FE29794210A5F902BC2F0247740F2B7EEBFFD309A8AC955B9A58127E72DF;Host=localhost:7865;Referer=http://localhost:7865/;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 10:36:31 AM : Vacant(318) accessing /Home/Binding
+Raw Url : /Home/Binding
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=0;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=087EA3589494DB1A56FFF7B8F829C62F05046F9CB622F823E96F8ED5B827B9E92A00C1FD412A9645DC0234CD87E9C32C519790C2271DA437F9BAAD2D68C3FC71157D837D3910354007ECD4276DA47C47C265FE29794210A5F902BC2F0247740F2B7EEBFFD309A8AC955B9A58127E72DF;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 10:36:47 AM : Vacant(318) accessing /Login/Logout
+Raw Url : /Login/Logout
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=087EA3589494DB1A56FFF7B8F829C62F05046F9CB622F823E96F8ED5B827B9E92A00C1FD412A9645DC0234CD87E9C32C519790C2271DA437F9BAAD2D68C3FC71157D837D3910354007ECD4276DA47C47C265FE29794210A5F902BC2F0247740F2B7EEBFFD309A8AC955B9A58127E72DF;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 10:36:47 AM : (0) accessing /Login/Index
+Raw Url : /
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=087EA3589494DB1A56FFF7B8F829C62F05046F9CB622F823E96F8ED5B827B9E92A00C1FD412A9645DC0234CD87E9C32C519790C2271DA437F9BAAD2D68C3FC71157D837D3910354007ECD4276DA47C47C265FE29794210A5F902BC2F0247740F2B7EEBFFD309A8AC955B9A58127E72DF;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 10:36:51 AM : (0) accessing /Home/Index
+Raw Url : /Home
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=087EA3589494DB1A56FFF7B8F829C62F05046F9CB622F823E96F8ED5B827B9E92A00C1FD412A9645DC0234CD87E9C32C519790C2271DA437F9BAAD2D68C3FC71157D837D3910354007ECD4276DA47C47C265FE29794210A5F902BC2F0247740F2B7EEBFFD309A8AC955B9A58127E72DF;Host=localhost:7865;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 10:36:51 AM : (0) accessing /Login/Index
+Raw Url : /
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=087EA3589494DB1A56FFF7B8F829C62F05046F9CB622F823E96F8ED5B827B9E92A00C1FD412A9645DC0234CD87E9C32C519790C2271DA437F9BAAD2D68C3FC71157D837D3910354007ECD4276DA47C47C265FE29794210A5F902BC2F0247740F2B7EEBFFD309A8AC955B9A58127E72DF;Host=localhost:7865;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 10:38:22 AM : (0) accessing /Ptw/Index
+Raw Url : /Ptw
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=087EA3589494DB1A56FFF7B8F829C62F05046F9CB622F823E96F8ED5B827B9E92A00C1FD412A9645DC0234CD87E9C32C519790C2271DA437F9BAAD2D68C3FC71157D837D3910354007ECD4276DA47C47C265FE29794210A5F902BC2F0247740F2B7EEBFFD309A8AC955B9A58127E72DF;Host=localhost:7865;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 10:39:14 AM : (0) accessing /Login/Index
+Raw Url : /
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=087EA3589494DB1A56FFF7B8F829C62F05046F9CB622F823E96F8ED5B827B9E92A00C1FD412A9645DC0234CD87E9C32C519790C2271DA437F9BAAD2D68C3FC71157D837D3910354007ECD4276DA47C47C265FE29794210A5F902BC2F0247740F2B7EEBFFD309A8AC955B9A58127E72DF;Host=localhost:7865;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 10:39:19 AM : (0) accessing /Ptw/Index
+Raw Url : /Ptw
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=087EA3589494DB1A56FFF7B8F829C62F05046F9CB622F823E96F8ED5B827B9E92A00C1FD412A9645DC0234CD87E9C32C519790C2271DA437F9BAAD2D68C3FC71157D837D3910354007ECD4276DA47C47C265FE29794210A5F902BC2F0247740F2B7EEBFFD309A8AC955B9A58127E72DF;Host=localhost:7865;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 10:42:07 AM : (0) accessing /Ptw/Index
+Raw Url : /Ptw
+IP Address : ::1
+Request Header : Cache-Control=no-cache;Connection=keep-alive;Pragma=no-cache;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=087EA3589494DB1A56FFF7B8F829C62F05046F9CB622F823E96F8ED5B827B9E92A00C1FD412A9645DC0234CD87E9C32C519790C2271DA437F9BAAD2D68C3FC71157D837D3910354007ECD4276DA47C47C265FE29794210A5F902BC2F0247740F2B7EEBFFD309A8AC955B9A58127E72DF;Host=localhost:7865;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 10:44:18 AM : (0) accessing /Login/Index
+Raw Url : /
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=087EA3589494DB1A56FFF7B8F829C62F05046F9CB622F823E96F8ED5B827B9E92A00C1FD412A9645DC0234CD87E9C32C519790C2271DA437F9BAAD2D68C3FC71157D837D3910354007ECD4276DA47C47C265FE29794210A5F902BC2F0247740F2B7EEBFFD309A8AC955B9A58127E72DF;Host=localhost:7865;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 10:44:27 AM : (0) accessing /Login/ValidateLogin
+Raw Url : /Login/ValidateLogin
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=39;Content-Type=application/x-www-form-urlencoded; charset=UTF-8;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=087EA3589494DB1A56FFF7B8F829C62F05046F9CB622F823E96F8ED5B827B9E92A00C1FD412A9645DC0234CD87E9C32C519790C2271DA437F9BAAD2D68C3FC71157D837D3910354007ECD4276DA47C47C265FE29794210A5F902BC2F0247740F2B7EEBFFD309A8AC955B9A58127E72DF;Host=localhost:7865;Referer=http://localhost:7865/;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : username=admin+data+master&
+===========================================
+
+12/18/2013 10:44:34 AM : Vacant(318) accessing /Home/Index
+Raw Url : /Home
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=0DE58FAD697ABCC73D68C56530929BA7C5694D52FF8E4DF7AAA3A984F962E852E2322DF6FE05CD8D0CAD320BC8637B0229A6F63C3F1C2210687D4A6E52ECC1863443DA8388F09F3D6BC4CB957C189EFD53072F11DBB7BCC8C4F285DC588E901927746E21335AD1D78261BE59B19CD4D7;Host=localhost:7865;Referer=http://localhost:7865/;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 10:45:18 AM : Vacant(318) accessing /Home/Binding
+Raw Url : /Home/Binding
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=0;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=0DE58FAD697ABCC73D68C56530929BA7C5694D52FF8E4DF7AAA3A984F962E852E2322DF6FE05CD8D0CAD320BC8637B0229A6F63C3F1C2210687D4A6E52ECC1863443DA8388F09F3D6BC4CB957C189EFD53072F11DBB7BCC8C4F285DC588E901927746E21335AD1D78261BE59B19CD4D7;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 10:45:19 AM : Vacant(318) accessing /Login/Logout
+Raw Url : /Login/Logout
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=0DE58FAD697ABCC73D68C56530929BA7C5694D52FF8E4DF7AAA3A984F962E852E2322DF6FE05CD8D0CAD320BC8637B0229A6F63C3F1C2210687D4A6E52ECC1863443DA8388F09F3D6BC4CB957C189EFD53072F11DBB7BCC8C4F285DC588E901927746E21335AD1D78261BE59B19CD4D7;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 10:45:19 AM : (0) accessing /Login/Index
+Raw Url : /
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 10:45:31 AM : (0) accessing /Login/Index
+Raw Url : /?returnUrl=http%3A%2F%2Flocalhost%3A7865%2FPtw
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530;Host=localhost:7865;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 10:46:00 AM : (0) accessing /Login/Index
+Raw Url : /?returnUrl=http%3A%2F%2Flocalhost%3A7865%2Fhome
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530;Host=localhost:7865;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 10:46:57 AM : (0) accessing /Login/Index
+Raw Url : /?returnUrl=http%3A%2F%2Flocalhost%3A7865%2FHome%3Fp%3DPtw%2Fedit%2F21
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530;Host=localhost:7865;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 10:47:01 AM : (0) accessing /Login/ValidateLogin
+Raw Url : /Login/ValidateLogin
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=39;Content-Type=application/x-www-form-urlencoded; charset=UTF-8;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530;Host=localhost:7865;Referer=http://localhost:7865/?returnUrl=http%3A%2F%2Flocalhost%3A7865%2FHome%3Fp%3DPtw%2Fedit%2F21;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : username=admin+data+master&
+===========================================
+
+12/18/2013 10:47:04 AM : Vacant(318) accessing /Home/Index
+Raw Url : /Home
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=236866B7654E87219BC65404D14064D90BDE61A4F04D47A4C8A9AE9926A33DBBE0BAD59BABB8F0872532A876F8E26A16FC40FC542A02E907C2C3CC2F4A51705D5B50DD36A389F7780CB716EEDAAAD965582D18B6CA21AD568766BD87CD25E08F34C0A818EC31DA5B78EB0ACB88F2C0E7;Host=localhost:7865;Referer=http://localhost:7865/?returnUrl=http%3A%2F%2Flocalhost%3A7865%2FHome%3Fp%3DPtw%2Fedit%2F21;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 10:47:04 AM : Vacant(318) accessing /Home/Binding
+Raw Url : /Home/Binding
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=0;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=236866B7654E87219BC65404D14064D90BDE61A4F04D47A4C8A9AE9926A33DBBE0BAD59BABB8F0872532A876F8E26A16FC40FC542A02E907C2C3CC2F4A51705D5B50DD36A389F7780CB716EEDAAAD965582D18B6CA21AD568766BD87CD25E08F34C0A818EC31DA5B78EB0ACB88F2C0E7;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 10:49:53 AM : Vacant(318) accessing /Login/Logout
+Raw Url : /Login/Logout
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=236866B7654E87219BC65404D14064D90BDE61A4F04D47A4C8A9AE9926A33DBBE0BAD59BABB8F0872532A876F8E26A16FC40FC542A02E907C2C3CC2F4A51705D5B50DD36A389F7780CB716EEDAAAD965582D18B6CA21AD568766BD87CD25E08F34C0A818EC31DA5B78EB0ACB88F2C0E7;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 10:49:53 AM : (0) accessing /Login/Index
+Raw Url : /
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 10:49:59 AM : (0) accessing /Login/Index
+Raw Url : /?returnUrl=http%3A%2F%2Flocalhost%3A7865%2FPtw
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530;Host=localhost:7865;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 11:08:15 AM : (0) accessing /Login/Index
+Raw Url : /?returnUrl=http%3A%2F%2Flocalhost%3A7865%2FPtw&e=401
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530;Host=localhost:7865;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 11:08:44 AM : (0) accessing /Login/Index
+Raw Url : /
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530;Host=localhost:7865;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 11:10:14 AM : (0) accessing /Login/Index
+Raw Url : /?returnUrl=http%3A%2F%2Flocalhost%3A7865%2FPtw&e=401
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530;Host=localhost:7865;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 11:12:36 AM : (0) accessing /Login/ValidateLogin
+Raw Url : /Login/ValidateLogin
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=39;Content-Type=application/x-www-form-urlencoded; charset=UTF-8;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530;Host=localhost:7865;Referer=http://localhost:7865/?returnUrl=http%3A%2F%2Flocalhost%3A7865%2FPtw&e=401;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : username=admin+data+master&
+===========================================
+
+12/18/2013 11:12:38 AM : Vacant(318) accessing /Home/Index
+Raw Url : /Home
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=135B8F1E4F1AE03A51CEB3AAD555737722514515B237BC5722371E119161659A0C6CAC25676BDE3CE1090969333713CAEC0959FE7A209E35003DF080981E229FA7D596D130095E3D7371A292053F50FDC68A0A9F3DC6160775C24429A5E9566BFC9EF01D1720E97BF5DE9673272A9895;Host=localhost:7865;Referer=http://localhost:7865/?returnUrl=http%3A%2F%2Flocalhost%3A7865%2FPtw&e=401;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 11:12:42 AM : Vacant(318) accessing /Home/Binding
+Raw Url : /Home/Binding
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=0;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=135B8F1E4F1AE03A51CEB3AAD555737722514515B237BC5722371E119161659A0C6CAC25676BDE3CE1090969333713CAEC0959FE7A209E35003DF080981E229FA7D596D130095E3D7371A292053F50FDC68A0A9F3DC6160775C24429A5E9566BFC9EF01D1720E97BF5DE9673272A9895;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 11:13:01 AM : Vacant(318) accessing /Home/Index
+Raw Url : /Home?p=Ptw/edit/21
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=135B8F1E4F1AE03A51CEB3AAD555737722514515B237BC5722371E119161659A0C6CAC25676BDE3CE1090969333713CAEC0959FE7A209E35003DF080981E229FA7D596D130095E3D7371A292053F50FDC68A0A9F3DC6160775C24429A5E9566BFC9EF01D1720E97BF5DE9673272A9895;Host=localhost:7865;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 11:13:02 AM : Vacant(318) accessing /Ptw/edit
+Raw Url : /Ptw/edit/21
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html, */*; q=0.01;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=135B8F1E4F1AE03A51CEB3AAD555737722514515B237BC5722371E119161659A0C6CAC25676BDE3CE1090969333713CAEC0959FE7A209E35003DF080981E229FA7D596D130095E3D7371A292053F50FDC68A0A9F3DC6160775C24429A5E9566BFC9EF01D1720E97BF5DE9673272A9895;Host=localhost:7865;Referer=http://localhost:7865/Home?p=Ptw/edit/21;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 11:13:03 AM : Vacant(318) accessing /Home/Binding
+Raw Url : /Home/Binding
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=0;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=135B8F1E4F1AE03A51CEB3AAD555737722514515B237BC5722371E119161659A0C6CAC25676BDE3CE1090969333713CAEC0959FE7A209E35003DF080981E229FA7D596D130095E3D7371A292053F50FDC68A0A9F3DC6160775C24429A5E9566BFC9EF01D1720E97BF5DE9673272A9895;Host=localhost:7865;Referer=http://localhost:7865/Home?p=Ptw/edit/21;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 11:17:54 AM : (0) accessing /Login/Index
+Raw Url : /
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=135B8F1E4F1AE03A51CEB3AAD555737722514515B237BC5722371E119161659A0C6CAC25676BDE3CE1090969333713CAEC0959FE7A209E35003DF080981E229FA7D596D130095E3D7371A292053F50FDC68A0A9F3DC6160775C24429A5E9566BFC9EF01D1720E97BF5DE9673272A9895;Host=localhost:7865;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 11:18:04 AM : (0) accessing /Login/ValidateLogin
+Raw Url : /Login/ValidateLogin
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=39;Content-Type=application/x-www-form-urlencoded; charset=UTF-8;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=135B8F1E4F1AE03A51CEB3AAD555737722514515B237BC5722371E119161659A0C6CAC25676BDE3CE1090969333713CAEC0959FE7A209E35003DF080981E229FA7D596D130095E3D7371A292053F50FDC68A0A9F3DC6160775C24429A5E9566BFC9EF01D1720E97BF5DE9673272A9895;Host=localhost:7865;Referer=http://localhost:7865/;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : username=admin+data+master&
+===========================================
+
+12/18/2013 11:18:08 AM : Vacant(318) accessing /Home/Index
+Raw Url : /Home
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=EFA7B2C9FBC9D3D39EC293A3AD85D5FBCEF31024EAD8ABE3441D3DE5F539E470E7F1C893023C91B1633285F9C831173B37240AB68EA4FA8B5F1216419A2225719A5FC076AA2567998B3333FE478EBF331724083D7DC4AD3C9E2703236C3B42103E0B84C914440079ED2BC8E152E80FEC;Host=localhost:7865;Referer=http://localhost:7865/;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 11:18:11 AM : Vacant(318) accessing /Home/Binding
+Raw Url : /Home/Binding
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=0;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=EFA7B2C9FBC9D3D39EC293A3AD85D5FBCEF31024EAD8ABE3441D3DE5F539E470E7F1C893023C91B1633285F9C831173B37240AB68EA4FA8B5F1216419A2225719A5FC076AA2567998B3333FE478EBF331724083D7DC4AD3C9E2703236C3B42103E0B84C914440079ED2BC8E152E80FEC;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 11:20:08 AM : (0) accessing /Login/Index
+Raw Url : /?returnUrl=http%3A%2F%2Flocalhost%3A7865%2FPtw%2FEdit%2F
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html, */*; q=0.01;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=EFA7B2C9FBC9D3D39EC293A3AD85D5FBCEF31024EAD8ABE3441D3DE5F539E470E7F1C893023C91B1633285F9C831173B37240AB68EA4FA8B5F1216419A2225719A5FC076AA2567998B3333FE478EBF331724083D7DC4AD3C9E2703236C3B42103E0B84C914440079ED2BC8E152E80FEC;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 11:20:42 AM : (0) accessing /Login/Index
+Raw Url : /?returnUrl=http%3A%2F%2Flocalhost%3A7865%2Fptw%2Findex
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html, */*; q=0.01;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=EFA7B2C9FBC9D3D39EC293A3AD85D5FBCEF31024EAD8ABE3441D3DE5F539E470E7F1C893023C91B1633285F9C831173B37240AB68EA4FA8B5F1216419A2225719A5FC076AA2567998B3333FE478EBF331724083D7DC4AD3C9E2703236C3B42103E0B84C914440079ED2BC8E152E80FEC;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 11:20:51 AM : (0) accessing /Login/ValidateLogin
+Raw Url : /Login/ValidateLogin
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=39;Content-Type=application/x-www-form-urlencoded; charset=UTF-8;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=EFA7B2C9FBC9D3D39EC293A3AD85D5FBCEF31024EAD8ABE3441D3DE5F539E470E7F1C893023C91B1633285F9C831173B37240AB68EA4FA8B5F1216419A2225719A5FC076AA2567998B3333FE478EBF331724083D7DC4AD3C9E2703236C3B42103E0B84C914440079ED2BC8E152E80FEC;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : username=admin+data+master&
+===========================================
+
+12/18/2013 11:21:18 AM : Vacant(318) accessing /Home/Index
+Raw Url : /Home
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=FBCF2515342BA4DF5CF15CF1B47CC7952972B5EA49278821A4295A8774732146BEB95B6355DC345140E54E5B6A1FA4544002C81C76E586FB45907A6AD23514BE61A0C7D0C08EEBCA6D36FD2C3731C4B0B904A5678B4A48E08CA84C32773B7A053DF32B33F1B091F83569B18EB0B29E39;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 11:21:21 AM : Vacant(318) accessing /Home/Binding
+Raw Url : /Home/Binding
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=0;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=FBCF2515342BA4DF5CF15CF1B47CC7952972B5EA49278821A4295A8774732146BEB95B6355DC345140E54E5B6A1FA4544002C81C76E586FB45907A6AD23514BE61A0C7D0C08EEBCA6D36FD2C3731C4B0B904A5678B4A48E08CA84C32773B7A053DF32B33F1B091F83569B18EB0B29E39;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 11:27:19 AM : Vacant(318) accessing /Login/Index
+Raw Url : /?returnUrl=http%3A%2F%2Flocalhost%3A7865%2Fptw%2Findex
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html, */*; q=0.01;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=FBCF2515342BA4DF5CF15CF1B47CC7952972B5EA49278821A4295A8774732146BEB95B6355DC345140E54E5B6A1FA4544002C81C76E586FB45907A6AD23514BE61A0C7D0C08EEBCA6D36FD2C3731C4B0B904A5678B4A48E08CA84C32773B7A053DF32B33F1B091F83569B18EB0B29E39;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 11:27:33 AM : Vacant(318) accessing /Login/ValidateLogin
+Raw Url : /Login/ValidateLogin
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=39;Content-Type=application/x-www-form-urlencoded; charset=UTF-8;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=FBCF2515342BA4DF5CF15CF1B47CC7952972B5EA49278821A4295A8774732146BEB95B6355DC345140E54E5B6A1FA4544002C81C76E586FB45907A6AD23514BE61A0C7D0C08EEBCA6D36FD2C3731C4B0B904A5678B4A48E08CA84C32773B7A053DF32B33F1B091F83569B18EB0B29E39;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : username=admin+data+master&
+===========================================
+
+12/18/2013 11:27:33 AM : Vacant(318) accessing /Login/ValidateLogin
+Raw Url : /Login/ValidateLogin
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=39;Content-Type=application/x-www-form-urlencoded; charset=UTF-8;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=FBCF2515342BA4DF5CF15CF1B47CC7952972B5EA49278821A4295A8774732146BEB95B6355DC345140E54E5B6A1FA4544002C81C76E586FB45907A6AD23514BE61A0C7D0C08EEBCA6D36FD2C3731C4B0B904A5678B4A48E08CA84C32773B7A053DF32B33F1B091F83569B18EB0B29E39;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : username=admin+data+master&
+===========================================
+
+12/18/2013 11:27:35 AM : Vacant(318) accessing /Home/Index
+Raw Url : /Home
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=1C236DAA1310E228DABD16A1F9233757FD8491B670AA45CCE9245C0AC9D4B796D0C2A86FD6AA4C1054547D469797A9F55EFF40841FF7B48412337A65E60FC8D5F69231DCC8148AF34D730ECDF1D0DAB5DC3AD3A86C444B722A34AFB03A8A072A52FA5F0AC26A9F0B767495047A7E8223;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 11:27:36 AM : Vacant(318) accessing /Home/Binding
+Raw Url : /Home/Binding
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=0;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=1C236DAA1310E228DABD16A1F9233757FD8491B670AA45CCE9245C0AC9D4B796D0C2A86FD6AA4C1054547D469797A9F55EFF40841FF7B48412337A65E60FC8D5F69231DCC8148AF34D730ECDF1D0DAB5DC3AD3A86C444B722A34AFB03A8A072A52FA5F0AC26A9F0B767495047A7E8223;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:35:04 PM : (0) accessing /Login/Index
+Raw Url : /
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=1C236DAA1310E228DABD16A1F9233757FD8491B670AA45CCE9245C0AC9D4B796D0C2A86FD6AA4C1054547D469797A9F55EFF40841FF7B48412337A65E60FC8D5F69231DCC8148AF34D730ECDF1D0DAB5DC3AD3A86C444B722A34AFB03A8A072A52FA5F0AC26A9F0B767495047A7E8223;Host=localhost:7865;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 2:35:27 PM : (0) accessing /Login/ValidateLogin
+Raw Url : /Login/ValidateLogin
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=39;Content-Type=application/x-www-form-urlencoded; charset=UTF-8;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=1C236DAA1310E228DABD16A1F9233757FD8491B670AA45CCE9245C0AC9D4B796D0C2A86FD6AA4C1054547D469797A9F55EFF40841FF7B48412337A65E60FC8D5F69231DCC8148AF34D730ECDF1D0DAB5DC3AD3A86C444B722A34AFB03A8A072A52FA5F0AC26A9F0B767495047A7E8223;Host=localhost:7865;Referer=http://localhost:7865/;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : username=admin+data+master&
+===========================================
+
+12/18/2013 2:35:35 PM : Vacant(318) accessing /Home/Index
+Raw Url : /Home
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=11E3EDC920DC1EEA4D12C49746990258B6857792ADDD8E60C1E7B4B057E4631870F0D20175B50F500C6A2650F4B9337D12A6D5192D2A5CF39D9B24159FA51CB71D7DE1E5C84536E8A0609C5CD07CC19E58C5546BC45FDFC7515B1501B41341D58161C12EC2CEC2085F76012BA57C7670;Host=localhost:7865;Referer=http://localhost:7865/;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 2:35:38 PM : Vacant(318) accessing /Home/Binding
+Raw Url : /Home/Binding
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=0;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=11E3EDC920DC1EEA4D12C49746990258B6857792ADDD8E60C1E7B4B057E4631870F0D20175B50F500C6A2650F4B9337D12A6D5192D2A5CF39D9B24159FA51CB71D7DE1E5C84536E8A0609C5CD07CC19E58C5546BC45FDFC7515B1501B41341D58161C12EC2CEC2085F76012BA57C7670;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:35:56 PM : Vacant(318) accessing /Ptw/Create
+Raw Url : /Ptw/Create
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html, */*; q=0.01;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=11E3EDC920DC1EEA4D12C49746990258B6857792ADDD8E60C1E7B4B057E4631870F0D20175B50F500C6A2650F4B9337D12A6D5192D2A5CF39D9B24159FA51CB71D7DE1E5C84536E8A0609C5CD07CC19E58C5546BC45FDFC7515B1501B41341D58161C12EC2CEC2085F76012BA57C7670;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:36:01 PM : Vacant(318) accessing /Ptw/Index
+Raw Url : /Ptw/Index
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html, */*; q=0.01;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=11E3EDC920DC1EEA4D12C49746990258B6857792ADDD8E60C1E7B4B057E4631870F0D20175B50F500C6A2650F4B9337D12A6D5192D2A5CF39D9B24159FA51CB71D7DE1E5C84536E8A0609C5CD07CC19E58C5546BC45FDFC7515B1501B41341D58161C12EC2CEC2085F76012BA57C7670;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:36:01 PM : Vacant(318) accessing /Ptw/Binding
+Raw Url : /Ptw/Binding
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=0;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=11E3EDC920DC1EEA4D12C49746990258B6857792ADDD8E60C1E7B4B057E4631870F0D20175B50F500C6A2650F4B9337D12A6D5192D2A5CF39D9B24159FA51CB71D7DE1E5C84536E8A0609C5CD07CC19E58C5546BC45FDFC7515B1501B41341D58161C12EC2CEC2085F76012BA57C7670;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:37:50 PM : Vacant(318) accessing /ptw/index
+Raw Url : /ptw/index
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html, */*; q=0.01;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=11E3EDC920DC1EEA4D12C49746990258B6857792ADDD8E60C1E7B4B057E4631870F0D20175B50F500C6A2650F4B9337D12A6D5192D2A5CF39D9B24159FA51CB71D7DE1E5C84536E8A0609C5CD07CC19E58C5546BC45FDFC7515B1501B41341D58161C12EC2CEC2085F76012BA57C7670;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:37:50 PM : Vacant(318) accessing /Ptw/Binding
+Raw Url : /Ptw/Binding
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=0;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=11E3EDC920DC1EEA4D12C49746990258B6857792ADDD8E60C1E7B4B057E4631870F0D20175B50F500C6A2650F4B9337D12A6D5192D2A5CF39D9B24159FA51CB71D7DE1E5C84536E8A0609C5CD07CC19E58C5546BC45FDFC7515B1501B41341D58161C12EC2CEC2085F76012BA57C7670;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:37:53 PM : Vacant(318) accessing /home/PartialIndex
+Raw Url : /home/PartialIndex
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html, */*; q=0.01;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=11E3EDC920DC1EEA4D12C49746990258B6857792ADDD8E60C1E7B4B057E4631870F0D20175B50F500C6A2650F4B9337D12A6D5192D2A5CF39D9B24159FA51CB71D7DE1E5C84536E8A0609C5CD07CC19E58C5546BC45FDFC7515B1501B41341D58161C12EC2CEC2085F76012BA57C7670;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:37:53 PM : Vacant(318) accessing /Home/Binding
+Raw Url : /Home/Binding
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=0;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=11E3EDC920DC1EEA4D12C49746990258B6857792ADDD8E60C1E7B4B057E4631870F0D20175B50F500C6A2650F4B9337D12A6D5192D2A5CF39D9B24159FA51CB71D7DE1E5C84536E8A0609C5CD07CC19E58C5546BC45FDFC7515B1501B41341D58161C12EC2CEC2085F76012BA57C7670;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:38:09 PM : Vacant(318) accessing /Hw/Edit
+Raw Url : /Hw/Edit/4
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html, */*; q=0.01;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=11E3EDC920DC1EEA4D12C49746990258B6857792ADDD8E60C1E7B4B057E4631870F0D20175B50F500C6A2650F4B9337D12A6D5192D2A5CF39D9B24159FA51CB71D7DE1E5C84536E8A0609C5CD07CC19E58C5546BC45FDFC7515B1501B41341D58161C12EC2CEC2085F76012BA57C7670;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:40:59 PM : Vacant(318) accessing /Ptw/Edit
+Raw Url : /Ptw/Edit/17
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html, */*; q=0.01;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=11E3EDC920DC1EEA4D12C49746990258B6857792ADDD8E60C1E7B4B057E4631870F0D20175B50F500C6A2650F4B9337D12A6D5192D2A5CF39D9B24159FA51CB71D7DE1E5C84536E8A0609C5CD07CC19E58C5546BC45FDFC7515B1501B41341D58161C12EC2CEC2085F76012BA57C7670;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:41:54 PM : (0) accessing /Ptw/Edit
+Raw Url : /Ptw/Edit/17
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html, */*; q=0.01;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=11E3EDC920DC1EEA4D12C49746990258B6857792ADDD8E60C1E7B4B057E4631870F0D20175B50F500C6A2650F4B9337D12A6D5192D2A5CF39D9B24159FA51CB71D7DE1E5C84536E8A0609C5CD07CC19E58C5546BC45FDFC7515B1501B41341D58161C12EC2CEC2085F76012BA57C7670;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:42:07 PM : (0) accessing /ptw/index
+Raw Url : /ptw/index
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html, */*; q=0.01;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=11E3EDC920DC1EEA4D12C49746990258B6857792ADDD8E60C1E7B4B057E4631870F0D20175B50F500C6A2650F4B9337D12A6D5192D2A5CF39D9B24159FA51CB71D7DE1E5C84536E8A0609C5CD07CC19E58C5546BC45FDFC7515B1501B41341D58161C12EC2CEC2085F76012BA57C7670;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:42:16 PM : (0) accessing /ptw/index
+Raw Url : /ptw/index
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html, */*; q=0.01;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=11E3EDC920DC1EEA4D12C49746990258B6857792ADDD8E60C1E7B4B057E4631870F0D20175B50F500C6A2650F4B9337D12A6D5192D2A5CF39D9B24159FA51CB71D7DE1E5C84536E8A0609C5CD07CC19E58C5546BC45FDFC7515B1501B41341D58161C12EC2CEC2085F76012BA57C7670;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:42:20 PM : (0) accessing /home/PartialIndex
+Raw Url : /home/PartialIndex
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html, */*; q=0.01;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=11E3EDC920DC1EEA4D12C49746990258B6857792ADDD8E60C1E7B4B057E4631870F0D20175B50F500C6A2650F4B9337D12A6D5192D2A5CF39D9B24159FA51CB71D7DE1E5C84536E8A0609C5CD07CC19E58C5546BC45FDFC7515B1501B41341D58161C12EC2CEC2085F76012BA57C7670;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:42:21 PM : (0) accessing /Home/Binding
+Raw Url : /Home/Binding
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=0;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=11E3EDC920DC1EEA4D12C49746990258B6857792ADDD8E60C1E7B4B057E4631870F0D20175B50F500C6A2650F4B9337D12A6D5192D2A5CF39D9B24159FA51CB71D7DE1E5C84536E8A0609C5CD07CC19E58C5546BC45FDFC7515B1501B41341D58161C12EC2CEC2085F76012BA57C7670;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:42:28 PM : (0) accessing /Login/Logout
+Raw Url : /Login/Logout
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=11E3EDC920DC1EEA4D12C49746990258B6857792ADDD8E60C1E7B4B057E4631870F0D20175B50F500C6A2650F4B9337D12A6D5192D2A5CF39D9B24159FA51CB71D7DE1E5C84536E8A0609C5CD07CC19E58C5546BC45FDFC7515B1501B41341D58161C12EC2CEC2085F76012BA57C7670;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 2:42:28 PM : (0) accessing /Login/Index
+Raw Url : /
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 2:42:40 PM : (0) accessing /Login/ValidateLogin
+Raw Url : /Login/ValidateLogin
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=39;Content-Type=application/x-www-form-urlencoded; charset=UTF-8;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530;Host=localhost:7865;Referer=http://localhost:7865/;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : username=admin+data+master&
+===========================================
+
+12/18/2013 2:42:43 PM : Vacant(318) accessing /Home/Index
+Raw Url : /Home
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=5E437D374AF280E463F134BC3E5A2F094C66E9CAC5BC7C14EEFC20C591CB7DAFCC1C24078106650C0637C95502A94F0E5BAD4017F7F9F65D3635A94FEF3BD6F2D8C94C4EA4C2D437DAF4F2AF0A538FACD7BCC7B43FED8F93660AB3B884D81D5B650E477795600951D4B722E6196183F2;Host=localhost:7865;Referer=http://localhost:7865/;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;
+Request Body : 
+===========================================
+
+12/18/2013 2:42:44 PM : Vacant(318) accessing /Home/Binding
+Raw Url : /Home/Binding
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=0;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=5E437D374AF280E463F134BC3E5A2F094C66E9CAC5BC7C14EEFC20C591CB7DAFCC1C24078106650C0637C95502A94F0E5BAD4017F7F9F65D3635A94FEF3BD6F2D8C94C4EA4C2D437DAF4F2AF0A538FACD7BCC7B43FED8F93660AB3B884D81D5B650E477795600951D4B722E6196183F2;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:42:52 PM : Vacant(318) accessing /ptw/index
+Raw Url : /ptw/index
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html, */*; q=0.01;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=5E437D374AF280E463F134BC3E5A2F094C66E9CAC5BC7C14EEFC20C591CB7DAFCC1C24078106650C0637C95502A94F0E5BAD4017F7F9F65D3635A94FEF3BD6F2D8C94C4EA4C2D437DAF4F2AF0A538FACD7BCC7B43FED8F93660AB3B884D81D5B650E477795600951D4B722E6196183F2;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:42:52 PM : Vacant(318) accessing /Ptw/Binding
+Raw Url : /Ptw/Binding
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=0;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=5E437D374AF280E463F134BC3E5A2F094C66E9CAC5BC7C14EEFC20C591CB7DAFCC1C24078106650C0637C95502A94F0E5BAD4017F7F9F65D3635A94FEF3BD6F2D8C94C4EA4C2D437DAF4F2AF0A538FACD7BCC7B43FED8F93660AB3B884D81D5B650E477795600951D4B722E6196183F2;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:42:54 PM : Vacant(318) accessing /Ptw/Edit
+Raw Url : /Ptw/Edit/
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=5;Content-Type=application/x-www-form-urlencoded; charset=UTF-8;Accept=text/html, */*; q=0.01;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=5E437D374AF280E463F134BC3E5A2F094C66E9CAC5BC7C14EEFC20C591CB7DAFCC1C24078106650C0637C95502A94F0E5BAD4017F7F9F65D3635A94FEF3BD6F2D8C94C4EA4C2D437DAF4F2AF0A538FACD7BCC7B43FED8F93660AB3B884D81D5B650E477795600951D4B722E6196183F2;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : id=21
+===========================================
+
+12/18/2013 2:44:54 PM : Vacant(318) accessing /ptw/index
+Raw Url : /ptw/index
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html, */*; q=0.01;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=5E437D374AF280E463F134BC3E5A2F094C66E9CAC5BC7C14EEFC20C591CB7DAFCC1C24078106650C0637C95502A94F0E5BAD4017F7F9F65D3635A94FEF3BD6F2D8C94C4EA4C2D437DAF4F2AF0A538FACD7BCC7B43FED8F93660AB3B884D81D5B650E477795600951D4B722E6196183F2;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:44:55 PM : Vacant(318) accessing /Ptw/Binding
+Raw Url : /Ptw/Binding
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=0;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=5E437D374AF280E463F134BC3E5A2F094C66E9CAC5BC7C14EEFC20C591CB7DAFCC1C24078106650C0637C95502A94F0E5BAD4017F7F9F65D3635A94FEF3BD6F2D8C94C4EA4C2D437DAF4F2AF0A538FACD7BCC7B43FED8F93660AB3B884D81D5B650E477795600951D4B722E6196183F2;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:44:57 PM : Vacant(318) accessing /home/PartialIndex
+Raw Url : /home/PartialIndex
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html, */*; q=0.01;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=5E437D374AF280E463F134BC3E5A2F094C66E9CAC5BC7C14EEFC20C591CB7DAFCC1C24078106650C0637C95502A94F0E5BAD4017F7F9F65D3635A94FEF3BD6F2D8C94C4EA4C2D437DAF4F2AF0A538FACD7BCC7B43FED8F93660AB3B884D81D5B650E477795600951D4B722E6196183F2;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:44:57 PM : Vacant(318) accessing /Home/Binding
+Raw Url : /Home/Binding
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=0;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=5E437D374AF280E463F134BC3E5A2F094C66E9CAC5BC7C14EEFC20C591CB7DAFCC1C24078106650C0637C95502A94F0E5BAD4017F7F9F65D3635A94FEF3BD6F2D8C94C4EA4C2D437DAF4F2AF0A538FACD7BCC7B43FED8F93660AB3B884D81D5B650E477795600951D4B722E6196183F2;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:45:01 PM : Vacant(318) accessing /Hw/Edit
+Raw Url : /Hw/Edit/4
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html, */*; q=0.01;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=5E437D374AF280E463F134BC3E5A2F094C66E9CAC5BC7C14EEFC20C591CB7DAFCC1C24078106650C0637C95502A94F0E5BAD4017F7F9F65D3635A94FEF3BD6F2D8C94C4EA4C2D437DAF4F2AF0A538FACD7BCC7B43FED8F93660AB3B884D81D5B650E477795600951D4B722E6196183F2;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:45:13 PM : Vacant(318) accessing /Ptw/Edit
+Raw Url : /Ptw/Edit/17
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html, */*; q=0.01;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=5E437D374AF280E463F134BC3E5A2F094C66E9CAC5BC7C14EEFC20C591CB7DAFCC1C24078106650C0637C95502A94F0E5BAD4017F7F9F65D3635A94FEF3BD6F2D8C94C4EA4C2D437DAF4F2AF0A538FACD7BCC7B43FED8F93660AB3B884D81D5B650E477795600951D4B722E6196183F2;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:48:41 PM : Vacant(318) accessing /ptw/index
+Raw Url : /ptw/index
+IP Address : ::1
+Request Header : Connection=keep-alive;Accept=text/html, */*; q=0.01;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=5E437D374AF280E463F134BC3E5A2F094C66E9CAC5BC7C14EEFC20C591CB7DAFCC1C24078106650C0637C95502A94F0E5BAD4017F7F9F65D3635A94FEF3BD6F2D8C94C4EA4C2D437DAF4F2AF0A538FACD7BCC7B43FED8F93660AB3B884D81D5B650E477795600951D4B722E6196183F2;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
+12/18/2013 2:48:41 PM : Vacant(318) accessing /Ptw/Binding
+Raw Url : /Ptw/Binding
+IP Address : ::1
+Request Header : Connection=keep-alive;Content-Length=0;Accept=*/*;Accept-Encoding=gzip,deflate,sdch;Accept-Language=en-US,en;q=0.8,id;q=0.6;Cookie=ASP.NET_SessionId=jh2uqioxg1ruvaiudptg45ur; PHPSESSID=61hcqv2oro9ngqgd2nkt4fd530; .ASPXAUTH=5E437D374AF280E463F134BC3E5A2F094C66E9CAC5BC7C14EEFC20C591CB7DAFCC1C24078106650C0637C95502A94F0E5BAD4017F7F9F65D3635A94FEF3BD6F2D8C94C4EA4C2D437DAF4F2AF0A538FACD7BCC7B43FED8F93660AB3B884D81D5B650E477795600951D4B722E6196183F2;Host=localhost:7865;Referer=http://localhost:7865/Home;User-Agent=Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36;Origin=http://localhost:7865;X-Requested-With=XMLHttpRequest;
+Request Body : 
+===========================================
+
