@@ -44,7 +44,7 @@
 <script type="text/x-kendo-template" id="extend-template">
     @if (requestor.roles.Exists(p => p.role == (int)PermitToWork.Models.User.UserEntity.role.ADMINMASTERSHE)) {
     <text><input type="button" class="btn btn-primary" value="Edit" onclick="editPtw(#= id #)"/>
-    #if (status == 4) {#
+    #if (status == 5 && new Date() <= validity_period_end) {#
     <input type="button" class="btn btn-warning" value="Extend" onclick="extendPtw(#= id #)"/>
     #}#</text>
     }
@@ -74,6 +74,7 @@
                             ptw_no: { type: "string", nullable: "true" },
                             ptw_status: { type: "string", nullable: "true", editable: false },
                             status: { type: "number", editable: false },
+                            validity_period_end: { type: "date", editable: false }
                         }
                     }
                 },

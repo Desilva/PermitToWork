@@ -53,7 +53,8 @@
             if (startDate) {
                 startDate = new Date(startDate);
                 startDate.setDate(startDate.getDate());
-                endValidity.min(startDate);
+                startDate.setHours(7);
+                endValidity.value(addDays(startDate, 1));
             }
         }
 
@@ -63,7 +64,6 @@
             if (endDate) {
                 endDate = new Date(endDate);
                 endDate.setDate(endDate.getDate());
-                startValidity.max(endDate);
             }
         }
 
@@ -77,6 +77,7 @@
             if (startDate) {
                 startDate = new Date(startDate);
                 startDate.setDate(startDate.getDate());
+                startDate.setHours(7);
                 extNewValidity1.value(addDays(startDate, 1));
             }
         }
@@ -87,6 +88,7 @@
             if (startDate) {
                 startDate = new Date(startDate);
                 startDate.setDate(startDate.getDate());
+                startDate.setHours(7);
                 extNewValidity2.value(addDays(startDate, 1));
             }
         }
@@ -97,6 +99,7 @@
             if (startDate) {
                 startDate = new Date(startDate);
                 startDate.setDate(startDate.getDate());
+                startDate.setHours(7);
                 extNewValidity3.value(addDays(startDate, 1));
             }
         }
@@ -107,6 +110,7 @@
             if (startDate) {
                 startDate = new Date(startDate);
                 startDate.setDate(startDate.getDate());
+                startDate.setHours(7);
                 extNewValidity4.value(addDays(startDate, 1));
             }
         }
@@ -117,6 +121,7 @@
             if (startDate) {
                 startDate = new Date(startDate);
                 startDate.setDate(startDate.getDate());
+                startDate.setHours(7);
                 extNewValidity5.value(addDays(startDate, 1));
             }
         }
@@ -127,6 +132,7 @@
             if (startDate) {
                 startDate = new Date(startDate);
                 startDate.setDate(startDate.getDate());
+                startDate.setHours(7);
                 extNewValidity6.value(addDays(startDate, 1));
             }
         }
@@ -137,6 +143,7 @@
             if (startDate) {
                 startDate = new Date(startDate);
                 startDate.setDate(startDate.getDate());
+                startDate.setHours(7);
                 extNewValidity7.value(addDays(startDate, 1));
             }
         }
@@ -214,8 +221,8 @@
             parseFormats: ["MM/dd/yyyy"]
         }).data("kendoDateTimePicker");
 
-        startValidity.max(endValidity.value());
-        endValidity.min(startValidity.value());
+        //startValidity.max(endValidity.value());
+        //endValidity.min(startValidity.value());
 
         $('#supervisor_reject').click(function () {
             $('#type_reject').val(1);
@@ -317,15 +324,44 @@
         });
 
         $('#work_leader_acc').click(function () {
+            if ('@(user_hw[0] == true)' == 'True') {
+                var values = {
+                    id: '@Model.id',
+                    user_id: '@requestor.id',
+                    extension: 0,
+                };
+                $('#work_leader_acc').attr('disabled', 'disabled');
+                $('#loading_work_leader_acc').css('display', 'inline-block');
+                $.post("Hw/requestorAcc", values, function (resp) {
+                    if (resp.status == "200" || resp.status == "201") {
+                        save();
+                    } else if (resp.status == "400") {
+                        $('#work_leader_acc').removeAttr('disabled');
+                        $('#loading_work_leader_acc').hide();
+                        alert("Failed to approve Hot Work.");
+                    } else if (resp.status == "404") {
+                        $('#work_leader_acc').removeAttr('disabled');
+                        $('#loading_work_leader_acc').hide();
+                        alert("Failed to approve Hot Work. Are you trying something not your access?");
+                    }
+                });
+            } else {
+                $('#approvalRequestor').modal('show');
+            }
+        });
+
+        $('#approve_requestor_button').click(function () {
             var values = {
                 id: '@Model.id',
                 user_id: '@requestor.id',
                 extension: 0,
+                random_pin: $('#random_pin').val(),
             };
             $('#work_leader_acc').attr('disabled', 'disabled');
             $('#loading_work_leader_acc').css('display', 'inline-block');
             $.post("Hw/requestorAcc", values, function (resp) {
                 if (resp.status == "200" || resp.status == "201") {
+                    $('#approvalRequestor').modal('hide');
                     save();
                 } else if (resp.status == "400") {
                     $('#work_leader_acc').removeAttr('disabled');
@@ -335,8 +371,17 @@
                     $('#work_leader_acc').removeAttr('disabled');
                     $('#loading_work_leader_acc').hide();
                     alert("Failed to approve Hot Work. Are you trying something not your access?");
+                } else if (resp.status == "402") {
+                    $('#work_leader_acc').removeAttr('disabled');
+                    $('#loading_work_leader_acc').hide();
+                    alert("PIN Wrong");
                 }
             });
+        });
+
+        $('#fo_reject_can').click(function () {
+            $('#type_reject').val(6);
+            $('#rejection').modal('show');
         });
 
         $('#supervisor_acc').click(function () {
@@ -606,31 +651,42 @@
                 screening_6_db: screening_6_db,
                 screening_7_db: screening_7_db,
             };
-            values["ext_datetime_" + extend] = $('#ext_datetime_' + extend).val();
-            values["ext_lel_" + extend] = $('#ext_lel_' + extend).val();
-            values["ext_o2_" + extend] = $('#ext_o2_' + extend).val();
-            values["ext_h2s_" + extend] = $('#ext_h2s_' + extend).val();
-            values["ext_co_" + extend] = $('#ext_co_' + extend).val();
-            values["ext_other_" + extend] = $('#ext_other_' + extend).val();
-            values["ext_new_validity_" + extend] = $('#ext_new_validity_' + extend).val();
-            values["ext_remark_" + extend] = $('#ext_remark_' + extend).val();
-            values["ext_gas_tester_" + extend] = $('#ext_gas_tester_' + extend).val();
-            values.id = '@Model.id';
-            values.extension = extend;
-            $('#save').attr('disabled', 'disabled');
-            $('#loading').css('display', 'inline-block');
-            $.post("/Hw/EditExtHw", values, function (resp) {
-                if (resp.status == "200") {
-                    $('#save').removeAttr('disabled');
-                    $('#loading').hide();
-                    alert("Hot Work Permit for extension number " + extend + " save successful!");
-                    $('#content').load('Hw/Edit/@Model.id');
-                } else if (resp.status == "400") {
-                    $('#save').removeAttr('disabled');
-                    $('#loading').hide();
-                    alert("Hot Work Permit for extension number" + extend + " failed to save\nMessage : " + resp.message);
-                }
-            });
+            var notes = $('#notes').val();
+            if (extend == 1 && (screening_1_db.indexOf("2") < 0 || notes.indexOf("1:") >= 0) || extend == 2 && (screening_2_db.indexOf("2") < 0 || notes.indexOf("2:") >= 0) ||
+                extend == 3 && (screening_3_db.indexOf("2") < 0 || notes.indexOf("3:") >= 0) || extend == 4 && (screening_4_db.indexOf("2") < 0 || notes.indexOf("4:") >= 0) ||
+                extend == 5 && (screening_5_db.indexOf("2") < 0 || notes.indexOf("5:") >= 0) || extend == 6 && (screening_6_db.indexOf("2") < 0 || notes.indexOf("6:") >= 0) ||
+                extend == 7 && (screening_7_db.indexOf("2") < 0 || notes.indexOf("7:") >= 0)) {
+                values["ext_datetime_" + extend] = $('#ext_datetime_' + extend).val();
+                values["ext_lel_" + extend] = $('#ext_lel_' + extend).val();
+                values["ext_o2_" + extend] = $('#ext_o2_' + extend).val();
+                values["ext_h2s_" + extend] = $('#ext_h2s_' + extend).val();
+                values["ext_co_" + extend] = $('#ext_co_' + extend).val();
+                values["ext_other_" + extend] = $('#ext_other_' + extend).val();
+                values["ext_new_validity_" + extend] = $('#ext_new_validity_' + extend).val();
+                values["ext_remark_" + extend] = $('#ext_remark_' + extend).val();
+                values["ext_gas_tester_" + extend] = $('#ext_gas_tester_' + extend).val();
+                values.id = '@Model.id';
+                values.extension = extend;
+                values.notes = notes;
+                $('#save').attr('disabled', 'disabled');
+                $('#loading').css('display', 'inline-block');
+                $.post("/Hw/EditExtHw", values, function (resp) {
+                    if (resp.status == "200") {
+                        $('#save').removeAttr('disabled');
+                        $('#loading').hide();
+                        alert("Hot Work Permit for extension number " + extend + " save successful!");
+                        $('#content').load('Hw/Edit/@Model.id');
+                    } else if (resp.status == "400") {
+                        $('#save').removeAttr('disabled');
+                        $('#loading').hide();
+                        alert("Hot Work Permit for extension number" + extend + " failed to save\nMessage : " + resp.message);
+                    }
+                });
+            } else {
+                $('#notes_required').show();
+                $('#notes_required').html('Notes must be added. Start with \'' + extend + ':\'');
+                alert('Screening contains one or more \'no\'. Please add Notes start with \'' + extend + ':\'');
+            }
         } else {
             var screening_spv_db = $('#screening_spv_1').val();
             var screening_fo_db = $('#screening_fo_1').val();
@@ -652,40 +708,54 @@
                 screening_6_db += '#' + $('#screening_6_' + i).val();
                 screening_7_db += '#' + $('#screening_7_' + i).val();
             }
-            var values = {
-                fire_watch: $('#fire_watch').val(),
-                purpose: $('#purpose').val(),
-                validity_period_start: $('#validity_period_start').val(),
-                validity_period_end: $('#validity_period_end').val(),
-                screening_spv_db: screening_spv_db,
-                screening_fo_db: screening_fo_db,
-                screening_1_db: screening_1_db,
-                screening_2_db: screening_2_db,
-                screening_3_db: screening_3_db,
-                screening_4_db: screening_4_db,
-                screening_5_db: screening_5_db,
-                screening_6_db: screening_6_db,
-                screening_7_db: screening_7_db,
-                notes: $('#notes').val(),
-                methane_result: $('#methane_result').val(),
-                o2_result: $('#o2_result').val(),
-                h2s_result: $('#h2s_result').val(),
-                co_result: $('#co_result').val(),
-                other_gas: $('#other_gas').val(),
-                other_result: $('#other_result').val(),
-                acc_gas_tester: $('#acc_gas_tester').val(),
-                acc_fire_watch: $('#acc_fire_watch').val()
 
-            };
+            if ((screening_spv_db.indexOf("2") < 0 || $('#notes').val().indexOf("Spv:") >= 0) &&
+                (screening_fo_db.indexOf("2") < 0 || $('#notes').val().indexOf("FO:") >= 0)) {
+                var values = {
+                    fire_watch: $('#fire_watch').val(),
+                    purpose: $('#purpose').val(),
+                    validity_period_start: $('#validity_period_start').val(),
+                    validity_period_end: $('#validity_period_end').val(),
+                    screening_spv_db: screening_spv_db,
+                    screening_fo_db: screening_fo_db,
+                    screening_1_db: screening_1_db,
+                    screening_2_db: screening_2_db,
+                    screening_3_db: screening_3_db,
+                    screening_4_db: screening_4_db,
+                    screening_5_db: screening_5_db,
+                    screening_6_db: screening_6_db,
+                    screening_7_db: screening_7_db,
+                    notes: $('#notes').val(),
+                    methane_result: $('#methane_result').val(),
+                    o2_result: $('#o2_result').val(),
+                    h2s_result: $('#h2s_result').val(),
+                    co_result: $('#co_result').val(),
+                    other_gas: $('#other_gas').val(),
+                    other_result: $('#other_result').val(),
+                    acc_gas_tester: $('#acc_gas_tester').val(),
+                    acc_fire_watch: $('#acc_fire_watch').val()
 
-            values.id = '@Model.id';
-            $.post("/Hw/EditHw", values, function (resp) {
-                if (resp.status == "200") {
-                    alert("Hot Work Permit save successful!");
-                    $('#content').load('Hw/Edit/@Model.id');
-                } else if (resp.status == "400")
-                    alert("Hot Work Permit failed to save\nMessage : " + resp.message);
-            });
+                };
+
+                values.id = '@Model.id';
+                $.post("/Hw/EditHw", values, function (resp) {
+                    if (resp.status == "200") {
+                        alert("Hot Work Permit save successful!");
+                        $('#content').load('Hw/Edit/@Model.id');
+                    } else if (resp.status == "400")
+                        alert("Hot Work Permit failed to save\nMessage : " + resp.message);
+                });
+            } else {
+                $('#notes_required').show();
+                var a = "";
+                if ('@(Model.status == (int)PermitToWork.Models.Hw.HwEntity.statusHW.SPVSCREENING)' == 'True') {
+                    a = "FO";
+                } else {
+                    a = "Spv";
+                }
+                $('#notes_required').html('Notes must be added. Start with \'' + a + ':\'');
+                alert('Screening contains one or more \'no\'. Please add Notes start with \'' + a + ':\'');
+            }
         }
     }
 
@@ -775,7 +845,15 @@
                 <td>
                     Fire Watch
                 </td>
-                <td colspan="2"><input type="text" class="table-input" id="fire_watch" value="@(Model.fire_watch != null ? Model.fire_watch : "")" @(isCanEdit[0] == true ? "" : "disabled")/></td>
+                <td colspan="2">
+                    <select id="fire_watch" @(isCanEdit[0] == true ? "" : "disabled")>
+                        <option value="">Choose One</option>
+                    @foreach (PermitToWork.Models.User.UserEntity u in listUser.listUser)
+                    {
+                            <option value="@u.id" @(Model.fire_watch == u.id.ToString() ? "selected" : "")>@u.alpha_name</option>   
+                    }
+                    </select>
+                </td>
             </tr>
             <tr>
                 <td>2</td>
@@ -791,14 +869,14 @@
                 <td>4</td>
                 <td>Validity</td>
                 <td>From : <input id="validity_period_start" class="datetimepicker" value="@(Model.validity_period_start != null ? Model.validity_period_start.Value.ToString("MM/dd/yyyy hh:mm tt") : DateTime.Today.ToString("MM/dd/yyyy hh:mm tt"))"  @(isCanEdit[0] == true ? "" : "disabled")/></td>
-                <td>To : <input id="validity_period_end" class="datetimepicker" value="@(Model.validity_period_end != null ? Model.validity_period_end.Value.ToString("MM/dd/yyyy hh:mm tt") : DateTime.Today.ToString("MM/dd/yyyy hh:mm tt"))"  @(isCanEdit[0] == true ? "" : "disabled")/></td>
+                <td>To : <input id="validity_period_end" class="datetimepicker" value="@(Model.validity_period_end != null ? Model.validity_period_end.Value.ToString("MM/dd/yyyy hh:mm tt") : DateTime.Today.AddDays(1).AddHours(7).ToString("MM/dd/yyyy hh:mm tt"))" disabled/></td>
             </tr>
         </tbody>
     </table>
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th class="title-form" colspan="8"><b>2. HAZARD SCREENING</b></th>
+                <th class="title-form" colspan="8"><b>2. PRE-JOB SCREENING</b></th>
                 <th colspan="3">Hira no : @Model.getHiraNo()</th>
             </tr>
         </thead>
@@ -1215,7 +1293,9 @@
             </tr>
             <tr>
                 <td colspan="11"><small>Note *:Spv:Supervisor / Project manager; FO /PH : as agreement betwen facility owner and permit holder; 1 ~ 7 for extension period</small>
-                    <br /><textarea class="table-textarea" id="notes" @((isCanEdit[0] == true && user_hw[1] == true && Model.status < (int)HwEntity.statusHW.GASTESTER)
+                    <br />
+                    <span id="notes_required" style="display:none;color:red"></span>
+                    <textarea class="table-textarea" id="notes" @((isCanEdit[0] == true && user_hw[1] == true && Model.status < (int)HwEntity.statusHW.GASTESTER)
                     || (isCanEdit[0] == true && user_hw[3] == true && Model.status == (int)HwEntity.statusHW.SPVSCREENING)
                     || (isCanEdit[1] == true && user_hw[9] == true && Model.status == (int)HwEntity.statusHW.EXTCREATE1)
                     || (isCanEdit[2] == true && user_hw[11] == true && Model.status == (int)HwEntity.statusHW.EXTCREATE2)
@@ -1258,7 +1338,7 @@
                     }
                     else if (Model.acc_gas_tester != null)
                     {
-                        if (Model.acc_gas_tester_approve == null && user_hw[4] == true && Model.status == (int)HwEntity.statusHW.FOSCREENING)
+                        if (Model.acc_gas_tester_approve == null && (user_hw[4] == true || user_hw[3] == true) && Model.status == (int)HwEntity.statusHW.FOSCREENING)
                         {
                             <button class="btn" type="button" id="gas_tester_acc">Accept</button><br />
                             <span id="loading_gas_tester_acc" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
@@ -1279,7 +1359,7 @@
                 <td>19.5 ~ 23.5 % </td>
                 <td> < 10 ppm</td>
                 <td> < 30 ppm</td>
-                <td><input type="text" class="table-input table-input-120" id="other_gas" value="@Model.other_gas" @(user_hw[4] == true && isCanEdit[0] == true ? "" : "disabled") /></td>
+                <td><input type="text" class="table-input table-input-120" id="other_gas" value="@Model.other_gas" @((user_hw[4] == true || user_hw[3] == true) && isCanEdit[0] == true ? "" : "disabled") /></td>
                 <td rowspan="2"> Worker representative</td>
                 <td rowspan="2"> <span>@(listUser.listUser.Where(p => p.id == Model.work_leader.AsInt()).FirstOrDefault().alpha_name)</span></td>
             </tr>
@@ -1287,11 +1367,11 @@
                 <td>
                     <strong>Measurement Result</strong>
                 </td>
-                <td><input type="text" class="table-input table-input-75" id="methane_result" value="@Model.methane_result" @(user_hw[4] == true && isCanEdit[0] == true ? "" : "disabled") /></td>
-                <td><input type="text" class="table-input table-input-75" id="o2_result" value="@Model.o2_result" @(user_hw[4] == true && isCanEdit[0] == true ? "" : "disabled") /></td>
-                <td><input type="text" class="table-input table-input-75" id="h2s_result" value="@Model.h2s_result" @(user_hw[4] == true && isCanEdit[0] == true ? "" : "disabled") /></td>
-                <td><input type="text" class="table-input table-input-75" id="co_result" value="@Model.co_result" @(user_hw[4] == true && isCanEdit[0] == true ? "" : "disabled") /></td>
-                <td><input type="text" class="table-input table-input-75" id="other_result" value="@Model.other_result" @(user_hw[4] == true && isCanEdit[0] == true ? "" : "disabled") /></td>
+                <td><input type="text" class="table-input table-input-75" id="methane_result" value="@Model.methane_result" @((user_hw[4] == true || user_hw[3] == true) && isCanEdit[0] == true ? "" : "disabled") /></td>
+                <td><input type="text" class="table-input table-input-75" id="o2_result" value="@Model.o2_result" @((user_hw[4] == true || user_hw[3] == true) && isCanEdit[0] == true ? "" : "disabled") /></td>
+                <td><input type="text" class="table-input table-input-75" id="h2s_result" value="@Model.h2s_result" @((user_hw[4] == true || user_hw[3] == true) && isCanEdit[0] == true ? "" : "disabled") /></td>
+                <td><input type="text" class="table-input table-input-75" id="co_result" value="@Model.co_result" @((user_hw[4] == true || user_hw[3] == true) && isCanEdit[0] == true ? "" : "disabled") /></td>
+                <td><input type="text" class="table-input table-input-75" id="other_result" value="@Model.other_result" @((user_hw[4] == true || user_hw[3] == true) && isCanEdit[0] == true ? "" : "disabled") /></td>
             </tr>
         </tbody>
     </table>
@@ -1304,7 +1384,7 @@
         <tbody>
             <tr>
                 <td class="td-centre">
-                    @if (Model.acc_work_leader_approve == null && user_hw[0] == true && Model.status == (int)HwEntity.statusHW.GASTESTER)
+                    @if (Model.acc_work_leader_approve == null && (user_hw[0] == true || user_hw[1] == true) && Model.status == (int)HwEntity.statusHW.GASTESTER)
                     {
                         <button class="btn" type="button" id="work_leader_acc">Accept</button><br />
                         <span id="loading_work_leader_acc" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
@@ -1336,7 +1416,7 @@
                     }
                     <strong><u>Supervisor</u></strong>
                 </td>
-                <td class="td-centre">
+                @*<td class="td-centre">
                     @if (Model.acc_fire_watch_approve == null && Model.status == (int)HwEntity.statusHW.ACCSPV && user_hw[2] == true)
                     {
                         <button class="btn" type="button" id="fire_watch_reject">Reject</button><button class="btn" type="button" id="fire_watch_acc">Accept</button><br />
@@ -1365,9 +1445,9 @@
                         <span>@((Model.acc_fire_watch_approve == null && Model.acc_fire_watch_delegate == requestor.id.ToString()) || (Model.acc_fire_watch_approve != null && Model.acc_fire_watch_approve.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.acc_fire_watch.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                     <strong><u>Fire Watch</u></strong>
-                </td>
+                </td>*@
                 <td class="td-centre">
-                    @if (Model.acc_fo_approve == null && user_hw[3] == true && Model.status == (int)HwEntity.statusHW.ACCFIREWATCH)
+                    @if (Model.acc_fo_approve == null && user_hw[3] == true && Model.status == (int)HwEntity.statusHW.ACCSPV)
                     {
                         <button class="btn" type="button" id="fo_reject">Reject</button><button class="btn" type="button" id="fo_acc">Accept</button><br />
                         <span id="loading_fo_acc" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
@@ -1490,7 +1570,7 @@
                         <span>@((Model.ext_fo_approve_1 == null && Model.ext_fo_delegate_1 == requestor.id.ToString()) || (Model.ext_fo_approve_1 != null && Model.ext_fo_approve_1.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.ext_fo_1.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                 </td>
-                <td><input id="ext_new_validity_1" class="datetimepicker" value="@(Model.ext_new_validity_1 != null ? Model.ext_new_validity_1.Value.ToString("MM/dd/yyyy hh:mm tt") : DateTime.Today.AddDays(1).ToString("MM/dd/yyyy hh:mm tt"))"  disabled/></td>
+                <td><input id="ext_new_validity_1" class="datetimepicker" value="@(Model.ext_new_validity_1 != null ? Model.ext_new_validity_1.Value.ToString("MM/dd/yyyy hh:mm tt") : DateTime.Today.AddDays(1).AddHours(7).ToString("MM/dd/yyyy hh:mm tt"))"  disabled/></td>
                 <td><input type="text" class="table-input table-input-75" id="ext_remark_1" value="@Model.ext_remark_1" @(isCanEdit[1] == true ? "" : "disabled") /></td>
             </tr>
             }
@@ -1560,7 +1640,7 @@
                         <span>@((Model.ext_fo_approve_2 == null && Model.ext_fo_delegate_2 == requestor.id.ToString()) || (Model.ext_fo_approve_2 != null && Model.ext_fo_approve_2.Substring(0, 2) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.ext_fo_2.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                 </td>
-                <td><input id="ext_new_validity_2" class="datetimepicker" value="@(Model.ext_new_validity_2 != null ? Model.ext_new_validity_2.Value.ToString("MM/dd/yyyy hh:mm tt") : DateTime.Today.AddDays(1).ToString("MM/dd/yyyy hh:mm tt"))"  disabled/></td>
+                <td><input id="ext_new_validity_2" class="datetimepicker" value="@(Model.ext_new_validity_2 != null ? Model.ext_new_validity_2.Value.ToString("MM/dd/yyyy hh:mm tt") : DateTime.Today.AddDays(1).AddHours(7).ToString("MM/dd/yyyy hh:mm tt"))"  disabled/></td>
                 <td><input type="text" class="table-input table-input-75" id="ext_remark_2" value="@Model.ext_remark_2" @(isCanEdit[2] == true ? "" : "disabled") /></td>
             </tr>
             }
@@ -1630,7 +1710,7 @@
                         <span>@((Model.ext_fo_approve_3 == null && Model.ext_fo_delegate_3 == requestor.id.ToString()) || (Model.ext_fo_approve_3 != null && Model.ext_fo_approve_3.Substring(0, 3) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.ext_fo_3.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                 </td>
-                <td><input id="ext_new_validity_3" class="datetimepicker" value="@(Model.ext_new_validity_3 != null ? Model.ext_new_validity_3.Value.ToString("MM/dd/yyyy hh:mm tt") : DateTime.Today.AddDays(1).ToString("MM/dd/yyyy hh:mm tt"))"  disabled/></td>
+                <td><input id="ext_new_validity_3" class="datetimepicker" value="@(Model.ext_new_validity_3 != null ? Model.ext_new_validity_3.Value.ToString("MM/dd/yyyy hh:mm tt") : DateTime.Today.AddDays(1).AddHours(7).ToString("MM/dd/yyyy hh:mm tt"))"  disabled/></td>
                 <td><input type="text" class="table-input table-input-75" id="ext_remark_3" value="@Model.ext_remark_3" @(isCanEdit[3] == true ? "" : "disabled") /></td>
             </tr>
             }
@@ -1700,7 +1780,7 @@
                         <span>@((Model.ext_fo_approve_4 == null && Model.ext_fo_delegate_4 == requestor.id.ToString()) || (Model.ext_fo_approve_4 != null && Model.ext_fo_approve_4.Substring(0, 4) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.ext_fo_4.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                 </td>
-                <td><input id="ext_new_validity_4" class="datetimepicker" value="@(Model.ext_new_validity_4 != null ? Model.ext_new_validity_4.Value.ToString("MM/dd/yyyy hh:mm tt") : DateTime.Today.AddDays(1).ToString("MM/dd/yyyy hh:mm tt"))"  disabled/></td>
+                <td><input id="ext_new_validity_4" class="datetimepicker" value="@(Model.ext_new_validity_4 != null ? Model.ext_new_validity_4.Value.ToString("MM/dd/yyyy hh:mm tt") : DateTime.Today.AddDays(1).AddHours(7).ToString("MM/dd/yyyy hh:mm tt"))"  disabled/></td>
                 <td><input type="text" class="table-input table-input-75" id="ext_remark_4" value="@Model.ext_remark_4" @(isCanEdit[4] == true ? "" : "disabled") /></td>
             </tr>
             }
@@ -1770,7 +1850,7 @@
                         <span>@((Model.ext_fo_approve_5 == null && Model.ext_fo_delegate_5 == requestor.id.ToString()) || (Model.ext_fo_approve_5 != null && Model.ext_fo_approve_5.Substring(0, 5) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.ext_fo_5.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                 </td>
-                <td><input id="ext_new_validity_5" class="datetimepicker" value="@(Model.ext_new_validity_5 != null ? Model.ext_new_validity_5.Value.ToString("MM/dd/yyyy hh:mm tt") : DateTime.Today.AddDays(1).ToString("MM/dd/yyyy hh:mm tt"))"  disabled/></td>
+                <td><input id="ext_new_validity_5" class="datetimepicker" value="@(Model.ext_new_validity_5 != null ? Model.ext_new_validity_5.Value.ToString("MM/dd/yyyy hh:mm tt") : DateTime.Today.AddDays(1).AddHours(7).ToString("MM/dd/yyyy hh:mm tt"))"  disabled/></td>
                 <td><input type="text" class="table-input table-input-75" id="ext_remark_5" value="@Model.ext_remark_5" @(isCanEdit[5] == true ? "" : "disabled") /></td>
             </tr>
             }
@@ -1840,7 +1920,7 @@
                         <span>@((Model.ext_fo_approve_6 == null && Model.ext_fo_delegate_6 == requestor.id.ToString()) || (Model.ext_fo_approve_6 != null && Model.ext_fo_approve_6.Substring(0, 6) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.ext_fo_6.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                 </td>
-                <td><input id="ext_new_validity_6" class="datetimepicker" value="@(Model.ext_new_validity_6 != null ? Model.ext_new_validity_6.Value.ToString("MM/dd/yyyy hh:mm tt") : DateTime.Today.AddDays(1).ToString("MM/dd/yyyy hh:mm tt"))"  disabled/></td>
+                <td><input id="ext_new_validity_6" class="datetimepicker" value="@(Model.ext_new_validity_6 != null ? Model.ext_new_validity_6.Value.ToString("MM/dd/yyyy hh:mm tt") : DateTime.Today.AddDays(1).AddHours(7).ToString("MM/dd/yyyy hh:mm tt"))"  disabled/></td>
                 <td><input type="text" class="table-input table-input-75" id="ext_remark_6" value="@Model.ext_remark_6" @(isCanEdit[6] == true ? "" : "disabled") /></td>
             </tr>
             }
@@ -1910,7 +1990,7 @@
                         <span>@((Model.ext_fo_approve_7 == null && Model.ext_fo_delegate_7 == requestor.id.ToString()) || (Model.ext_fo_approve_7 != null && Model.ext_fo_approve_7.Substring(0, 7) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.ext_fo_7.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                 </td>
-                <td><input id="ext_new_validity_7" class="datetimepicker" value="@(Model.ext_new_validity_7 != null ? Model.ext_new_validity_7.Value.ToString("MM/dd/yyyy hh:mm tt") : DateTime.Today.AddDays(1).ToString("MM/dd/yyyy hh:mm tt"))"  disabled/></td>
+                <td><input id="ext_new_validity_7" class="datetimepicker" value="@(Model.ext_new_validity_7 != null ? Model.ext_new_validity_7.Value.ToString("MM/dd/yyyy hh:mm tt") : DateTime.Today.AddDays(1).AddHours(7).ToString("MM/dd/yyyy hh:mm tt"))"  disabled/></td>
                 <td><input type="text" class="table-input table-input-75" id="ext_remark_7" value="@Model.ext_remark_7" @(isCanEdit[7] == true ? "" : "disabled") /></td>
             </tr>
             }
@@ -1962,7 +2042,7 @@
                     }
                     <strong><u>Supervisor</u></strong>
                 </td>
-                <td class="td-centre">
+                @*<td class="td-centre">
                     @if (Model.can_fire_watch_approve == null && Model.status == (int)HwEntity.statusHW.CANSPV && user_hw[6] == true)
                     {
                         <button class="btn" type="button" id="fire_watch_reject_can">Reject</button><button class="btn" type="button" id="fire_watch_can">Accept</button><br />
@@ -1981,9 +2061,9 @@
                         <span>@((Model.can_fire_watch_approve == null && Model.can_fire_watch_delegate == requestor.id.ToString()) || (Model.can_fire_watch_approve != null && Model.can_fire_watch_approve.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.can_fire_watch.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                     <strong><u>Fire Watch</u></strong>
-                </td>
+                </td>*@
                 <td class="td-centre">
-                    @if (Model.can_fo_approve == null && user_hw[7] == true && Model.status == (int)HwEntity.statusHW.CANFIREWATCH)
+                    @if (Model.can_fo_approve == null && user_hw[7] == true && Model.status == (int)HwEntity.statusHW.CANSPV)
                     {
                         <button class="btn" type="button" id="fo_reject_can">Reject</button><button class="btn" type="button" id="fo_can">Accept</button><br />
                         <span id="loading_fo_can" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
@@ -2042,5 +2122,19 @@
     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
     <button class="btn btn-primary" id="reject_button">Reject</button>
     <span id="loading_reject" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span>
+  </div>
+</div>
+
+<div id="approvalRequestor" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="Requestor Approval" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="approvalRequestorLabel">Requestor Approval</h3>
+  </div>
+  <div class="modal-body">
+    <label for="PIN">PIN</label><input type="password" id="random_pin" name="random_pin" />
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="approve_requestor_button">Send</button>
   </div>
 </div>

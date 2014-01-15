@@ -8,6 +8,11 @@
         <EntityContainer Name="star_energy_ptwModelStoreContainer">
           <EntitySet Name="hira_document" EntityType="star_energy_ptwModel.Store.hira_document" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="hot_work" EntityType="star_energy_ptwModel.Store.hot_work" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="mst_assessor" EntityType="star_energy_ptwModel.Store.mst_assessor" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="mst_department" EntityType="star_energy_ptwModel.Store.mst_department" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="mst_facility_owner" EntityType="star_energy_ptwModel.Store.mst_facility_owner" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="mst_ptw_holder_no" EntityType="star_energy_ptwModel.Store.mst_ptw_holder_no" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="mst_section" EntityType="star_energy_ptwModel.Store.mst_section" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="permit_log" EntityType="star_energy_ptwModel.Store.permit_log" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="permit_to_work" EntityType="star_energy_ptwModel.Store.permit_to_work" store:Type="Tables" Schema="dbo" />
           <AssociationSet Name="FK_hira_document_permit_to_work" Association="star_energy_ptwModel.Store.FK_hira_document_permit_to_work">
@@ -17,6 +22,18 @@
           <AssociationSet Name="FK_hot_work_permit_to_work" Association="star_energy_ptwModel.Store.FK_hot_work_permit_to_work">
             <End Role="permit_to_work" EntitySet="permit_to_work" />
             <End Role="hot_work" EntitySet="hot_work" />
+          </AssociationSet>
+          <AssociationSet Name="FK_permit_to_work_mst_department" Association="star_energy_ptwModel.Store.FK_permit_to_work_mst_department">
+            <End Role="mst_department" EntitySet="mst_department" />
+            <End Role="permit_to_work" EntitySet="permit_to_work" />
+          </AssociationSet>
+          <AssociationSet Name="FK_permit_to_work_mst_ptw_holder_no" Association="star_energy_ptwModel.Store.FK_permit_to_work_mst_ptw_holder_no">
+            <End Role="mst_ptw_holder_no" EntitySet="mst_ptw_holder_no" />
+            <End Role="permit_to_work" EntitySet="permit_to_work" />
+          </AssociationSet>
+          <AssociationSet Name="FK_permit_to_work_mst_section" Association="star_energy_ptwModel.Store.FK_permit_to_work_mst_section">
+            <End Role="mst_section" EntitySet="mst_section" />
+            <End Role="permit_to_work" EntitySet="permit_to_work" />
           </AssociationSet>
           <AssociationSet Name="FK_permit_to_work_permit_to_work" Association="star_energy_ptwModel.Store.FK_permit_to_work_permit_to_work">
             <End Role="permit_to_work" EntitySet="permit_to_work" />
@@ -189,6 +206,46 @@
           <Property Name="ext_new_validity_7" Type="datetime" />
           <Property Name="ext_remark_7" Type="text" />
           <Property Name="status" Type="int" />
+          <Property Name="random_pin" Type="varchar" MaxLength="4" />
+        </EntityType>
+        <EntityType Name="mst_assessor">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="id_employee" Type="int" />
+          <Property Name="assessor_code" Type="varchar" MaxLength="10" />
+        </EntityType>
+        <EntityType Name="mst_department">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="department" Type="varchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="mst_facility_owner">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="id_employee" Type="int" />
+          <Property Name="fo_code" Type="varchar" MaxLength="10" />
+        </EntityType>
+        <EntityType Name="mst_ptw_holder_no">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="id_employee" Type="int" />
+          <Property Name="ptw_holder_no" Type="varchar" MaxLength="50" />
+          <Property Name="activated_date_until" Type="date" />
+        </EntityType>
+        <EntityType Name="mst_section">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="section" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="permit_log">
           <Key>
@@ -210,10 +267,10 @@
           <Property Name="ptw_no" Type="varchar" MaxLength="50" />
           <Property Name="proposed_period_start" Type="datetime" />
           <Property Name="proposed_period_end" Type="datetime" />
-          <Property Name="dept_requestor" Type="varchar" MaxLength="255" />
-          <Property Name="section" Type="varchar" MaxLength="50" />
+          <Property Name="dept_requestor" Type="int" />
+          <Property Name="section" Type="int" />
           <Property Name="total_crew" Type="varchar" MaxLength="50" />
-          <Property Name="requestor_ptw_holder_no" Type="varchar" MaxLength="255" />
+          <Property Name="requestor_ptw_holder_no" Type="int" />
           <Property Name="area" Type="varchar" MaxLength="255" />
           <Property Name="work_location" Type="varchar" MaxLength="255" />
           <Property Name="area_code" Type="varchar" MaxLength="50" />
@@ -274,10 +331,10 @@
           <Property Name="acc_supervisor_approve" Type="varchar" MaxLength="255" />
           <Property Name="acc_assessor" Type="varchar" MaxLength="50" />
           <Property Name="acc_assessor_delegate" Type="varchar" MaxLength="50" />
-          <Property Name="acc_assessor_approve" Type="varchar" MaxLength="50" />
+          <Property Name="acc_assessor_approve" Type="varchar" MaxLength="255" />
           <Property Name="acc_fo" Type="varchar" MaxLength="50" />
           <Property Name="acc_fo_delegate" Type="varchar" MaxLength="50" />
-          <Property Name="acc_fo_approve" Type="varchar" MaxLength="50" />
+          <Property Name="acc_fo_approve" Type="varchar" MaxLength="255" />
           <Property Name="can_ptw_requestor" Type="varchar" MaxLength="50" />
           <Property Name="can_ptw_requestor_approve" Type="varchar" MaxLength="255" />
           <Property Name="can_supervisor" Type="varchar" MaxLength="50" />
@@ -285,10 +342,10 @@
           <Property Name="can_supervisor_approve" Type="varchar" MaxLength="255" />
           <Property Name="can_assessor" Type="varchar" MaxLength="50" />
           <Property Name="can_assessor_delegate" Type="varchar" MaxLength="50" />
-          <Property Name="can_assessor_approve" Type="varchar" MaxLength="50" />
+          <Property Name="can_assessor_approve" Type="varchar" MaxLength="255" />
           <Property Name="can_fo" Type="varchar" MaxLength="50" />
           <Property Name="can_fo_delegate" Type="varchar" MaxLength="50" />
-          <Property Name="can_fo_approve" Type="varchar" MaxLength="50" />
+          <Property Name="can_fo_approve" Type="varchar" MaxLength="255" />
           <Property Name="id_parent_ptw" Type="int" />
           <Property Name="status" Type="int" />
         </EntityType>
@@ -320,6 +377,42 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_permit_to_work_mst_department">
+          <End Role="mst_department" Type="star_energy_ptwModel.Store.mst_department" Multiplicity="0..1" />
+          <End Role="permit_to_work" Type="star_energy_ptwModel.Store.permit_to_work" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="mst_department">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="permit_to_work">
+              <PropertyRef Name="dept_requestor" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_permit_to_work_mst_ptw_holder_no">
+          <End Role="mst_ptw_holder_no" Type="star_energy_ptwModel.Store.mst_ptw_holder_no" Multiplicity="0..1" />
+          <End Role="permit_to_work" Type="star_energy_ptwModel.Store.permit_to_work" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="mst_ptw_holder_no">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="permit_to_work">
+              <PropertyRef Name="requestor_ptw_holder_no" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_permit_to_work_mst_section">
+          <End Role="mst_section" Type="star_energy_ptwModel.Store.mst_section" Multiplicity="0..1" />
+          <End Role="permit_to_work" Type="star_energy_ptwModel.Store.permit_to_work" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="mst_section">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="permit_to_work">
+              <PropertyRef Name="section" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_permit_to_work_permit_to_work">
           <End Role="permit_to_work" Type="star_energy_ptwModel.Store.permit_to_work" Multiplicity="0..1" />
           <End Role="permit_to_work1" Type="star_energy_ptwModel.Store.permit_to_work" Multiplicity="*" />
@@ -338,6 +431,12 @@
       <Schema Namespace="star_energy_ptwModel" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="star_energy_ptwEntities" p1:LazyLoadingEnabled="true">
           <EntitySet Name="hira_document" EntityType="star_energy_ptwModel.hira_document" />
+          <EntitySet Name="permit_log" EntityType="star_energy_ptwModel.permit_log" />
+          <EntitySet Name="mst_department" EntityType="star_energy_ptwModel.mst_department" />
+          <EntitySet Name="mst_section" EntityType="star_energy_ptwModel.mst_section" />
+          <EntitySet Name="mst_ptw_holder_no" EntityType="star_energy_ptwModel.mst_ptw_holder_no" />
+          <EntitySet Name="mst_assessor" EntityType="star_energy_ptwModel.mst_assessor" />
+          <EntitySet Name="mst_facility_owner" EntityType="star_energy_ptwModel.mst_facility_owner" />
           <EntitySet Name="hot_work" EntityType="star_energy_ptwModel.hot_work" />
           <EntitySet Name="permit_to_work" EntityType="star_energy_ptwModel.permit_to_work" />
           <AssociationSet Name="FK_hira_document_permit_to_work" Association="star_energy_ptwModel.FK_hira_document_permit_to_work">
@@ -348,11 +447,22 @@
             <End Role="permit_to_work" EntitySet="permit_to_work" />
             <End Role="hot_work" EntitySet="hot_work" />
           </AssociationSet>
+          <AssociationSet Name="FK_permit_to_work_mst_department" Association="star_energy_ptwModel.FK_permit_to_work_mst_department">
+            <End Role="mst_department" EntitySet="mst_department" />
+            <End Role="permit_to_work" EntitySet="permit_to_work" />
+          </AssociationSet>
+          <AssociationSet Name="FK_permit_to_work_mst_ptw_holder_no" Association="star_energy_ptwModel.FK_permit_to_work_mst_ptw_holder_no">
+            <End Role="mst_ptw_holder_no" EntitySet="mst_ptw_holder_no" />
+            <End Role="permit_to_work" EntitySet="permit_to_work" />
+          </AssociationSet>
+          <AssociationSet Name="FK_permit_to_work_mst_section" Association="star_energy_ptwModel.FK_permit_to_work_mst_section">
+            <End Role="mst_section" EntitySet="mst_section" />
+            <End Role="permit_to_work" EntitySet="permit_to_work" />
+          </AssociationSet>
           <AssociationSet Name="FK_permit_to_work_permit_to_work" Association="star_energy_ptwModel.FK_permit_to_work_permit_to_work">
             <End Role="permit_to_work" EntitySet="permit_to_work" />
             <End Role="permit_to_work1" EntitySet="permit_to_work" />
           </AssociationSet>
-          <EntitySet Name="permit_log" EntityType="star_energy_ptwModel.permit_log" />
           </EntityContainer>
         <EntityType Name="hira_document">
           <Key>
@@ -363,6 +473,60 @@
           <Property Type="String" Name="filename" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Type="Int32" Name="id_ptw" />
           <NavigationProperty Name="permit_to_work" Relationship="star_energy_ptwModel.FK_hira_document_permit_to_work" FromRole="hira_document" ToRole="permit_to_work" />
+        </EntityType>
+        <EntityType Name="permit_log">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="id_permit" />
+          <Property Type="DateTime" Name="datetime" Precision="3" />
+          <Property Type="Int32" Name="user_id" />
+          <Property Type="String" Name="status" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="comment" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="permit_type" />
+        </EntityType>
+        <EntityType Name="mst_department">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="department" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="permit_to_work" Relationship="star_energy_ptwModel.FK_permit_to_work_mst_department" FromRole="mst_department" ToRole="permit_to_work" />
+        </EntityType>
+        <EntityType Name="mst_section">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="section" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="permit_to_work" Relationship="star_energy_ptwModel.FK_permit_to_work_mst_section" FromRole="mst_section" ToRole="permit_to_work" />
+        </EntityType>
+        <EntityType Name="mst_ptw_holder_no">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="id_employee" />
+          <Property Type="String" Name="ptw_holder_no" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="activated_date_until" Precision="0" />
+          <NavigationProperty Name="permit_to_work" Relationship="star_energy_ptwModel.FK_permit_to_work_mst_ptw_holder_no" FromRole="mst_ptw_holder_no" ToRole="permit_to_work" />
+        </EntityType>
+        <EntityType Name="mst_assessor">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="id_employee" />
+          <Property Type="String" Name="assessor_code" MaxLength="10" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="mst_facility_owner">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="id_employee" />
+          <Property Type="String" Name="fo_code" MaxLength="10" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="hot_work">
           <Key>
@@ -521,6 +685,7 @@
           <Property Type="DateTime" Name="ext_new_validity_7" Precision="3" />
           <Property Type="String" Name="ext_remark_7" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Type="Int32" Name="status" />
+          <Property Type="String" Name="random_pin" MaxLength="4" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="permit_to_work" Relationship="star_energy_ptwModel.FK_hot_work_permit_to_work" FromRole="hot_work" ToRole="permit_to_work" />
         </EntityType>
         <EntityType Name="permit_to_work">
@@ -531,10 +696,10 @@
           <Property Type="String" Name="ptw_no" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Type="DateTime" Name="proposed_period_start" Precision="3" />
           <Property Type="DateTime" Name="proposed_period_end" Precision="3" />
-          <Property Type="String" Name="dept_requestor" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="section" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="dept_requestor" />
+          <Property Type="Int32" Name="section" />
           <Property Type="String" Name="total_crew" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="requestor_ptw_holder_no" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="requestor_ptw_holder_no" />
           <Property Type="String" Name="area" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="work_location" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="area_code" MaxLength="50" FixedLength="false" Unicode="false" />
@@ -595,10 +760,10 @@
           <Property Type="String" Name="acc_supervisor_approve" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="acc_assessor" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="acc_assessor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="acc_assessor_approve" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_assessor_approve" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="acc_fo" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="acc_fo_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="acc_fo_approve" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_fo_approve" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="can_ptw_requestor" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="can_ptw_requestor_approve" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="can_supervisor" MaxLength="50" FixedLength="false" Unicode="false" />
@@ -606,14 +771,17 @@
           <Property Type="String" Name="can_supervisor_approve" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="can_assessor" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="can_assessor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_assessor_approve" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_assessor_approve" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="can_fo" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="can_fo_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_fo_approve" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_fo_approve" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Type="Int32" Name="id_parent_ptw" />
           <Property Type="Int32" Name="status" />
           <NavigationProperty Name="hira_document" Relationship="star_energy_ptwModel.FK_hira_document_permit_to_work" FromRole="permit_to_work" ToRole="hira_document" />
           <NavigationProperty Name="hot_work" Relationship="star_energy_ptwModel.FK_hot_work_permit_to_work" FromRole="permit_to_work" ToRole="hot_work" />
+          <NavigationProperty Name="mst_department" Relationship="star_energy_ptwModel.FK_permit_to_work_mst_department" FromRole="permit_to_work" ToRole="mst_department" />
+          <NavigationProperty Name="mst_ptw_holder_no" Relationship="star_energy_ptwModel.FK_permit_to_work_mst_ptw_holder_no" FromRole="permit_to_work" ToRole="mst_ptw_holder_no" />
+          <NavigationProperty Name="mst_section" Relationship="star_energy_ptwModel.FK_permit_to_work_mst_section" FromRole="permit_to_work" ToRole="mst_section" />
           <NavigationProperty Name="permit_to_work1" Relationship="star_energy_ptwModel.FK_permit_to_work_permit_to_work" FromRole="permit_to_work" ToRole="permit_to_work1" />
           <NavigationProperty Name="permit_to_work2" Relationship="star_energy_ptwModel.FK_permit_to_work_permit_to_work" FromRole="permit_to_work1" ToRole="permit_to_work" />
         </EntityType>
@@ -645,6 +813,42 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_permit_to_work_mst_department">
+          <End Type="star_energy_ptwModel.mst_department" Role="mst_department" Multiplicity="0..1" />
+          <End Type="star_energy_ptwModel.permit_to_work" Role="permit_to_work" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="mst_department">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="permit_to_work">
+              <PropertyRef Name="dept_requestor" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_permit_to_work_mst_ptw_holder_no">
+          <End Type="star_energy_ptwModel.mst_ptw_holder_no" Role="mst_ptw_holder_no" Multiplicity="0..1" />
+          <End Type="star_energy_ptwModel.permit_to_work" Role="permit_to_work" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="mst_ptw_holder_no">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="permit_to_work">
+              <PropertyRef Name="requestor_ptw_holder_no" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_permit_to_work_mst_section">
+          <End Type="star_energy_ptwModel.mst_section" Role="mst_section" Multiplicity="0..1" />
+          <End Type="star_energy_ptwModel.permit_to_work" Role="permit_to_work" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="mst_section">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="permit_to_work">
+              <PropertyRef Name="section" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_permit_to_work_permit_to_work">
           <End Type="star_energy_ptwModel.permit_to_work" Role="permit_to_work" Multiplicity="0..1" />
           <End Type="star_energy_ptwModel.permit_to_work" Role="permit_to_work1" Multiplicity="*" />
@@ -657,18 +861,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="permit_log">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Int32" Name="id_permit" />
-          <Property Type="DateTime" Name="datetime" Precision="3" />
-          <Property Type="Int32" Name="user_id" />
-          <Property Type="String" Name="status" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="comment" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Type="Int32" Name="permit_type" />
-        </EntityType>
         </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -685,9 +877,67 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="permit_log">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.permit_log">
+              <MappingFragment StoreEntitySet="permit_log">
+                <ScalarProperty Name="permit_type" ColumnName="permit_type" />
+                <ScalarProperty Name="comment" ColumnName="comment" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="user_id" ColumnName="user_id" />
+                <ScalarProperty Name="datetime" ColumnName="datetime" />
+                <ScalarProperty Name="id_permit" ColumnName="id_permit" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="mst_department">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.mst_department">
+              <MappingFragment StoreEntitySet="mst_department">
+                <ScalarProperty Name="department" ColumnName="department" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="mst_section">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.mst_section">
+              <MappingFragment StoreEntitySet="mst_section">
+                <ScalarProperty Name="section" ColumnName="section" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="mst_ptw_holder_no">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.mst_ptw_holder_no">
+              <MappingFragment StoreEntitySet="mst_ptw_holder_no">
+                <ScalarProperty Name="activated_date_until" ColumnName="activated_date_until" />
+                <ScalarProperty Name="ptw_holder_no" ColumnName="ptw_holder_no" />
+                <ScalarProperty Name="id_employee" ColumnName="id_employee" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="mst_assessor">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.mst_assessor">
+              <MappingFragment StoreEntitySet="mst_assessor">
+                <ScalarProperty Name="assessor_code" ColumnName="assessor_code" />
+                <ScalarProperty Name="id_employee" ColumnName="id_employee" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="mst_facility_owner">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.mst_facility_owner">
+              <MappingFragment StoreEntitySet="mst_facility_owner">
+                <ScalarProperty Name="fo_code" ColumnName="fo_code" />
+                <ScalarProperty Name="id_employee" ColumnName="id_employee" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="hot_work">
             <EntityTypeMapping TypeName="star_energy_ptwModel.hot_work">
               <MappingFragment StoreEntitySet="hot_work">
+                <ScalarProperty Name="random_pin" ColumnName="random_pin" />
                 <ScalarProperty Name="status" ColumnName="status" />
                 <ScalarProperty Name="ext_remark_7" ColumnName="ext_remark_7" />
                 <ScalarProperty Name="ext_new_validity_7" ColumnName="ext_new_validity_7" />
@@ -931,19 +1181,6 @@
                 <ScalarProperty Name="proposed_period_end" ColumnName="proposed_period_end" />
                 <ScalarProperty Name="proposed_period_start" ColumnName="proposed_period_start" />
                 <ScalarProperty Name="ptw_no" ColumnName="ptw_no" />
-                <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="permit_log">
-            <EntityTypeMapping TypeName="star_energy_ptwModel.permit_log">
-              <MappingFragment StoreEntitySet="permit_log">
-                <ScalarProperty Name="permit_type" ColumnName="permit_type" />
-                <ScalarProperty Name="comment" ColumnName="comment" />
-                <ScalarProperty Name="status" ColumnName="status" />
-                <ScalarProperty Name="user_id" ColumnName="user_id" />
-                <ScalarProperty Name="datetime" ColumnName="datetime" />
-                <ScalarProperty Name="id_permit" ColumnName="id_permit" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>

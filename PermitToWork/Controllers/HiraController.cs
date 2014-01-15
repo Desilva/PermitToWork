@@ -40,9 +40,6 @@ namespace PermitToWork.Controllers
                     HiraEntity hira = new HiraEntity(dummyPath, fileName, id_ptw);
                     hira.addHiraDocument();
                 }
-                
-                
-
             }
 
             // Return an empty string to signify success

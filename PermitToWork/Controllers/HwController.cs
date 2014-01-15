@@ -2,6 +2,7 @@
 using PermitToWork.Models.Ptw;
 using PermitToWork.Models.User;
 using PermitToWork.Utilities;
+using ReportManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ using System.Web.Mvc;
 namespace PermitToWork.Controllers
 {
     [AuthorizeUser]
-    public class HwController : Controller
+    public class HwController : PdfViewController
     {
         //
         // GET: /Hw/
@@ -87,6 +88,14 @@ namespace PermitToWork.Controllers
             UserEntity user = Session["user"] as UserEntity;
             int ret = hw.editHotWork();
             HwEntity hw_new = new HwEntity(hw.id);
+
+            if (hw_new.status == (int)HwEntity.statusHW.CREATE && hw_new.isWorkLeader(user))
+            {
+                // change status to SPVSCREENING
+                hw_new.sendEmailRandomPIN(fullUrl());
+
+                // send email to facility owner (5)
+            }
 
             if (hw_new.status == (int)HwEntity.statusHW.CREATE && hw_new.isAccSupervisor(user))
             {
@@ -199,7 +208,7 @@ namespace PermitToWork.Controllers
                     {
                         hw.assignFO(user, Int32.Parse(s[0]));
                         PtwEntity ptw = new PtwEntity(hw.id_ptw.Value);
-                        if (ptw.acc_fo != null)
+                        if (ptw.acc_fo == null)
                         {
                             ptw.assignFO(user);
                         }
@@ -240,14 +249,14 @@ namespace PermitToWork.Controllers
         }
 
         [HttpPost]
-        public JsonResult requestorAcc(int user_id, int id, int extension)
+        public JsonResult requestorAcc(int user_id, int id, int extension, string random_pin)
         {
             UserEntity user = new UserEntity(user_id);
             HwEntity hw = new HwEntity(id);
-            string retVal = hw.requestorAcc(user,extension);
-            if (extension == 0)
+            string retVal = hw.requestorAcc(user,extension,random_pin);
+            if (extension == 0 && retVal == "200")
                 hw.sendEmailSupervisor(fullUrl());
-            else
+            else if (extension != 0)
                 hw.sendEmailFOExt(fullUrl(), extension);
             return Json(new { status = retVal });
         }
@@ -257,13 +266,14 @@ namespace PermitToWork.Controllers
         {
             UserEntity user = new UserEntity(user_id);
             HwEntity hw = new HwEntity(id);
-            if (fire_watch_id != null)
-            {
-                UserEntity assesor = new UserEntity(fire_watch_id.Value);
-                hw.assignFireWatch(assesor);
-                hw.sendEmailFireWatch(fullUrl());
-            }
+            //if (fire_watch_id != null)
+            //{
+            //    UserEntity assesor = new UserEntity(fire_watch_id.Value);
+            //    hw.assignFireWatch(assesor);
+            //    hw.sendEmailFOAcc(fullUrl());
+            //}
             string retVal = hw.supervisorAcc(user);
+            hw.sendEmailFOAcc(fullUrl());
             return Json(new { status = retVal });
         }
 
@@ -320,7 +330,7 @@ namespace PermitToWork.Controllers
             HwEntity hw = new HwEntity(id);
             string retVal = hw.fOAccReject(user, extension, comment);
             if (extension == 0)
-                hw.sendEmailFireWatch(fullUrl(),1,comment);
+                hw.sendEmailSupervisor(fullUrl(),1,comment);
             else
                 hw.sendEmailRequestor(fullUrl(), extension,1,comment);
             return Json(new { status = retVal });
@@ -342,7 +352,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.supervisorCan(user);
-            hw.sendEmailFireWatch(fullUrl());
+            hw.sendEmailFOCan(fullUrl());
             return Json(new { status = retVal });
         }
 
@@ -401,7 +411,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.fOCanReject(user, comment);
-            hw.sendEmailFireWatch(fullUrl(), 1, comment);
+            hw.sendEmailSupervisor(fullUrl(), 1, comment);
             return Json(new { status = retVal });
         }
 
@@ -643,5 +653,79 @@ namespace PermitToWork.Controllers
         }
 
         #endregion
+
+        public ActionResult Print(int id)
+        {
+            HwEntity hw = new HwEntity(id);
+
+            List<UserEntity> listUser = new ListUser().listUser;
+            ViewBag.listUser = listUser;
+            int a = Int32.Parse(hw.fire_watch);
+            hw.fire_watch = listUser.Find(p => p.id == a).alpha_name;
+            a = Int32.Parse(hw.work_leader);
+            hw.work_leader = listUser.Find(p => p.id == a).alpha_name;
+            a = Int32.Parse(hw.acc_supervisor);
+            hw.acc_supervisor = listUser.Find(p => p.id == a).alpha_name;
+            a = Int32.Parse(hw.acc_supervisor_delegate != "" && hw.acc_supervisor_delegate != null ? hw.acc_supervisor_delegate : "0");
+            hw.acc_supervisor_delegate = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.acc_fo);
+            hw.acc_fo = listUser.Find(p => p.id == a).alpha_name;
+            a = Int32.Parse(hw.acc_fo_delegate != "" && hw.acc_fo_delegate != null ? hw.acc_fo_delegate : "0");
+            hw.acc_fo_delegate = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.acc_gas_tester);
+            hw.acc_gas_tester = listUser.Find(p => p.id == a).alpha_name;
+            a = Int32.Parse(hw.ext_gas_tester_1 != "" && hw.ext_gas_tester_1 != null ? hw.ext_gas_tester_1 : "0");
+            hw.ext_gas_tester_1 = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.ext_gas_tester_2 != "" && hw.ext_gas_tester_2 != null ? hw.ext_gas_tester_2 : "0");
+            hw.ext_gas_tester_2 = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.ext_gas_tester_3 != "" && hw.ext_gas_tester_3 != null ? hw.ext_gas_tester_3 : "0");
+            hw.ext_gas_tester_3 = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.ext_gas_tester_4 != "" && hw.ext_gas_tester_4 != null ? hw.ext_gas_tester_4 : "0");
+            hw.ext_gas_tester_4 = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.ext_gas_tester_5 != "" && hw.ext_gas_tester_5 != null ? hw.ext_gas_tester_5 : "0");
+            hw.ext_gas_tester_5 = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.ext_gas_tester_6 != "" && hw.ext_gas_tester_6 != null ? hw.ext_gas_tester_6 : "0");
+            hw.ext_gas_tester_6 = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.ext_gas_tester_7 != "" && hw.ext_gas_tester_7 != null ? hw.ext_gas_tester_7 : "0");
+            hw.ext_gas_tester_7 = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.ext_fo_1 != "" && hw.ext_fo_1 != null ? hw.ext_fo_1 : "0");
+            hw.ext_fo_1 = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.ext_fo_delegate_1 != "" && hw.ext_fo_delegate_1 != null ? hw.ext_fo_delegate_1 : "0");
+            hw.ext_fo_delegate_1 = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.ext_fo_2 != "" && hw.ext_fo_2 != null ? hw.ext_fo_2 : "0");
+            hw.ext_fo_2 = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.ext_fo_delegate_2 != "" && hw.ext_fo_delegate_2 != null ? hw.ext_fo_delegate_2 : "0");
+            hw.ext_fo_delegate_2 = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.ext_fo_3 != "" && hw.ext_fo_3 != null ? hw.ext_fo_3 : "0");
+            hw.ext_fo_3 = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.ext_fo_delegate_3 != "" && hw.ext_fo_delegate_3 != null ? hw.ext_fo_delegate_3 : "0");
+            hw.ext_fo_delegate_3 = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.ext_fo_4 != "" && hw.ext_fo_4 != null ? hw.ext_fo_4 : "0");
+            hw.ext_fo_4 = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.ext_fo_delegate_4 != "" && hw.ext_fo_delegate_4 != null ? hw.ext_fo_delegate_4 : "0");
+            hw.ext_fo_delegate_4 = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.ext_fo_5 != "" && hw.ext_fo_5 != null ? hw.ext_fo_5 : "0");
+            hw.ext_fo_5 = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.ext_fo_delegate_5 != "" && hw.ext_fo_delegate_5 != null ? hw.ext_fo_delegate_5 : "0");
+            hw.ext_fo_delegate_5 = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.ext_fo_6 != "" && hw.ext_fo_6 != null ? hw.ext_fo_6 : "0");
+            hw.ext_fo_6 = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.ext_fo_delegate_6 != "" && hw.ext_fo_delegate_6 != null ? hw.ext_fo_delegate_6 : "0");
+            hw.ext_fo_delegate_6 = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.ext_fo_7 != "" && hw.ext_fo_7 != null ? hw.ext_fo_7 : "0");
+            hw.ext_fo_7 = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.ext_fo_delegate_7 != "" && hw.ext_fo_delegate_7 != null ? hw.ext_fo_delegate_7 : "0");
+            hw.ext_fo_delegate_7 = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.can_supervisor != "" && hw.can_supervisor != null ? hw.can_supervisor : "0");
+            hw.can_supervisor = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.can_supervisor_delegate != "" && hw.can_supervisor_delegate != null ? hw.can_supervisor_delegate : "0");
+            hw.can_supervisor_delegate = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.can_fo != "" && hw.can_fo != null ? hw.can_fo : "0");
+            hw.can_fo = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(hw.can_fo_delegate != "" && hw.can_fo_delegate != null ? hw.can_fo_delegate : "0");
+            hw.can_fo_delegate = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+
+            return this.ViewPdf("", "Print", hw);
+        }
     }
 }

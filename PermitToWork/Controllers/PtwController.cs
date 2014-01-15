@@ -1,9 +1,11 @@
 ﻿using PermitToWork.Models;
 using PermitToWork.Models.Hira;
 using PermitToWork.Models.Hw;
+using PermitToWork.Models.Master;
 using PermitToWork.Models.Ptw;
 using PermitToWork.Models.User;
 using PermitToWork.Utilities;
+using ReportManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +15,7 @@ using System.Web.Mvc;
 namespace PermitToWork.Controllers
 {
     [AuthorizeUser]
-    public class PtwController : Controller
+    public class PtwController : PdfViewController
     {
         //
         // GET: /Ptw/
@@ -27,7 +29,49 @@ namespace PermitToWork.Controllers
             ViewBag.position = "Create";
             ViewBag.listUser = new ListUser();
             ListPtw listPtw = new ListPtw();
-            entity.generatePtwNumber(listPtw.getLastPtw().ptw_no);
+            ViewBag.listFO = new MstFOEntity().getListMstFO();
+            ViewBag.listAssessor = new MstAssessorEntity().getListAssessor();
+
+            var listDepartment = new List<SelectListItem>();
+            var listDept = new MstDepartmentEntity().getListMstDepartment();
+            foreach (MstDepartmentEntity dept in listDept) {
+                listDepartment.Add(new SelectListItem
+                {
+                    Text = dept.department,
+                    Value = dept.id.ToString(),
+                });
+            }
+            ViewBag.listDepartment = listDepartment;
+
+            var listSection = new List<SelectListItem>();
+            var listSect = new MstSectionEntity().getListMstSection();
+            foreach (MstSectionEntity sect in listSect)
+            {
+                listSection.Add(new SelectListItem
+                {
+                    Text = sect.section,
+                    Value = sect.id.ToString(),
+                });
+            }
+            ViewBag.listSection = listSection;
+
+            var listTotalCrew = new List<SelectListItem>();
+            for (int i = 1; i <= 100; i++)
+            {
+                listTotalCrew.Add(new SelectListItem
+                {
+                    Text = i.ToString(),
+                    Value = i.ToString(),
+                });
+            }
+            ViewBag.listTotalCrew = listTotalCrew;
+
+            UserEntity user = Session["user"] as UserEntity;
+
+            entity.ptw_holder_no = new MstPtwHolderNoEntity(user.id, 1);
+            entity.requestor_ptw_holder_no = entity.ptw_holder_no.id;
+
+            entity.generatePtwNumber(listPtw.getLastPtw() != null ? listPtw.getLastPtw().ptw_no : "");
             return PartialView(entity);
         }
 
@@ -54,6 +98,45 @@ namespace PermitToWork.Controllers
             ViewBag.isClearenceClose = entity.isAllClearanceClose();
             ViewBag.position = "Edit";
             ViewBag.listUser = new ListUser();
+            ViewBag.listFO = new MstFOEntity().getListMstFO();
+            ViewBag.listAssessor = new MstAssessorEntity().getListAssessor();
+
+            var listDepartment = new List<SelectListItem>();
+            var listDept = new MstDepartmentEntity().getListMstDepartment();
+            foreach (MstDepartmentEntity dept in listDept)
+            {
+                listDepartment.Add(new SelectListItem
+                {
+                    Text = dept.department,
+                    Value = dept.id.ToString(),
+                    Selected = entity.dept_requestor == dept.id ? true : false
+                });
+            }
+            ViewBag.listDepartment = listDepartment;
+
+            var listSection = new List<SelectListItem>();
+            var listSect = new MstSectionEntity().getListMstSection();
+            foreach (MstSectionEntity sect in listSect)
+            {
+                listSection.Add(new SelectListItem
+                {
+                    Text = sect.section,
+                    Value = sect.id.ToString(),
+                    Selected = entity.section == sect.id ? true : false
+                });
+            }
+            ViewBag.listSection = listSection;
+            var listTotalCrew = new List<SelectListItem>();
+            for (int i = 1; i <= 100; i++)
+            {
+                listTotalCrew.Add(new SelectListItem
+                {
+                    Text = i.ToString(),
+                    Value = i.ToString(),
+                    Selected = entity.total_crew == i.ToString() ? true : false
+                });
+            }
+            ViewBag.listTotalCrew = listTotalCrew;
             return PartialView("create", entity);
         }
 
@@ -68,20 +151,46 @@ namespace PermitToWork.Controllers
         }
 
         [HttpPost]
+        public JsonResult GenerateNewNumber(int user_id)
+        {
+            List<MstFOEntity> listFo = new MstFOEntity().getListMstFO();
+            MstFOEntity fo = listFo.Find(p => p.id_employee == user_id);
+            ListPtw listPtw = new ListPtw();
+            
+            PtwEntity entity = new PtwEntity();
+            entity.generatePtwNumber(listPtw.getLastPtw() != null ? listPtw.getLastPtw().ptw_no : "", fo == null ? null : fo.fo_code);
+
+            return Json(new { status = "200", message = "", ptw_number = entity.ptw_no });
+        }
+
+        [HttpPost]
         public JsonResult Add(PtwEntity ptw, int hw_need, IList<string> hiras)
         {
+            List<MstFOEntity> listFo = new MstFOEntity().getListMstFO();
+            int fo_id = Int32.Parse(ptw.acc_fo);
+            MstFOEntity fo = listFo.Find(p => p.id_employee == fo_id);
             ListPtw listPtw = new ListPtw();
-            ptw.generatePtwNumber(listPtw.getLastPtw().ptw_no);
+            ptw.generatePtwNumber(listPtw.getLastPtw() != null ? listPtw.getLastPtw().ptw_no : "", fo == null ? null : fo.fo_code);
             int ret = ptw.addPtw();
 
+            if (ptw.acc_fo != null)
+            {
+                UserEntity fos = new UserEntity(Int32.Parse(ptw.acc_fo));
+                ptw.assignFO(fos);
+            }
+
             ListHira listHira = new ListHira();
-            listHira.changeIdPtw(hiras.ToList(),ptw.id);
+            if (hiras != null)
+            {
+                listHira.changeIdPtw(hiras.ToList(), ptw.id);
+            }
 
             if (hw_need == 1)
             {
                 HwEntity hw = addHotWork(ptw.id);
                 ptw.setHw(hw.id, (int)PtwEntity.statusClearance.NOTCOMPLETE);
             }
+
 
 
             ListUser listUser = new ListUser();
@@ -109,6 +218,8 @@ namespace PermitToWork.Controllers
             {
                 UserEntity assesor = new UserEntity(Int32.Parse(ptw.acc_assessor));
                 ptw.assignAssessor(assesor);
+                ptw.setStatus((int)PtwEntity.statusPtw.CHOOSEASS);
+                ptw.sendEmailAssessor(fullUrl(), 0);
             }
             int ret = ptw.editPtw();
             PtwEntity ptw_new = new PtwEntity(ptw.id);
@@ -133,6 +244,44 @@ namespace PermitToWork.Controllers
             }
         }
 
+        public ActionResult Print(int id)
+        {
+            PtwEntity ptw = new PtwEntity(id);
+
+            List<UserEntity> listUser = new ListUser().listUser;
+
+            int a = Int32.Parse(ptw.acc_ptw_requestor);
+            ptw.acc_ptw_requestor = listUser.Find(p => p.id == a).alpha_name;
+            a = Int32.Parse(ptw.acc_supervisor);
+            ptw.acc_supervisor = listUser.Find(p => p.id == a).alpha_name;
+            a = Int32.Parse(ptw.acc_supervisor_delegate != "" && ptw.acc_supervisor_delegate != null ? ptw.acc_supervisor_delegate : "0");
+            ptw.acc_supervisor_delegate = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(ptw.acc_assessor);
+            ptw.acc_assessor = listUser.Find(p => p.id == a).alpha_name;
+            a = Int32.Parse(ptw.acc_assessor_delegate != "" && ptw.acc_assessor_delegate != null ? ptw.acc_assessor_delegate : "0");
+            ptw.acc_assessor_delegate = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(ptw.acc_fo);
+            ptw.acc_fo = listUser.Find(p => p.id == a).alpha_name;
+            a = Int32.Parse(ptw.acc_fo_delegate != "" && ptw.acc_fo_delegate != null ? ptw.acc_fo_delegate : "0");
+            ptw.acc_fo_delegate = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(ptw.can_ptw_requestor);
+            ptw.can_ptw_requestor = listUser.Find(p => p.id == a).alpha_name;
+            a = Int32.Parse(ptw.can_supervisor);
+            ptw.can_supervisor = listUser.Find(p => p.id == a).alpha_name;
+            a = Int32.Parse(ptw.can_supervisor_delegate != "" && ptw.can_supervisor_delegate != null ? ptw.can_supervisor_delegate : "0");
+            ptw.can_supervisor_delegate = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(ptw.can_assessor);
+            ptw.can_assessor = listUser.Find(p => p.id == a).alpha_name;
+            a = Int32.Parse(ptw.can_assessor_delegate != "" && ptw.can_assessor_delegate != null ? ptw.can_assessor_delegate : "0");
+            ptw.can_assessor_delegate = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+            a = Int32.Parse(ptw.can_fo);
+            ptw.can_fo = listUser.Find(p => p.id == a).alpha_name;
+            a = Int32.Parse(ptw.can_fo_delegate != "" && ptw.can_fo_delegate != null ? ptw.can_fo_delegate : "0");
+            ptw.can_fo_delegate = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
+
+            return this.ViewPdf("", "Print", ptw);
+        }
+
         #region approve and reject PTW and Cancellation PTW
 
         [HttpPost]
@@ -150,13 +299,21 @@ namespace PermitToWork.Controllers
         {
             UserEntity user = new UserEntity(user_id);
             PtwEntity ptw = new PtwEntity(id);
-            if (assessor_id != null)
+            //if (assessor_id != null)
+            //{
+            //    UserEntity assesor = new UserEntity(assessor_id.Value);
+            //    ptw.assignAssessor(assesor);
+                
+            //}
+            string retVal = ptw.supervisorAccApproval(user);
+            if (ptw.acc_assessor != null)
             {
-                UserEntity assesor = new UserEntity(assessor_id.Value);
-                ptw.assignAssessor(assesor);
                 ptw.sendEmailAssessor(fullUrl(), 0);
             }
-            string retVal = ptw.supervisorAccApproval(user);
+            else
+            {
+                ptw.sendEmailFo(fullUrl(), 0);
+            }
             return Json(new { status = retVal });
         }
 
@@ -171,21 +328,21 @@ namespace PermitToWork.Controllers
         }
 
         [HttpPost]
-        public JsonResult assessorAcc(int id, int user_id, int? fo_id)
+        public JsonResult assessorAcc(int id, int user_id, string comment)
         {
             UserEntity user = new UserEntity(user_id);
             PtwEntity ptw = new PtwEntity(id);
-            if (fo_id != null)
-            {
-                UserEntity fo = new UserEntity(fo_id.Value);
-                ptw.assignFO(fo);
-            }
+            //if (fo_id != null)
+            //{
+            //    UserEntity fo = new UserEntity(fo_id.Value);
+            //    ptw.assignFO(fo);
+            //}
             //ptw.acc_assessor = fo_id.ToString();
             //ptw.can_assessor = fo_id.ToString();
             //ptw.acc_assessor_delegate = fo.employee_delegate.ToString();
             //ptw.can_assessor_delegate = fo.employee_delegate.ToString();
             string retVal = ptw.assessorAccApproval(user);
-            ptw.sendEmailFo(fullUrl(), 0);
+            ptw.sendEmailFo(fullUrl(), 0, 0, comment);
             return Json(new { status = retVal });
         }
 
@@ -215,7 +372,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id);
             PtwEntity ptw = new PtwEntity(id);
             string retVal = ptw.fOAccReject(user, comment);
-            ptw.sendEmailAssessor(fullUrl(), 0, 1, comment);
+            ptw.sendEmailSupervisor(fullUrl(), 0, 1, comment);
             return Json(new { status = retVal });
         }
 
@@ -259,7 +416,7 @@ namespace PermitToWork.Controllers
         }
 
         [HttpPost]
-        public JsonResult assessorCan(int id, int user_id)
+        public JsonResult assessorCan(int id, int user_id, string comment)
         {
             UserEntity user = new UserEntity(user_id);
             PtwEntity ptw = new PtwEntity(id);
@@ -268,7 +425,7 @@ namespace PermitToWork.Controllers
             //ptw.acc_assessor_delegate = fo.employee_delegate.ToString();
             //ptw.can_assessor_delegate = fo.employee_delegate.ToString();
             string retVal = ptw.assessorCanApproval(user);
-            ptw.sendEmailFo(fullUrl(), 1);
+            ptw.sendEmailFo(fullUrl(), 1, 0, comment);
             return Json(new { status = retVal });
         }
 
@@ -303,7 +460,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id);
             PtwEntity ptw = new PtwEntity(id);
             string retVal = ptw.fOCanReject(user, comment);
-            ptw.sendEmailAssessor(fullUrl(), 1, 1, comment);
+            ptw.sendEmailSupervisor(fullUrl(), 1, 1, comment);
             return Json(new { status = retVal });
         }
 
@@ -424,7 +581,7 @@ namespace PermitToWork.Controllers
             PtwEntity ptw = new PtwEntity(id);
             HwEntity hw = new HwEntity(ptw.id, ptw.acc_ptw_requestor, ptw.work_description);
             HwEntity hwLast = new HwEntity("0");
-            hw.generateHwNumber(hwLast.hw_no);
+            hw.generateHwNumber(hwLast.hw_no,ptw.ptw_no);
             hw.addHotWork();
 
             return hw;

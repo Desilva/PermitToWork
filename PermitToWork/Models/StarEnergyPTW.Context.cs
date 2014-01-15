@@ -26,8 +26,13 @@ namespace PermitToWork.Models
         }
     
         public DbSet<hira_document> hira_document { get; set; }
+        public DbSet<permit_log> permit_log { get; set; }
+        public DbSet<mst_department> mst_department { get; set; }
+        public DbSet<mst_section> mst_section { get; set; }
+        public DbSet<mst_ptw_holder_no> mst_ptw_holder_no { get; set; }
+        public DbSet<mst_assessor> mst_assessor { get; set; }
+        public DbSet<mst_facility_owner> mst_facility_owner { get; set; }
         public DbSet<hot_work> hot_work { get; set; }
         public DbSet<permit_to_work> permit_to_work { get; set; }
-        public DbSet<permit_log> permit_log { get; set; }
     }
 }

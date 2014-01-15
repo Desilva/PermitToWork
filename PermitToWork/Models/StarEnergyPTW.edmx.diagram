@@ -4,14 +4,22 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="4fe3ff4ca7ec49498721a3fc5164e108" Name="Diagram1" ZoomLevel="20">
-        <EntityTypeShape EntityType="star_energy_ptwModel.hira_document" Width="1.5" PointX="12" PointY="5.625" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.hot_work" Width="1.5" PointX="4.4574415313347435" PointY="8.85962942655181" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.permit_to_work" Width="1.5" PointX="7.875" PointY="8.875" />
+      <Diagram DiagramId="4fe3ff4ca7ec49498721a3fc5164e108" Name="Diagram1" ZoomLevel="52">
+        <EntityTypeShape EntityType="star_energy_ptwModel.hira_document" Width="1.5" PointX="7.125" PointY="5.5" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.permit_log" Width="1.5" PointX="1.125" PointY="5.5" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_department" Width="1.5" PointX="3.125" PointY="5.5" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_section" Width="1.5" PointX="9.25" PointY="5.5" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_ptw_holder_no" Width="1.5" PointX="5.125" PointY="5.5" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_assessor" Width="1.5" PointX="11.25" PointY="5.5" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_facility_owner" Width="1.5" PointX="13.25" PointY="5.5" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.hot_work" Width="1.5" PointX="15.375" PointY="8.875" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.permit_to_work" Width="1.5" PointX="6.125" PointY="8.875" />
         <AssociationConnector Association="star_energy_ptwModel.FK_hira_document_permit_to_work" />
         <AssociationConnector Association="star_energy_ptwModel.FK_hot_work_permit_to_work" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_mst_department" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_mst_ptw_holder_no" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_mst_section" />
         <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_permit_to_work" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.permit_log" Width="1.5" PointX="11.875" PointY="8.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

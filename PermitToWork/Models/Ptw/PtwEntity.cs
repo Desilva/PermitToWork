@@ -1,10 +1,13 @@
 ﻿using PermitToWork.Models.Hira;
 using PermitToWork.Models.Hw;
+using PermitToWork.Models.Master;
 using PermitToWork.Models.User;
 using PermitToWork.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Entity.Validation;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -18,10 +21,10 @@ namespace PermitToWork.Models.Ptw
         public string ptw_no { get; set; }
         public Nullable<System.DateTime> proposed_period_start { get; set; }
         public Nullable<System.DateTime> proposed_period_end { get; set; }
-        public string dept_requestor { get; set; }
-        public string section { get; set; }
+        public Nullable<int> dept_requestor { get; set; }
+        public Nullable<int> section { get; set; }
         public string total_crew { get; set; }
-        public string requestor_ptw_holder_no { get; set; }
+        public Nullable<int> requestor_ptw_holder_no { get; set; }
         public string area { get; set; }
         public string work_location { get; set; }
         public string area_code { get; set; }
@@ -108,6 +111,10 @@ namespace PermitToWork.Models.Ptw
         public string hw_no { get; set; }
         public bool has_clearance { get; set; }
 
+        public MstDepartmentEntity department { get; set; }
+        public MstSectionEntity section1 { get; set; }
+        public MstPtwHolderNoEntity ptw_holder_no { get; set; }
+
         public HwEntity hw { get; set; }
         public string ptw_status { get; set; }
 
@@ -116,6 +123,7 @@ namespace PermitToWork.Models.Ptw
             CREATE,
             CLEARANCECOMPLETE,
             ACCSPV,
+            CHOOSEASS,
             ACCASS,
             ACCFO,
             CANCEL,
@@ -248,6 +256,9 @@ namespace PermitToWork.Models.Ptw
             this.status = ptw.status;
             this.has_extend = ptw.permit_to_work1.Count > 0;
             this.extend_ptw_no = ptw.permit_to_work2 != null ? ptw.permit_to_work2.ptw_no : "";
+            this.ptw_holder_no = new MstPtwHolderNoEntity(ptw.mst_ptw_holder_no);
+            this.section1 = new MstSectionEntity(ptw.mst_section);
+            this.department = new MstDepartmentEntity(ptw.mst_department);
 
             if (this.hw_id != null)
             {
@@ -379,7 +390,9 @@ namespace PermitToWork.Models.Ptw
 
         public int extendPtw(PtwEntity ptw)
         {
-            this.generatePtwNumber(ptw.ptw_no, true);
+            string ptw_no = ptw.ptw_no;
+            var ptw_nos = ptw_no.Split('-');
+            this.generatePtwNumber(ptw.ptw_no, ptw_nos[0], true);
             this.proposed_period_start = ptw.validity_period_end.Value.AddDays(1);
             this.proposed_period_end = ptw.validity_period_end.Value.AddDays(8);
             this.dept_requestor = ptw.dept_requestor;
@@ -395,15 +408,15 @@ namespace PermitToWork.Models.Ptw
             this.acc_ptw_requestor = ptw.acc_ptw_requestor;
             this.acc_supervisor = ptw.acc_supervisor;
             this.acc_supervisor_delegate = ptw.acc_supervisor_delegate;
-            this.acc_assessor = ptw.acc_assessor;
-            this.acc_assessor_delegate = ptw.acc_assessor_delegate;
+            //this.acc_assessor = ptw.acc_assessor;
+            //this.acc_assessor_delegate = ptw.acc_assessor_delegate;
             this.acc_fo = ptw.acc_fo;
             this.acc_fo_delegate = ptw.acc_fo_delegate;
             this.can_ptw_requestor = ptw.can_ptw_requestor;
             this.can_supervisor = ptw.can_supervisor;
             this.can_supervisor_delegate = ptw.can_supervisor_delegate;
-            this.can_assessor = ptw.can_assessor;
-            this.can_assessor_delegate = ptw.can_assessor_delegate;
+            //this.can_assessor = ptw.can_assessor;
+            //this.can_assessor_delegate = ptw.can_assessor_delegate;
             this.can_fo = ptw.can_fo;
             this.can_fo_delegate = ptw.can_fo_delegate;
             this.id_parent_ptw = ptw.id;
@@ -448,6 +461,8 @@ namespace PermitToWork.Models.Ptw
             } else if (this.status == (int)statusPtw.CLEARANCECOMPLETE) {
                 retVal = "Waiting Approval by Supervisor";
             } else if (this.status == (int)statusPtw.ACCSPV) {
+                retVal = "Waiting for choosing Assessor by Facility Owner";
+            } else if (this.status == (int)statusPtw.CHOOSEASS) {
                 retVal = "Waiting Approval by Assessor";
             } else if (this.status == (int)statusPtw.ACCASS) {
                 retVal = "Waiting Approval by Facility Owner";
@@ -468,65 +483,74 @@ namespace PermitToWork.Models.Ptw
             return retVal;            
         }
 
+        public int setStatus(int status)
+        {
+            permit_to_work ptw = this.db.permit_to_work.Find(this.id);
+
+            ptw.status = status;
+            this.db.Entry(ptw).State = EntityState.Modified;
+            return this.db.SaveChanges();
+        }
+
         #region generate ptw_number
 
-        public void generatePtwNumber(string lastNumber, bool isExtend = false)
+        public void generatePtwNumber(string lastNumber, string fo_code = null, bool isExtend = false)
         {
-            string result = "PTW-A-B-C-";
+            string result = (fo_code == null ? "XXX" : fo_code) + "-";
             int thisYear = DateTime.Today.Year;
             int lastNo = 0;
             int extension = 0;
             if (lastNumber != null)
             {
                 string[] lastPtwNumberPart = lastNumber.Split('-');
-                if (lastPtwNumberPart.Length == 6)
+                if (lastPtwNumberPart.Length == 2)
                 {
-                    lastNo = Int32.Parse(lastPtwNumberPart[5]) - 1;
-                    if (Int32.Parse(lastPtwNumberPart[4]) == thisYear)
+                    lastNo = Int32.Parse(lastPtwNumberPart[1]) - 1;
+                    //if (Int32.Parse(lastPtwNumberPart[4]) == thisYear)
+                    //{
+                    if (isExtend == false)
                     {
-                        if (isExtend == false)
-                        {
-                            lastNo = Int32.Parse(lastPtwNumberPart[5]);
-                        }
+                        lastNo = Int32.Parse(lastPtwNumberPart[1]);
                     }
-                    else
-                    {
-                        if (isExtend == false)
-                        {
-                            lastNo = 0;
-                        }
-                    }
+                    //}
+                    //else
+                    //{
+                    //    if (isExtend == false)
+                    //    {
+                    //        lastNo = 0;
+                    //    }
+                    //}
                 }
-                else if (lastPtwNumberPart.Length == 7)
+                else if (lastPtwNumberPart.Length == 3)
                 {
-                    if (Int32.Parse(lastPtwNumberPart[4]) == thisYear)
-                    {
+                    //if (Int32.Parse(lastPtwNumberPart[4]) == thisYear)
+                    //{
                         if (isExtend == true)
                         {
-                            extension = lastPtwNumberPart[6][0] - 65 + 1;
-                            lastNo = Int32.Parse(lastPtwNumberPart[5]) - 1;
+                            extension = lastPtwNumberPart[2][0] - 65 + 1;
+                            lastNo = Int32.Parse(lastPtwNumberPart[1]) - 1;
                         }
                         else
                         {
-                            lastNo = Int32.Parse(lastPtwNumberPart[5]);
+                            lastNo = Int32.Parse(lastPtwNumberPart[1]);
                         }
-                    }
-                    else
-                    {
-                        if (isExtend == true)
-                        {
-                            extension = lastPtwNumberPart[6][0] - 65 + 1;
-                            lastNo = Int32.Parse(lastPtwNumberPart[5]) - 1;
-                        }
-                        else
-                        {
-                            lastNo = 0;
-                        }
-                    }
+                    //}
+                    //else
+                    //{
+                    //    if (isExtend == true)
+                    //    {
+                    //        extension = lastPtwNumberPart[6][0] - 65 + 1;
+                    //        lastNo = Int32.Parse(lastPtwNumberPart[5]) - 1;
+                    //    }
+                    //    else
+                    //    {
+                    //        lastNo = 0;
+                    //    }
+                    //}
                 }
             }
 
-            result += thisYear + "-" + (lastNo + 1).ToString().PadLeft(4, '0');
+            result += (lastNo + 1).ToString().PadLeft(6, '0');
             if (isExtend)
             {
                 result += "-" + (char)(extension + 65);
@@ -635,7 +659,12 @@ namespace PermitToWork.Models.Ptw
                 isCanEdit = true;
             }
 
-            if (isAccAssessor(user) && this.status == (int)statusPtw.ACCSPV)
+            if (isAccFO(user) && this.status == (int)statusPtw.ACCSPV)
+            {
+                isCanEdit = true;
+            }
+
+            if (isAccAssessor(user) && this.status == (int)statusPtw.CHOOSEASS)
             {
                 isCanEdit = true;
             }
@@ -854,10 +883,10 @@ namespace PermitToWork.Models.Ptw
             //               401 {not select assessor}
 
             permit_to_work ptw = this.db.permit_to_work.Find(this.id);
-            if (ptw.acc_assessor == null)
-            {
-                return "401";
-            }
+            //if (ptw.acc_assessor == null)
+            //{
+            //    return "401";
+            //}
 
             if (user.id.ToString() == this.acc_supervisor)
             {
@@ -866,7 +895,14 @@ namespace PermitToWork.Models.Ptw
                 //ptw.can_assessor = this.can_assessor;
                 //ptw.can_assessor_delegate = this.can_assessor_delegate;
                 ptw.acc_supervisor_approve = "a" + user.signature;
-                ptw.status = (int)statusPtw.ACCSPV;
+                if (ptw.acc_assessor != null)
+                {
+                    ptw.status = (int)statusPtw.CHOOSEASS;
+                }
+                else
+                {
+                    ptw.status = (int)statusPtw.ACCSPV;
+                }
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
 
@@ -879,7 +915,14 @@ namespace PermitToWork.Models.Ptw
                 //ptw.can_assessor = this.can_assessor;
                 //ptw.can_assessor_delegate = this.can_assessor_delegate;
                 ptw.acc_supervisor_approve = "d" + user.signature;
-                ptw.status = (int)statusPtw.ACCSPV;
+                if (ptw.acc_assessor != null)
+                {
+                    ptw.status = (int)statusPtw.CHOOSEASS;
+                }
+                else
+                {
+                    ptw.status = (int)statusPtw.ACCSPV;
+                }
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
 
@@ -929,15 +972,32 @@ namespace PermitToWork.Models.Ptw
             
             if (user.id.ToString() == this.acc_assessor)
             {
-                //ptw.acc_fo = this.acc_fo;
-                //ptw.acc_fo_delegate = this.acc_fo_delegate;
-                //ptw.can_fo = this.acc_fo;
-                //ptw.can_fo_delegate = this.acc_fo_delegate;
-                ptw.acc_assessor_approve = "a" + user.signature;
-                ptw.status = (int)statusPtw.ACCASS;
-                this.db.Entry(ptw).State = EntityState.Modified;
-                this.db.SaveChanges();
+                try
+                {
+                    //ptw.acc_fo = this.acc_fo;
+                    //ptw.acc_fo_delegate = this.acc_fo_delegate;
+                    //ptw.can_fo = this.acc_fo;
+                    //ptw.can_fo_delegate = this.acc_fo_delegate;
+                    ptw.acc_assessor_approve = "a" + user.signature;
+                    ptw.status = (int)statusPtw.ACCASS;
+                    this.db.Entry(ptw).State = EntityState.Modified;
+                    this.db.SaveChanges();
 
+                }
+                catch (DbEntityValidationException e)
+                {
+                    foreach (var eve in e.EntityValidationErrors)
+                    {
+                        Debug.WriteLine("Entity of type \"{0}\" in state \"{1}\" has the following validation errors:",
+                            eve.Entry.Entity.GetType().Name, eve.Entry.State);
+                        foreach (var ve in eve.ValidationErrors)
+                        {
+                            Debug.WriteLine("- Property: \"{0}\", Error: \"{1}\"",
+                                ve.PropertyName, ve.ErrorMessage);
+                        }
+                    }
+                    throw;
+                }
                 return "200";
             }
             else if (user.id.ToString() == this.acc_assessor_delegate)
@@ -1031,8 +1091,9 @@ namespace PermitToWork.Models.Ptw
             if (user.id.ToString() == this.acc_fo || user.id.ToString() == this.acc_fo_delegate)
             {
                 permit_to_work ptw = this.db.permit_to_work.Find(this.id);
+                ptw.acc_supervisor_approve = null;
                 ptw.acc_assessor_approve = null;
-                ptw.status = (int)statusPtw.ACCSPV;
+                ptw.status = (int)statusPtw.CLEARANCECOMPLETE;
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
 
@@ -1287,8 +1348,9 @@ namespace PermitToWork.Models.Ptw
                 permit_to_work ptw = this.db.permit_to_work.Find(this.id);
 
                 ptw.can_assessor_approve = null;
+                ptw.can_supervisor_approve = null;
                 this.id_parent_ptw = ptw.id_parent_ptw;
-                ptw.status = (int)statusPtw.CANSPV;
+                ptw.status = (int)statusPtw.CANREQ;
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
                 if (this.id_parent_ptw != null)
@@ -1466,7 +1528,7 @@ namespace PermitToWork.Models.Ptw
             string subject = "";
             if (stat == 0)
             {
-                message = serverUrl + "Home?p=Hw/edit/" + this.id;
+                message = serverUrl + "Home?p=Hw/edit/" + this.id + "<br />" + comment;
                 subject = "Permit to Work Facility Owner Approve";
             }
             else if (stat == 1)

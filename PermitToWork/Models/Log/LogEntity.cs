@@ -16,6 +16,8 @@ namespace PermitToWork.Models.Log
         public string comment { get; set; }
         public int? permit_type { get; set; }
 
+        public UserEntity user { get; set; }
+
         private star_energy_ptwEntities db;
 
         public LogEntity() {
@@ -40,6 +42,7 @@ namespace PermitToWork.Models.Log
             this.status = log.status;
             this.comment = log.comment;
             this.permit_type = log.permit_type;
+            this.user = new UserEntity(this.user_id.Value);
         }
 
         public int addLog()
@@ -58,7 +61,7 @@ namespace PermitToWork.Models.Log
             return this.db.SaveChanges();
         }
 
-        public string generateLog(UserEntity user, int id_permit, string controllerName, string actionName, string comment = null, int extension = 0) {
+        public string generateLog(UserEntity user, int id_permit, string controllerName, string actionName, string comment = null, int extension = 0, string assessor = "") {
             if (controllerName == "Ptw")
             {
                 this.id_permit = id_permit;
@@ -127,6 +130,13 @@ namespace PermitToWork.Models.Log
                     case "fOCanReject":
                         this.status = "Cancellation rejected by Facility Owner";
                         addLog();
+                        break;
+                    case "EditPtw":
+                        if (assessor != "")
+                        {
+                            this.status = "Facility Owner has chosen Assessor";
+                            addLog();
+                        }
                         break;
                 }
             }
@@ -235,6 +245,25 @@ namespace PermitToWork.Models.Log
             }
 
             return "200";
+        }
+
+        public List<LogEntity> getLogsById(int id_permit, int permit_type)
+        {
+            var list = from log in this.db.permit_log
+                       where log.id_permit == id_permit && log.permit_type == permit_type
+                       select new LogEntity
+                       {
+                           datetime = log.datetime,
+                           user_id = log.user_id,
+                           status = log.status,
+                           comment = log.comment,
+                       };
+            var listLogs = list.ToList();
+            foreach (var a in listLogs)
+            {
+                a.user = new UserEntity(a.user_id.Value);
+            }
+            return listLogs;
         }
     }
 }

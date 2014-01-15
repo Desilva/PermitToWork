@@ -44,9 +44,15 @@
 </div>
 <script type="text/x-kendo-template" id="extend-template">
     <input type="button" class="btn btn-primary" value="Edit" onclick="editPtw(#= id #)"/>
-    #if (status == 4) {#
+    #if (status == 5 && new Date() <= validity_period_end && !has_extend) {#
     <input type="button" class="btn btn-warning" value="Extend" onclick="extendPtw(#= id #)"/>
+
     #}#
+    #if (status >= 5) {#
+    <a class="btn btn-success" href="Ptw/Print/#= id #" target="_blank">Print</a>
+    #}#
+    <input type="button" class="btn btn-success" value="Log" onclick="logPtw(#= id #)"/>
+    
 </script>
 <script type="text/x-kendo-template" id="template">
     <div class='employee-details'>
@@ -86,7 +92,10 @@
                             status: { type: "number", editable: false },
                             hw: {},
                             hw_no: { type: "string", editable: false },
-                            hw_id: { type: "number", editable: false, nullable : "true" },
+                            hw_id: { type: "number", editable: false, nullable: "true" },
+                            validity_period_end: { type: "date", editable: false, nullable: "true" },
+                            has_extend: { type: "boolean", editable: false },
+                            is_extend: { type: "boolean", editable: false }
                         }
                     }
                 },
@@ -100,6 +109,7 @@
             filterable: true,
             detailTemplate: kendo.template($("#template").html()),
             detailInit: detailInit,
+            dataBound: onDataBound,
             columns: [
                 { field: "ptw_no", title: "PTW Number", type: "string", width: 250 },
                 { field: "ptw_status", title: "PTW Status", type: "string" },
@@ -129,9 +139,28 @@
             var detailRow = e.detailRow;
         }
 
+        function onDataBound(e) {
+            dataView = this.dataSource.view();
+            for (var i in dataView) {
+                if (dataView[i].has_extend) {
+                    var uid = dataView[i].uid;
+                    var uid1 = dataView[i].bomc;
+                    $("#grid-ptw tbody").find("tr[data-uid=" + uid + "]").css("background-color", "lightblue");
+                }
+
+                if (dataView[i].status == 10) {
+                    var uid = dataView[i].uid;
+                    var uid1 = dataView[i].bomc;
+                    $("#grid-ptw tbody").find("tr[data-uid=" + uid + "]").css("background-color", "pink");
+                }
+            }
+        }
+
         function getDataRowGrid(e) {
             return $(e.target).closest("tr");
         }
+
+
     });
 
     function editPtw(e) {
@@ -149,12 +178,16 @@
                 if (resp.status == "401" || resp.status == "402" || resp.status == "403") {
 
                 } else {
-                    $('#content').load('Ptw/Extend/' + data.id);
+                    $('#content').load('Ptw/Extend/' + data);
                 }
             });
         } else {
 
         }
+    }
+
+    function logPtw(id) {
+        $('#content').load('Log/Index/' + id + '?permitType=' + 0 + '&backPath=' + 'Home/Index');
     }
 
     function createPtw() {

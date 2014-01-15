@@ -167,6 +167,7 @@ namespace PermitToWork.Models
         public Nullable<System.DateTime> ext_new_validity_7 { get; set; }
         public string ext_remark_7 { get; set; }
         public Nullable<int> status { get; set; }
+        public string random_pin { get; set; }
     
         public virtual permit_to_work permit_to_work { get; set; }
     }

@@ -24,12 +24,20 @@ namespace PermitToWork
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+            routes.MapRoute(
+                "Master Data Services",
+                "{controller}/{action}/{timestamp}/{seal}/{id}",
+                new { controller = "Master", action = "NotFound", id = UrlParameter.Optional },
+                new { id = @"^(?:\d+|)$", timestamp = @"\d+", seal = @"^[A-Fa-f0-9]{32}$", controller = @"Master([A-Za-z0-9]+)$" }
+            );
 
             routes.MapRoute(
                 "Default", // Route name
                 "{controller}/{action}/{id}", // URL with parameters
                 new { controller = "Login", action = "Index", id = UrlParameter.Optional } // Parameter defaults
             );
+
+            
 
         }
 
@@ -42,6 +50,15 @@ namespace PermitToWork
 
             RegisterGlobalFilters(GlobalFilters.Filters);
             RegisterRoutes(RouteTable.Routes);
+        }
+
+        protected void Application_BeginRequest(object sender, EventArgs e)
+        {
+            HttpContext.Current.Response.AddHeader(
+                        "Access-Control-Allow-Origin", "*");    
+            /* HttpContext.Current.Response.AddHeader(
+              "Access-Control-Allow-Origin", 
+              "http://AllowedDomain.com"); */
         }
     }
 }

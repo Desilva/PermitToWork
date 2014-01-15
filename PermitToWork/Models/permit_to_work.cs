@@ -25,10 +25,10 @@ namespace PermitToWork.Models
         public string ptw_no { get; set; }
         public Nullable<System.DateTime> proposed_period_start { get; set; }
         public Nullable<System.DateTime> proposed_period_end { get; set; }
-        public string dept_requestor { get; set; }
-        public string section { get; set; }
+        public Nullable<int> dept_requestor { get; set; }
+        public Nullable<int> section { get; set; }
         public string total_crew { get; set; }
-        public string requestor_ptw_holder_no { get; set; }
+        public Nullable<int> requestor_ptw_holder_no { get; set; }
         public string area { get; set; }
         public string work_location { get; set; }
         public string area_code { get; set; }
@@ -109,6 +109,9 @@ namespace PermitToWork.Models
     
         public virtual ICollection<hira_document> hira_document { get; set; }
         public virtual ICollection<hot_work> hot_work { get; set; }
+        public virtual mst_department mst_department { get; set; }
+        public virtual mst_ptw_holder_no mst_ptw_holder_no { get; set; }
+        public virtual mst_section mst_section { get; set; }
         public virtual ICollection<permit_to_work> permit_to_work1 { get; set; }
         public virtual permit_to_work permit_to_work2 { get; set; }
     }

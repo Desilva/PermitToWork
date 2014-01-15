@@ -21,6 +21,7 @@ namespace PermitToWork.Utilities
         public string actionName { get; set; }
         public string comment { get; set; }
         public int extension { get; set; }
+        public string assessor { get; set; }
 
         public CapturingResponseFilter(Stream sink)
         {
@@ -81,14 +82,14 @@ namespace PermitToWork.Utilities
             _sink.Flush();
 
             string content = GetContents(new UTF8Encoding(false));
-            if (content.First() == '{')
+            if (content != "" && content.First() == '{' && !controllerName.Contains("Master"))
             {
                 Dictionary<string, string> dic = JsonConvert.DeserializeObject<Dictionary<string, string>>(content);
                 string status = dic["status"];
                 if (status == "200")
                 {
                     LogEntity log = new LogEntity();
-                    log.generateLog(user, id_permit, controllerName, actionName, comment, extension);
+                    log.generateLog(user, id_permit, controllerName, actionName, comment, extension, assessor);
                 }
             }
             //YOU CAN STORE YOUR DATA TO YOUR DATABASE HERE

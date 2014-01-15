@@ -174,6 +174,7 @@ namespace PermitToWork.Models.Hw
         public Nullable<System.DateTime> ext_new_validity_7 { get; set; }
         public string ext_remark_7 { get; set; }
         public Nullable<int> status { get; set; }
+        public string random_pin { get; set; }
 
         public List<HiraEntity> hira_document { get; set; }
         public string hira_no { get; set; }
@@ -188,7 +189,6 @@ namespace PermitToWork.Models.Hw
             GASTESTER,
             ACCWORKLEADER,
             ACCSPV,
-            ACCFIREWATCH,
             ACCFO,
             EXTCREATE1,
             EXTFOSCREENING1,
@@ -228,7 +228,6 @@ namespace PermitToWork.Models.Hw
             CANCEL,
             CANWORKLEADER,
             CANSPV,
-            CANFIREWATCH,
             CANFO,
         }
 
@@ -238,7 +237,7 @@ namespace PermitToWork.Models.Hw
             this.db = new star_energy_ptwEntities();
         }
 
-        public HwEntity(int id_ptw, string work_leader, string purpose)
+        public HwEntity(int id_ptw, string work_leader, string purpose, string acc_spv = null, string acc_spv_del = null)
         {
             this.db = new star_energy_ptwEntities();
             this.id_ptw = id_ptw;
@@ -250,7 +249,7 @@ namespace PermitToWork.Models.Hw
         {
             this.db = new star_energy_ptwEntities();
             hot_work hw = this.db.hot_work.OrderByDescending(p => p.hw_no).FirstOrDefault();
-            this.hw_no = hw.hw_no;
+            this.hw_no = hw == null ? "" : hw.hw_no;
         }
 
         public HwEntity(int id, star_energy_ptwEntities db = null)
@@ -417,6 +416,7 @@ namespace PermitToWork.Models.Hw
             this.ext_new_validity_7 = hw.ext_new_validity_7;
             this.ext_remark_7 = hw.ext_remark_7;
             this.status = hw.status;
+            this.random_pin = hw.random_pin;
 
             this.hw_status = getStatus();
 
@@ -426,6 +426,7 @@ namespace PermitToWork.Models.Hw
         public int addHotWork()
         {
             this.db = new star_energy_ptwEntities();
+            generateRandomPIN();
             hot_work hw = new hot_work
             {
                 hw_no = this.hw_no,
@@ -443,6 +444,9 @@ namespace PermitToWork.Models.Hw
                 screening_6 = "0#0#0#0#0#0#0#0#0",
                 screening_7 = "0#0#0#0#0#0#0#0#0",
                 status = (int)statusHW.CREATE,
+                random_pin = this.random_pin,
+                acc_supervisor = this.acc_supervisor,
+                acc_supervisor_delegate = this.acc_supervisor_delegate,
             };
 
             db.hot_work.Add(hw);
@@ -489,67 +493,9 @@ namespace PermitToWork.Models.Hw
 
         #region generate hot work number
 
-        public void generateHwNumber(string lastNumber, bool isExtend = false)
+        public void generateHwNumber(string lastNumber, string ptw_no, bool isExtend = false)
         {
-            string result = "HW-A-B-C-";
-            int thisYear = DateTime.Today.Year;
-            int lastNo = 0;
-            int extension = 0;
-            if (lastNumber != null)
-            {
-                string[] lastPtwNumberPart = lastNumber.Split('-');
-                if (lastPtwNumberPart.Length == 6)
-                {
-                    lastNo = Int32.Parse(lastPtwNumberPart[5]) - 1;
-                    if (Int32.Parse(lastPtwNumberPart[4]) == thisYear)
-                    {
-                        if (isExtend == false)
-                        {
-                            lastNo = Int32.Parse(lastPtwNumberPart[5]);
-                        }
-                    }
-                    else
-                    {
-                        if (isExtend == false)
-                        {
-                            lastNo = 0;
-                        }
-                    }
-                }
-                else if (lastPtwNumberPart.Length == 7)
-                {
-                    if (Int32.Parse(lastPtwNumberPart[4]) == thisYear)
-                    {
-                        if (isExtend == true)
-                        {
-                            extension = lastPtwNumberPart[6][0] - 65 + 1;
-                            lastNo = Int32.Parse(lastPtwNumberPart[5]) - 1;
-                        }
-                        else
-                        {
-                            lastNo = Int32.Parse(lastPtwNumberPart[5]);
-                        }
-                    }
-                    else
-                    {
-                        if (isExtend == true)
-                        {
-                            extension = lastPtwNumberPart[6][0] - 65 + 1;
-                            lastNo = Int32.Parse(lastPtwNumberPart[5]) - 1;
-                        }
-                        else
-                        {
-                            lastNo = 0;
-                        }
-                    }
-                }
-            }
-
-            result += thisYear + "-" + (lastNo + 1).ToString().PadLeft(4, '0');
-            if (isExtend)
-            {
-                result += "-" + (char)(extension + 65);
-            }
+            string result = "HW-" + ptw_no;
 
             this.hw_no = result;
         }
@@ -773,17 +719,17 @@ namespace PermitToWork.Models.Hw
                 isCanEdit = true;
             }
 
-            if (isAccFireWatch(user) && this.status == (int)statusHW.ACCSPV)
+            //if (isAccFireWatch(user) && this.status == (int)statusHW.ACCSPV)
+            //{
+            //    isCanEdit = true;
+            //}
+
+            if (isAccFO(user) && this.status == (int)statusHW.ACCSPV || this.status == (int)statusHW.SPVSCREENING)
             {
                 isCanEdit = true;
             }
 
-            if (isAccFO(user) && this.status == (int)statusHW.ACCFIREWATCH || this.status == (int)statusHW.SPVSCREENING)
-            {
-                isCanEdit = true;
-            }
-
-            if (isAccGasTester(user) && this.status == (int)statusHW.FOSCREENING)
+            if ((isAccGasTester(user) || isAccFO(user)) && this.status == (int)statusHW.FOSCREENING)
             {
                 isCanEdit = true;
             }
@@ -1333,8 +1279,7 @@ namespace PermitToWork.Models.Hw
                 case (int)statusHW.FOSCREENING: retVal = "Waiting for Gas Testing by Gas Tester"; break;
                 case (int)statusHW.GASTESTER: retVal = "Waiting for Approval by Work Leader / PTW Requestor"; break;
                 case (int)statusHW.ACCWORKLEADER: retVal = "Waiting for Approval by Supervisor"; break;
-                case (int)statusHW.ACCSPV: retVal = "Waiting for Approval by Fire Watch"; break;
-                case (int)statusHW.ACCFIREWATCH: retVal = "Waiting for Approval by Facility Owner"; break;
+                case (int)statusHW.ACCSPV: retVal = "Waiting for Approval by Facility Owner"; break;
                 case (int)statusHW.ACCFO: retVal = "Completed. Hot Work Permit has been approved by Facility Owner"; break;
                 case (int)statusHW.EXTCREATE1: retVal = "Hot Work extended number 1. Waiting for Facility Owner Screening"; break;
                 case (int)statusHW.EXTFOSCREENING1: retVal = "Waiting for Gas Testing by Gas Tester"; break;
@@ -1373,8 +1318,7 @@ namespace PermitToWork.Models.Hw
                 case (int)statusHW.EXTACCFO7: retVal = "Hot Work extension number 7 has been approved by Facility Owner"; break;
                 case (int)statusHW.CANCEL: retVal = "Hot Work Permit has been Closed. Waiting for Approval by Work Leader"; break;
                 case (int)statusHW.CANWORKLEADER: retVal = "Hot Work Permit has been Closed. Waiting for Approval by Supervisor"; break;
-                case (int)statusHW.CANSPV: retVal = "Waiting for Closing Approval by Fire Watch"; break;
-                case (int)statusHW.CANFIREWATCH: retVal = "Waiting for Closing Approval by Facility Owner"; break;
+                case (int)statusHW.CANSPV: retVal = "Waiting for Closing Approval by Facility Owner"; break;
                 case (int)statusHW.CANFO: retVal = "Closed. Hot Work Permit has been approved to closing by Facility Owner"; break;
             };
 
@@ -1423,6 +1367,15 @@ namespace PermitToWork.Models.Hw
             }
         }
 
+        public string generateRandomPIN()
+        {
+            Random rnd = new Random();
+            int card = rnd.Next(1001,9999);
+
+            this.random_pin = card.ToString().PadLeft(4, '0');
+            return this.random_pin;
+        }
+
         #region send email
 
         public string sendEmailFO(List<UserEntity> listFO, string serverUrl, int? ext = null)
@@ -1456,6 +1409,21 @@ namespace PermitToWork.Models.Hw
                 }
             }
 
+            return "200";
+        }
+
+        public string sendEmailRandomPIN(string serverUrl)
+        {
+            UserEntity requestor = new UserEntity(Int32.Parse(this.work_leader));
+            SendEmail sendEmail = new SendEmail();
+            List<string> s = new List<string>();
+            //s.Add(requestor.email);
+            s.Add("septu.jamasoka@gmail.com");
+
+            string message = this.random_pin;
+            string subject = "PIN for Approving as Requestor";
+
+            sendEmail.Send(s, message, subject);
             return "200";
         }
 
@@ -1566,9 +1534,11 @@ namespace PermitToWork.Models.Hw
             //if (extension == 0)
             //{
             UserEntity requestor = new UserEntity(Int32.Parse(this.work_leader));
+            UserEntity spv = new UserEntity(Int32.Parse(this.acc_supervisor));
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
             //s.Add(requestor.email);
+            //s.Add(spv.email);
             s.Add("septu.jamasoka@gmail.com");
 
             string message = "";
@@ -1757,7 +1727,7 @@ namespace PermitToWork.Models.Hw
             // return code - 200 {ok}
             //               400 {not the user}
             hot_work hw = this.db.hot_work.Find(this.id);
-            if (extension == 0 && user.id.ToString() == this.acc_gas_tester)
+            if (extension == 0 && (user.id.ToString() == this.acc_gas_tester || user.id.ToString() == this.acc_fo))
             {
                 hw.acc_gas_tester_approve = "a" + user.signature;
                 hw.status = (int)statusHW.GASTESTER;
@@ -1807,7 +1777,7 @@ namespace PermitToWork.Models.Hw
             return "200";
         }
 
-        public string requestorAcc(UserEntity user, int extension)
+        public string requestorAcc(UserEntity user, int extension, string random_pin = null)
         {
             // requestor approval
             // return code - 200 {ok}
@@ -1817,6 +1787,19 @@ namespace PermitToWork.Models.Hw
             {
                 hw.acc_work_leader_approve = "a" + user.signature;
                 hw.status = (int)statusHW.ACCWORKLEADER;
+            }
+            else if (extension == 0 && random_pin != null && user.id.ToString() == this.acc_supervisor)
+            {
+                if (random_pin == this.random_pin)
+                {
+                    user = new UserEntity(Int32.Parse(this.work_leader));
+                    hw.acc_work_leader_approve = "a" + user.signature;
+                    hw.status = (int)statusHW.ACCWORKLEADER;
+                }
+                else
+                {
+                    return "402";
+                }
             }
             else if (extension == 1 && user.id.ToString() == this.ext_work_leader_1)
             {
@@ -1872,10 +1855,10 @@ namespace PermitToWork.Models.Hw
             //               401 {not select assessor}
 
             hot_work hw = this.db.hot_work.Find(this.id);
-            if (hw.acc_fire_watch == null)
-            {
-                return "401";
-            }
+            //if (hw.acc_fire_watch == null)
+            //{
+            //    return "401";
+            //}
 
             if (user.id.ToString() == this.acc_supervisor)
             {
@@ -1947,7 +1930,7 @@ namespace PermitToWork.Models.Hw
                 //ptw.can_fo = this.acc_fo;
                 //ptw.can_fo_delegate = this.acc_fo_delegate;
                 hw.acc_fire_watch_approve = "a" + user.signature;
-                hw.status = (int)statusHW.ACCFIREWATCH;
+                //hw.status = (int)statusHW.ACCFIREWATCH;
                 this.db.Entry(hw).State = EntityState.Modified;
                 this.db.SaveChanges();
 
@@ -1960,7 +1943,7 @@ namespace PermitToWork.Models.Hw
                 //ptw.can_fo = this.acc_fo;
                 //ptw.can_fo_delegate = this.acc_fo_delegate;
                 hw.acc_fire_watch_approve = "d" + user.signature;
-                hw.status = (int)statusHW.ACCFIREWATCH;
+                //hw.status = (int)statusHW.ACCFIREWATCH;
                 this.db.Entry(hw).State = EntityState.Modified;
                 this.db.SaveChanges();
 
@@ -1982,7 +1965,7 @@ namespace PermitToWork.Models.Hw
             {
                 hot_work hw = this.db.hot_work.Find(this.id);
                 hw.acc_supervisor_approve = null;
-                hw.status = (int)statusHW.ACCWORKLEADER;
+                //hw.status = (int)statusHW.ACCWORKLEADER;
                 this.db.Entry(hw).State = EntityState.Modified;
                 this.db.SaveChanges();
 
@@ -2205,8 +2188,8 @@ namespace PermitToWork.Models.Hw
                 if (user.id.ToString() == this.acc_fo || user.id.ToString() == this.acc_fo_delegate)
                 {
                     hot_work hw = this.db.hot_work.Find(this.id);
-                    hw.acc_fire_watch_approve = null;
-                    hw.status = (int)statusHW.ACCSPV;
+                    hw.acc_supervisor_approve = null;
+                    hw.status = (int)statusHW.ACCWORKLEADER;
                     this.db.Entry(hw).State = EntityState.Modified;
                     this.db.SaveChanges();
 
@@ -2437,7 +2420,7 @@ namespace PermitToWork.Models.Hw
                 //ptw.can_fo = this.acc_fo;
                 //ptw.can_fo_delegate = this.acc_fo_delegate;
                 hw.can_fire_watch_approve = "a" + user.signature;
-                hw.status = (int)statusHW.CANFIREWATCH;
+                //hw.status = (int)statusHW.CANFIREWATCH;
                 this.db.Entry(hw).State = EntityState.Modified;
                 this.db.SaveChanges();
 
@@ -2450,7 +2433,7 @@ namespace PermitToWork.Models.Hw
                 //ptw.can_fo = this.acc_fo;
                 //ptw.can_fo_delegate = this.acc_fo_delegate;
                 hw.can_fire_watch_approve = "d" + user.signature;
-                hw.status = (int)statusHW.CANFIREWATCH;
+                //hw.status = (int)statusHW.CANFIREWATCH;
                 this.db.Entry(hw).State = EntityState.Modified;
                 this.db.SaveChanges();
 
@@ -2523,8 +2506,8 @@ namespace PermitToWork.Models.Hw
             if (user.id.ToString() == this.can_fo || user.id.ToString() == this.can_fo_delegate)
             {
                 hot_work hw = this.db.hot_work.Find(this.id);
-                hw.can_fire_watch_approve = null;
-                hw.status = (int)statusHW.CANSPV;
+                hw.can_supervisor_approve = null;
+                hw.status = (int)statusHW.CANWORKLEADER;
                 this.db.Entry(hw).State = EntityState.Modified;
                 this.db.SaveChanges();
 
