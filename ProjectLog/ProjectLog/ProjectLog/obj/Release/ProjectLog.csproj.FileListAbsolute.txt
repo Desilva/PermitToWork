@@ -1,0 +1,5 @@
+D:\Informatics\Proyek\ProjectLog\ProjectLog\ProjectLog\bin\Release\ProjectLog.dll
+D:\Informatics\Proyek\ProjectLog\ProjectLog\ProjectLog\bin\Release\ProjectLog.pdb
+D:\Informatics\Proyek\ProjectLog\ProjectLog\ProjectLog\obj\Release\ProjectLog.dll
+D:\Informatics\Proyek\ProjectLog\ProjectLog\ProjectLog\obj\Release\ProjectLog.pdb
+D:\Informatics\Proyek\ProjectLog\ProjectLog\ProjectLog\obj\Release\ProjectLog.csprojResolveAssemblyReference.cache
