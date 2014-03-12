@@ -10,7 +10,7 @@ using System.Web;
 
 namespace PermitToWork.Models.Hw
 {
-    public class HwEntity
+    public class HwEntity : IClearancePermitEntity
     {
         public int id { get; set; }
         public string hw_no { get; set; }
@@ -180,6 +180,9 @@ namespace PermitToWork.Models.Hw
         public string hira_no { get; set; }
 
         public string hw_status { get; set; }
+
+        public int ids { get; set; }
+        public string statusText { get; set; }
 
         public enum statusHW
         {
@@ -423,7 +426,7 @@ namespace PermitToWork.Models.Hw
             this.hira_document = new ListHira(this.id_ptw.Value,this.db).listHira;
         }
 
-        public int addHotWork()
+        public int create()
         {
             this.db = new star_energy_ptwEntities();
             generateRandomPIN();
@@ -455,7 +458,7 @@ namespace PermitToWork.Models.Hw
             return retVal;
         }
 
-        public int deleteHotWork()
+        public int delete()
         {
             this.db = new star_energy_ptwEntities();
             hot_work hw = this.db.hot_work.Find(this.id);
@@ -463,7 +466,7 @@ namespace PermitToWork.Models.Hw
             return this.db.SaveChanges();
         }
 
-        public int editHotWork()
+        public int edit()
         {
             hot_work hw = db.hot_work.Find(id);
             hw.fire_watch = this.fire_watch;
@@ -493,7 +496,7 @@ namespace PermitToWork.Models.Hw
 
         #region generate hot work number
 
-        public void generateHwNumber(string lastNumber, string ptw_no, bool isExtend = false)
+        public void generateNumber(string ptw_no)
         {
             string result = "HW-" + ptw_no;
 
@@ -1378,7 +1381,7 @@ namespace PermitToWork.Models.Hw
 
         #region send email
 
-        public string sendEmailFO(List<UserEntity> listFO, string serverUrl, int? ext = null)
+        public string sendEmailFO(List<UserEntity> listFO, string serverUrl, string token, UserEntity user, int? ext = null)
         {
             if (ext == null) {
                 
@@ -1393,7 +1396,7 @@ namespace PermitToWork.Models.Hw
                     s.Add("septu.jamasoka@gmail.com"); // email FO
                     if (fo.employee_delegate != null)
                     {
-                        UserEntity del = new UserEntity(fo.employee_delegate.Value);
+                        UserEntity del = new UserEntity(fo.employee_delegate.Value, token, user);
                         //s.Add(del.email);
                         s.Add("septu.jamasoka@gmail.com"); // email Delegasi FO
                     }
@@ -1412,9 +1415,9 @@ namespace PermitToWork.Models.Hw
             return "200";
         }
 
-        public string sendEmailRandomPIN(string serverUrl)
+        public string sendEmailRandomPIN(string serverUrl, string token, UserEntity user)
         {
-            UserEntity requestor = new UserEntity(Int32.Parse(this.work_leader));
+            UserEntity requestor = new UserEntity(Int32.Parse(this.work_leader), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
             //s.Add(requestor.email);
@@ -1427,10 +1430,10 @@ namespace PermitToWork.Models.Hw
             return "200";
         }
 
-        public string sendEmailGasTester(string serverUrl, int extension)
+        public string sendEmailGasTester(string serverUrl, string token, UserEntity user, int extension)
         {
             if (extension == 0) {
-                UserEntity gasTester = new UserEntity(Int32.Parse(this.acc_gas_tester));
+                UserEntity gasTester = new UserEntity(Int32.Parse(this.acc_gas_tester), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
                 //s.Add(gasTester.email);
@@ -1438,11 +1441,11 @@ namespace PermitToWork.Models.Hw
 
                 string message = serverUrl + "Home?p=Hw/edit/" + this.id;
 
-                sendEmail.Send(s, message, "hot work Gas Tester");
+                sendEmail.Send(s, message, "Hot Work Gas Tester");
             }
             else if (extension == 1)
             {
-                UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_1));
+                UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_1), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
 
@@ -1455,7 +1458,7 @@ namespace PermitToWork.Models.Hw
             }
             else if (extension == 2)
             {
-                UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_2));
+                UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_2), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
                 //s.Add(gasTester.email);
@@ -1467,7 +1470,7 @@ namespace PermitToWork.Models.Hw
             }
             else if (extension == 3)
             {
-                UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_3));
+                UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_3), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
                 //s.Add(gasTester.email);
@@ -1479,7 +1482,7 @@ namespace PermitToWork.Models.Hw
             }
             else if (extension == 4)
             {
-                UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_4));
+                UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_4), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
                 //s.Add(gasTester.email);
@@ -1491,7 +1494,7 @@ namespace PermitToWork.Models.Hw
             }
             else if (extension == 5)
             {
-                UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_5));
+                UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_5), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
                 //s.Add(gasTester.email);
@@ -1503,7 +1506,7 @@ namespace PermitToWork.Models.Hw
             }
             else if (extension == 6)
             {
-                UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_6));
+                UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_6), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
                 //s.Add(gasTester.email);
@@ -1515,7 +1518,7 @@ namespace PermitToWork.Models.Hw
             }
             else if (extension == 7)
             {
-                UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_7));
+                UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_7), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
                 //s.Add(gasTester.email);
@@ -1529,12 +1532,12 @@ namespace PermitToWork.Models.Hw
             return "200";
         }
 
-        public string sendEmailRequestor(string serverUrl, int extension, int stat = 0, string comment = null)
+        public string sendEmailRequestor(string serverUrl, string token, UserEntity user, int extension, int stat = 0, string comment = null)
         {
             //if (extension == 0)
             //{
-            UserEntity requestor = new UserEntity(Int32.Parse(this.work_leader));
-            UserEntity spv = new UserEntity(Int32.Parse(this.acc_supervisor));
+            UserEntity requestor = new UserEntity(Int32.Parse(this.work_leader), token, user);
+            UserEntity spv = new UserEntity(Int32.Parse(this.acc_supervisor), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
             //s.Add(requestor.email);
@@ -1560,9 +1563,9 @@ namespace PermitToWork.Models.Hw
             return "200";
         }
 
-        public string sendEmailSupervisor(string serverUrl, int stat = 0, string comment = null)
+        public string sendEmailSupervisor(string serverUrl, string token, UserEntity user, int stat = 0, string comment = null)
         {
-            UserEntity supervisor = new UserEntity(Int32.Parse(this.acc_supervisor));
+            UserEntity supervisor = new UserEntity(Int32.Parse(this.acc_supervisor), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
             //s.Add(requestor.email);
@@ -1570,7 +1573,7 @@ namespace PermitToWork.Models.Hw
 
             if (supervisor.employee_delegate != null)
             {
-                UserEntity del = new UserEntity(supervisor.employee_delegate.Value);
+                UserEntity del = new UserEntity(supervisor.employee_delegate.Value, token, user);
                 //s.Add(del.email);
                 s.Add("septu.jamasoka@gmail.com");
             }
@@ -1593,9 +1596,9 @@ namespace PermitToWork.Models.Hw
             return "200";
         }
 
-        public string sendEmailFireWatch(string serverUrl, int stat = 0, string comment = null)
+        public string sendEmailFireWatch(string serverUrl, string token, UserEntity user, int stat = 0, string comment = null)
         {
-            UserEntity fireWatch = new UserEntity(Int32.Parse(this.acc_fire_watch));
+            UserEntity fireWatch = new UserEntity(Int32.Parse(this.acc_fire_watch), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
             s.Add(fireWatch.email);
@@ -1603,7 +1606,7 @@ namespace PermitToWork.Models.Hw
 
             if (fireWatch.employee_delegate != null)
             {
-                UserEntity del = new UserEntity(fireWatch.employee_delegate.Value);
+                UserEntity del = new UserEntity(fireWatch.employee_delegate.Value, token, user);
                 //s.Add(del.email);
                 s.Add("septu.jamasoka@gmail.com");
             }
@@ -1626,9 +1629,9 @@ namespace PermitToWork.Models.Hw
             return "200";
         }
 
-        public string sendEmailFOAcc(string serverUrl)
+        public string sendEmailFOAcc(string serverUrl, string token, UserEntity user)
         {
-            UserEntity fOAcc = new UserEntity(Int32.Parse(this.acc_fo));
+            UserEntity fOAcc = new UserEntity(Int32.Parse(this.acc_fo), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
             //s.Add(fOAcc.email);
@@ -1636,7 +1639,7 @@ namespace PermitToWork.Models.Hw
 
             if (fOAcc.employee_delegate != null)
             {
-                UserEntity del = new UserEntity(fOAcc.employee_delegate.Value);
+                UserEntity del = new UserEntity(fOAcc.employee_delegate.Value, token, user);
                 //s.Add(del.email);
                 s.Add("septu.jamasoka@gmail.com");
             }
@@ -1648,7 +1651,7 @@ namespace PermitToWork.Models.Hw
             return "200";
         }
 
-        public string sendEmailFOExt(string serverUrl, int extension)
+        public string sendEmailFOExt(string serverUrl, string token, UserEntity user, int extension)
         {
             int fo_id = 0;
             switch (extension)
@@ -1675,7 +1678,7 @@ namespace PermitToWork.Models.Hw
                     fo_id = Int32.Parse(this.ext_fo_7);
                     break;
             }
-            UserEntity fOAcc = new UserEntity(fo_id);
+            UserEntity fOAcc = new UserEntity(fo_id, token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
             //s.Add(fOAcc.email);
@@ -1683,7 +1686,7 @@ namespace PermitToWork.Models.Hw
 
             if (fOAcc.employee_delegate != null)
             {
-                UserEntity del = new UserEntity(fOAcc.employee_delegate.Value);
+                UserEntity del = new UserEntity(fOAcc.employee_delegate.Value, token, user);
                 //s.Add(del.email);
                 s.Add("septu.jamasoka@gmail.com");
             }
@@ -1695,9 +1698,9 @@ namespace PermitToWork.Models.Hw
             return "200";
         }
 
-        public string sendEmailFOCan(string serverUrl)
+        public string sendEmailFOCan(string serverUrl, string token, UserEntity user)
         {
-            UserEntity fOCan = new UserEntity(Int32.Parse(this.can_fo));
+            UserEntity fOCan = new UserEntity(Int32.Parse(this.can_fo), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
             //s.Add(fOAcc.email);
@@ -1705,7 +1708,7 @@ namespace PermitToWork.Models.Hw
 
             if (fOCan.employee_delegate != null)
             {
-                UserEntity del = new UserEntity(fOCan.employee_delegate.Value);
+                UserEntity del = new UserEntity(fOCan.employee_delegate.Value, token, user);
                 //s.Add(del.email);
                 s.Add("septu.jamasoka@gmail.com");
             }
@@ -1777,7 +1780,7 @@ namespace PermitToWork.Models.Hw
             return "200";
         }
 
-        public string requestorAcc(UserEntity user, int extension, string random_pin = null)
+        public string requestorAcc(UserEntity user, string token, int extension, string random_pin = null)
         {
             // requestor approval
             // return code - 200 {ok}
@@ -1792,7 +1795,7 @@ namespace PermitToWork.Models.Hw
             {
                 if (random_pin == this.random_pin)
                 {
-                    user = new UserEntity(Int32.Parse(this.work_leader));
+                    user = new UserEntity(Int32.Parse(this.work_leader), token, user);
                     hw.acc_work_leader_approve = "a" + user.signature;
                     hw.status = (int)statusHW.ACCWORKLEADER;
                 }

@@ -171,19 +171,24 @@
             //changeContent('csep/create');
         })
         $('#hw_id').click(function () {
+            $('#history').val('@Url.Action("Edit","Ptw", new { id = Model.id })');
             changeContent('hw/edit/' + $(this).attr('data-id'));
         })
-        $('#fi').change(function () {
+        $('#fi_id').click(function () {
             //changeContent('fi/create');
+            $('#history').val('@Url.Action("Edit","Ptw", new { id = Model.id })');
+            changeContent('fi/edit/' + $(this).attr('data-id'));
         })
         $('#ex').change(function () {
             //changeContent('ex/create');
         })
-        $('#wh').change(function () {
-            //changeContent('workingHeight/create');
+        $('#wh_id').click(function () {
+            $('#history').val('@Url.Action("Edit","Ptw", new { id = Model.id })');
+            changeContent('workingheight/edit/' + $(this).attr('data-id'));
         })
-        $('#rg').change(function () {
-            //changeContent('radiography/create');
+        $('#rad_id').click(function () {
+            $('#history').val('@Url.Action("Edit","Ptw", new { id = Model.id })');
+            changeContent('radiography/edit/' + $(this).attr('data-id'));
         })
 
         $('#requestor_acc').click(function () {
@@ -604,6 +609,9 @@
             acc_assessor: $('#acc_assessor').val(),
             acc_fo: $('#acc_fo').val(),
             hw_need: $('#hw').is(':checked') ? 1 : 0,
+            fi_need: $('#fi').is(':checked') ? 1 : 0,
+            rad_need: $('#rad').is(':checked') ? 1 : 0,
+            wh_need: $('#wh').is(':checked') ? 1 : 0,
         };
 
         if ('@isPosition' == 1) {
@@ -858,16 +866,20 @@
                         }
                     </td>
                     <td class="small">
-                        @Html.Raw(Model.hwStatus())
+                        @Html.Raw(Model.clearancePermitStatus(PtwEntity.clearancePermit.HOTWORK.ToString()))
                     </td>
                     <td class="small">Emergency evacuation plan, competence fire attendance</td>
                     <td class="small">HW form(104a) : general info, initial hazard screening  emergency evacuation form(101c) Approved emergency evacuation plan</td>
                 </tr>
                 <tr>
-                    <td class="td-centre"><input id="fi" type="checkbox" @(isCanEdit == true ? "" : "disabled")/></td>
+                    <td class="td-centre"><input id="fi" type="checkbox" @(isCanEdit == true ? "" : "disabled") @(Model.fi_id != null ? "checked" : "")/></td>
                     <td class="small">Fire Impairment (FI)</td>
-                    <td class="small">&nbsp;</td>
-                    <td class="small">&nbsp;</td>
+                    <td class="small">@if (Model.fi_id != null)
+                        {
+                            <button class="btn btn-small" id="fi_id" data-id="@Model.fi_id">@Model.fi_no&nbsp;</button>
+                        }
+                    </td>
+                    <td class="small">@Html.Raw(Model.clearancePermitStatus(PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString()))</td>
                     <td class="small">Fire operation system back up plan</td>
                     <td class="small">FI form(105a) : general info, clearance from spv, ERT leader, safety officer</td>
                 </tr>
@@ -880,18 +892,28 @@
                     <td class="small">Ex form(106a) : general info, clearance from facility + E&I officer</td>
                 </tr>
                 <tr>
-                    <td class="td-centre"><input id="wh" type="checkbox" @(isCanEdit == true ? "" : "disabled")/></td>
+                    <td class="td-centre"><input id="wh" type="checkbox" @(isCanEdit == true ? "" : "disabled") @(Model.wh_id != null ? "checked" : "")/></td>
                     <td class="small">Working at Height (WH)</td>
-                    <td class="small">&nbsp;</td>
-                    <td class="small">&nbsp;</td>
+                    <td class="small">
+                        @if (Model.wh_id != null)
+                        {
+                            <button class="btn btn-small" id="wh_id" data-id="@Model.wh_id">@Model.wh_no&nbsp;</button>
+                        }
+                    </td>
+                    <td class="small">@Html.Raw(Model.clearancePermitStatus(PtwEntity.clearancePermit.WORKINGHEIGHT.ToString()))</td>
                     <td class="small">Working at height emergency evacuation plan, scafolder certificate (for scafolding erection)</td>
                     <td class="small">WH form(107a) : general info, supervisor assesment</td>
                 </tr>
                 <tr>
-                    <td class="td-centre"><input id="rg" type="checkbox" @(isCanEdit == true ? "" : "disabled")/></td>
+                    <td class="td-centre"><input id="rad" type="checkbox" @(isCanEdit == true ? "" : "disabled") @(Model.rad_id != null ? "checked" : "")/></td>
                     <td class="small">RadioGraphic (Rad)</td>
-                    <td class="small">&nbsp;</td>
-                    <td class="small">&nbsp;</td>
+                    <td class="small">
+                        @if (Model.rad_id != null)
+                        {
+                            <button class="btn btn-small" id="rad_id" data-id="@Model.rad_id">@Model.rad_no&nbsp;</button>
+                        }
+                    </td>
+                    <td class="small">@Html.Raw(Model.clearancePermitStatus(PtwEntity.clearancePermit.RADIOGRAPHY.ToString()))</td>
                     <td class="small">Copy of certificate of competences: radiographic (engineer, operator, safety), emergency rescue plan, radioactive equipment & material manifest</td>
                     <td class="small">Rad form (108a) : general info, initial assesment (spv, engineer, operator, safety officer)</td>
                 </tr>
@@ -1111,7 +1133,7 @@
                     <td class="td-centre">
                         @if (Model.acc_ptw_requestor_approve != null && Model.acc_supervisor_approve == null && user_ptw[1] == true)
                         {
-                            <button class="btn" type="button" id="supervisor_reject">Reject</button><button class="btn" type="button" id="supervisor_acc">Accept</button><br />
+                            <button class="btn btn-success" type="button" id="supervisor_acc">Accept</button> <button class="btn btn-danger" type="button" id="supervisor_reject">Reject</button><br />
                             <span id="loading_supervisor_acc" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                         }
                         else
@@ -1140,7 +1162,7 @@
                     <td class="td-centre">
                         @if (Model.acc_supervisor_approve != null && Model.acc_assessor_approve == null && user_ptw[2] == true)
                         {
-                            <button class="btn" type="button" id="assessor_reject">Reject</button><button class="btn" type="button" id="assessor_acc">Accept</button><br />
+                            <button class="btn btn-success" type="button" id="assessor_acc">Accept</button> <button class="btn btn-danger" type="button" id="assessor_reject">Reject</button><br />
                             <span id="loading_assessor_acc" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                         }
                         else
@@ -1173,7 +1195,7 @@
                     <td class="td-centre">
                         @if (Model.acc_assessor_approve != null && Model.acc_fo_approve == null && user_ptw[3] == true)
                         {
-                            <button class="btn" type="button" id="fo_reject">Reject</button><button class="btn" type="button" id="fo_acc">Accept</button><br />
+                            <button class="btn btn-success" type="button" id="fo_acc">Accept</button> <button class="btn btn-danger" type="button" id="fo_reject">Reject</button><br />
                             <span id="loading_fo_acc" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                         }
                         else

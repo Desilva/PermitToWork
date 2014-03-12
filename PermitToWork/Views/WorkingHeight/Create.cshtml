@@ -1,4 +1,9 @@
-﻿<script>
+﻿@model PermitToWork.Models.WorkingHeight.WorkingHeightEntity
+@{
+    bool[] isCanEdit = ViewBag.isCanEdit as bool[];
+    PermitToWork.Models.User.UserEntity requestor = Session["user"] as PermitToWork.Models.User.UserEntity;
+}
+<script>
     $(document).ready(function () {
         addHandlerMenu();
 
@@ -18,6 +23,33 @@
                 $('#area').css('display', 'block');
             } else {
                 $('#area').css('display', 'none');
+            }
+        });
+        var a = false;
+        $('#access-location > div > .accordion-body').on('hide', function (e) {
+            var id = $(this).attr('id');
+            if (!a) {
+                if ($('#' + id + '-opt').is(':checked')) {
+                    e.preventDefault();
+                }
+            } else {
+                a = !a;
+            }
+        });
+
+        $('#scaffold .accordion-body').on('hide', function (e) {
+            var id = $(this).attr('id');
+            if ($('#' + id + '-opt').is(':checked')) {
+                e.preventDefault();
+            }
+            a = true;
+        });
+
+        $('input[name="mandatory-prevention"]').change(function () {
+            if (($(this).val() == 0)) {
+                $('#mandatory-prevention-other').removeAttr('disabled');
+            } else {
+                $('#mandatory-prevention-other').attr('disabled', 'disabled');
             }
         });
 
@@ -52,12 +84,472 @@
         }).data("kendoDateTimePicker");
 
 
-        var valid = $("#datetimepickerValid").kendoDateTimePicker({
+        var valid = $("#utilization-valid-date").kendoDatePicker({
             parseFormats: ["MM/dd/yyyy"]
-        }).data("kendoDateTimePicker");
+        }).data("kendoDatePicker");
 
         start.max(end.value());
         end.min(start.value());
+
+        $("#file-attachment").kendoUpload({
+            async: {
+                saveUrl: "@Url.Action("saveAttachment", "WorkingHeight")",
+                removeUrl: "@Url.Action("removeAttachment", "WorkingHeight")",
+                autoUpload: true,
+            },
+            upload: onUpload,
+            remove: onRemove,
+            success: onSuccessAttachment,
+        });
+
+        $fileList = $("#existing-files-attachment");
+
+        if ($fileList.length > 0) {
+            $("#file-attachment").parent().parent().parent('div.k-upload').append($fileList);
+            $files = $(".k-file");
+            _fn = function (item) {
+                var $item, fileId, filenames;
+                $item = $(item);
+                fileId = $item.data("att-id");
+                filenames = [
+                  {
+                      name: fileId
+                  }
+                ];
+                return $item.data("fileNames", filenames);
+            };
+            for (_i = 0, _len = $files.length; _i < _len; _i++) {
+                item = $files[_i];
+                _fn(item);
+            }
+            $fileList.show();
+        }
+
+        function onUpload(e) {
+            // Array with information about the uploaded files
+            var files = e.files;
+
+            // Check the extension of each file and abort the upload if it is not .jpg
+            $.each(files, function () {
+                if (this.extension != ".pdf") {
+                    //alert("Only .pdf files can be uploaded.")
+                    //e.preventDefault();
+                }
+            });
+            e.data = { id: '@Model.id' };
+        }
+
+        function onRemove(e) {
+            e.data = { id: '@Model.id' };
+        }
+
+        function onSuccessAttachment(e) {
+            var files = e.files;
+            // Check the extension of each file and abort the upload if it is not .jpg
+            $.each(files, function () {
+                $('.k-filename[title="' + this.name + '"]').html('<a href="@Url.Content("~/Upload/WorkingHeight/" + Model.id + "/Attachment")' + this.name + '">' + this.name + '</a>');
+            });
+        }
+
+        $('input[name = "mandatory-prevention"]:checked').trigger('change');
+
+        @if (!isCanEdit[0])
+        {
+        <text>
+        start.enable(false);
+        end.enable(false);
+        valid.enable(false);
+        $('#file-attachment').data('kendoUpload').disable();
+        </text>
+        }
+
+        $('#inspector').change(function () {
+            $.post('@Url.Action("GetInspector","WorkingHeight")', { id: $(this).val() }, function (resp) {
+                $('#inspector-certify-no').val(resp.inspectorCertifyNo);
+            });
+        });
+
+        $('#erection-erector').change(function () {
+            $.post('@Url.Action("getErector","WorkingHeight")', { id: $(this).val() }, function (resp) {
+                $('#erection-erector-certificate-no').val(resp.certificateNo);
+                $('#erection-erector-valid-date').val(resp.validDate);
+            });
+        });
+
+        $('#dismantling-erector').change(function () {
+            $.post('@Url.Action("getErector","WorkingHeight")', { id: $(this).val() }, function (resp) {
+                $('#dismantling-erector-certificate-no').val(resp.certificateNo);
+                $('#dismantling-erector-valid-date').val(resp.validDate);
+            });
+        });
+
+        $('#save-as-draft').click(function () {
+            var values = getValues();
+
+            $.post('@Url.Action("SaveAsDraft","WorkingHeight")', values, function (resp) {
+                if (resp.status == "200") {
+                    alert('Save success.');
+                } else {
+                    alert('Something\'s wrong. Please try again.');
+                }
+                $('#content').load('@Url.Action("Edit", "WorkingHeight")');
+            });
+        });
+
+        $('#save-send').click(function () {
+            var values = getValues();
+            $('#loading_gif').show();
+            $.post('@Url.Action("SaveAndSend","WorkingHeight")', values, function (resp) {
+                $('#loading_gif').hide();
+                if (resp.status == "200") {
+                    alert('Save success. You/erector may start pre-screening now.');
+                } else if (resp.status == "201") {
+                    alert('Save success. Inspector will be informed to approve.');
+                } else {
+                    alert('Something\'s wrong. Please try again.');
+                }
+                $('#content').load('@Url.Action("Edit", "WorkingHeight")');
+            });
+        });
+
+        $('#sign-inspector').click(function () {
+            var values = getValues();
+            $('#loading_gif').show();
+            $.post('@Url.Action("inspectorSign","WorkingHeight")', values, function (resp) {
+                $('#loading_gif').hide();
+                if (resp.status == "200") {
+                    alert('Save success. Requestor has been notified to do pre-job screening.');
+                } else {
+                    alert('Something\'s wrong. Please try again.');
+                }
+                $('#content').load('@Url.Action("Edit", "WorkingHeight")');
+            });
+        });
+
+        $('#save-as-draft-2').click(function () {
+            var values = getValues();
+            values = getScreeningValue(values, 1);
+            values.who = 1;
+            $.post('@Url.Action("SaveAsDraftPreScreening","WorkingHeight")', values, function (resp) {
+                if (resp.status == "200") {
+                    alert('Save success.');
+                } else {
+                    alert('Something\'s wrong. Please try again.');
+                }
+                $('#content').load('@Url.Action("Edit", "WorkingHeight")');
+            });
+        });
+
+        $('#save-send-2').click(function () {
+            var values = getValues();
+            values = getScreeningValue(values, 1);
+            values.who = 1;
+            $('#loading_gif').show();
+            $.post('@Url.Action("SaveAndSendPreScreening","WorkingHeight")', values, function (resp) {
+                $('#loading_gif').hide();
+                if (resp.status == "200") {
+                    alert('Save success. Facility Owner has been informed to do pre-job screening.');
+                } else {
+                    alert('Something\'s wrong. Please try again.');
+                }
+                $('#content').load('@Url.Action("Edit", "WorkingHeight")');
+            });
+        });
+
+        $('#save-as-draft-3').click(function () {
+            var values = getValues();
+            values = getScreeningValue(values, 2);
+            values.who = 2;
+            $.post('@Url.Action("SaveAsDraftPreScreening","WorkingHeight")', values, function (resp) {
+                if (resp.status == "200") {
+                    alert('Save success.');
+                } else {
+                    alert('Something\'s wrong. Please try again.');
+                }
+                $('#content').load('@Url.Action("Edit", "WorkingHeight")');
+            });
+        });
+
+        $('#save-send-3').click(function () {
+            var values = getValues();
+            values = getScreeningValue(values, 2);
+            values.who = 2;
+            $('#loading_gif').show();
+            $.post('@Url.Action("SaveAndSendPreScreening","WorkingHeight")', values, function (resp) {
+                $('#loading_gif').hide();
+                if (resp.status == "200") {
+                    alert('Save success. Requestor / Erector has been informed to sign clearence permit.');
+                } else {
+                    alert('Something\'s wrong. Please try again.');
+                }
+                $('#content').load('@Url.Action("Edit", "WorkingHeight")');
+            });
+        });
+
+        $('#reject').click(function () {
+            $('#type-reject').val(1);
+            $('#rejection').modal('show');
+        });
+
+        $('#reject-button').click(function () {
+            var values = {
+                id: '@Model.id',
+                comment: $('#comment').val(),
+            }
+
+            var type = $('#type-reject').val();
+            var url = '';
+            if (type == "1") {
+                url = '@Url.Action("rejectPreScreening","WorkingHeight")';
+                var values = getScreeningValue(values, 2);
+            } else if (type == "2") {
+                url = '@Url.Action("rejectCancelScreening","WorkingHeight")';
+                var values = getScreeningValue(values, 4);
+            }
+
+            $.post(url, values, function (resp) {
+                if (resp.status == "200") {
+                    alert('Comment has been sent to requestor for revising.');
+                }
+                $('#content').load('@Url.Action("Edit", "WorkingHeight")');
+            });
+        });
+
+        $('.start-accept').click(function () {
+            var values = {
+                id: '@Model.id',
+                who: $(this).data('who'),
+            }
+
+            $.post('@Url.Action("SignStartPermit", "WorkingHeight")', values, function (resp) {
+                if (resp.status == "200") {
+                    alert(resp.message);
+                }
+                $('#content').load('@Url.Action("Edit", "WorkingHeight")');
+            });
+        });
+
+        $('#closing').click(function () {
+            var values = {
+                id: '@Model.id',
+            }
+            $('#loading_gif').show();
+            $.post('@Url.Action("CancelWHPermit", "WorkingHeight")', values, function (resp) {
+                $('#loading_gif').hide();
+                if (resp.status == "200") {
+                    alert("Working Height Clearance Permit Cancelled. Notification has been sent to requestor / erector for cancellation screening.");
+                }
+                $('#content').load('@Url.Action("Edit", "WorkingHeight")');
+            });
+        });
+
+        $('#save-as-draft-4').click(function () {
+            var values = getValues();
+            var who = parseInt($('#save-send-4').data('who'));
+            values = getScreeningValue(values, who + 2);
+            values.who = who;
+            $.post('@Url.Action("SaveAsDraftCancelScreening","WorkingHeight")', values, function (resp) {
+                if (resp.status == "200") {
+                    alert('Save success.');
+                } else {
+                    alert('Something\'s wrong. Please try again.');
+                }
+                $('#content').load('@Url.Action("Edit", "WorkingHeight")');
+            });
+        });
+
+        $('#save-send-4').click(function () {
+            var values = getValues();
+            var who = parseInt($('#save-send-4').data('who'));
+            values = getScreeningValue(values, who + 2);
+            values.who = who;
+            $('#loading_gif').show();
+            $.post('@Url.Action("SaveAndSendCancelScreening","WorkingHeight")', values, function (resp) {
+                $('#loading_gif').hide();
+                if (resp.status == "200") {
+                    alert('Save success. Facility Owner has been informed to do cancellation screening.');
+                } else if (resp.status == "201") {
+                    alert('Save success. Facility Owner has been informed to sign cancellation.');
+                } else {
+                    alert('Something\'s wrong. Please try again.');
+                }
+                $('#content').load('@Url.Action("Edit", "WorkingHeight")');
+            });
+        });
+
+        $('.cancel-accept').click(function () {
+            var values = {
+                id: '@Model.id',
+                who: $(this).data('who'),
+            }
+
+            $.post('@Url.Action("SignCancelPermit", "WorkingHeight")', values, function (resp) {
+                if (resp.status == "200") {
+                    alert(resp.message);
+                }
+                $('#content').load('@Url.Action("Edit", "WorkingHeight")');
+            });
+        });
+
+        $('#reject-2').click(function () {
+            $('#type-reject').val(2);
+            $('#rejection').modal('show');
+        });
+
+        $('#back').click(function () {
+            $('#content').load($('#history').val());
+        });
+
+        function getValues() {
+            var values = {};
+            values.id = '@Model.id';
+            values.description = $('#description').val();
+            values.work_location = $('#work-location').val();
+            values.from = $('#datetimepickerFrom').val();
+            values.until = $('#datetimepickerUntil').val();
+            values.total_crew = $('#total-crew').val();
+            values.access = $('input[name="access-location"]:checked').val();
+            if (values.access == "1") {
+                var a = [];
+                var s = "";
+                $('.workbox-access').each(function () {
+                    var id = $(this).data('id');
+                    a[id] = $(this).val();
+                });
+
+                for (var i = 0; i < 4;i++) {
+                    s += a[i] + "#";
+                }
+                values.workbox_access = s.length > 0 ? s.substring(0, s.length - 1) : "";
+            } else if (values.access == "2") {
+                var a = [];
+                var s = "";
+                $('.ladder-access').each(function () {
+                    var id = $(this).data('id');
+                    a[id] = $(this).val();
+                });
+
+                for (var i = 0; i < 4; i++) {
+                    s += a[i] + "#";
+                }
+                values.ladder_access = s.length > 0 ? s.substring(0, s.length - 1) : "";
+            } else if (values.access == "3") {
+                var a = [];
+                var s = "";
+                $('.elevated-access').each(function () {
+                    var id = $(this).data('id');
+                    a[id] = $(this).val();
+                });
+
+                for (var i = 0; i < 3; i++) {
+                    s += a[i] + "#";
+                }
+                values.elevated_access = s.length > 0 ? s.substring(0, s.length - 1) : "";
+            } else if (values.access == "4") {
+                values.load_capacity = $('#load-capacity').val();
+                values.no_person = $('#no-person').val();
+                values.scaffolding = $('input[name="scaffolding-option"]:checked').val();
+                var a = [];
+                var s = "";
+                $('.scaffold-access').each(function () {
+                    var id = $(this).data('id');
+                    a[id] = $(this).val();
+                });
+
+                for (var i = 0; i < 3; i++) {
+                    s += a[i] + "#";
+                }
+                values.scaffold_access = s.length > 0 ? s.substring(0, s.length - 1) : "";
+
+                if (values.scaffolding == "1") {
+                    values.erector = $('#erection-erector').val();
+                    values.erector_valid_date = $('#erection-erector-valid-date').val();
+                    values.erector_certificate_no = $('#erection-erector-certificate-no').val();
+                } else if (values.scaffolding == "2") {
+                    values.inspector = $('#inspector').val();
+                    values.inspector_certify_no = $('#inspector-certify-no').val();
+                    values.utilization_valid_date = $('#utilization-valid-date').val();
+                } else if (values.scaffolding == "3") {
+                    values.erector = $('#dismantling-erector').val();
+                    values.erector_valid_date = $('#dismantling-erector-valid-date').val();
+                    values.erector_certificate_no = $('#dismantling-erector-certificate-no').val();
+                }
+            }
+
+            values.mandatory_fall_prevention = $('input[name="mandatory-prevention"]:checked').val();
+
+            if (values.mandatory_fall_prevention == "0") {
+                values.mandatory_fall_prevention = $('#mandatory-prevention-other').val();
+            }
+
+            var a = [];
+            var s = "";
+            $('.fall-prevention-assess').each(function () {
+                var id = $(this).data('id');
+                a[id] = $(this).val();
+            });
+
+            for (var i = 0; i < 3; i++) {
+                s += a[i] + "#";
+            }
+            values.fall_prevention_assess = s.length > 0 ? s.substring(0, s.length - 1) : "";
+
+            return values;
+        }
+
+        function getScreeningValue(values, id) {
+            if (id == 1) {
+                var a = [];
+                var s = "";
+                $('.pre-screening-req').each(function () {
+                    var id = $(this).data('id');
+                    a[id] = $(this).val();
+                });
+
+                for (var i = 0; i < 3; i++) {
+                    s += a[i] + "#";
+                }
+                values.pre_screening_req = s.length > 0 ? s.substring(0, s.length - 1) : "";
+            } else if (id == 2) {
+                var a = [];
+                var s = "";
+                $('.pre-screening-fo').each(function () {
+                    var id = $(this).data('id');
+                    a[id] = $(this).val();
+                });
+
+                for (var i = 0; i < 3; i++) {
+                    s += a[i] + "#";
+                }
+                values.pre_screening_fo = s.length > 0 ? s.substring(0, s.length - 1) : "";
+            } else if (id == 3) {
+                var a = [];
+                var s = "";
+                $('.can-screening-req').each(function () {
+                    var id = $(this).data('id');
+                    a[id] = $(this).val();
+                });
+
+                for (var i = 0; i < 3; i++) {
+                    s += a[i] + "#";
+                }
+                values.can_screening_req = s.length > 0 ? s.substring(0, s.length - 1) : "";
+            } else if (id == 4) {
+                var a = [];
+                var s = "";
+                $('.can-screening-fo').each(function () {
+                    var id = $(this).data('id');
+                    a[id] = $(this).val();
+                });
+
+                for (var i = 0; i < 3; i++) {
+                    s += a[i] + "#";
+                }
+                values.can_screening_fo = s.length > 0 ? s.substring(0, s.length - 1) : "";
+            }
+
+            return values;
+        }
     })
 </script>
 
@@ -80,7 +572,7 @@
             Star Energy Geothermal (Wayang Windu) Limited
         </div>
         <div class="span3 no">
-            No: WH-xxx-xxx/xxx/xxx
+            <br /><i>No : @Model.wh_no</i>
         </div>
     </div>
     <div class="row-fluid separator">
@@ -100,18 +592,18 @@
             <tbody>
                 <tr>
                     <td>Description of Work at<br />height task</td>
-                    <td colspan="3">: <input class="table-input table-input-170" id="description" type="text"></td>
+                    <td colspan="3">: <input class="table-input table-input-200" id="description" type="text" value="@Model.description" @(isCanEdit[0] ? "" : "disabled")></td>
                 </tr>
                 <tr>
                     <td>Work Location</td>
-                    <td>: <input class="table-input table-input-120" id="workLocation" type="text"></td>
-                    <td>From : <input id="datetimepickerFrom" class="datetimepicker" value="10/10/2011 12:00 AM" /></td>
-                    <td>Until : <input id="datetimepickerUntil" class="datetimepicker" value="10/10/2011 12:00 AM" /></td>
+                    <td>: <input class="table-input table-input-120" id="work-location" type="text" value="@Model.work_location" @(isCanEdit[0] ? "" : "disabled")></td>
+                    <td>From : <input id="datetimepickerFrom" class="datetimepicker" value="@(Model.from != null ? Model.from.Value.ToString("MM/dd/yyyy hh:mm tt") : "")" /></td>
+                    <td>Until : <input id="datetimepickerUntil" class="datetimepicker" value="@(Model.until != null ? Model.until.Value.ToString("MM/dd/yyyy hh:mm tt") : "")" /></td>
                 </tr>
                 <tr>
                     <td>Requestor</td>
-                    <td>: <input class="table-input table-input-120" id="requestor" type="text"></td>
-                    <td colspan="2">Total crew : <input class="table-input table-input-120" id="totalCrew" type="text"></td>
+                    <td>: <input class="table-input table-input-120" id="requestor" type="text" disabled value="@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.REQUESTOR.ToString()].alpha_name"></td>
+                    <td colspan="2">Total crew : @Html.DropDownList("total-crew", ViewBag.listTotalCrew as List<SelectListItem>, (isCanEdit[0] ? new { @class = "table-input-170" } as object : new { @class = "table-input-170", disabled = "disabled" } as object))</td>
                 </tr>
             </tbody>
         </table>
@@ -120,332 +612,456 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th colspan="3" class="title-form">
-                        <b>2. ACCESS TO WORK LOCATION AT HEIGHT</b> <span><i>(Fill by supervisor review by Facility Owner)</i></span>
+                    <th class="title-form">
+                        <b>2. ACCESS TO WORK LOCATION AT HEIGHT</b>
                     </th>
                 </tr>
             </thead>
-            <tbody class="span6 wh-no-margin">
+            <tbody>
                 <tr>
-                    <td><input type="checkbox" id="workBox" value="1"/></td>
-                    <td><strong>WORK BOX</strong> <small>(man basket: for lifting purpose needs other lifting equipment)</small></td>
-                    <td> Yes N/A </td>
-                </tr>
-                <tr>
-                    <td>1) </td>
-                    <td>Work Box is suitable for the task </td>
                     <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
+                        <div class="accordion" id="access-location">
+                            <div class="accordion-group">
+                                <div class="accordion-heading">
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" id="work-box-opt" value="1" class="accordion-toggle" name="access-location" data-parent="#access-location" data-toggle="collapse" data-target="#work-box" @(Model.access == 1 ? "checked" : "") @(isCanEdit[0] ? "" : "disabled")> WORK BOX
+                                        </label>
+                                    </div>
+                                </div>
+                                <div id="work-box" class="accordion-body collapse @(Model.access == 1 ? "in" : "")">
+                                    <div class="accordion-inner">
+                                        <table class="table table-bordered">
+                                            <tbody>
+                                                <tr>
+                                                    <td>1) </td>
+                                                    <td>Work Box is suitable for the task </td>
+                                                    <td>
+                                                        <select class="radiography-select workbox-access" data-id="0" id="workbox-access-1" @(isCanEdit[0] ? "" : "disabled")>
+                                                            <option value="0" @(Model.workbox_access_arr[0] == "0" ? "selected" : "")>N/A</option>
+                                                            <option value="1" @(Model.workbox_access_arr[0] == "1" ? "selected" : "")>Yes</option>
+                                                            <option value="2" @(Model.workbox_access_arr[0] == "2" ? "selected" : "")>No</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>2) </td>
+                                                    <td>Work box has valid color code and tag available? </td>
+                                                    <td>
+                                                        <select class="radiography-select workbox-access" data-id="1" id="workbox-access-2" @(isCanEdit[0] ? "" : "disabled")>
+                                                            <option value="0" @(Model.workbox_access_arr[1] == "0" ? "selected" : "")>N/A</option>
+                                                            <option value="1" @(Model.workbox_access_arr[1] == "1" ? "selected" : "")>Yes</option>
+                                                            <option value="2" @(Model.workbox_access_arr[1] == "2" ? "selected" : "")>No</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>3) </td>
+                                                    <td>Overhead hazards have been controlled? </td>
+                                                    <td>
+                                                        <select class="radiography-select workbox-access" data-id="2" id="workbox-access-3" @(isCanEdit[0] ? "" : "disabled")>
+                                                            <option value="0" @(Model.workbox_access_arr[2] == "0" ? "selected" : "")>N/A</option>
+                                                            <option value="1" @(Model.workbox_access_arr[2] == "1" ? "selected" : "")>Yes</option>
+                                                            <option value="2" @(Model.workbox_access_arr[2] == "2" ? "selected" : "")>No</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>4) </td>
+                                                    <td>Anchor point for fall arrest is suitable and accessible? </td>
+                                                    <td>
+                                                        <select class="radiography-select workbox-access" data-id="3" id="workbox-access-4" @(isCanEdit[0] ? "" : "disabled")>
+                                                            <option value="0" @(Model.workbox_access_arr[3] == "0" ? "selected" : "")>N/A</option>
+                                                            <option value="1" @(Model.workbox_access_arr[3] == "1" ? "selected" : "")>Yes</option>
+                                                            <option value="2" @(Model.workbox_access_arr[3] == "2" ? "selected" : "")>No</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-group">
+                                <div class="accordion-heading">
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" id="ladder-opt" value="2" class="accordion-toggle" name="access-location" data-parent="#access-location" data-toggle="collapse" data-target="#ladder" @(Model.access == 2 ? "checked" : "") @(isCanEdit[0] ? "" : "disabled")> LADDER <small>(portable ladder)</small>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div id="ladder" class="accordion-body collapse @(Model.access == 2 ? "in" : "")">
+                                    <div class="accordion-inner">
+                                        <table class="table table-bordered">
+                                            <tbody>
+                                                <tr>
+                                                    <td>1) </td>
+                                                    <td>Is the ladder secured and suitable for the task? </td>
+                                                    <td>
+                                                        <select class="radiography-select ladder-access" data-id="0" id="ladder-access-1" @(isCanEdit[0] ? "" : "disabled")>
+                                                            <option value="0" @(Model.ladder_access_arr[0] == "0" ? "selected" : "")>N/A</option>
+                                                            <option value="1" @(Model.ladder_access_arr[0] == "1" ? "selected" : "")>Yes</option>
+                                                            <option value="2" @(Model.ladder_access_arr[0] == "2" ? "selected" : "")>No</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>2) </td>
+                                                    <td>Can work be performed maintaining 3 points of contact? </td>
+                                                    <td>
+                                                        <select class="radiography-select ladder-access" data-id="1" id="ladder-access-2" @(isCanEdit[0] ? "" : "disabled")>
+                                                            <option value="0" @(Model.ladder_access_arr[1] == "0" ? "selected" : "")>N/A</option>
+                                                            <option value="1" @(Model.ladder_access_arr[1] == "1" ? "selected" : "")>Yes</option>
+                                                            <option value="2" @(Model.ladder_access_arr[1] == "2" ? "selected" : "")>No</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>3) </td>
+                                                    <td>Ladder material from non conductive material? </td>
+                                                    <td>
+                                                        <select class="radiography-select ladder-access" data-id="2" id="ladder-access-3" @(isCanEdit[0] ? "" : "disabled")>
+                                                            <option value="0" @(Model.ladder_access_arr[2] == "0" ? "selected" : "")>N/A</option>
+                                                            <option value="1" @(Model.ladder_access_arr[2] == "1" ? "selected" : "")>Yes</option>
+                                                            <option value="2" @(Model.ladder_access_arr[2] == "2" ? "selected" : "")>No</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>4) </td>
+                                                    <td>Does the ladder require fall arrest for use? </td>
+                                                    <td>
+                                                        <select class="radiography-select ladder-access" data-id="3" id="ladder-access-4" @(isCanEdit[0] ? "" : "disabled")>
+                                                            <option value="0" @(Model.ladder_access_arr[3] == "0" ? "selected" : "")>N/A</option>
+                                                            <option value="1" @(Model.ladder_access_arr[3] == "1" ? "selected" : "")>Yes</option>
+                                                            <option value="2" @(Model.ladder_access_arr[3] == "2" ? "selected" : "")>No</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-group">
+                                <div class="accordion-heading">
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" id="elevated-platform-opt" value="3" class="accordion-toggle" name="access-location" data-parent="#access-location" data-toggle="collapse" data-target="#elevated-platform" @(Model.access == 3 ? "checked" : "") @(isCanEdit[0] ? "" : "disabled")> ELEVATED WORK PLATFORM <small>(movable work platform equipped by mechanical adjustment for operation)</small>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div id="elevated-platform" class="accordion-body collapse @(Model.access == 3 ? "in" : "")">
+                                    <div class="accordion-inner">
+                                        <table class="table table-bordered">
+                                            <tbody>
+                                                <tr>
+                                                    <td>1) </td>
+                                                    <td>Has the equipment certified. </td>
+                                                    <td>
+                                                        <select class="radiography-select elevated-access" data-id="0" id="elevated-access-1" @(isCanEdit[0] ? "" : "disabled")>
+                                                            <option value="0" @(Model.ladder_access_arr[0] == "0" ? "selected" : "")>N/A</option>
+                                                            <option value="1" @(Model.ladder_access_arr[0] == "1" ? "selected" : "")>Yes</option>
+                                                            <option value="2" @(Model.ladder_access_arr[0] == "2" ? "selected" : "")>No</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>2) </td>
+                                                    <td>Overhead hazard have been controlled? </td>
+                                                    <td>
+                                                        <select class="radiography-select elevated-access" data-id="1" id="elevated-access-2" @(isCanEdit[0] ? "" : "disabled")>
+                                                            <option value="0" @(Model.ladder_access_arr[1] == "0" ? "selected" : "")>N/A</option>
+                                                            <option value="1" @(Model.ladder_access_arr[1] == "1" ? "selected" : "")>Yes</option>
+                                                            <option value="2" @(Model.ladder_access_arr[1] == "2" ? "selected" : "")>No</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>3) </td>
+                                                    <td>Anchor point for fall arrest suitable and accessible? </td>
+                                                    <td>
+                                                        <select class="radiography-select elevated-access" data-id="2" id="elevated-access-3" @(isCanEdit[0] ? "" : "disabled")>
+                                                            <option value="0" @(Model.ladder_access_arr[2] == "0" ? "selected" : "")>N/A</option>
+                                                            <option value="1" @(Model.ladder_access_arr[2] == "1" ? "selected" : "")>Yes</option>
+                                                            <option value="2" @(Model.ladder_access_arr[2] == "2" ? "selected" : "")>No</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-group">
+                                <div class="accordion-heading">
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" id="scaffolding-opt" value="4" class="accordion-toggle" name="access-location" data-parent="#access-location" data-toggle="collapse" data-target="#scaffolding" @(Model.access == 4 ? "checked" : "") @(isCanEdit[0] ? "" : "disabled")> SCAFFOLDING <small>(for install and dismantle erector must be as permit holder)</small>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div id="scaffolding" class="accordion-body collapse @(Model.access == 4 ? "in" : "")">
+                                    <div class="row-fluid">
+                                        <form class="form-horizontal">
+                                            <div class="span6">
+                                                <div class="control-group">
+                                                    <label class="control-label" for="load-capacity">Load Capacity</label>
+                                                    <div class="controls">
+                                                        <input type="text" id="load-capacity" placeholder="Load Capacity" value="@Model.load_capacity" @(isCanEdit[0] ? "" : "disabled")>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="span6">
+                                                <div class="control-group">
+                                                    <label class="control-label" for="inputPassword">No of Person</label>
+                                                    <div class="controls">
+                                                        <input type="text" id="no-person" placeholder="No of Person" value="@Model.no_person" @(isCanEdit[0] ? "" : "disabled")>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="accordion-inner">
+                                        <div class="accordion" id="scaffold">
+                                            <div class="accordion-group">
+                                                <div class="accordion-heading">
+                                                    <div class="radio">
+                                                        <label>
+                                                            <input type="radio" id="erection-opt" value="1" class="accordion-toggle" name="scaffolding-option" data-parent="#scaffold" data-toggle="collapse" data-target="#erection"  @(Model.scaffolding == 1 ? "checked" : "") @(isCanEdit[0] ? "" : "disabled")> Erection
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div id="erection" class="accordion-body collapse @(Model.scaffolding == 1 ? "in" : "")">
+                                                    <div class="accordion-inner">
+                                                        <table class="table">
+                                                            <tr>
+                                                                <td>
+                                                                    a
+                                                                </td>
+                                                                <td>
+                                                                    Erector
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DropDownList("erection-erector", ViewBag.listErector as List<SelectListItem>, (isCanEdit[0] ? new { @class = "table-input-170" } as object : new { @class = "table-input-170", disabled = "disabled" } as object))
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    b
+                                                                </td>
+                                                                <td>
+                                                                    Erector Certificate No:
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" id="erection-erector-certificate-no" value="@Model.erector_certificate_no" disabled />
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    c
+                                                                </td>
+                                                                <td>
+                                                                    Valid until, date:
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" id="erection-erector-valid-date" value="@Model.erector_valid_date" disabled/>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    d
+                                                                </td>
+                                                                <td>
+                                                                    Has scaffold design been approved?
+                                                                </td>
+                                                                <td>
+                                                                    <select class="radiography-select scaffold-access" data-id="0" id="scaffold-access-1" @(isCanEdit[0] ? "" : "disabled")>
+                                                                        <option value="0" @(Model.scaffold_access_arr[0] == "0" ? "selected" : "")>N/A</option>
+                                                                        <option value="1" @(Model.scaffold_access_arr[0] == "1" ? "selected" : "")>Yes</option>
+                                                                        <option value="2" @(Model.scaffold_access_arr[0] == "2" ? "selected" : "")>No</option>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="accordion-group">
+                                                <div class="accordion-heading">
+                                                    <div class="radio">
+                                                        <label>
+                                                            <input type="radio" id="utilization-opt" value="2" class="accordion-toggle" name="scaffolding-option" data-parent="#scaffold" data-toggle="collapse" data-target="#utilization" @(Model.scaffolding == 2 ? "checked" : "") @(isCanEdit[0] ? "" : "disabled")> Utilization
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div id="utilization" class="accordion-body collapse @(Model.scaffolding == 2 ? "in" : "")">
+                                                    <div class="accordion-inner">
+                                                        <table class="table">
+                                                            <tr>
+                                                                <td>
+                                                                    a
+                                                                </td>
+                                                                <td>
+                                                                    Has the scaffolding been certified?
+                                                                </td>
+                                                                <td>
+                                                                    <select class="radiography-select scaffold-access" data-id="1" id="scaffold-access-2" @(isCanEdit[0] ? "" : "disabled")>
+                                                                        <option value="0" @(Model.scaffold_access_arr[1] == "0" ? "selected" : "")>N/A</option>
+                                                                        <option value="1" @(Model.scaffold_access_arr[1] == "1" ? "selected" : "")>Yes</option>
+                                                                        <option value="2" @(Model.scaffold_access_arr[1] == "2" ? "selected" : "")>No</option>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    b
+                                                                </td>
+                                                                <td>
+                                                                    Inspector:
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DropDownList("inspector", ViewBag.listInspector as List<SelectListItem>, (isCanEdit[0] ? new { @class = "table-input-170" } as object : new { @class = "table-input-170", disabled = "disabled" } as object))
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    c
+                                                                </td>
+                                                                <td>
+                                                                    Inspector certify no:
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" id="inspector-certify-no" value="@Model.inspector_certify_no" disabled/>
+                                                                </td>
+                                                            </tr>
+                                                            @if (Model.status >= (int)PermitToWork.Models.WorkingHeight.WorkingHeightEntity.WHStatus.EDITANDSEND) {
+                                                            <tr>
+                                                                <td colspan="3" class="text-center">
+                                                                    <u>Inspector Approval</u><br />
+                                                                    @if (isCanEdit[1])
+                                                                    {
+                                                                        <input type="button" class="btn btn-success" value="Sign" id="sign-inspector" />
+                                                                    }
+                                                                    else if (Model.inspector_signature != null)
+                                                                    {
+                                                                        <img id="img-approve-inspector" width="50" height="50" src="@Model.inspector_signature" />
+                                                                    }
+                                                                    <br /><span>@(Model.inspectorUser != null ? Model.inspectorUser.user.alpha_name : "") @(Model.inspector_signature != null ? "- " + Model.inspector_sign_date.Value.ToString("dd MMM yyyy") : "")</span>
+                                                                </td>
+                                                            </tr>
+                                                            }
+                                                            <tr>
+                                                                <td>
+                                                                    d
+                                                                </td>
+                                                                <td>
+                                                                    Valid Until:
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" id="utilization-valid-date" value="@(Model.utilization_valid_date != null ? Model.utilization_valid_date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")"/>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="accordion-group">
+                                                <div class="accordion-heading">
+                                                    <div class="radio">
+                                                        <label>
+                                                            <input type="radio" id="dismantling-opt" value="3" class="accordion-toggle" name="scaffolding-option" data-parent="#scaffold" data-toggle="collapse" data-target="#dismantling" @(Model.scaffolding == 3 ? "checked" : "") @(isCanEdit[0] ? "" : "disabled")> Dismantling
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div id="dismantling" class="accordion-body collapse @(Model.scaffolding == 3 ? "in" : "")">
+                                                    <div class="accordion-inner">
+                                                        <table class="table">
+                                                            <tr>
+                                                                <td>
+                                                                    a
+                                                                </td>
+                                                                <td>
+                                                                    Erector
+                                                                </td>
+                                                                <td>
+                                                                    @Html.DropDownList("dismantling-erector", ViewBag.listErector as List<SelectListItem>, (isCanEdit[0] ? new { @class = "table-input-170" } as object : new { @class = "table-input-170", disabled = "disabled" } as object))
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    b
+                                                                </td>
+                                                                <td>
+                                                                    Erector Certificate No:
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" id="dismantling-erector-certificate-no" value="@Model.erector_certificate_no" disabled />
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    c
+                                                                </td>
+                                                                <td>
+                                                                    Valid until, date:
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" id="dismantling-erector-valid-date" value="@Model.erector_valid_date" disabled/>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    d
+                                                                </td>
+                                                                <td>
+                                                                    Has dismantle scaffolding approved by previous user?
+                                                                </td>
+                                                                <td>
+                                                                    <select class="radiography-select scaffold-access" data-id="2" id="scaffold-access-3" @(isCanEdit[0] ? "" : "disabled")>
+                                                                        <option value="0" @(Model.scaffold_access_arr[2] == "0" ? "selected" : "")>N/A</option>
+                                                                        <option value="1" @(Model.scaffold_access_arr[2] == "1" ? "selected" : "")>Yes</option>
+                                                                        <option value="2" @(Model.scaffold_access_arr[2] == "2" ? "selected" : "")>No</option>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </td>
-                </tr>
-                <tr>
-                    <td>2) </td>
-                    <td>Work box has valid color code and tag available? </td>
-                    <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>3) </td>
-                    <td>Overhead hazards have been controlled? </td>
-                    <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>4) </td>
-                    <td>Fail arrest system has been identified and in place? </td>
-                    <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>5) </td>
-                    <td>Anchor point for fall arrest is suitable and accessible? </td>
-                    <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox" id="ladder" value="1"/></td>
-                    <td><strong>LADDER</strong> <small>(portable ladder)</small></td>
-                    <td> Yes N/A </td>
-                </tr>
-                <tr>
-                    <td>1) </td>
-                    <td>Is the ladder secured and suitable for the task? </td>
-                    <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>2) </td>
-                    <td>Can work be performed maintaining 3 points of contact? </td>
-                    <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>3) </td>
-                    <td>Ladder material from non conductive material? </td>
-                    <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>4) </td>
-                    <td>Does the ladder require fall arrest for use? </td>
-                    <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox" id="elevatedPlatform" value="1"/></td>
-                    <td><strong>ELEVATED WORK PLATFORM</strong> <small>(movable work platform equipped by mechanical adjustment for operation)</small></td>
-                    <td> Yes N/A </td>
-                </tr>
-                <tr>
-                    <td>1) </td>
-                    <td>Pre-use inspection has been conduct (form xxx). </td>
-                    <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>2) </td>
-                    <td>Area inspected for overhead hazards has been control. </td>
-                    <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>3) </td>
-                    <td>Fall restraint controls identified and in place. </td>
-                    <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>4) </td>
-                    <td>Anchor point is suitable and accessible. </td>
-                    <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                </tr>
-            </tbody>
-            <tbody class="span6">
-                <tr>
-                    <td><input type="checkbox" id="scaffolding" value="1"/></td>
-                    <td><strong>SCAFFOLDING</strong> <small>(if selected form HW 107b must be attached, for install and dismantle erector must be as permit holder)</small></td>
-                    <td> Yes N/A </td>
-                </tr>
-                <tr>
-                    <td>1) </td>
-                    <td>For Install and or dismantle scaffolding </td>
-                    <td>
-                        &nbsp;
-                    </td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>a. Erector certificate no: <input class="table-input table-input-120" id="erectorCertificateNo" type="text"></td>
-                    <td>
-                        &nbsp;
-                    </td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>b. Valid until, date: <input id="datetimepickerValid" class="datetimepicker" value="10/10/2011 12:00 AM" /></td>
-                    <td>
-                        &nbsp;
-                    </td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>c. Has scaffold design been approved?</td>
-                    <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>2) </td>
-                    <td>For user scaffolding </td>
-                    <td>
-                        &nbsp;
-                    </td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>a. Has the scaffolding been certified (green tag applied)?</td>
-                    <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>b. Have the scaffolding will be utilize by other parties? <small><i>(first group leader user shall brief other group user)</i></small></td>
-                    <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>3) </td>
-                    <td>For dismantle scaffolding </td>
-                    <td>
-                        &nbsp;
-                    </td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>a. Scaffolding ready to dismantle <small><i>(agreed by user)</i></small></td>
-                    <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>b. Dismantle method have been identified? </td>
-                    <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td>&nbsp;</td>
-                    <td>c. Scaffolding can be dismantled with safely way? </td>
-                    <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td><input type="checkbox" id="other" value="1"/></td>
-                    <td colspan="2"><strong>*OTHER</strong> <input class="table-input table-input-180" id="otherText" type="text"><br /><small><i>(* Must be approved by safety officer)</i></small></td>
                 </tr>
             </tbody>
         </table>
     </div>
     <div class="row-fluid">
         <table class="table">
-            <tbody>
+            <thead>
                 <tr>
-                    <td colspan="3"><strong>FALL PREVENTION</strong></td>
+                    <th class="title-form" colspan="5"><b>3. MANDATORY FALL PREVENTION</b></th>
                 </tr>
-            </tbody>
+            </thead>
             <tbody class="span6 wh-no-margin">
                 <tr>
                     <td>1) </td>
                     <td class="span6">Mandatory Fall prevention system </td>
-                    <td>
-                         Yes N/A 
-                    </td>
                 </tr>
                 <tr>
                     <td>&nbsp;</td>
-                    <td>a. Fall arrest</td>
-                    <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
+                    <td><input type="radio" name="mandatory-prevention" value="1" @(Model.mandatory_fall_prevention == "1" ? "checked" : "") @(isCanEdit[0] ? "" : "disabled")/> Fall arrest</td>
                 </tr>
                 <tr>
                     <td>&nbsp;</td>
-                    <td>b. Safety net</td>
-                    <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
+                    <td><input type="radio" name="mandatory-prevention" value="2" @(Model.mandatory_fall_prevention == "2" ? "checked" : "") @(isCanEdit[0] ? "" : "disabled")/> Safety net</td>
                 </tr>
                 <tr>
                     <td>&nbsp;</td>
-                    <td>c. Other: <input class="table-input table-input-120" id="otherFallPrevention" type="text"></td>
-                    <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
+                    <td><input type="radio" name="mandatory-prevention" value="0" @(Model.mandatory_fall_prevention != null && Model.mandatory_fall_prevention != "1" && Model.mandatory_fall_prevention != "2" ? "checked" : "") @(isCanEdit[0] ? "" : "disabled")/> Other: <input class="table-input table-input-120" id="mandatory-prevention-other" type="text" value="@(Model.mandatory_fall_prevention != "1" && Model.mandatory_fall_prevention != "2" ? Model.mandatory_fall_prevention : "")" disabled></td>
                 </tr>
             </tbody>
             <tbody class="span6">
@@ -457,10 +1073,10 @@
                     <td>2) </td>
                     <td>Anchor point and landyard restricts fall of no more than 600 mm. </td>
                     <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select fall-prevention-assess" data-id="0" id="fall-prevention-assess-1" @(isCanEdit[0] ? "" : "disabled")>
+                            <option value="0" @(Model.fall_prevention_assess_arr[0] == "0" ? "selected" : "")>N/A</option>
+                            <option value="1" @(Model.fall_prevention_assess_arr[0] == "1" ? "selected" : "")>Yes</option>
+                            <option value="2" @(Model.fall_prevention_assess_arr[0] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                 </tr>
@@ -468,10 +1084,10 @@
                     <td>3) </td>
                     <td>Equipment to be used in good condition. </td>
                     <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select fall-prevention-assess" data-id="1" id="fall-prevention-assess-2" @(isCanEdit[0] ? "" : "disabled")>
+                            <option value="0" @(Model.fall_prevention_assess_arr[1] == "0" ? "selected" : "")>N/A</option>
+                            <option value="1" @(Model.fall_prevention_assess_arr[1] == "1" ? "selected" : "")>Yes</option>
+                            <option value="2" @(Model.fall_prevention_assess_arr[1] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                 </tr>
@@ -479,10 +1095,10 @@
                     <td>4) </td>
                     <td>Equipment designed to limit fall potential. </td>
                     <td>
-                        <select class="radiography-select" id="">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select fall-prevention-assess" data-id="2" id="fall-prevention-assess-3" @(isCanEdit[0] ? "" : "disabled")>
+                            <option value="0" @(Model.fall_prevention_assess_arr[2] == "0" ? "selected" : "")>N/A</option>
+                            <option value="1" @(Model.fall_prevention_assess_arr[2] == "1" ? "selected" : "")>Yes</option>
+                            <option value="2" @(Model.fall_prevention_assess_arr[2] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                 </tr>
@@ -493,217 +1109,422 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th class="title-form" colspan="5"><b>3. WORKING AT HEIGHT SCREENING</b> <span><i>(Fill assessment with yes, no, or N/A; Spv: Supervisor; SO: Safety Officer; FO: Facility Owner)</i></span></th>
-                    
+                    <th class="title-form" colspan="4"><b>4. PRE-JOB SCREENING</b> <span><i>(Fill assessment with yes, no, or N/A; Req: Requestor; Er: Erector; FO: Facility Owner)</i></span></th>
                 </tr>
-                
             </thead>
             <tbody>
                 <tr>
                     <td rowspan="2" class="radio-title-form"><b>No</b></td>
                     <td rowspan="2" class="radio-title-form"><b>Description</b></td>
-                    <td colspan="3" class="radio-title-form"><b>Assessment</b></td>
+                    <td colspan="2" class="radio-title-form"><b>Assessment</b></td>
                 </tr>
                 <tr>
-                    <td class="radio-title-form">SPV</td>
-                    <td class="radio-title-form">SO</td>
+                    <td class="radio-title-form">Requestor / Erector *</td>
                     <td class="radio-title-form">FO</td>
                 </tr>
                 <tr>
                     <td>1</td>
-                    <td>Worker assign the task are competent in working at height</td>
+                    <td>Personnel(s) are competent in working at height</td>
                     <td class="radio-title-form">
-                        <select class="radiography-select" id="spv1">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-req" data-id="0" id="pre-screening-req-1" @(isCanEdit[2] ? "" : "disabled")>
+                            <option value="0" @(Model.screening_req_arr[0] == "0" ? "selected" : "")>N/A</option>
+                            <option value="1" @(Model.screening_req_arr[0] == "1" ? "selected" : "")>Yes</option>
+                            <option value="2" @(Model.screening_req_arr[0] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td class="radio-title-form">
-                        <select class="radiography-select" id="so1">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                    <td class="radio-title-form">
-                        <select class="radiography-select" id="fo1">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-fo" data-id="0" id="pre-screening-fo-1" @(isCanEdit[3] ? "" : "disabled")>
+                            <option value="0" @(Model.screening_fo_arr[0] == "0" ? "selected" : "")>N/A</option>
+                            <option value="1" @(Model.screening_fo_arr[0] == "1" ? "selected" : "")>Yes</option>
+                            <option value="2" @(Model.screening_fo_arr[0] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                 </tr>
                 <tr>
                     <td>2</td>
-                    <td>Work area safe for energize power lines <small><i>(safe clearance available)</i></small></td>
+                    <td>Emergency rescue plan is available & work leader/ supervisor has briefed his personnel</td>
                     <td class="radio-title-form">
-                        <select class="radiography-select" id="spv2">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-req" data-id="1" id="pre-screening-req-2" @(isCanEdit[2] ? "" : "disabled")>
+                            <option value="0" @(Model.screening_req_arr[1] == "0" ? "selected" : "")>N/A</option>
+                            <option value="1" @(Model.screening_req_arr[1] == "1" ? "selected" : "")>Yes</option>
+                            <option value="2" @(Model.screening_req_arr[1] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td class="radio-title-form">
-                        <select class="radiography-select" id="so2">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                    <td class="radio-title-form">
-                        <select class="radiography-select" id="fo2">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-fo" data-id="1" id="pre-screening-fo-2" @(isCanEdit[3] ? "" : "disabled")>
+                            <option value="0" @(Model.screening_fo_arr[1] == "0" ? "selected" : "")>N/A</option>
+                            <option value="1" @(Model.screening_fo_arr[1] == "1" ? "selected" : "")>Yes</option>
+                            <option value="2" @(Model.screening_fo_arr[1] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                 </tr>
                 <tr>
                     <td>3</td>
-                    <td>Emergency rescue plan available <small><i>(Form xxx attached)</i></small></td>
+                    <td>Working at height can be done with safely way </td>
                     <td class="radio-title-form">
-                        <select class="radiography-select" id="spv3">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-req" data-id="2" id="pre-screening-req-3" @(isCanEdit[2] ? "" : "disabled")>
+                            <option value="0" @(Model.screening_req_arr[2] == "0" ? "selected" : "")>N/A</option>
+                            <option value="1" @(Model.screening_req_arr[2] == "1" ? "selected" : "")>Yes</option>
+                            <option value="2" @(Model.screening_req_arr[2] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td class="radio-title-form">
-                        <select class="radiography-select" id="so3">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                    <td class="radio-title-form">
-                        <select class="radiography-select" id="fo3">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-fo" data-id="2" id="pre-screening-fo-3" @(isCanEdit[3] ? "" : "disabled")>
+                            <option value="0" @(Model.screening_fo_arr[2] == "0" ? "selected" : "")>N/A</option>
+                            <option value="1" @(Model.screening_fo_arr[2] == "1" ? "selected" : "")>Yes</option>
+                            <option value="2" @(Model.screening_fo_arr[2] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                 </tr>
                 <tr>
-                    <td>4</td>
-                    <td>Working at height can be done with safely way</td>
-                    <td class="radio-title-form">
-                        <select class="radiography-select" id="spv4">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                    <td class="radio-title-form">
-                        <select class="radiography-select" id="so4">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                    <td class="radio-title-form">
-                        <select class="radiography-select" id="fo4">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="5">Note <small><i>(write any consent related the working at height permit)</i></small>: <br />
-                        <textarea class="table-textarea" id="note"></textarea>
+                    <td colspan="4">Note <small><i>(write any consent related the working at height permit)</i></small>: <br />
+                        <textarea class="table-textarea" id="note" @(isCanEdit[2] || isCanEdit[3] ? "" : "disabled")></textarea>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
+    <div class="row-fluid">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th colspan="3" class="title-form">
+                        <b>5. APPROVAL</b>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="td-centre">
+                        @if (isCanEdit[4])
+                        {
+                        <button class="btn btn-success btn-small start-accept" type="button" id="start-accept-requestor" data-who="1">Sign</button>
+                        }
+                        else if (Model.requestor_signature != null)
+                        {
+                        <img id="img_approve_operator" width="50" height="50" @(Model.requestor_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.requestor_signature == null ? "" : Model.requestor_signature.Substring(1))"/><br />
+                        }
+                    </td>
+                    <td class="td-centre">
+                        @if (isCanEdit[5])
+                        {
+                        <button class="btn btn-success btn-small start-accept" type="button" id="start-accept-supervisor" data-who="2">Sign</button>
+                        }
+                        else if (Model.supervisor_signature != null)
+                        {
+                        <img id="img_approve_supervisor" width="50" height="50" @(Model.supervisor_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.supervisor_signature == null ? "" : Model.supervisor_signature.Substring(1))"/><br />
+                        }
+                    </td>
+                    <td class="td-centre">
+                        @if (isCanEdit[6])
+                        {
+                        <button class="btn btn-success btn-small start-accept" type="button" id="start-accept-fo" data-who="3">Sign</button>
+                        }
+                        else if (Model.facility_owner_signature != null)
+                        {
+                        <img id="img_approve_fo" width="50" height="50" @(Model.facility_owner_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.facility_owner_signature == null ? "" : Model.facility_owner_signature.Substring(1))"/><br />
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td-centre">
+                        <i><u>Requestor / Erector</u></i><br />
+                        @if ((Model.requestor_signature == null && isCanEdit[4]))
+                        {
+                            if (Model.access == 4 && (Model.scaffolding == 1 || Model.scaffolding == 3) && requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.ERECTOR.ToString()].id) {
+                            <text>@requestor.alpha_name<br />a/n </text>
+                            }
+                            else if (requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.REQUESTOR.ToString()].id)
+                            {
+                            <text>@requestor.alpha_name<br />a/n </text>
+                            }
+                        }
+                        else if ((Model.requestor_signature != null && Model.requestor_signature.Substring(0, 1) == "d"))
+                        {
+                            
+                            <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.REQUESTORDELEGATE.ToString()].alpha_name<br />a/n </text>
+                        }
+                        @if (Model.access == 4 && (Model.scaffolding == 1 || Model.scaffolding == 3))
+                        {
+                            <text>@(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.ERECTOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.ERECTOR.ToString()].alpha_name : "")</text>
+                        }
+                        else
+                        {
+                            <text>@(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.REQUESTOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.REQUESTOR.ToString()].alpha_name : "")</text>
+                        }
+                        
+                    </td>
+                    <td class="td-centre">
+                        <i><u>Supervisor</u></i><br />
+                        @if ((Model.supervisor_signature == null && isCanEdit[5] && requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.SUPERVISOR.ToString()].id))
+                        {
+                            <text>@requestor.alpha_name<br />a/n </text>
+                        }
+                        else if ((Model.supervisor_signature != null && Model.supervisor_signature.Substring(0, 1) == "d"))
+                        {
+                            <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.SUPERVISORDELEGATE.ToString()].alpha_name<br />a/n </text>
+                        }
+                        @(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.SUPERVISOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.SUPERVISOR.ToString()].alpha_name : "")
+                    </td>
+                    <td class="td-centre">
+                        <i><u>Facility Owner</u></i><br />
+                        @if ((Model.facility_owner_signature == null && isCanEdit[6] && requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.FACILITYOWNER.ToString()].id))
+                        {
+                            <text>@requestor.alpha_name<br />a/n </text>
+                        }
+                        else if ((Model.facility_owner_signature != null && Model.facility_owner_signature.Substring(0, 1) == "d"))
+                        {
+                            <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.FACILITYOWNERDELEGATE.ToString()].alpha_name<br />a/n </text>
+                        }
+                        @(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.FACILITYOWNER.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.FACILITYOWNER.ToString()].alpha_name : "")
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    @if (Model.status >= (int)PermitToWork.Models.WorkingHeight.WorkingHeightEntity.WHStatus.CLOSING) {
     <div class="row-fluid">
         <table class="table table-bordered">
             <thead>
                 <tr>
                     <th colspan="4" class="title-form">
-                        <b>4. APPROVAL</b>
+                        <b>6. CANCELATION </b><span><i>(Worker supervisor responsible to completed assessments prior cancellations review by safety officer & facility owner)</i></span>
                     </th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="td-centre">
-                        <button class="btn" type="button">Accept</button><br />
-                        <i><u>Requestor / Erector</u></i>
+                    <td rowspan="2" class="radio-title-form"><b>No</b></td>
+                    <td rowspan="2" class="radio-title-form"><b>Description</b></td>
+                    <td colspan="2" class="radio-title-form"><b>Assessment</b></td>
+                </tr>
+                <tr>
+                    <td class="radio-title-form">Requestor / Erector *</td>
+                    <td class="radio-title-form">FO</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Working at height completed</td>
+                    <td class="radio-title-form">
+                        <select class="radiography-select can-screening-req" data-id="0" id="can-screening-req-1" @(isCanEdit[8] ? "" : "disabled")>
+                            <option value="0" @(Model.can_screening_req_arr[0] == "0" ? "selected" : "")>N/A</option>
+                            <option value="1" @(Model.can_screening_req_arr[0] == "1" ? "selected" : "")>Yes</option>
+                            <option value="2" @(Model.can_screening_req_arr[0] == "2" ? "selected" : "")>No</option>
+                        </select>
                     </td>
-                    <td class="td-centre">
-                        <button class="btn" type="button">Accept</button><br />
-                        <i><u>Supervisor / Project Manager</u></i>
+                    <td class="radio-title-form">
+                        <select class="radiography-select can-screening-fo" data-id="0" id="can-screening-fo-1" @(isCanEdit[9] ? "" : "disabled")>
+                            <option value="0" @(Model.can_screening_fo_arr[0] == "0" ? "selected" : "")>N/A</option>
+                            <option value="1" @(Model.can_screening_fo_arr[0] == "1" ? "selected" : "")>Yes</option>
+                            <option value="2" @(Model.can_screening_fo_arr[0] == "2" ? "selected" : "")>No</option>
+                        </select>
                     </td>
-                    <td class="td-centre">
-                        <button class="btn" type="button">Accept</button><br />
-                        <i><u>Safety Officer</u></i>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Are the access to work location height has been disabled <i>(secured , dismantled, demobilized)</i></td>
+                    <td class="radio-title-form">
+                        <select class="radiography-select can-screening-req" data-id="1" id="can-screening-req-2" @(isCanEdit[8] ? "" : "disabled")>
+                            <option value="0" @(Model.can_screening_req_arr[1] == "0" ? "selected" : "")>N/A</option>
+                            <option value="1" @(Model.can_screening_req_arr[1] == "1" ? "selected" : "")>Yes</option>
+                            <option value="2" @(Model.can_screening_req_arr[1] == "2" ? "selected" : "")>No</option>
+                        </select>
                     </td>
-                    <td class="td-centre">
-                        <button class="btn" type="button">Accept</button><br />
-                        <i><u>Facility Owner</u></i>
+                    <td class="radio-title-form">
+                        <select class="radiography-select can-screening-fo" data-id="1" id="can-screening-fo-2" @(isCanEdit[9] ? "" : "disabled")>
+                            <option value="0" @(Model.can_screening_fo_arr[1] == "0" ? "selected" : "")>N/A</option>
+                            <option value="1" @(Model.can_screening_fo_arr[1] == "1" ? "selected" : "")>Yes</option>
+                            <option value="2" @(Model.can_screening_fo_arr[1] == "2" ? "selected" : "")>No</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Specific for scaffolding :Are the scaffolding going to  be utilized by other <br /><small><i>If  NO put red tag, erector shall dismantle the scaffolding, If YES  Confirm Scaffolding inspector to check latest condition.</i></small></td>
+                    <td class="radio-title-form">
+                        <select class="radiography-select can-screening-req" data-id="2" id="can-screening-req-3" @(isCanEdit[8] ? "" : "disabled")>
+                            <option value="0" @(Model.can_screening_req_arr[2] == "0" ? "selected" : "")>N/A</option>
+                            <option value="1" @(Model.can_screening_req_arr[2] == "1" ? "selected" : "")>Yes</option>
+                            <option value="2" @(Model.can_screening_req_arr[2] == "2" ? "selected" : "")>No</option>
+                        </select>
+                    </td>
+                    <td class="radio-title-form">
+                        <select class="radiography-select can-screening-fo" data-id="2" id="can-screening-fo-3" @(isCanEdit[9] ? "" : "disabled")>
+                            <option value="0" @(Model.can_screening_fo_arr[2] == "0" ? "selected" : "")>N/A</option>
+                            <option value="1" @(Model.can_screening_fo_arr[2] == "1" ? "selected" : "")>Yes</option>
+                            <option value="2" @(Model.can_screening_fo_arr[2] == "2" ? "selected" : "")>No</option>
+                        </select>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
     <div class="row-fluid">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th class="title-form">
-                        <b>5. WORKING AT HEIGHT PERMIT CANCELATION </b><span><i>(Worker supervisor responsible to completed assessments prior cancellations review by safety officer & facility owner)</i></span>
-                    </th>
-                </tr>
-            </thead>
-        </table>
-    </div>
-    <div class="row-fluid">
-        <div class="span12">
-            <ul class="inline table-ul">
-                <li>1) It's the work area secure (safe to leave work area) without direct supervision on site. </li>
-                <li> <label class="radio"><input name="area" type="radio" />Yes</label></li>
-                <li> <label class="radio"><input name="area" value="0" type="radio" />No <small><i>(if the answer no, write special precaution must be taken)</i></small></label></li>
-            </ul>
-            <input class="table-input table-input-180" id="precaution" type="text">
-        </div>
-    </div>
-    <div class="row-fluid">
-        <div class="span12">
-            <ul class="inline table-ul">
-                <li>2) Working at height completed. </li>
-                <li> <label class="radio"><input name="area" type="radio" />Yes</label></li>
-                <li> <label class="radio"><input name="area" value="0" type="radio" />No <small><i>(if the answer no, request extension permit)</i></small></label></li>
-            </ul>
-            <small><i>Note: write any consent related cancellations of working at height attach to other sheet if required</i></small><br />
-            <textarea class="table-textarea" id="cancellationConsent"></textarea>
-        </div>
         <table class="table table-bordered">
             <tbody>
                 <tr>
                     <td class="td-centre">
-                        <button class="btn" type="button">Accept</button><br />
-                        <i><u>Requestor / Erector</u></i>
+                        @if (isCanEdit[10])
+                        {
+                        <button class="btn btn-success btn-small cancel-accept" type="button" id="cancel-accept-requestor" data-who="1">Sign</button>
+                        }
+                        else if (Model.can_requestor_signature != null)
+                        {
+                        <img id="img_approve_operator_can" width="50" height="50" @(Model.can_requestor_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_requestor_signature == null ? "" : Model.can_requestor_signature.Substring(1))"/><br />
+                        }
                     </td>
                     <td class="td-centre">
-                        <button class="btn" type="button">Accept</button><br />
-                        <i><u>Supervisor / Project Manager</u></i>
+                        @if (isCanEdit[11])
+                        {
+                        <button class="btn btn-success btn-small cancel-accept" type="button" id="cancel-accept-supervisor" data-who="2">Sign</button>
+                        }
+                        else if (Model.can_supervisor_signature != null)
+                        {
+                        <img id="img_approve_supervisor_can" width="50" height="50" @(Model.can_supervisor_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_supervisor_signature == null ? "" : Model.can_supervisor_signature.Substring(1))"/><br />
+                        }
                     </td>
                     <td class="td-centre">
-                        <button class="btn" type="button">Accept</button><br />
-                        <i><u>Safety Officer</u></i>
+                        @if (isCanEdit[12])
+                        {
+                        <button class="btn btn-success btn-small cancel-accept" type="button" id="cancel-accept-fo" data-who="3">Sign</button>
+                        }
+                        else if (Model.can_facility_owner_signature != null)
+                        {
+                        <img id="img_approve_fo_can" width="50" height="50" @(Model.can_facility_owner_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_facility_owner_signature == null ? "" : Model.can_facility_owner_signature.Substring(1))"/><br />
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td-centre">
+                        <i><u>Requestor / Erector</u></i><br />
+                        @if ((Model.can_requestor_signature == null && isCanEdit[10]))
+                        {
+                            if (Model.access == 4 && (Model.scaffolding == 1 || Model.scaffolding == 3) && requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.ERECTOR.ToString()].id) {
+                            <text>@requestor.alpha_name<br />a/n </text>
+                            }
+                            else if (requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.REQUESTOR.ToString()].id)
+                            {
+                            <text>@requestor.alpha_name<br />a/n </text>
+                            }
+                        }
+                        else if ((Model.can_requestor_signature != null && Model.can_requestor_signature.Substring(0, 1) == "d"))
+                        {
+                            
+                            <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.CANREQUESTORDELEGATE.ToString()].alpha_name<br />a/n </text>
+                        }
+                        @if (Model.access == 4 && (Model.scaffolding == 1 || Model.scaffolding == 3))
+                        {
+                            <text>@(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.ERECTOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.ERECTOR.ToString()].alpha_name : "")</text>
+                        }
+                        else
+                        {
+                            <text>@(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.REQUESTOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.REQUESTOR.ToString()].alpha_name : "")</text>
+                        }
+                        
                     </td>
                     <td class="td-centre">
-                        <button class="btn" type="button">Accept</button><br />
-                        <i><u>Facility Owner</u></i>
+                        <i><u>Supervisor</u></i><br />
+                        @if ((Model.can_supervisor_signature == null && isCanEdit[11] && requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.SUPERVISOR.ToString()].id))
+                        {
+                            <text>@requestor.alpha_name<br />a/n </text>
+                        }
+                        else if ((Model.can_supervisor_signature != null && Model.can_supervisor_signature.Substring(0, 1) == "d"))
+                        {
+                            <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.CANSUPERVISORDELEGATE.ToString()].alpha_name<br />a/n </text>
+                        }
+                        @(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.SUPERVISOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.SUPERVISOR.ToString()].alpha_name : "")
+                    </td>
+                    <td class="td-centre">
+                        <i><u>Facility Owner</u></i><br />
+                        @if ((Model.can_facility_owner_signature == null && isCanEdit[12] && requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.FACILITYOWNER.ToString()].id))
+                        {
+                            <text>@requestor.alpha_name<br />a/n </text>
+                        }
+                        else if ((Model.can_facility_owner_signature != null && Model.can_facility_owner_signature.Substring(0, 1) == "d"))
+                        {
+                            <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.CANFACILITYOWNERDELEGATE.ToString()].alpha_name<br />a/n </text>
+                        }
+                        @(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.FACILITYOWNER.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.FACILITYOWNER.ToString()].alpha_name : "")
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
+    }
     <div class="row-fluid">
-        <br />
-        <button class="btn">Save</button>
+        <div class="span12">
+            Attachment(s)
+        </div>
     </div>
+    <div class="row-fluid">
+        <div class="span12">
+            <input name="files" id="file-attachment" type="file" class="radiography-file" />
+            <ul id="existing-files-attachment" class="k-upload-files k-reset" style="display: none;">
+                @foreach (string file in Model.listDocumentUploaded[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.DocumentUploaded.ATTACHMENT.ToString()])
+                {
+                <li class="k-file" data-att-id="@(file)">
+                    <span class="k-icon k-success">uploaded</span>
+                    <span class="k-filename" title="@(file)"><a href="@Url.Content("~/Upload/WorkingHeight/" + Model.id + "/Attachment/" + file)" target="_blank">@file</a><span class="k-progress"><span class="k-state-selected k-progress-status" style="width: 100%;"></span></span></span>
+                    <button type="button" class="k-button k-button-icontext k-upload-action" @(isCanEdit[0] ? "" : "disabled")><span class="k-icon k-delete"></span>Remove</button>
+                </li>
+                }
+            </ul>
+        </div>
+
+    </div>
+    <div class="row-fluid">
+        <div class="span12"></div>
+    </div>
+    <div class="row-fluid">
+        <div class="span12">
+            @if (isCanEdit[2])
+            {
+            <button class="btn btn-success" id="save-send-2">Save and Complete</button>
+            <button class="btn btn-default" id="save-as-draft-2">Save as Draft</button>
+            }
+            else if (isCanEdit[0])
+            {
+            <button class="btn btn-success" id="save-send">Save and Send Email</button>  
+            <button class="btn btn-default" id="save-as-draft">Save as Draft</button>
+            }
+            @if (isCanEdit[3])
+            {
+            <button class="btn btn-success" id="save-send-3">Save and Complete</button>
+            <button class="btn btn-default" id="save-as-draft-3">Save as Draft</button>
+            <button class="btn btn-danger" id="reject">Reject to Requestor</button>
+            }
+            @if (isCanEdit[7])
+            {
+            <button class="btn btn-danger" id="closing">Cancel Radiography Clearance Permit</button>
+            }
+            @if (isCanEdit[8] || isCanEdit[9])
+            {
+            <button class="btn btn-success" id="save-send-4" data-who="@(isCanEdit[8] ? "1" : (isCanEdit[9] ? "2" : ""))">Save and Complete</button>
+            <button class="btn btn-default" id="save-as-draft-4">Save as Draft</button>
+            <button class="btn btn-danger" id="reject-2">Reject to Requestor</button>
+            }
+            <button class="btn btn-primary" id="back">Back</button>
+            <span id="loading_gif" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal -->
+<div id="rejection" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="Reject" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="Reject">Reject</h3>
+  </div>
+  <div class="modal-body">
+    <label for="comment">Comment</label><textarea id="comment"></textarea>
+    <input type="hidden" id="type-reject" value="0" />
+      <input type="hidden" id="who" value="0" />
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="reject-button">Reject</button>
+    <span id="loading_reject" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span>
+  </div>
 </div>

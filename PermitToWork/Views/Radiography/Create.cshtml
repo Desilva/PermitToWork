@@ -1,58 +1,222 @@
-﻿<script>
+﻿@model PermitToWork.Models.Radiography.RadEntity
+@{
+    bool[] isCanEdit = ViewBag.isCanEdit as bool[];
+    PermitToWork.Models.User.UserEntity requestor = Session["user"] as PermitToWork.Models.User.UserEntity;
+}
+<script>
     $(document).ready(function () {
         addHandlerMenu();
 
-        $('#InputExtensionPtw').css('display', 'none');
-        $('#area').css('display', 'none');
-
-        $('input[name = "extensionPtw"]').change(function(){
-            if(($(this).val() == 1)){
-                $('#InputExtensionPtw').css('display','block');
-            }else{
-                $('#InputExtensionPtw').css('display','none');
+        if ($('input[name="radiographic-source"]:checked').val() == 0) {
+            @if (isCanEdit[0])
+            {
+                <text>$('#radiographic-source-other').removeAttr('disabled');</text>
             }
-        });
+        }
 
-        $('input[name = "area"]').change(function () {
-            if (($(this).val() == 0)) {
-                $('#area').css('display', 'block');
+        $('input[name="radiographic-source"]').change(function () {
+            if ($(this).val() == 0) {
+                $('#radiographic-source-other').removeAttr('disabled');
             } else {
-                $('#area').css('display', 'none');
+                $('#radiographic-source-other').attr('disabled', 'disabled');
             }
-        });
+        })
 
-        $("#filesRadiographyLvl2").kendoUpload({
+        $("#file-radiographer-2").kendoUpload({
             async: {
-                saveUrl: "save",
-                removeUrl: "remove",
+                saveUrl: "@Url.Action("saveLicenseNumber", "Radiography", new { type = 2 })",
+                removeUrl: "@Url.Action("removeLicenseNumber", "Radiography", new { type = 2 })",
                 autoUpload: true
-            }
+            },
+            upload: onUpload,
+            remove: onRemove,
+            success: onSuccess2,
         });
 
-        $("#filesRadiographyLvl1").kendoUpload({
+        $("#file-radiographer-1").kendoUpload({
             async: {
-                saveUrl: "save",
-                removeUrl: "remove",
+                saveUrl: "@Url.Action("saveLicenseNumber", "Radiography", new { type = 1 })",
+                removeUrl: "@Url.Action("removeLicenseNumber", "Radiography", new { type = 1 })",
                 autoUpload: true,
-
-            }
+            },
+            upload: onUpload,
+            remove: onRemove,
+            success: onSuccess1,
         });
 
-        $("#filesRadiationPO").kendoUpload({
+        $("#file-radiation-protection-officer").kendoUpload({
             async: {
-                saveUrl: "save",
-                removeUrl: "remove",
-                autoUpload: true
-            }
+                saveUrl: "@Url.Action("saveLicenseNumber", "Radiography", new { type = 3 })",
+                removeUrl: "@Url.Action("removeLicenseNumber", "Radiography", new { type = 3 })",
+                autoUpload: true,
+            },
+            upload: onUpload,
+            remove: onRemove,
+            success: onSuccessRPO,
         });
 
-        $("#filesPotentialAreaAffected").kendoUpload({
+        $("#file-attachment").kendoUpload({
             async: {
-                saveUrl: "save",
-                removeUrl: "remove",
-                autoUpload: true
-            }
+                saveUrl: "@Url.Action("saveLicenseNumber", "Radiography", new { type = 4 })",
+                removeUrl: "@Url.Action("removeLicenseNumber", "Radiography", new { type = 4 })",
+                autoUpload: true,
+            },
+            upload: onUpload,
+            remove: onRemove,
+            success: onSuccessAttachment,
         });
+
+        $fileList = $("#existing-files-license-number-1");
+
+        if ($fileList.length > 0) {
+            $("#file-radiographer-1").parent().parent().parent('div.k-upload').append($fileList);
+            $files = $(".k-file");
+            _fn = function (item) {
+                var $item, fileId, filenames;
+                $item = $(item);
+                fileId = $item.data("att-id");
+                filenames = [
+                  {
+                      name: fileId
+                  }
+                ];
+                return $item.data("fileNames", filenames);
+            };
+            for (_i = 0, _len = $files.length; _i < _len; _i++) {
+                item = $files[_i];
+                _fn(item);
+            }
+            $fileList.show();
+        }
+
+        $fileList = $("#existing-files-license-number-2");
+
+        if ($fileList.length > 0) {
+            $("#file-radiographer-2").parent().parent().parent('div.k-upload').append($fileList);
+            $files = $(".k-file");
+            _fn = function (item) {
+                var $item, fileId, filenames;
+                $item = $(item);
+                fileId = $item.data("att-id");
+                filenames = [
+                  {
+                      name: fileId
+                  }
+                ];
+                return $item.data("fileNames", filenames);
+            };
+            for (_i = 0, _len = $files.length; _i < _len; _i++) {
+                item = $files[_i];
+                _fn(item);
+            }
+            $fileList.show();
+        }
+
+        $fileList = $("#existing-files-license-number-rpo");
+
+        if ($fileList.length > 0) {
+            $("#file-radiation-protection-officer").parent().parent().parent('div.k-upload').append($fileList);
+            $files = $(".k-file");
+            _fn = function (item) {
+                var $item, fileId, filenames;
+                $item = $(item);
+                fileId = $item.data("att-id");
+                filenames = [
+                  {
+                      name: fileId
+                  }
+                ];
+                return $item.data("fileNames", filenames);
+            };
+            for (_i = 0, _len = $files.length; _i < _len; _i++) {
+                item = $files[_i];
+                _fn(item);
+            }
+            $fileList.show();
+        }
+
+        $fileList = $("#existing-files-attachment");
+
+        if ($fileList.length > 0) {
+            $("#file-attachment").parent().parent().parent('div.k-upload').append($fileList);
+            $files = $(".k-file");
+            _fn = function (item) {
+                var $item, fileId, filenames;
+                $item = $(item);
+                fileId = $item.data("att-id");
+                filenames = [
+                  {
+                      name: fileId
+                  }
+                ];
+                return $item.data("fileNames", filenames);
+            };
+            for (_i = 0, _len = $files.length; _i < _len; _i++) {
+                item = $files[_i];
+                _fn(item);
+            }
+            $fileList.show();
+        }
+
+        function onUpload(e) {
+            // Array with information about the uploaded files
+            var files = e.files;
+
+            // Check the extension of each file and abort the upload if it is not .jpg
+            $.each(files, function () {
+                if (this.extension != ".pdf") {
+                    //alert("Only .pdf files can be uploaded.")
+                    //e.preventDefault();
+                }
+            });
+            e.data = { id: '@Model.id' };
+        }
+
+        function onRemove(e) {
+            e.data = { id: '@Model.id' };
+        }
+
+        function onSuccess1(e) {
+            var files = e.files;
+            // Check the extension of each file and abort the upload if it is not .jpg
+            $.each(files, function () {
+                $('.k-filename[title="' + this.name + '"]').html('<a href="@Url.Content("~/Upload/Radiography/" + Model.id + "/LicenseNumber1")' + this.name + '">' + this.name + '</a>');
+            });
+        }
+
+        function onSuccess2(e) {
+            var files = e.files;
+            // Check the extension of each file and abort the upload if it is not .jpg
+            $.each(files, function () {
+                $('.k-filename[title="' + this.name + '"]').html('<a href="@Url.Content("~/Upload/Radiography/" + Model.id + "/LicenseNumber2")' + this.name + '">' + this.name + '</a>');
+            });
+        }
+
+        function onSuccessRPO(e) {
+            var files = e.files;
+            // Check the extension of each file and abort the upload if it is not .jpg
+            $.each(files, function () {
+                $('.k-filename[title="' + this.name + '"]').html('<a href="@Url.Content("~/Upload/Radiography/" + Model.id + "/LicenseNumberRPO")' + this.name + '">' + this.name + '</a>');
+            });
+        }
+
+        function onSuccessAttachment(e) {
+            var files = e.files;
+            // Check the extension of each file and abort the upload if it is not .jpg
+            $.each(files, function () {
+                $('.k-filename[title="' + this.name + '"]').html('<a href="@Url.Content("~/Upload/Radiography/" + Model.id + "/Attachment")' + this.name + '">' + this.name + '</a>');
+            });
+        }
+
+        @if (!isCanEdit[0])
+        {
+        <text>
+        $('#file-radiographer-2').data("kendoUpload").disable();
+        $('#file-radiographer-1').data("kendoUpload").disable();
+        $('#file-radiation-protection-officer').data("kendoUpload").disable();
+        $('#file-attachment').data("kendoUpload").disable();
+        </text>
+        }
 
         function startChange() {
             var startDate = start.value();
@@ -74,18 +238,427 @@
             }
         }
 
-        var start = $("#datetimepickerFrom").kendoDateTimePicker({
+        var start = $("#estimate-time-start").kendoDateTimePicker({
             change: startChange,
             parseFormats: ["MM/dd/yyyy"]
         }).data("kendoDateTimePicker");
 
-        var end = $("#datetimepickerUntil").kendoDateTimePicker({
+        var end = $("#estimate-time-end").kendoDateTimePicker({
             change: endChange,
             parseFormats: ["MM/dd/yyyy"]
         }).data("kendoDateTimePicker");
 
         start.max(end.value());
         end.min(start.value());
+
+        $('#save-as-draft').click(function () {
+            var values = getValues();
+            $('#loading_gif').show();
+            $.post('@Url.Action("saveAsDraft", "Radiography")', values, function (resp) {
+                $('#loading_gif').hide();
+                alert('Save success.');
+                $('#content').load('@Url.Action("Edit", "Radiography")');
+            });
+        });
+
+        $('#save-send').click(function () {
+            var values = getValues();
+            $('#loading_gif').show();
+            $.post('@Url.Action("saveAndSend", "Radiography")', values, function (resp) {
+                $('#loading_gif').hide();
+                if (resp.status == "200") {
+                    alert('Save success. Notification has been sent to Supervisor for Pre-job screening.');
+                    $('#content').load('@Url.Action("Edit", "Radiography")');
+                } else if (resp.status == "400") {
+                    alert('Something wrong! Please try again.');
+                } else if (resp.status == "404") {
+                    alert('Save success. Because Supervisor has not accept as supervisor from email, you must wait until supervisor is assigned, and try to send again.');
+                }
+            });
+        });
+
+        $('#save-so').click(function () {
+            var values = getValues();
+            values.safety_officer = $('#safety_officer').val();
+            $('#loading_gif').show();
+            $.post('@Url.Action("assignSafetyOfficer", "Radiography")', values, function (resp) {
+                $('#loading_gif').hide();
+                if (resp.status == "200") {
+                    alert('Save success. Notification has been sent to Safety Officer.');
+                    $('#content').load('@Url.Action("Edit", "Radiography")');
+                } else if (resp.status == "400") {
+                    alert('Something wrong! Please try again.');
+                }
+            });
+        });
+
+        $('#save-as-draft-2').click(function () {
+            var values = getValues();
+            var who = $('#save-send-2').data("who");
+            values.who = who;
+            values = getPreScreeningValues(values, who);
+            $('#loading_gif').show();
+            $.post('@Url.Action("saveAsDraftPreScreening", "Radiography")', values, function (resp) {
+                $('#loading_gif').hide();
+                alert('Save success.');
+                $('#content').load('@Url.Action("Edit", "Radiography")');
+                //if (who == "1") {
+                //    alert('Save success. Notification has been sent to Radiographer Level 2 for Pre-job screening.');
+                //} else if (who == "2") {
+                //    alert('Save success. Notification has been sent to Facility Owner for Pre-job screening.');
+                //} else if (who == "3") {
+                //    alert('Save success. Notification has been sent to Operator for Approving.');
+                //}
+            });
+        });
+
+        $('#save-send-2').click(function () {
+            var values = getValues();
+            var who = $('#save-send-2').data("who");
+            values.who = who;
+            values = getPreScreeningValues(values, who);
+
+            if (who == "1") {
+                if (values.pre_screening_spv.indexOf("2") >= 0) {
+                    if (values.pre_remark.indexOf("Spv:") < 0) {
+                        alert('Screening contains one or more \'no\'. Please add Notes start with \'Spv:\'');
+                        $('#pre_remark_required').show();
+                        $('#pre_remark_required').html('Notes must be added. Start with \'Spv:\'');
+
+                        return;
+                    }
+                }
+            } else if (who == "2") {
+                if (values.pre_screening_rad.indexOf("2") >= 0) {
+                    console.log(values.pre_remark);
+                    if (values.pre_remark.indexOf("Rad:") < 0) {
+                        alert('Screening contains one or more \'no\'. Please add Notes start with \'Rad:\'');
+                        $('#pre_remark_required').show();
+                        $('#pre_remark_required').html('Notes must be added. Start with \'Rad:\'');
+
+                        return;
+                    }
+                }
+            } else if (who == "3") {
+                if (values.pre_screening_fo.indexOf("2") >= 0) {
+                    if (values.pre_remark.indexOf("FO:") < 0) {
+                        alert('Screening contains one or more \'no\'. Please add Notes start with \'FO:\'');
+                        $('#pre_remark_required').show();
+                        $('#pre_remark_required').html('Notes must be added. Start with \'FO:\'');
+
+                        return;
+                    }
+                }
+            }
+            $('#loading_gif').show();
+            $.post('@Url.Action("saveCompletePreScreening", "Radiography")', values, function (resp) {
+                // alert('Save success.');
+                $('#loading_gif').hide();
+                if (who == "1") {
+                    alert('Save success. Notification has been sent to Radiographer Level 2 for Pre-job screening.');
+                } else if (who == "2") {
+                    alert('Save success. Notification has been sent to Facility Owner for Pre-job screening.');
+                } else if (who == "3") {
+                    alert('Save success. Notification has been sent to Operator for Approving.');
+                }
+                $('#content').load('@Url.Action("Edit", "Radiography")');
+            });
+        });
+
+        $('#reject').click(function () {
+            $('#type-reject').val(1);
+            $('#who').val($('#save-send-2').data("who"));
+            $('#rejection').modal('show');
+        });
+
+        $('#reject_button').click(function () {
+            var values = {
+                id: '@Model.id',
+                comment: $('#comment').val(),
+            }
+            values = getPreScreeningValues(values, $('#who').val());
+            var type = $('#type-reject').val();
+            var url = '';
+            switch (type) {
+                case "1": values.who = $('#who').val(); url = '@Url.Action("rejectPreScreening", "Radiography")'; break;
+                case "2": values.who = $('#who').val(); url = '@Url.Action("rejectCancelScreening", "Radiography")'; break;
+            }
+            $('#loading_reject').show();
+            $.post(url, values, function (resp) {
+                $('#loading_reject').hide();
+                $('#rejection').modal('hide');
+                alert('Comment has been sent to Requestor.');
+                $('#content').load('@Url.Action("Edit", "Radiography")');
+            });
+
+        });
+
+        $('.start-accept').click(function () {
+            var values = {
+                id: '@Model.id',
+                who: $(this).data('who'),
+            }
+
+            $.post('@Url.Action("SignStartPermit", "Radiography")', values, function (resp) {
+                if (resp.status == "200") {
+                    alert(resp.message);
+                }
+                $('#content').load('@Url.Action("Edit", "Radiography")');
+            });
+        });
+
+        $('#closing').click(function () {
+            var values = {
+                id: '@Model.id',
+            }
+            $('#loading_gif').show();
+            $.post('@Url.Action("CancelRadPermit", "Radiography")', values, function (resp) {
+                $('#loading_gif').hide();
+                if (resp.status == "200") {
+                    alert("Radiography Clearance Permit Cancelled. Notification has been sent to supervisor for cancellation screening.");
+                }
+                $('#content').load('@Url.Action("Edit", "Radiography")');
+            });
+        });
+
+        $('#save-as-draft-3').click(function () {
+            var values = getValues();
+            var who = $('#save-send-3').data("who");
+            values.who = who;
+            values = getCancelScreeningValues(values, who);
+            $('#loading_gif').show();
+            $.post('@Url.Action("saveAsDraftCancelScreening", "Radiography")', values, function (resp) {
+                $('#loading_gif').hide();
+                alert('Save success.');
+                $('#content').load('@Url.Action("Edit", "Radiography")');
+                //if (who == "1") {
+                //    alert('Save success. Notification has been sent to Radiographer Level 2 for Pre-job screening.');
+                //} else if (who == "2") {
+                //    alert('Save success. Notification has been sent to Facility Owner for Pre-job screening.');
+                //} else if (who == "3") {
+                //    alert('Save success. Notification has been sent to Operator for Approving.');
+                //}
+            });
+        });
+
+        $('#save-send-3').click(function () {
+            var values = getValues();
+            var who = $('#save-send-3').data("who");
+            values.who = who;
+            values = getCancelScreeningValues(values, who);
+
+            if (who == "1") {
+                if (values.can_screening_spv.indexOf("2") >= 0) {
+                    if (values.can_remark.indexOf("Spv:") < 0) {
+                        alert('Screening contains one or more \'no\'. Please add Notes start with \'Spv:\'');
+                        $('#can_remark_required').show();
+                        $('#can_remark_required').html('Notes must be added. Start with \'Spv:\'');
+
+                        return;
+                    }
+                }
+            } else if (who == "2") {
+                if (values.can_screening_rad.indexOf("2") >= 0) {
+                    console.log(values.pre_remark);
+                    if (values.can_remark.indexOf("Rad:") < 0) {
+                        alert('Screening contains one or more \'no\'. Please add Notes start with \'Rad:\'');
+                        $('#can_remark_required').show();
+                        $('#can_remark_required').html('Notes must be added. Start with \'Rad:\'');
+
+                        return;
+                    }
+                }
+            } else if (who == "3") {
+                if (values.can_screening_fo.indexOf("2") >= 0) {
+                    if (values.can_remark.indexOf("FO:") < 0) {
+                        alert('Screening contains one or more \'no\'. Please add Notes start with \'FO:\'');
+                        $('#can_remark_required').show();
+                        $('#can_remark_required').html('Notes must be added. Start with \'FO:\'');
+
+                        return;
+                    }
+                }
+            }
+            $('#loading_gif').show();
+            $.post('@Url.Action("saveCompleteCancelScreening", "Radiography")', values, function (resp) {
+                // alert('Save success.');
+                $('#loading_gif').hide();
+                if (who == "1") {
+                    alert('Save success. Notification has been sent to Radiographer Level 2 for cancellation screening.');
+                } else if (who == "2") {
+                    alert('Save success. Notification has been sent to Facility Owner for cancellation screening.');
+                } else if (who == "3") {
+                    alert('Save success. Notification has been sent to Operator for cancellation approval.');
+                }
+                $('#content').load('@Url.Action("Edit", "Radiography")');
+            });
+        });
+
+        $('#reject-3').click(function () {
+            $('#type-reject').val(2);
+            $('#who').val($('#save-send-3').data("who"));
+            $('#rejection').modal('show');
+        });
+
+        $('.cancel-accept').click(function () {
+            var values = {
+                id: '@Model.id',
+                who: $(this).data('who'),
+            }
+
+            $.post('@Url.Action("SignCancelPermit", "Radiography")', values, function (resp) {
+                if (resp.status == "200") {
+                    alert(resp.message);
+                }
+                $('#content').load('@Url.Action("Edit", "Radiography")');
+            });
+        });
+
+        $('#back').click(function () {
+            $('#content').load($('#history').val());
+        });
+
+        $('#radiographer-2').change(function () {
+            $.post('@Url.Action("getLicenseNumber", "Radiography")', { id: $(this).val() }, function (resp) {
+                $('#radiographer-2-license-number').val(resp.data);
+            });
+        });
+
+        $('#radiographer-1').change(function () {
+            $.post('@Url.Action("getLicenseNumber", "Radiography")', { id: $(this).val() }, function (resp) {
+                $('#radiographer-1-license-number').val(resp.data);
+            });
+        });
+
+        $('#radiation-protection-officer').change(function () {
+            $.post('@Url.Action("getLicenseNumberRPO", "Radiography")', { id: $(this).val() }, function (resp) {
+                $('#radiation-protection-officer-license-number').val(resp.data);
+            });
+        });
+
+        function getPreScreeningValues(values, who) {
+            var pre_screening_arr = [];
+            if (who == "1") {
+                $('.pre-screening-spv').each(function () {
+                    var i = $(this).data("id");
+                    pre_screening_arr[i] = $(this).val();
+                });
+
+                var s = "";
+
+                for (var i = 0; i < 14; i++) {
+                    s += pre_screening_arr[i] + "#";
+                }
+
+                s = s.substr(0, s.length - 1);
+                values.pre_screening_spv = s;
+            } else if (who == "2") {
+                $('.pre-screening-rad').each(function () {
+                    var i = $(this).data("id");
+                    pre_screening_arr[i] = $(this).val();
+                });
+
+                var s = "";
+
+                for (var i = 0; i < 14; i++) {
+                    s += pre_screening_arr[i] + "#";
+                }
+
+                s = s.substr(0, s.length - 1);
+                values.pre_screening_rad = s;
+            } else if (who == 3) {
+                $('.pre-screening-fo').each(function () {
+                    var i = $(this).data("id");
+                    pre_screening_arr[i] = $(this).val();
+                });
+
+                var s = "";
+
+                for (var i = 0; i < 14; i++) {
+                    s += pre_screening_arr[i] + "#";
+                }
+
+                s = s.substr(0, s.length - 1);
+                values.pre_screening_fo = s;
+
+                values.safety_officer = $('#safety_officer').val();
+            }
+
+            values.pre_remark = $('#pre_remark').val();
+            return values;
+        }
+
+        function getCancelScreeningValues(values, who) {
+            var can_screening_arr = [];
+            if (who == "1") {
+                $('.can-screening-spv').each(function () {
+                    var i = $(this).data("id");
+                    can_screening_arr[i] = $(this).val();
+                });
+
+                var s = "";
+
+                for (var i = 0; i < 3; i++) {
+                    s += can_screening_arr[i] + "#";
+                }
+
+                s = s.substr(0, s.length - 1);
+                values.can_screening_spv = s;
+            } else if (who == "2") {
+                $('.can-screening-rad').each(function () {
+                    var i = $(this).data("id");
+                    can_screening_arr[i] = $(this).val();
+                });
+
+                var s = "";
+
+                for (var i = 0; i < 3; i++) {
+                    s += can_screening_arr[i] + "#";
+                }
+
+                s = s.substr(0, s.length - 1);
+                values.can_screening_rad = s;
+            } else if (who == 3) {
+                $('.can-screening-fo').each(function () {
+                    var i = $(this).data("id");
+                    can_screening_arr[i] = $(this).val();
+                });
+
+                var s = "";
+
+                for (var i = 0; i < 3; i++) {
+                    s += can_screening_arr[i] + "#";
+                }
+
+                s = s.substr(0, s.length - 1);
+                values.can_screening_fo = s;
+            }
+
+            values.can_remark = $('#can_remark').val();
+            return values;
+        }
+
+        function getValues() {
+            var values = {
+                id: '@Model.id',
+                purpose: $('#purpose').val(),
+                work_location: $('#work-location').val(),
+                radiographer_2: $('#radiographer-2').val(),
+                radiographer_2_license_number: $('#radiographer-2-license-number').val(),
+                radiographer_1: $('#radiographer-1').val(),
+                radiographer_1_license_number: $('#radiographer-1-license-number').val(),
+                radiation_protection_officer: $('#radiation-protection-officer').val(),
+                radiation_protection_officer_license_number: $('#radiation-protection-officer-license-number').val(),
+                potential_area_affected: $('#potential-area-affected').val(),
+                total_crew: $('#total-crew').val(),
+                radiographic_source: $('input[name="radiographic-source"]:checked').val() != "0" ? $('input[name="radiographic-source"]:checked').val() : $('#radiographic-source-other').val(),
+                estimate_time_start: $('#estimate-time-start').val(),
+                estimate_time_end: $('#estimate-time-end').val(),
+            };
+            return values;
+        }
+
+
     })
 </script>
 
@@ -95,7 +668,7 @@
 <div id="breadcrumb">
 	<a href="#" title="Go to Home" class="tip-bottom home"><i class="icon-home"></i> Home</a>
 	<a href="#"  class="tip-bottom ptw">Radiography </a>
-    <a href="#" class="current">Create</a>
+    <a href="#" class="current">@Model.rg_no</a>
 </div>
 
 <div class="container-fluid header-form">
@@ -109,7 +682,8 @@
         </div>
 
         <div class="span3 no">
-            Permit No: RT-xxx/xxx/xxx
+            <br />
+            Permit No: @Model.rg_no
         </div>
     </div>
     <div class="row-fluid separator">
@@ -132,63 +706,97 @@
                 </tr>
                 <tr>
                     <td>1</td>
-                    <td>Work location</td>
-                    <td colspan="2">: <input class="table-input table-input-170" id="workLocation" type="text"></td>
+                    <td>Purpose</td>
+                    <td colspan="2">: <input class="table-input table-input-600" id="purpose" type="text" value="@Model.purpose" @(isCanEdit[0] ? "" : "disabled")></td>
                 </tr>
                 <tr>
                     <td>2</td>
-                    <td>Radiographer Level 2 <small>(Ahli Radiographic)</small></td>
-                    <td>: <input class="table-input table-input-120" id="radiographerLvl2" type="text"></td>
-                    <td>Licensed number: <input class="table-input table-input-120" id="radiographerLvl2LicenseNumber" type="text">&nbsp;<input name="files" id="filesRadiographyLvl2" type="file" class="radiography-file" /><br />
-                        Contact number: &nbsp;&nbsp;<input class="table-input table-input-120" id="radiographerLvl2ContactNumber" type="text">
-                    </td>
+                    <td>Work location</td>
+                    <td colspan="2">: <input class="table-input table-input-600" id="work-location" type="text" value="@Model.work_location" @(isCanEdit[0] ? "" : "disabled")></td>
                 </tr>
                 <tr>
                     <td>3</td>
-                    <td>Radiographer Level 1 <small>(Operator Radiographic)</small></td>
-                    <td>: <input class="table-input table-input-120" id="radiographerLvl1" type="text"></td>
-                    <td>Licensed number: <input class="table-input table-input-120" id="radiographerLvl1LicenseNumber" type="text">&nbsp;<input name="files" id="filesRadiographyLvl1" type="file" class="radiography-file" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td>Radiation Protection Officer </td>
-                    <td>: <input class="table-input table-input-120" id="radiationPO" type="text"></td>
-                    <td>Licensed number: <input class="table-input table-input-120" id="radiationPOLicenseNumber" type="text">&nbsp;<input name="files" id="filesRadiationPO" type="file" class="radiography-file" />
-                    </td>
-                </tr>
-                <tr>
-                    <td>5</td>
-                    <td>Potential area affected </td>
-                    <td colspan="2">: <input class="table-input table-input-170" id="potentialAreaAffected" type="text">&nbsp;<input name="files" id="filesPotentialAreaAffected" type="file" /></td>
-                </tr>
-                <tr>
-                    <td>6</td>
-                    <td>Total crew involve </td>
-                    <td colspan="2">: <input class="table-input table-input-170" id="totalCrewInvolve" type="text"></td>
-                </tr>
-                <tr>
-                    <td>7</td>
-                    <td>Supervisor <small>(project manager)</small> </td>
-                    <td colspan="2">: <input class="table-input table-input-170" id="supervisor" type="text"></td>
-                </tr>
-                <tr>
-                    <td>8</td>
-                    <td>Type of radiographic source </td>
-                    <td colspan="2">
-                        <ul class="inline table-ul">
-                            <li><label class="radio"><input name="radioSource" type="radio" />X ray</label></li>
-                            <li> <label class="radio"><input name="radioSource" type="radio" />Gamma ray</label></li>
-                            <li> <label class="radio"><input name="radioSource" value="0" type="radio" />Others</label></li>
-                            <li><input class="table-input table-input-170" id="radioSource" type="text"></li>
+                    <td>Radiographer Level 2 <small>(Ahli Radiographic)</small></td>
+                    <td>: @Html.DropDownList("radiographer-2", ViewBag.listRadiographer2 as List<SelectListItem>, (isCanEdit[0] ? new { @class = "table-input-170" } as object : new { @class = "table-input-170", disabled = "disabled" } as object))</td>
+                    <td>Licensed number: <input class="table-input table-input-120" id="radiographer-2-license-number" type="text" value="@Model.radiographer_2_license_number" disabled>&nbsp;<input name="files" id="file-radiographer-2" type="file" class="radiography-file" />
+                        <ul id="existing-files-license-number-2" class="k-upload-files k-reset uploaded-files" style="display: none;">
+                            @foreach (string file in Model.listDocumentUploaded[PermitToWork.Models.Radiography.RadEntity.DocumentUploaded.RADIOGRAPHER2LICENSENUMBER.ToString()])
+                            {
+                            <li class="k-file" data-att-id="@(file)">
+                                <span class="k-icon k-success">uploaded</span>
+                                <span class="k-filename" title="@(file)"><a href="@Url.Content("~/Upload/Radiography/" + Model.id + "/LicenseNumber2/" + file)" target="_blank">@file</a><span class="k-progress"><span class="k-state-selected k-progress-status" style="width: 100%;"></span></span></span>
+                                <button type="button" class="k-button k-button-icontext k-upload-action" @(isCanEdit[0] ? "" : "disabled")><span class="k-icon k-delete"></span>Remove</button>
+                            </li>
+                            }
                         </ul>
                     </td>
                 </tr>
                 <tr>
+                    <td>4</td>
+                    <td>Radiographer Level 1 <small>(Operator Radiographic)</small></td>
+                    <td>: @Html.DropDownList("radiographer-1", ViewBag.listRadiographer1 as List<SelectListItem>, (isCanEdit[0] ? new { @class = "table-input-170" } as object : new { @class = "table-input-170", disabled = "disabled" } as object))</td>
+                    <td>Licensed number: <input class="table-input table-input-120" id="radiographer-1-license-number" type="text" value="@Model.radiographer_1_license_number" disabled>&nbsp;<input name="files" id="file-radiographer-1" type="file" class="radiography-file" />
+                        <ul id="existing-files-license-number-1" class="k-upload-files k-reset uploaded-files" style="display: none;">
+                            @foreach (string file in Model.listDocumentUploaded[PermitToWork.Models.Radiography.RadEntity.DocumentUploaded.RADIOGRAPHER1LICENSENUMBER.ToString()])
+                            {
+                            <li class="k-file" data-att-id="@(file)">
+                                <span class="k-icon k-success">uploaded</span>
+                                <span class="k-filename" title="@(file)"><a href="@Url.Content("~/Upload/Radiography/" + Model.id + "/LicenseNumber1/" + file)" target="_blank">@file</a><span class="k-progress"><span class="k-state-selected k-progress-status" style="width: 100%;"></span></span></span>
+                                <button type="button" class="k-button k-button-icontext k-upload-action" @(isCanEdit[0] ? "" : "disabled")><span class="k-icon k-delete"></span>Remove</button>
+                            </li>
+                            }
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>Radiation Protection Officer </td>
+                    <td>: @Html.DropDownList("radiation-protection-officer", ViewBag.listRPO as List<SelectListItem>, (isCanEdit[0] ? new { @class = "table-input-170" } as object : new { @class = "table-input-170", disabled = "disabled" } as object))</td>
+                    <td>Licensed number: <input class="table-input table-input-120" id="radiation-protection-officer-license-number" type="text" value="@Model.radiation_protection_officer_license_number" disabled>&nbsp;<input name="files" id="file-radiation-protection-officer" type="file" class="radiography-file" />
+                        <ul id="existing-files-license-number-rpo" class="k-upload-files k-reset uploaded-files" style="display: none;">
+                            @foreach (string file in Model.listDocumentUploaded[PermitToWork.Models.Radiography.RadEntity.DocumentUploaded.RADIATIONPOLICENSENUMBER.ToString()])
+                            {
+                            <li class="k-file" data-att-id="@(file)">
+                                <span class="k-icon k-success">uploaded</span>
+                                <span class="k-filename" title="@(file)"><a href="@Url.Content("~/Upload/Radiography/" + Model.id + "/LicenseNumberRPO/" + file)" target="_blank">@file</a><span class="k-progress"><span class="k-state-selected k-progress-status" style="width: 100%;"></span></span></span>
+                                <button type="button" class="k-button k-button-icontext k-upload-action" @(isCanEdit[0] ? "" : "disabled")><span class="k-icon k-delete"></span>Remove</button>
+                            </li>
+                            }
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>Potential Area Exposure </td>
+                    <td colspan="2">: <input class="table-input table-input-600" id="potential-area-affected" type="text" value="@Model.potential_area_affected" @(isCanEdit[0] ? "" : "disabled")><br /><small><i><b>(site plan drawings that have been marked shall be attached at bottom of page)</b></i></small></td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>Total Crew Involve </td>
+                    <td colspan="2">: @Html.DropDownList("total-crew", ViewBag.listTotalCrew as List<SelectListItem>, (isCanEdit[0] ? new { @class = "table-input-170" } as object : new { @class = "table-input-170", disabled = "disabled" } as object))</td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td>Supervisor <small><i>(project manager)</i></small> </td>
+                    <td colspan="2">: <input class="table-input table-input-170" id="supervisor" type="text" value="@(Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SUPERVISOR.ToString()] != null ? Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SUPERVISOR.ToString()].alpha_name : "")" disabled></td>
+                </tr>
+                <tr>
                     <td>9</td>
+                    <td>Type of radiographic source </td>
+                    <td colspan="2">
+                        <ul class="inline table-ul">
+                            <li><label class="radio"><input name="radiographic-source" type="radio" value="1" @(Model.radiographic_source == "1" ? "checked" : "")  @(isCanEdit[0] ? "" : "disabled")/>X Ray</label></li>
+                            <li> <label class="radio"><input name="radiographic-source" type="radio" value="2" @(Model.radiographic_source == "2" ? "checked" : "")  @(isCanEdit[0] ? "" : "disabled")/>Gamma Ray</label></li>
+                            <li> <label class="radio"><input name="radiographic-source" value="0" type="radio" @(Model.radiographic_source != "1" && Model.radiographic_source != "2" && Model.radiographic_source != null ? "checked" : "")  @(isCanEdit[0] ? "" : "disabled")/>Others</label></li>
+                            <li><input class="table-input table-input-170" id="radiographic-source-other" type="text" value="@(Model.radiographic_source != "1" && Model.radiographic_source != "2" ? Model.radiographic_source : "")" disabled></li>
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td>10</td>
                     <td>Estimate time <small>(dd:mm:yyyy hh:mm)</small></td>
-                    <td>From : <input id="datetimepickerFrom" class="datetimepicker" value="10/10/2011 12:00 AM" /></td>
-                    <td>Until : <input id="datetimepickerUntil" class="datetimepicker" value="10/10/2011 12:00 AM" /></td>
+                    <td>From : <input id="estimate-time-start" class="datetimepicker" value="@(Model.estimate_time_start != null ? Model.estimate_time_start.Value.ToString("MM/dd/yyyy hh:mm") : "")" /></td>
+                    <td>Until : <input id="estimate-time-end" class="datetimepicker" value="@(Model.estimate_time_end != null ? Model.estimate_time_end.Value.ToString("MM/dd/yyyy hh:mm") : "")" /></td>
                 </tr>
             </tbody>
         </table>
@@ -198,8 +806,8 @@
             <thead>
                 <tr>
                     <th class="title-form" colspan="6">
-                        <b>2. HAZARD SCREENING</b> <span><i>It must be completed by certified radiographer Level 2. If any of the below can't be satisfied the work will not be permitted. Project manager acknowledge at the ack column as agreement with hazard screening. 
-                            Fill : yes if agree, no if disagree, N/A if not applicable with statement on description column; Spv : Supervisor; Rad : Radiographic engineer / level-2; FO : facility owner</i></span>
+                        <b>2. PRE-JOB SCREENING</b> <small><i>It must be completed by certified radiographer Level 2. If any of the below can't be satisfied the work will not be permitted. Project manager acknowledge at the ack column as agreement with hazard screening. 
+                            Fill : yes if agree, no if disagree, N/A if not applicable with statement on description column; Spv : Supervisor; Rad : Radiographic engineer / level-2; FO : facility owner</i></small>
                     </th>
                     
                 </tr>
@@ -211,426 +819,362 @@
                     <td><strong>SPV</strong></td>
                     <td><strong>RAD</strong></td>
                     <td><strong>FO</strong></td>
-                    <td><strong>Remark</strong><br /><em><small>(Write any controlling method shall be apply)</small></em></td>
                 </tr>
                 <tr>
                     <td>1</td>
                     <td>Warning sign will be posted around relevant potential area of exposure <small>(attached copy sample of sign if there apply)</small></td>
                     <td>
-                        <select class="radiography-select" id="spv1">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-spv" data-id="0" id="pre-screening-spv-1" @(isCanEdit[2] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_spv_arr[0] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_spv_arr[0] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_spv_arr[0] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="rad1">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-rad" data-id="0" id="pre-screening-rad-1" @(isCanEdit[3] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_rad_arr[0] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_rad_arr[0] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_rad_arr[0] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="fo1">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-fo" data-id="0" id="pre-screening-fo-1" @(isCanEdit[4] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_fo_arr[0] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_fo_arr[0] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_fo_arr[0] == "2" ? "selected" : "")>No</option>
                         </select>
-                    </td>
-                    <td>
-                        <input class="table-input table-input-170" id="remark1" type="text">
                     </td>
                 </tr>
                 <tr>
                     <td>2</td>
                     <td>Safety line will be provided at working area boundary</td>
                     <td>
-                        <select class="radiography-select" id="spv2">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-spv" data-id="1" id="pre-screening-spv-2" @(isCanEdit[2] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_spv_arr[1] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_spv_arr[1] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_spv_arr[1] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="rad2">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-rad" data-id="1" id="pre-screening-rad-2" @(isCanEdit[3] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_rad_arr[1] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_rad_arr[1] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_rad_arr[1] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="fo2">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-fo" data-id="1" id="pre-screening-fo-2" @(isCanEdit[4] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_fo_arr[1] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_fo_arr[1] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_fo_arr[1] == "2" ? "selected" : "")>No</option>
                         </select>
-                    </td>
-                    <td>
-                        <input class="table-input table-input-170" id="remark2" type="text">
                     </td>
                 </tr>
                 <tr>
                     <td>3</td>
                     <td>Sufficient illumination <small>(if work on night)</small></td>
                     <td>
-                        <select class="radiography-select" id="spv3">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-spv" data-id="2" id="pre-screening-spv-3" @(isCanEdit[2] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_spv_arr[2] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_spv_arr[2] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_spv_arr[2] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="rad3">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-rad" data-id="2" id="pre-screening-rad-3" @(isCanEdit[3] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_rad_arr[2] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_rad_arr[2] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_rad_arr[2] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="fo3">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-fo" data-id="2" id="pre-screening-fo-3" @(isCanEdit[4] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_fo_arr[2] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_fo_arr[2] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_fo_arr[2] == "2" ? "selected" : "")>No</option>
                         </select>
-                    </td>
-                    <td>
-                        <input class="table-input table-input-170" id="remark3" type="text">
                     </td>
                 </tr>
                 <tr>
                     <td>4</td>
-                    <td>Rotary lamp applied</td>
+                    <td>Is emergency procedure available? <small>(attached if any, emergency shall be approved by WW SHE Official)</small></td>
                     <td>
-                        <select class="radiography-select" id="spv4">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-spv" data-id="3" id="pre-screening-spv-4" @(isCanEdit[2] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_spv_arr[3] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_spv_arr[3] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_spv_arr[3] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="rad4">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-rad" data-id="3" id="pre-screening-rad-4" @(isCanEdit[3] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_rad_arr[3] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_rad_arr[3] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_rad_arr[3] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="fo4">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-fo" data-id="3" id="pre-screening-fo-4" @(isCanEdit[4] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_fo_arr[3] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_fo_arr[3] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_fo_arr[3] == "2" ? "selected" : "")>No</option>
                         </select>
-                    </td>
-                    <td>
-                        <input class="table-input table-input-170" id="remark4" type="text">
                     </td>
                 </tr>
                 <tr>
                     <td>5</td>
-                    <td>Is emergency procedure available? <small>(attached if any, emergency shall be approved by WW SHE Official)</small></td>
+                    <td>Other workers within potential area have been evacuated</td>
                     <td>
-                        <select class="radiography-select" id="spv5">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-spv" data-id="4" id="pre-screening-spv-5" @(isCanEdit[2] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_spv_arr[4] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_spv_arr[4] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_spv_arr[4] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="rad5">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-rad" data-id="4" id="pre-screening-rad-5" @(isCanEdit[3] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_rad_arr[4] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_rad_arr[4] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_rad_arr[4] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="fo5">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-fo" data-id="4" id="pre-screening-fo-5" @(isCanEdit[4] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_fo_arr[4] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_fo_arr[4] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_fo_arr[4] == "2" ? "selected" : "")>No</option>
                         </select>
-                    </td>
-                    <td>
-                        <input class="table-input table-input-170" id="remark5" type="text">
                     </td>
                 </tr>
                 <tr>
                     <td>6</td>
-                    <td>Other workers within potential area have been evacuated</td>
+                    <td>Available radio communication with facility owner</td>
                     <td>
-                        <select class="radiography-select" id="spv6">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-spv" data-id="5" id="pre-screening-spv-6" @(isCanEdit[2] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_spv_arr[5] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_spv_arr[5] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_spv_arr[5] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="rad6">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-rad" data-id="5" id="pre-screening-rad-6" @(isCanEdit[3] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_rad_arr[5] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_rad_arr[5] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_rad_arr[5] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="fo6">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-fo" data-id="5" id="pre-screening-fo-6" @(isCanEdit[4] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_fo_arr[5] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_fo_arr[5] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_fo_arr[5] == "2" ? "selected" : "")>No</option>
                         </select>
-                    </td>
-                    <td>
-                        <input class="table-input table-input-170" id="remark6" type="text">
                     </td>
                 </tr>
                 <tr>
                     <td>7</td>
-                    <td>Available radio communication with facility owner</td>
+                    <td>Available valid RT procedure <small>(copy must be attached)</small></td>
                     <td>
-                        <select class="radiography-select" id="spv7">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-spv" data-id="6" id="pre-screening-spv-7" @(isCanEdit[2] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_spv_arr[6] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_spv_arr[6] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_spv_arr[6] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="rad7">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-rad" data-id="6" id="pre-screening-rad-7" @(isCanEdit[3] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_rad_arr[6] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_rad_arr[6] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_rad_arr[6] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="fo7">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-fo" data-id="6" id="pre-screening-fo-7" @(isCanEdit[4] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_fo_arr[6] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_fo_arr[6] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_fo_arr[6] == "2" ? "selected" : "")>No</option>
                         </select>
-                    </td>
-                    <td>
-                        <input class="table-input table-input-170" id="remark7" type="text">
                     </td>
                 </tr>
                 <tr>
                     <td>8</td>
-                    <td>Available valid RT procedure <small>(copy must be attached)</small></td>
+                    <td>Available radiation survey meter with valid calibration record <small>(copy of certificate must be attached)</small></td>
                     <td>
-                        <select class="radiography-select" id="spv8">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-spv" data-id="7" id="pre-screening-spv-8" @(isCanEdit[2] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_spv_arr[7] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_spv_arr[7] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_spv_arr[7] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="rad8">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-rad" data-id="7" id="pre-screening-rad-8" @(isCanEdit[3] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_rad_arr[7] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_rad_arr[7] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_rad_arr[7] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="fo8">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-fo" data-id="7" id="pre-screening-fo-8" @(isCanEdit[4] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_fo_arr[7] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_fo_arr[7] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_fo_arr[7] == "2" ? "selected" : "")>No</option>
                         </select>
-                    </td>
-                    <td>
-                        <input class="table-input table-input-170" id="remark8" type="text">
                     </td>
                 </tr>
                 <tr>
                     <td>9</td>
-                    <td>Available radiation survey meter with valid calibration record <small>(copy of certificate must be attached)</small></td>
+                    <td>Available "film badge exposure recorder" from Batan</td>
                     <td>
-                        <select class="radiography-select" id="spv9">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-spv" data-id="8" id="pre-screening-spv-9" @(isCanEdit[2] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_spv_arr[8] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_spv_arr[8] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_spv_arr[8] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="rad9">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-rad" data-id="8" id="pre-screening-rad-9" @(isCanEdit[3] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_rad_arr[8] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_rad_arr[8] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_rad_arr[8] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="fo9">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-fo" data-id="8" id="pre-screening-fo-9" @(isCanEdit[4] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_fo_arr[8] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_fo_arr[8] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_fo_arr[8] == "2" ? "selected" : "")>No</option>
                         </select>
-                    </td>
-                    <td>
-                        <input class="table-input table-input-170" id="remark9" type="text">
                     </td>
                 </tr>
                 <tr>
                     <td>10</td>
-                    <td>Available "film badge exposure recorder" from Batan</td>
+                    <td>Available "Surat Ijin Pemanfaatan Tenaga Nuklir" from Bapeten <small>(copy must be attached)</small></td>
                     <td>
-                        <select class="radiography-select" id="spv10">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-spv" data-id="9" id="pre-screening-spv-10" @(isCanEdit[2] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_spv_arr[9] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_spv_arr[9] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_spv_arr[9] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="rad10">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-rad" data-id="9" id="pre-screening-rad-10" @(isCanEdit[3] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_rad_arr[9] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_rad_arr[9] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_rad_arr[9] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="fo10">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-fo" data-id="9" id="pre-screening-fo-10" @(isCanEdit[4] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_fo_arr[9] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_fo_arr[9] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_fo_arr[9] == "2" ? "selected" : "")>No</option>
                         </select>
-                    </td>
-                    <td>
-                        <input class="table-input table-input-170" id="remark10" type="text">
                     </td>
                 </tr>
                 <tr>
                     <td>11</td>
-                    <td>Available "Surat Ijin Pemanfaatan Tenaga Nuklir" from Bapeten <small>(copy must be attached)</small></td>
+                    <td>Available "Quality Control Certificate" of radiographic source from Batan <small>(copy must be attached)</small></td>
                     <td>
-                        <select class="radiography-select" id="spv11">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-spv" data-id="10" id="pre-screening-spv-11" @(isCanEdit[2] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_spv_arr[10] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_spv_arr[10] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_spv_arr[10] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="rad11">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-rad" data-id="10" id="pre-screening-rad-11" @(isCanEdit[3] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_rad_arr[10] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_rad_arr[10] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_rad_arr[10] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="fo11">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-fo" data-id="10" id="pre-screening-fo-11" @(isCanEdit[4] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_fo_arr[10] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_fo_arr[10] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_fo_arr[10] == "2" ? "selected" : "")>No</option>
                         </select>
-                    </td>
-                    <td>
-                        <input class="table-input table-input-170" id="remark11" type="text">
                     </td>
                 </tr>
                 <tr>
                     <td>12</td>
-                    <td>Available "Quality Control Certificate" of radiographic source from Batan <small>(copy must be attached)</small></td>
+                    <td>Available proper "protection container" from save storage & handling of radiographic source</td>
                     <td>
-                        <select class="radiography-select" id="spv12">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-spv" data-id="11" id="pre-screening-spv-12" @(isCanEdit[2] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_spv_arr[11] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_spv_arr[11] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_spv_arr[11] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="rad12">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-rad" data-id="11" id="pre-screening-rad-12" @(isCanEdit[3] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_rad_arr[11] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_rad_arr[11] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_rad_arr[11] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="fo12">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-fo" data-id="11" id="pre-screening-fo-12" @(isCanEdit[4] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_fo_arr[11] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_fo_arr[11] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_fo_arr[11] == "2" ? "selected" : "")>No</option>
                         </select>
-                    </td>
-                    <td>
-                        <input class="table-input table-input-170" id="remark12" type="text">
                     </td>
                 </tr>
                 <tr>
                     <td>13</td>
-                    <td>Available proper "protection container" from save storage & handling of radiographic source</td>
+                    <td>Available proper storage & handling of Hazardous (B3) waste of Fixer & Developer chemical, incl.: MSDS <small>(copy must be attached)</small></td>
                     <td>
-                        <select class="radiography-select" id="spv13">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-spv" data-id="12" id="pre-screening-spv-13" @(isCanEdit[2] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_spv_arr[12] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_spv_arr[12] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_spv_arr[12] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="rad13">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-rad" data-id="12" id="pre-screening-rad-13" @(isCanEdit[3] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_rad_arr[12] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_rad_arr[12] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_rad_arr[12] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="fo13">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-fo" data-id="12" id="pre-screening-fo-13" @(isCanEdit[4] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_fo_arr[12] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_fo_arr[12] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_fo_arr[12] == "2" ? "selected" : "")>No</option>
                         </select>
-                    </td>
-                    <td>
-                        <input class="table-input table-input-170" id="remark13" type="text">
                     </td>
                 </tr>
                 <tr>
                     <td>14</td>
-                    <td>Available proper storage & handling of Hazardous (B3) waste of Fixer & Developer chemical, incl.: MSDS <small>(copy must be attached)</small></td>
+                    <td>Radiographic can be done safely</td>
                     <td>
-                        <select class="radiography-select" id="spv14">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-spv" data-id="13" id="pre-screening-spv-14" @(isCanEdit[2] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_spv_arr[13] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_spv_arr[13] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_spv_arr[13] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="rad14">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-rad" data-id="13" id="pre-screening-rad-14" @(isCanEdit[3] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_rad_arr[13] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_rad_arr[13] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_rad_arr[13] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td>
-                        <select class="radiography-select" id="fo14">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
+                        <select class="radiography-select pre-screening-fo" data-id="13" id="pre-screening-fo-14" @(isCanEdit[4] ? "" : "disabled")>
+                          <option value="0" @(Model.screening_fo_arr[13] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.screening_fo_arr[13] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.screening_fo_arr[13] == "2" ? "selected" : "")>No</option>
                         </select>
-                    </td>
-                    <td>
-                        <input class="table-input table-input-170" id="remark14W" type="text">
                     </td>
                 </tr>
                 <tr>
-                    <td>15</td>
-                    <td>Radiographic can be done safely</td>
-                    <td>
-                        <select class="radiography-select" id="spv15">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                    <td>
-                        <select class="radiography-select" id="rad15">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                    <td>
-                        <select class="radiography-select" id="fo15">
-                          <option value="1">Yes</option>
-                          <option value="0">No</option>
-                          <option value="">N/A</option>
-                        </select>
-                    </td>
-                    <td>
-                        <input class="table-input table-input-170" id="remark15" type="text">
+                    <td colspan="5">
+                        <h6>Remark : <small><i>(Write any controlling method shall be apply, start with 'Spv:' for Supervisor, start with 'Rad:' for Rad, and start with 'FO:' for FO)</i></small></h6>
+                        <span id="pre_remark_required" style="display:none;color:red"></span>
+                        <textarea class="table-textarea" id="pre_remark" @(isCanEdit[2] || isCanEdit[3] || isCanEdit[4] ? "" : "disabled")>@Model.pre_remark</textarea>
                     </td>
                 </tr>
             </tbody>
@@ -640,7 +1184,7 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th colspan="4" class="title-form">
+                    <th colspan="5" class="title-form">
                         <b>3. APPROVAL</b>
                     </th>
                 </tr>
@@ -654,6 +1198,9 @@
                         <strong>Supervisor</strong>
                     </td>
                     <td rowspan="2" class="td-centre">
+                        <strong>Safety Officer</strong>
+                    </td>
+                    <td rowspan="2" class="td-centre">
                         <strong>Facility Owner</strong>
                     </td>
                 </tr>
@@ -667,16 +1214,225 @@
                 </tr>
                 <tr>
                     <td class="td-centre">
-                        <button class="btn" type="button">Accept</button>
+                        @if (isCanEdit[5])
+                        {
+                        <button class="btn btn-success btn-small start-accept" type="button" id="start-accept-operator" data-who="1">Sign</button>
+                        }
+                        else if (Model.operator_signature != null)
+                        {
+                        <img id="img_approve_operator" width="50" height="50" @(Model.operator_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.operator_signature == null ? "" : Model.operator_signature.Substring(1))"/><br />
+                        }
                     </td>
                     <td class="td-centre">
-                        <button class="btn" type="button">Accept</button>
+                        @if (isCanEdit[6])
+                        {
+                        <button class="btn btn-success btn-small start-accept" type="button" id="start-accept-radiographer" data-who="2">Sign</button>
+                        }
+                        else if (Model.radiographer_2_signature != null)
+                        {
+                        <img id="img_approve_radiographer" width="50" height="50" @(Model.radiographer_2_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.radiographer_2_signature == null ? "" : Model.radiographer_2_signature.Substring(1))"/><br />
+                        }
                     </td>
                     <td class="td-centre">
-                        <button class="btn" type="button">Accept</button>
+                        @if (isCanEdit[7])
+                        {
+                        <button class="btn btn-success btn-small start-accept" type="button" id="start-accept-spv" data-who="3">Sign</button>
+                        }
+                        else if (Model.supervisor_signature != null)
+                        {
+                        <img id="img_approve_supervisor" width="50" height="50" @(Model.supervisor_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.supervisor_signature == null ? "" : Model.supervisor_signature.Substring(1))"/><br />
+                        }
                     </td>
                     <td class="td-centre">
-                        <button class="btn" type="button">Accept</button>
+                        @if (isCanEdit[8])
+                        {
+                        <button class="btn btn-success btn-small start-accept" type="button" id="start-accept-so" data-who="4">Sign</button>
+                        }
+                        else if (Model.safety_officer_signature != null)
+                        {
+                        <img id="img_approve_safety_officer" width="50" height="50" @(Model.safety_officer_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.safety_officer_signature == null ? "" : Model.safety_officer_signature.Substring(1))"/><br />
+                        }
+                    </td>
+                    <td class="td-centre">
+                        @if (isCanEdit[9])
+                        {
+                        <button class="btn btn-success btn-small start-accept" type="button" id="start-accept-fo" data-who="5">Sign</button>
+                        }
+                        else if (Model.facility_owner_signature != null)
+                        {
+                        <img id="img_approve_facility_owner" width="50" height="50" @(Model.facility_owner_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.facility_owner_signature == null ? "" : Model.facility_owner_signature.Substring(1))"/><br />
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td-centre">
+                        @if ((Model.operator_signature == null && isCanEdit[5] && requestor.id != Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER1.ToString()].id))
+                        {
+                            <text>@requestor.alpha_name<br />a/n </text>
+                        }
+                        else if ((Model.operator_signature != null && Model.operator_signature.Substring(0, 1) == "d"))
+                        {
+                            <text>@Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER1DELEGATE.ToString()].alpha_name<br />a/n </text>
+                        }
+                        @(Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER1.ToString()] != null ? Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER1.ToString()].alpha_name : "")
+                    </td>
+                    <td class="td-centre">
+                        @if ((Model.radiographer_2_signature == null && isCanEdit[6] && requestor.id != Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER2.ToString()].id))
+                        {
+                            <text>@requestor.alpha_name<br />a/n </text>
+                        }
+                        else if ((Model.radiographer_2_signature != null && Model.radiographer_2_signature.Substring(0, 1) == "d"))
+                        {
+                            <text>@Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER2DELEGATE.ToString()].alpha_name<br />a/n </text>
+                        }
+                        @(Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER2.ToString()] != null ? Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER2.ToString()].alpha_name : "")
+                    </td>
+                    <td class="td-centre">
+                        @if ((Model.supervisor_signature == null && isCanEdit[7] && requestor.id != Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SUPERVISOR.ToString()].id))
+                        {
+                            <text>@requestor.alpha_name<br />a/n </text>
+                        }
+                        else if ((Model.supervisor_signature != null && Model.supervisor_signature.Substring(0, 1) == "d"))
+                        {
+                            <text>@Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SUPERVISORDELEGATE.ToString()].alpha_name<br />a/n </text>
+                        }
+                        @(Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SUPERVISOR.ToString()] != null ? Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SUPERVISOR.ToString()].alpha_name : "")
+                    </td>
+                    <td class="td-centre">
+                        @if (isCanEdit[1])
+                        {
+                            @(Html.DropDownList("safety_officer", ViewBag.listSafetyOfficer as List<SelectListItem>, (isCanEdit[1] ? new { @class = "table-input-170" } as object : new { @class = "table-input-170", disabled = "disabled" } as object)));
+                        }
+                        else
+                        {
+                            if ((Model.safety_officer_signature == null && isCanEdit[8] && requestor.id != Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SAFETYOFFICER.ToString()].id))
+                            {
+                            <text>@requestor.alpha_name<br />a/n </text>
+                            }
+                            else if ((Model.safety_officer_signature != null && Model.safety_officer_signature.Substring(0, 1) == "d"))
+                            {
+                            <text>@Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SAFETYOFFICERDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SAFETYOFFICER.ToString()] != null ? Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SAFETYOFFICER.ToString()].alpha_name : "")
+                        }
+                    </td>
+                    <td class="td-centre">
+                        @if ((Model.facility_owner_signature == null && isCanEdit[9]) && requestor.id != Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.FACILITYOWNER.ToString()].id)
+                        {
+                            <text>@requestor.alpha_name<br />a/n </text>
+                        }
+                        else if ((Model.facility_owner_signature != null && Model.facility_owner_signature.Substring(0, 1) == "d"))
+                        {
+                            <text>@Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.FACILITYOWNERDELEGATE.ToString()].alpha_name<br />a/n </text>
+                        }
+                        @(Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.FACILITYOWNER.ToString()] != null ? Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.FACILITYOWNER.ToString()].alpha_name : "")
+                    
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    @if (Model.status >= (int)PermitToWork.Models.Radiography.RadEntity.RadStatus.CLOSING)
+    {
+    <div class="row-fluid">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="title-form" colspan="6">
+                        <b>4. CANCELATION SCREENING</b> <small><i>It must be completed by certified radiographer Level 2. If any of the below can't be satisfied the work will not be permitted. Project manager acknowledge at the ack column as agreement with hazard screening. 
+                            Fill : yes if agree, no if disagree, N/A if not applicable with statement on description column; Spv : Supervisor; Rad : Radiographic engineer / level-2; FO : facility owner</i></small>
+                    </th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>No</strong></td>
+                    <td><strong>Description</strong></td>
+                    <td><strong>SPV</strong></td>
+                    <td><strong>RAD</strong></td>
+                    <td><strong>FO</strong></td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Radiographic job have been completed <small>(Radiatioan survey by valid calibrated meter have been done)</small></td>
+                    <td>
+                        <select class="radiography-select can-screening-spv" data-id="0" id="can-screening-spv-1" @(isCanEdit[11] ? "" : "disabled")>
+                          <option value="0" @(Model.can_screening_spv_arr[0] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.can_screening_spv_arr[0] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.can_screening_spv_arr[0] == "2" ? "selected" : "")>No</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select can-screening-rad" data-id="0" id="can-screening-rad-1" @(isCanEdit[12] ? "" : "disabled")>
+                          <option value="0" @(Model.can_screening_rad_arr[0] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.can_screening_rad_arr[0] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.can_screening_rad_arr[0] == "2" ? "selected" : "")>No</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select can-screening-fo" data-id="0" id="can-screening-fo-1" @(isCanEdit[13] ? "" : "disabled")>
+                          <option value="0" @(Model.can_screening_fo_arr[0] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.can_screening_fo_arr[0] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.can_screening_fo_arr[0] == "2" ? "selected" : "")>No</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Work location have been secure from any waste and residual of radio active material?</td>
+                    <td>
+                        <select class="radiography-select can-screening-spv" data-id="1" id="can-screening-spv-2" @(isCanEdit[11] ? "" : "disabled")>
+                          <option value="0" @(Model.can_screening_spv_arr[1] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.can_screening_spv_arr[1] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.can_screening_spv_arr[1] == "2" ? "selected" : "")>No</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select can-screening-rad" data-id="1" id="can-screening-rad-2" @(isCanEdit[12] ? "" : "disabled")>
+                          <option value="0" @(Model.can_screening_rad_arr[1] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.can_screening_rad_arr[1] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.can_screening_rad_arr[1] == "2" ? "selected" : "")>No</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select can-screening-fo" data-id="1" id="can-screening-fo-2" @(isCanEdit[13] ? "" : "disabled")>
+                          <option value="0" @(Model.can_screening_fo_arr[1] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.can_screening_fo_arr[1] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.can_screening_fo_arr[1] == "2" ? "selected" : "")>No</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Radio active material manifest document has been completed</td>
+                    <td>
+                        <select class="radiography-select can-screening-spv" data-id="2" id="can-screening-spv-3" @(isCanEdit[11] ? "" : "disabled")>
+                          <option value="0" @(Model.can_screening_spv_arr[2] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.can_screening_spv_arr[2] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.can_screening_spv_arr[2] == "2" ? "selected" : "")>No</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select can-screening-rad" data-id="2" id="can-screening-rad-3" @(isCanEdit[12] ? "" : "disabled")>
+                          <option value="0" @(Model.can_screening_rad_arr[2] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.can_screening_rad_arr[2] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.can_screening_rad_arr[2] == "2" ? "selected" : "")>No</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="radiography-select can-screening-fo" data-id="2" id="can-screening-fo-3" @(isCanEdit[13] ? "" : "disabled")>
+                          <option value="0" @(Model.can_screening_fo_arr[2] == "0" ? "selected" : "")>N/A</option>
+                          <option value="1" @(Model.can_screening_fo_arr[2] == "1" ? "selected" : "")>Yes</option>
+                          <option value="2" @(Model.can_screening_fo_arr[2] == "2" ? "selected" : "")>No</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="5">
+                        <h6>Remark : <small><i>(Write any controlling method shall be apply, start with 'Spv:' for Supervisor, start with 'Rad:' for Rad, and start with 'FO:' for FO)</i></small></h6>
+                        <span id="can_remark_required" style="display:none;color:red"></span>
+                        <textarea class="table-textarea" id="can-remark" @(isCanEdit[11] || isCanEdit[12] || isCanEdit[13] ? "" : "disabled")>@Model.can_remark</textarea>
                     </td>
                 </tr>
             </tbody>
@@ -686,8 +1442,8 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th colspan="4" class="title-form">
-                        <b>4. CLOSED</b> <span><i>Radiographic engineer have been declare that all radiation material have been secure in proper condition and work area have been clear from radiographic potential hazard</i></span>
+                    <th colspan="5" class="title-form">
+                        <b>4. CLOSED</b> <small><i>Note: by sign this section Radiographic engineer have been declare that all radiation material have been secure in proper condition and work area have been clear from radiographic potential hazard, Radiographer Level 2 responsible to proper disposal any radiation material and documentation of usage radiation material.</i></small>
                     </th>
                 </tr>
             </thead>
@@ -700,6 +1456,9 @@
                         <strong>Supervisor</strong>
                     </td>
                     <td rowspan="2" class="td-centre">
+                        <strong>Safety Officer</strong>
+                    </td>
+                    <td rowspan="2" class="td-centre">
                         <strong>Facility Owner</strong>
                     </td>
                 </tr>
@@ -713,29 +1472,189 @@
                 </tr>
                 <tr>
                     <td class="td-centre">
-                        <button class="btn" type="button">Accept</button>
+                        @if (isCanEdit[14])
+                        {
+                        <button class="btn btn-success btn-small cancel-accept" type="button" id="cancel-accept-operator" data-who="1">Sign</button>
+                        }
+                        else if (Model.can_operator_signature != null)
+                        {
+                        <img id="img_approve_cancel_operator" width="50" height="50" @(Model.can_operator_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_operator_signature == null ? "" : Model.can_operator_signature.Substring(1))"/><br />
+                        }
                     </td>
                     <td class="td-centre">
-                        <button class="btn" type="button">Accept</button>
+                        @if (isCanEdit[15])
+                        {
+                        <button class="btn btn-success btn-small cancel-accept" type="button" id="cancel-accept-radiographer" data-who="2">Sign</button>
+                        }
+                        else if (Model.can_radiographer_2_signature != null)
+                        {
+                        <img id="img_approve_cancel_radiographer" width="50" height="50" @(Model.can_radiographer_2_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_radiographer_2_signature == null ? "" : Model.can_radiographer_2_signature.Substring(1))"/><br />
+                        }
                     </td>
                     <td class="td-centre">
-                        <button class="btn" type="button">Accept</button>
+                        @if (isCanEdit[16])
+                        {
+                        <button class="btn btn-success btn-small cancel-accept" type="button" id="cancel-accept-supervisor" data-who="3">Sign</button>
+                        }
+                        else if (Model.can_supervisor_signature != null)
+                        {
+                        <img id="img_approve_cancel_supervisor" width="50" height="50" @(Model.can_supervisor_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_supervisor_signature == null ? "" : Model.can_supervisor_signature.Substring(1))"/><br />
+                        }
                     </td>
                     <td class="td-centre">
-                        <button class="btn" type="button">Accept</button>
+                        @if (isCanEdit[17])
+                        {
+                        <button class="btn btn-success btn-small cancel-accept" type="button" id="cancel-accept-so" data-who="4">Sign</button>
+                        }
+                        else if (Model.can_safety_officer_signature != null)
+                        {
+                        <img id="img_approve_cancel_so" width="50" height="50" @(Model.can_safety_officer_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_safety_officer_signature == null ? "" : Model.can_safety_officer_signature.Substring(1))"/><br />
+                        }
+                    </td>
+                    <td class="td-centre">
+                        @if (isCanEdit[18])
+                        {
+                        <button class="btn btn-success btn-small cancel-accept" type="button" id="cancel-accept-fo" data-who="5">Sign</button>
+                        }
+                        else if (Model.can_fo_signature != null)
+                        {
+                        <img id="img_approve_cancel_fo" width="50" height="50" @(Model.can_fo_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_fo_signature == null ? "" : Model.can_fo_signature.Substring(1))"/><br />
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td-centre">
+                        @if ((Model.can_operator_signature == null && isCanEdit[14] && requestor.id != Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER1.ToString()].id))
+                        {
+                            <text>@requestor.alpha_name<br />a/n </text>
+                        }
+                        else if ((Model.can_operator_signature != null && Model.can_operator_signature.Substring(0, 1) == "d"))
+                        {
+                            <text>@Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.CANRADIOGRAPHER1DELEGATE.ToString()].alpha_name<br />a/n </text>
+                        }
+                        @(Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER1.ToString()] != null ? Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER1.ToString()].alpha_name : "")
+                    </td>
+                    <td class="td-centre">
+                        @if ((Model.can_radiographer_2_signature == null && isCanEdit[15] && requestor.id != Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER2.ToString()].id))
+                        {
+                            <text>@requestor.alpha_name<br />a/n </text>
+                        }
+                        else if ((Model.can_radiographer_2_signature != null && Model.can_radiographer_2_signature.Substring(0, 1) == "d"))
+                        {
+                            <text>@Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.CANRADIOGRAPHER2DELEGATE.ToString()].alpha_name<br />a/n </text>
+                        }
+                        @(Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER2.ToString()] != null ? Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER2.ToString()].alpha_name : "")
+                    </td>
+                    <td class="td-centre">
+                        @if ((Model.can_supervisor_signature == null && isCanEdit[16] && requestor.id != Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SUPERVISOR.ToString()].id))
+                        {
+                            <text>@requestor.alpha_name<br />a/n </text>
+                        }
+                        else if ((Model.can_supervisor_signature != null && Model.can_supervisor_signature.Substring(0, 1) == "d"))
+                        {
+                            <text>@Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.CANSUPERVISORDELEGATE.ToString()].alpha_name<br />a/n </text>
+                        }
+                        @(Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SUPERVISOR.ToString()] != null ? Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SUPERVISOR.ToString()].alpha_name : "")
+                    </td>
+                    <td class="td-centre">
+                        @if ((Model.can_safety_officer_signature == null && isCanEdit[17] && requestor.id != Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SAFETYOFFICER.ToString()].id))
+                        {
+                        <text>@requestor.alpha_name<br />a/n </text>
+                        }
+                        else if ((Model.can_safety_officer_signature != null && Model.can_safety_officer_signature.Substring(0, 1) == "d"))
+                        {
+                        <text>@Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.CANSAFETYOFFICERDELEGATE.ToString()].alpha_name<br />a/n </text>
+                        }
+                        @(Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SAFETYOFFICER.ToString()] != null ? Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SAFETYOFFICER.ToString()].alpha_name : "")
+                    </td>
+                    <td class="td-centre">
+                        @if ((Model.can_fo_signature == null && isCanEdit[18]) && requestor.id != Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.FACILITYOWNER.ToString()].id)
+                        {
+                            <text>@requestor.alpha_name<br />a/n </text>
+                        }
+                        else if ((Model.can_fo_signature != null && Model.can_fo_signature.Substring(0, 1) == "d"))
+                        {
+                            <text>@Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.CANFACILITYOWNERDELEGATE.ToString()].alpha_name<br />a/n </text>
+                        }
+                        @(Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.FACILITYOWNER.ToString()] != null ? Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.FACILITYOWNER.ToString()].alpha_name : "")
+                    
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
+    }
     <div class="row-fluid">
         <div class="span12">
-            NOTE: <br />
-            <small>Radiographer Level 2 responsible to proper disposal any radiation material and documentation of usage radiation material</small>
+            Attachment(s)
         </div>
     </div>
     <div class="row-fluid">
-        <br />
-        <button class="btn">Save</button>
+        <div class="span12">
+            <input name="files" id="file-attachment" type="file" class="radiography-file" />
+            <ul id="existing-files-attachment" class="k-upload-files k-reset" style="display: none;">
+                @foreach (string file in Model.listDocumentUploaded[PermitToWork.Models.Radiography.RadEntity.DocumentUploaded.ATTACHMENT.ToString()])
+                {
+                <li class="k-file" data-att-id="@(file)">
+                    <span class="k-icon k-success">uploaded</span>
+                    <span class="k-filename" title="@(file)"><a href="@Url.Content("~/Upload/Radiography/" + Model.id + "/Attachment/" + file)" target="_blank">@file</a><span class="k-progress"><span class="k-state-selected k-progress-status" style="width: 100%;"></span></span></span>
+                    <button type="button" class="k-button k-button-icontext k-upload-action" @(isCanEdit[0] ? "" : "disabled")><span class="k-icon k-delete"></span>Remove</button>
+                </li>
+                }
+            </ul>
+        </div>
+
     </div>
+    <div class="row-fluid">
+        <div class="spann12">&nbsp;</div>
+    </div>
+    <div class="row-fluid">
+        <div class="span12">
+            @if (isCanEdit[0])
+            {
+            <button class="btn btn-success" id="save-send">Save and Send Email</button>  
+            <button class="btn btn-default" id="save-as-draft">Save as Draft</button>
+            }
+            @if (isCanEdit[1] && !isCanEdit[4])
+            {
+            <button class="btn btn-success" id="save-so">Save Safety Officer</button> 
+            }
+            @if (isCanEdit[2] || isCanEdit[3] || isCanEdit[4])
+            {
+            <button class="btn btn-success" id="save-send-2" data-who="@(isCanEdit[2] ? "1" : (isCanEdit[3] ? "2" : (isCanEdit[4] ? "3" : "0")))">Save and Complete</button>
+            <button class="btn btn-default" id="save-as-draft-2">Save as Draft</button>
+            <button class="btn btn-danger" id="reject">Reject to Initiator</button>
+            }
+            @if (isCanEdit[10])
+            {
+            <button class="btn btn-danger" id="closing">Cancel Radiography Clearance Permit</button>
+            }
+            @if (isCanEdit[11] || isCanEdit[12] || isCanEdit[13])
+            {
+            <button class="btn btn-success" id="save-send-3" data-who="@(isCanEdit[11] ? "1" : (isCanEdit[12] ? "2" : (isCanEdit[13] ? "3" : "0")))">Save and Complete</button>
+            <button class="btn btn-default" id="save-as-draft-3">Save as Draft</button>
+            <button class="btn btn-danger" id="reject-3">Send Comment to Initiator</button>
+            }
+            <button class="btn btn-primary" id="back">Back</button>
+            <span id="loading_gif" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="rejection" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="Reject" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="Reject">Reject</h3>
+  </div>
+  <div class="modal-body">
+    <label for="comment">Comment</label><textarea id="comment"></textarea>
+    <input type="hidden" id="type-reject" value="0" />
+      <input type="hidden" id="who" value="0" />
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="reject_button">Reject</button>
+    <span id="loading_reject" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span>
+  </div>
 </div>

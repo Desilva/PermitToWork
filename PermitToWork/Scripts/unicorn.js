@@ -144,6 +144,11 @@ function addHandlerMenu() {
         setActiveMenu('submenu-ptw')
     });
 
+    $('.hira').click(function () {
+        $('#content').load('workingHeight/create');
+        setActiveMenu('submenu-ptw')
+    });
+
     $('.safety').click(function () {
         $('#content').load('safetybriefing/create');
         setActiveMenu('submenu-ptw')

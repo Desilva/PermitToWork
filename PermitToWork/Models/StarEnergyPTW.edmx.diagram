@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="4fe3ff4ca7ec49498721a3fc5164e108" Name="Diagram1" ZoomLevel="52">
+      <Diagram DiagramId="4fe3ff4ca7ec49498721a3fc5164e108" Name="Diagram1" ZoomLevel="54">
         <EntityTypeShape EntityType="star_energy_ptwModel.hira_document" Width="1.5" PointX="7.125" PointY="5.5" />
         <EntityTypeShape EntityType="star_energy_ptwModel.permit_log" Width="1.5" PointX="1.125" PointY="5.5" />
         <EntityTypeShape EntityType="star_energy_ptwModel.mst_department" Width="1.5" PointX="3.125" PointY="5.5" />
@@ -20,6 +20,18 @@
         <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_mst_ptw_holder_no" />
         <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_mst_section" />
         <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_permit_to_work" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_dept_head_fo" Width="1.5" PointX="15.375" PointY="5.5" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_safety_officer" Width="1.5" PointX="17.375" PointY="5.5" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.fire_impairment" Width="1.5" PointX="11.25" PointY="8.875" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_fire_impairment_permit_to_work" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.radiography" Width="1.5" PointX="11.25" PointY="19.875" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_radiography_permit_to_work" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_radiographer" Width="1.5" PointX="21.75" PointY="5.5" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_radiation_po" Width="1.5" PointX="19.5" PointY="5.5" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_erector" Width="1.5" PointX="23.875" PointY="5.5" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_inspector" Width="1.5" PointX="26.125" PointY="5.5" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.working_height" Width="1.5" PointX="2.875" PointY="18.375" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_working_height_permit_to_work" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

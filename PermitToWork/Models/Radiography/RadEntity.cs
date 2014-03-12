@@ -1,0 +1,1398 @@
+﻿using PermitToWork.Models.Master;
+using PermitToWork.Models.Ptw;
+using PermitToWork.Models.User;
+using PermitToWork.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Linq;
+using System.Web;
+
+namespace PermitToWork.Models.Radiography
+{
+    public class RadEntity : radiography, IClearancePermitEntity
+    {
+        public override permit_to_work permit_to_work { get { return null; } set { } }
+
+        // ptw entity for PTW reference
+        private PtwEntity ptw { get; set; }
+
+        public string[] screening_spv_arr { get; set; }
+        public string[] screening_rad_arr { get; set; }
+        public string[] screening_fo_arr { get; set; }
+
+        public string[] can_screening_spv_arr { get; set; }
+        public string[] can_screening_rad_arr { get; set; }
+        public string[] can_screening_fo_arr { get; set; }
+
+        public Dictionary<string, UserEntity> userInRadiography { get; set; }
+
+        public MstRadiographerEntity radiographer2 { get; set; }
+        public MstRadiographerEntity radiographer1 { get; set; }
+
+        public Dictionary<string, List<string>> listDocumentUploaded { get; set; }
+
+        public int ids { get; set; }
+        public string statusText { get; set; }
+
+        // HIRA Document related
+        // public List<HiraEntity> hira_document { get; set; }
+        // public string hira_no { get; set; }
+
+        public string rad_status { get; set; }
+
+        private star_energy_ptwEntities db;
+
+        public enum RadStatus
+        {
+            CREATE,
+            EDITANDSEND,
+            SPVSCREENING,
+            RADSCREENING,
+            FOSCREENING,
+            OPERATORAPPROVE,
+            RADAPPROVE,
+            SPVAPPROVE,
+            SOAPPROVE,
+            FOAPPROVE,
+            CLOSING,
+            CANSPVSCREENING,
+            CANRADSCREENING,
+            CANFOSCREENING,
+            CANOPERATORAPPROVE,
+            CANRADAPPROVE,
+            CANSPVAPPROVE,
+            CANSOAPPROVE,
+            CANFOAPPROVE
+        };
+
+        public enum UserInRadiography
+        {
+            REQUESTOR,
+            RADIOGRAPHER1,
+            RADIOGRAPHER2,
+            SUPERVISOR,
+            SAFETYOFFICER,
+            FACILITYOWNER,
+            RADIOGRAPHER1DELEGATE,
+            RADIOGRAPHER2DELEGATE,
+            SUPERVISORDELEGATE,
+            SAFETYOFFICERDELEGATE,
+            FACILITYOWNERDELEGATE,
+            CANRADIOGRAPHER1DELEGATE,
+            CANRADIOGRAPHER2DELEGATE,
+            CANSUPERVISORDELEGATE,
+            CANSAFETYOFFICERDELEGATE,
+            CANFACILITYOWNERDELEGATE,
+        }
+
+        public enum DocumentUploaded
+        {
+            RADIOGRAPHER1LICENSENUMBER,
+            RADIOGRAPHER2LICENSENUMBER,
+            RADIATIONPOLICENSENUMBER,
+            ATTACHMENT
+        }
+
+        // parameterless constructor for declaring db
+        public RadEntity() : base()
+        {
+            this.db = new star_energy_ptwEntities();
+            this.userInRadiography = new Dictionary<string, UserEntity>();
+            this.listDocumentUploaded = new Dictionary<string, List<string>>();
+            //this.screening_fo_arr = new string[];
+        }
+
+        // constructor with id to get object from database
+        public RadEntity(int id, UserEntity user)
+            : this()
+        {
+            radiography rad = this.db.radiographies.Find(id);
+            // this.ptw = new PtwEntity(fi.id_ptw.Value);
+            ModelUtilization.Clone(rad, this);
+
+            this.screening_fo_arr = this.pre_screening_fo.Split('#');
+            this.screening_spv_arr = this.pre_screening_spv.Split('#');
+            this.screening_rad_arr = this.pre_screening_rad.Split('#');
+
+            this.can_screening_fo_arr = this.can_screening_fo.Split('#');
+            this.can_screening_spv_arr = this.can_screening_spv.Split('#');
+            this.can_screening_rad_arr = this.can_screening_rad.Split('#');
+
+            int radiographerId = 0;
+
+            if (Int32.TryParse(this.radiographer_1, out radiographerId)) {
+                this.radiographer1 = new MstRadiographerEntity(radiographerId, user);
+            }
+
+            if (Int32.TryParse(this.radiographer_2, out radiographerId))
+            {
+                this.radiographer2 = new MstRadiographerEntity(radiographerId, user);
+            }
+
+            string path = HttpContext.Current.Server.MapPath("~/Upload/Radiography/" + this.id + "/LicenseNumber1");
+
+            DirectoryInfo d = new DirectoryInfo(path);//Assuming Test is your Folder
+            FileInfo[] Files = d.GetFiles(); //Getting Text files
+
+            this.listDocumentUploaded.Add(DocumentUploaded.RADIOGRAPHER1LICENSENUMBER.ToString(),Files.Select(p => p.Name).ToList());
+
+            path = HttpContext.Current.Server.MapPath("~/Upload/Radiography/" + this.id + "/LicenseNumber2");
+
+            d = new DirectoryInfo(path);//Assuming Test is your Folder
+            Files = d.GetFiles(); //Getting Text files
+
+            this.listDocumentUploaded.Add(DocumentUploaded.RADIOGRAPHER2LICENSENUMBER.ToString(), Files.Select(p => p.Name).ToList());
+
+            path = HttpContext.Current.Server.MapPath("~/Upload/Radiography/" + this.id + "/LicenseNumberRPO");
+
+            d = new DirectoryInfo(path);//Assuming Test is your Folder
+            Files = d.GetFiles(); //Getting Text files
+
+            this.listDocumentUploaded.Add(DocumentUploaded.RADIATIONPOLICENSENUMBER.ToString(), Files.Select(p => p.Name).ToList());
+
+            path = HttpContext.Current.Server.MapPath("~/Upload/Radiography/" + this.id + "/Attachment");
+
+            d = new DirectoryInfo(path);//Assuming Test is your Folder
+            Files = d.GetFiles(); //Getting Text files
+
+            this.listDocumentUploaded.Add(DocumentUploaded.ATTACHMENT.ToString(), Files.Select(p => p.Name).ToList());
+
+            //this.rad_status = getStatus();
+
+            generateUserInRadiography(rad, user);
+
+            // this.hira_document = new ListHira(this.id_ptw.Value, this.db).listHira;
+        }
+
+        public RadEntity(int ptw_id, string requestor, string purpose, string acc_fo)
+            : this()
+        {
+            // TODO: Complete member initialization
+            this.purpose = purpose;
+            this.id_ptw = ptw_id;
+            this.@operator = requestor;
+            this.facility_owner = acc_fo;
+
+            this.pre_screening_fo = "#############";
+            this.pre_screening_spv = "#############";
+            this.pre_screening_rad = "#############";
+            this.can_screening_fo = "##";
+            this.can_screening_spv = "##";
+            this.can_screening_rad = "##";
+        }
+
+        // function insert data to database
+        public int create()
+        {
+            radiography rad = new radiography();
+            this.status = (int)RadStatus.CREATE;
+            ModelUtilization.Clone(this, rad);
+            this.db.radiographies.Add(rad);
+            int retVal = this.db.SaveChanges();
+            this.id = rad.id;
+
+            string path = HttpContext.Current.Server.MapPath("~/Upload/Radiography/" + this.id);
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            path = HttpContext.Current.Server.MapPath("~/Upload/Radiography/" + this.id  + "/LicenseNumber1");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            path = HttpContext.Current.Server.MapPath("~/Upload/Radiography/" + this.id + "/LicenseNumber2");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            path = HttpContext.Current.Server.MapPath("~/Upload/Radiography/" + this.id + "/LicenseNumberRPO");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            path = HttpContext.Current.Server.MapPath("~/Upload/Radiography/" + this.id + "/Attachment");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            return retVal;
+        }
+
+        // function for editing by requestor
+        public int edit()
+        {
+            int retVal = 0;
+            radiography rad = this.db.radiographies.Find(this.id);
+            if (rad != null)
+            {
+                rad.purpose = this.purpose;
+                rad.work_location = this.work_location;
+                rad.radiographer_2 = this.radiographer_2;
+                rad.radiographer_1 = this.radiographer_1;
+                rad.radiographer_1_license_number = this.radiographer_1_license_number;
+                rad.radiographer_2_license_number = this.radiographer_2_license_number;
+                rad.radiation_protection_officer = this.radiation_protection_officer;
+                rad.radiation_protection_officer_license_number = this.radiation_protection_officer_license_number;
+                rad.potential_area_affected = this.potential_area_affected;
+                rad.total_crew = this.total_crew;
+                rad.radiographic_source = this.radiographic_source;
+                rad.estimate_time_start = this.estimate_time_start;
+                rad.estimate_time_end = this.estimate_time_end;
+
+                this.db.Entry(rad).State = EntityState.Modified;
+                retVal = this.db.SaveChanges();
+            }
+
+            return retVal;
+        }
+
+        public int delete()
+        {
+            radiography rad = new radiography();
+            ModelUtilization.Clone(this, rad);
+            this.db.radiographies.Remove(rad);
+            int retVal = this.db.SaveChanges();
+            return retVal;
+        }
+
+        public void generateNumber(string ptw_no)
+        {
+            string result = "RT-" + ptw_no;
+
+            this.rg_no = result;
+        }
+
+        public int requestorSendScreeningSpv(string serverUrl)
+        {
+            int retVal = 0;
+            radiography rad = this.db.radiographies.Find(this.id);
+            if (rad != null)
+            {
+                if (this.status == (int)RadStatus.CREATE)
+                {
+                    if (this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()] != null)
+                    {
+                        rad.status = (int)RadStatus.EDITANDSEND;
+
+                        this.db.Entry(rad).State = EntityState.Modified;
+                        retVal = this.db.SaveChanges();
+
+                        // sending email
+                        List<string> email = new List<string>();
+
+                        //email.add(this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].email);
+                        email.Add("septujamasoka@gmail.com");
+                        SendEmail sendEmail = new SendEmail();
+                        //s.Add(gasTester.email);
+                        //s.Add("septu.jamasoka@gmail.com");
+
+                        string message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+
+                        sendEmail.Send(email, message, "Radiography Clearance Permit Supervisor Pre-Job Screening");
+                    }
+                    else
+                    {
+                        retVal = -1;
+                    }
+                }
+                else
+                {
+                    List<string> email = new List<string>();
+                    SendEmail sendEmail = new SendEmail();
+                    string message = "";
+                    switch (this.status)
+                    {
+                        case (int)RadStatus.EDITANDSEND:
+                            // sending email
+
+                            //email.add(this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].email);
+                            email.Add("septujamasoka@gmail.com");
+                            message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+                            sendEmail.Send(email, message, "Radiography Clearance Permit Supervisor Pre-Job Screening");
+                            break;
+                        case (int)RadStatus.SPVSCREENING:
+                            // sending email
+
+                            //email.add(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].email);
+                            email.Add("septujamasoka@gmail.com");
+                            message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+                            sendEmail.Send(email, message, "Radiography Clearance Permit Radiographer Level 2 Pre-Job Screening");
+                            break;
+                        case (int)RadStatus.RADSCREENING:
+                            // sending email
+
+                            //email.add(this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].email);
+                            email.Add("septujamasoka@gmail.com");
+                            message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+                            sendEmail.Send(email, message, "Radiography Clearance Permit Facility Owner Pre-Job Screening");
+                            break;
+                    }
+
+                    retVal = 1;
+                }
+            }
+
+            return retVal;
+        }
+
+        public int savePreScreening(int who /* 1 = spv, 2 = rad, 3 = fo */)
+        {
+            int retVal = 0;
+            radiography rad = this.db.radiographies.Find(this.id);
+            if (rad != null)
+            {
+                rad.pre_remark = pre_remark;
+                switch (who)
+                {
+                    case 1: // Supervisor
+                        rad.pre_screening_spv = this.pre_screening_spv;
+                        break;
+                    case 2: // radiographer level 2
+                        rad.pre_screening_rad = this.pre_screening_rad;
+                        break;
+                    case 3:
+                        rad.pre_screening_fo = this.pre_screening_fo;
+                        break;
+                }
+
+                this.db.Entry(rad).State = EntityState.Modified;
+                retVal = this.db.SaveChanges();
+            }
+
+            return retVal;
+        }
+
+        public int rejectPreScreening(int who /* 1 = spv, 2 = rad, 3 = fo */, string serverUrl, string comment)
+        {
+            int retVal = 0;
+            radiography rad = this.db.radiographies.Find(this.id);
+            if (rad != null)
+            {
+                // sending email
+                List<string> email = new List<string>();
+                string title = "";
+                switch (who)
+                {
+                    case 1:
+                        title = "Radiography Clearance Permit Rejected by Supervisor on Pre-Job Screening";
+                        break;
+                    case 2:
+                        title = "Radiography Clearance Permit Rejected by Radiographer Level 2 on Pre-Job Screening";
+                        break;
+                    case 3:
+                        title = "Radiography Clearance Permit Rejected by Facility Owner on Pre-Job Screening";
+                        break;
+                }
+                //email.add(this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].email);
+                email.Add("septujamasoka@gmail.com");
+                SendEmail sendEmail = new SendEmail();
+                string message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+                sendEmail.Send(email, message, title);
+            }
+
+            return retVal;
+        }
+
+        public int completePreScreening(int who /* 1 = spv, 2 = rad, 3 = fo */, UserEntity user, string serverUrl)
+        {
+            int retVal = 0;
+            radiography rad = this.db.radiographies.Find(this.id);
+
+            List<string> email = new List<string>();
+            string title = "";
+            SendEmail sendEmail = new SendEmail();
+            
+            if (rad != null)
+            {
+                switch (who)
+                {
+                    case 1: // Supervisor
+                        if (this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()] != null)
+                        {
+                            rad.status = (int)RadStatus.SPVSCREENING;
+
+                            this.db.Entry(rad).State = EntityState.Modified;
+                            retVal = this.db.SaveChanges();
+
+                            //email.add(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].email);
+                            email.Add("septujamasoka@gmail.com");
+                            title = "Radiography Clearance Permit Radiographer Level 2 Pre-Job Screening";
+                            string message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+                            sendEmail.Send(email, message, title);
+                        }
+                        else
+                        {
+                            retVal = -1;
+                        }
+                        break;
+                    case 2: // radiographer level 2
+                        if (this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()] != null)
+                        {
+                            rad.status = (int)RadStatus.RADSCREENING;
+
+                            this.db.Entry(rad).State = EntityState.Modified;
+                            retVal = this.db.SaveChanges();
+
+                            //email.add(this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].email);
+                            email.Add("septujamasoka@gmail.com");
+                            title = "Radiography Clearance Permit Facility Owner Pre-Job Screening";
+                            string message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+                            sendEmail.Send(email, message, title);
+                        }
+                        else
+                        {
+                            retVal = -1;
+                        }
+                        break;
+                    case 3:
+                        if (this.userInRadiography[UserInRadiography.RADIOGRAPHER1.ToString()] != null)
+                        {
+                            rad.status = (int)RadStatus.FOSCREENING;
+
+                            this.db.Entry(rad).State = EntityState.Modified;
+                            retVal = this.db.SaveChanges();
+
+                            //email.add(this.userInRadiography[UserInRadiography.RADIOGRAPHER1.ToString()].email);
+                            email.Add("septujamasoka@gmail.com");
+                            title = "Radiography Clearance Permit Operator Approval";
+                            string message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+                            sendEmail.Send(email, message, title);
+                        }
+                        else
+                        {
+                            retVal = -1;
+                        }
+                        break;
+                }
+            }
+
+            return retVal;
+        }
+
+        internal int signPermitStart(UserEntity user, int who, string serverUrl, out string messages)
+        {
+            int retVal = 0;
+            radiography rad = this.db.radiographies.Find(this.id);
+
+            List<string> email = new List<string>();
+            string title = "";
+            SendEmail sendEmail = new SendEmail();
+            string message = "";
+            messages = "";
+            if (rad != null)
+            {
+                switch (who)
+                {
+                    case 1:
+                        if (user.id == this.userInRadiography[UserInRadiography.RADIOGRAPHER1.ToString()].id)
+                        {
+                            rad.operator_signature = "a" + user.signature;
+                        }
+                        else if (user.id == this.userInRadiography[UserInRadiography.RADIOGRAPHER1.ToString()].employee_delegate)
+                        {
+                            rad.operator_delegate = user.id.ToString();
+                            rad.operator_signature = "d" + user.signature;
+                        }
+
+                        rad.status = (int)RadStatus.OPERATORAPPROVE;
+
+                        this.db.Entry(rad).State = EntityState.Modified;
+                        retVal = this.db.SaveChanges();
+
+                        //email.Add(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].email);
+                        //if (this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate != null)
+                        //{
+                        //    UserEntity @delegate = new UserEntity(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate.Value, user.token, user);
+                        //    email.Add(@delegate.email);
+                        //}
+                        email.Add("septujamasoka@gmail.com");
+                        title = "Radiography Clearance Permit Radiographer Level 2 Approval";
+                        message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+                        messages = "Radiography Clearance Permit is signed. Notification has been sent to Radiographer Level 2 for Signing.";
+                        break;
+                    case 2:
+                        if (user.id == this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].id)
+                        {
+                            rad.radiographer_2_signature = "a" + user.signature;
+                        }
+                        else if (user.id == this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate)
+                        {
+                            rad.radiographer_2_delegate = user.id.ToString();
+                            rad.radiographer_2_signature = "d" + user.signature;
+                        }
+
+                        rad.status = (int)RadStatus.RADAPPROVE;
+
+                        this.db.Entry(rad).State = EntityState.Modified;
+                        retVal = this.db.SaveChanges();
+
+                        //email.Add(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].email);
+                        //if (this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate != null)
+                        //{
+                        //    UserEntity @delegate = new UserEntity(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate.Value, user.token, user);
+                        //    email.Add(@delegate.email);
+                        //}
+                        email.Add("septujamasoka@gmail.com");
+                        title = "Radiography Clearance Permit Supervisor Approval";
+                        message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+                        messages = "Radiography Clearance Permit is signed. Notification has been sent to Supervisor for Signing.";
+                        break;
+                    case 3:
+                        if (user.id == this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].id)
+                        {
+                            rad.supervisor_signature = "a" + user.signature;
+                        }
+                        else if (user.id == this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].employee_delegate)
+                        {
+                            rad.supervisor_delegate = user.id.ToString();
+                            rad.supervisor_signature = "d" + user.signature;
+                        }
+
+                        rad.status = (int)RadStatus.SPVAPPROVE;
+
+                        this.db.Entry(rad).State = EntityState.Modified;
+                        retVal = this.db.SaveChanges();
+
+                        if (this.userInRadiography[UserInRadiography.SAFETYOFFICER.ToString()] == null)
+                        {
+                            //email.Add(this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].email);
+                            email.Add("septujamasoka@gmail.com");
+                            title = "Radiography Clearance Permit Safety Officer Assignment Needed";
+                            message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+                            messages = "Radiography Clearance Permit is signed. Notification has been sent to Facility Owner for assigning Safety Officer.";
+                        }
+                        else
+                        {
+                            //email.Add(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].email);
+                            //if (this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate != null)
+                            //{
+                            //    UserEntity @delegate = new UserEntity(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate.Value, user.token, user);
+                            //    email.Add(@delegate.email);
+                            //}
+                            email.Add("septujamasoka@gmail.com");
+                            title = "Radiography Clearance Permit Safety Officer Approval";
+                            message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+                            messages = "Radiography Clearance Permit is signed. Notification has been sent to Safety Officer for Signing.";
+                        }
+                        break;
+                    case 4:
+                        if (user.id == this.userInRadiography[UserInRadiography.SAFETYOFFICER.ToString()].id)
+                        {
+                            rad.safety_officer_signature = "a" + user.signature;
+                        }
+                        else if (user.id == this.userInRadiography[UserInRadiography.SAFETYOFFICER.ToString()].employee_delegate)
+                        {
+                            rad.safety_officer_delegate = user.id.ToString();
+                            rad.safety_officer_signature = "d" + user.signature;
+                        }
+
+                        rad.status = (int)RadStatus.SOAPPROVE;
+
+                        this.db.Entry(rad).State = EntityState.Modified;
+                        retVal = this.db.SaveChanges();
+                        
+                        //email.Add(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].email);
+                        //if (this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate != null)
+                        //{
+                        //    UserEntity @delegate = new UserEntity(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate.Value, user.token, user);
+                        //    email.Add(@delegate.email);
+                        //}
+                        email.Add("septujamasoka@gmail.com");
+                        title = "Radiography Clearance Permit Facility Owner Approval";
+                        message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+                        messages = "Radiography Clearance Permit is signed. Notification has been sent to Facility Owner for Signing.";
+                        break;
+                    case 5:
+                        if (user.id == this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].id)
+                        {
+                            rad.facility_owner_signature = "a" + user.signature;
+                        }
+                        else if (user.id == this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].employee_delegate)
+                        {
+                            rad.facility_owner_delegate = user.id.ToString();
+                            rad.facility_owner_signature = "d" + user.signature;
+                        }
+
+                        rad.status = (int)RadStatus.FOAPPROVE;
+
+                        this.db.Entry(rad).State = EntityState.Modified;
+                        retVal = this.db.SaveChanges();
+
+                        this.ptw = new PtwEntity(rad.id_ptw.Value, user);
+
+                        this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.RADIOGRAPHY.ToString());
+
+                        //email.Add(this.userInRadiography[UserInRadiography.REQUESTOR.ToString()].email);
+                        email.Add("septujamasoka@gmail.com");
+                        title = "Radiography Clearance Permit Approval Complete";
+                        message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+                        messages = "Radiography Clearance Permit is signed. Radiography Clearance Permit is completed. Notification has been sent to Requestor.";
+                        break;
+                }
+
+
+                sendEmail.Send(email, message, title);
+            }
+
+            return retVal;
+        }
+
+        internal int cancelPermit(UserEntity user, string serverUrl)
+        {
+            int retVal = 0;
+            radiography rad = this.db.radiographies.Find(this.id);
+
+            List<string> email = new List<string>();
+            string title = "";
+            SendEmail sendEmail = new SendEmail();
+
+            if (rad != null)
+            {
+                rad.status = (int)RadStatus.CLOSING;
+
+                this.db.Entry(rad).State = EntityState.Modified;
+                retVal = this.db.SaveChanges();
+
+                //email.add(this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].email);
+                email.Add("septujamasoka@gmail.com");
+                title = "Radiography Clearance Permit Supervisor Cancellation Screening";
+                string message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+                sendEmail.Send(email, message, title);
+            }
+
+            return retVal;
+        }
+
+        public int saveCancelScreening(int who /* 1 = spv, 2 = rad, 3 = fo */)
+        {
+            int retVal = 0;
+            radiography rad = this.db.radiographies.Find(this.id);
+            if (rad != null)
+            {
+                rad.can_remark = can_remark;
+                switch (who)
+                {
+                    case 1: // Supervisor
+                        rad.can_screening_spv = this.can_screening_spv;
+                        break;
+                    case 2: // radiographer level 2
+                        rad.can_screening_rad = this.can_screening_rad;
+                        break;
+                    case 3:
+                        rad.can_screening_fo = this.can_screening_fo;
+                        break;
+                }
+
+                this.db.Entry(rad).State = EntityState.Modified;
+                retVal = this.db.SaveChanges();
+            }
+
+            return retVal;
+        }
+
+        public int rejectCancelScreening(int who /* 1 = spv, 2 = rad, 3 = fo */, string serverUrl, string comment)
+        {
+            int retVal = 0;
+            radiography rad = this.db.radiographies.Find(this.id);
+            if (rad != null)
+            {
+                // sending email
+                List<string> email = new List<string>();
+                string title = "";
+                switch (who)
+                {
+                    case 1:
+                        title = "Radiography Clearance Permit Rejected by Supervisor on Cancellation Screening";
+                        break;
+                    case 2:
+                        title = "Radiography Clearance Permit Rejected by Radiographer Level 2 on Cancellation Screening";
+                        break;
+                    case 3:
+                        title = "Radiography Clearance Permit Rejected by Facility Owner on Cancellation Screening";
+                        break;
+                }
+                //email.add(this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].email);
+                email.Add("septujamasoka@gmail.com");
+                SendEmail sendEmail = new SendEmail();
+                string message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+                sendEmail.Send(email, message, title);
+            }
+
+            return retVal;
+        }
+
+        public int completeCancelScreening(int who /* 1 = spv, 2 = rad, 3 = fo */, UserEntity user, string serverUrl)
+        {
+            int retVal = 0;
+            radiography rad = this.db.radiographies.Find(this.id);
+
+            List<string> email = new List<string>();
+            string title = "";
+            SendEmail sendEmail = new SendEmail();
+
+            if (rad != null)
+            {
+                switch (who)
+                {
+                    case 1: // Supervisor
+                        if (this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()] != null)
+                        {
+                            rad.status = (int)RadStatus.CANSPVSCREENING;
+
+                            this.db.Entry(rad).State = EntityState.Modified;
+                            retVal = this.db.SaveChanges();
+
+                            //email.add(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].email);
+                            email.Add("septujamasoka@gmail.com");
+                            title = "Radiography Clearance Permit Radiographer Level 2 Cancellation Screening";
+                            string message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+                            sendEmail.Send(email, message, title);
+                        }
+                        else
+                        {
+                            retVal = -1;
+                        }
+                        break;
+                    case 2: // radiographer level 2
+                        if (this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()] != null)
+                        {
+                            rad.status = (int)RadStatus.CANRADSCREENING;
+
+                            this.db.Entry(rad).State = EntityState.Modified;
+                            retVal = this.db.SaveChanges();
+
+                            //email.add(this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].email);
+                            email.Add("septujamasoka@gmail.com");
+                            title = "Radiography Clearance Permit Facility Owner Cancellation Screening";
+                            string message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+                            sendEmail.Send(email, message, title);
+                        }
+                        else
+                        {
+                            retVal = -1;
+                        }
+                        break;
+                    case 3:
+                        if (this.userInRadiography[UserInRadiography.RADIOGRAPHER1.ToString()] != null)
+                        {
+                            rad.status = (int)RadStatus.CANFOSCREENING;
+
+                            this.db.Entry(rad).State = EntityState.Modified;
+                            retVal = this.db.SaveChanges();
+
+                            //email.add(this.userInRadiography[UserInRadiography.RADIOGRAPHER1.ToString()].email);
+                            email.Add("septujamasoka@gmail.com");
+                            title = "Radiography Clearance Permit Cancellation Operator Approval";
+                            string message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+                            sendEmail.Send(email, message, title);
+                        }
+                        else
+                        {
+                            retVal = -1;
+                        }
+                        break;
+                }
+            }
+
+            return retVal;
+        }
+
+        internal int signPermitCancel(UserEntity user, int who, string serverUrl, out string messages)
+        {
+            int retVal = 0;
+            radiography rad = this.db.radiographies.Find(this.id);
+
+            List<string> email = new List<string>();
+            string title = "";
+            SendEmail sendEmail = new SendEmail();
+            string message = "";
+            messages = "";
+            if (rad != null)
+            {
+                switch (who)
+                {
+                    case 1:
+                        if (user.id == this.userInRadiography[UserInRadiography.RADIOGRAPHER1.ToString()].id)
+                        {
+                            rad.can_operator_signature = "a" + user.signature;
+                        }
+                        else if (user.id == this.userInRadiography[UserInRadiography.RADIOGRAPHER1.ToString()].employee_delegate)
+                        {
+                            rad.can_operator_delegate = user.id.ToString();
+                            rad.can_operator_signature = "d" + user.signature;
+                        }
+
+                        rad.status = (int)RadStatus.CANOPERATORAPPROVE;
+
+                        this.db.Entry(rad).State = EntityState.Modified;
+                        retVal = this.db.SaveChanges();
+
+                        //email.Add(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].email);
+                        //if (this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate != null)
+                        //{
+                        //    UserEntity @delegate = new UserEntity(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate.Value, user.token, user);
+                        //    email.Add(@delegate.email);
+                        //}
+                        email.Add("septujamasoka@gmail.com");
+                        title = "Radiography Clearance Permit Radiographer Level 2 Approval";
+                        message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+                        messages = "Radiography Clearance Permit's cancellation is signed. Notification has been sent to Radiographer Level 2 for Signing.";
+                        break;
+                    case 2:
+                        if (user.id == this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].id)
+                        {
+                            rad.can_radiographer_2_signature = "a" + user.signature;
+                        }
+                        else if (user.id == this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate)
+                        {
+                            rad.can_radiographer_2_delegate = user.id.ToString();
+                            rad.can_radiographer_2_signature = "d" + user.signature;
+                        }
+
+                        rad.status = (int)RadStatus.CANRADAPPROVE;
+
+                        this.db.Entry(rad).State = EntityState.Modified;
+                        retVal = this.db.SaveChanges();
+
+                        //email.Add(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].email);
+                        //if (this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate != null)
+                        //{
+                        //    UserEntity @delegate = new UserEntity(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate.Value, user.token, user);
+                        //    email.Add(@delegate.email);
+                        //}
+                        email.Add("septujamasoka@gmail.com");
+                        title = "Radiography Clearance Permit Supervisor Approval";
+                        message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+                        messages = "Radiography Clearance Permit's cancellation is signed. Notification has been sent to Supervisor for Signing.";
+                        break;
+                    case 3:
+                        if (user.id == this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].id)
+                        {
+                            rad.can_supervisor_signature = "a" + user.signature;
+                        }
+                        else if (user.id == this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].employee_delegate)
+                        {
+                            rad.can_supervisor_delegate = user.id.ToString();
+                            rad.can_supervisor_signature = "d" + user.signature;
+                        }
+
+                        rad.status = (int)RadStatus.CANSPVAPPROVE;
+
+                        this.db.Entry(rad).State = EntityState.Modified;
+                        retVal = this.db.SaveChanges();
+
+                        
+                        //email.Add(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].email);
+                        //if (this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate != null)
+                        //{
+                        //    UserEntity @delegate = new UserEntity(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate.Value, user.token, user);
+                        //    email.Add(@delegate.email);
+                        //}
+                        email.Add("septujamasoka@gmail.com");
+                        title = "Radiography Clearance Permit Safety Officer Approval";
+                        message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+                        messages = "Radiography Clearance Permit's cancellation is signed. Notification has been sent to Safety Officer for Signing.";
+                        break;
+                    case 4:
+                        if (user.id == this.userInRadiography[UserInRadiography.SAFETYOFFICER.ToString()].id)
+                        {
+                            rad.can_safety_officer_signature = "a" + user.signature;
+                        }
+                        else if (user.id == this.userInRadiography[UserInRadiography.SAFETYOFFICER.ToString()].employee_delegate)
+                        {
+                            rad.can_safety_officer_delegate = user.id.ToString();
+                            rad.can_safety_officer_signature = "d" + user.signature;
+                        }
+
+                        rad.status = (int)RadStatus.CANSOAPPROVE;
+
+                        this.db.Entry(rad).State = EntityState.Modified;
+                        retVal = this.db.SaveChanges();
+
+                        //email.Add(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].email);
+                        //if (this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate != null)
+                        //{
+                        //    UserEntity @delegate = new UserEntity(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate.Value, user.token, user);
+                        //    email.Add(@delegate.email);
+                        //}
+                        email.Add("septujamasoka@gmail.com");
+                        title = "Radiography Clearance Permit Facility Owner Approval";
+                        message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+                        messages = "Radiography Clearance Permit's cancellation is signed. Notification has been sent to Facility Owner for Signing.";
+                        break;
+                    case 5:
+                        if (user.id == this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].id)
+                        {
+                            rad.can_fo_signature = "a" + user.signature;
+                        }
+                        else if (user.id == this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].employee_delegate)
+                        {
+                            rad.can_fo_delegate = user.id.ToString();
+                            rad.can_fo_signature = "d" + user.signature;
+                        }
+
+                        rad.status = (int)RadStatus.CANFOAPPROVE;
+
+                        this.db.Entry(rad).State = EntityState.Modified;
+                        retVal = this.db.SaveChanges();
+
+                        this.ptw = new PtwEntity(rad.id_ptw.Value, user);
+
+                        this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.CLOSE, PtwEntity.clearancePermit.RADIOGRAPHY.ToString());
+
+                        //email.Add(this.userInRadiography[UserInRadiography.REQUESTOR.ToString()].email);
+                        email.Add("septujamasoka@gmail.com");
+                        title = "Radiography Clearance Permit Cancellation Approval Complete";
+                        message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+                        messages = "Radiography Clearance Permit's cancellation is signed. Radiography Clearance Permit is closed. Notification has been sent to Requestor.";
+                        break;
+                }
+
+
+                sendEmail.Send(email, message, title);
+            }
+
+            return retVal;
+        }
+
+        #region is can edit
+
+        public bool isCanEditGeneralInformation(UserEntity user)
+        {
+            if (this.userInRadiography[UserInRadiography.REQUESTOR.ToString()] != null)
+            {
+                if ((user.id == this.userInRadiography[UserInRadiography.REQUESTOR.ToString()].id || user.id == this.userInRadiography[UserInRadiography.REQUESTOR.ToString()].employee_delegate) && this.status <= (int)RadStatus.RADSCREENING)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool isCanEditSpvScreening(UserEntity user)
+        {
+            if (this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()] != null)
+            {
+                if ((user.id == this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].id || user.id == this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].employee_delegate) && this.status == (int)RadStatus.EDITANDSEND)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool isCanEditRadScreening(UserEntity user)
+        {
+            if (this.userInRadiography.Keys.Where(p => p == UserInRadiography.RADIOGRAPHER2.ToString()).Count() != 0)
+            {
+                if ((user.id == this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].id || user.id == this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate) && this.status == (int)RadStatus.SPVSCREENING)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool isCanEditFOScreening(UserEntity user)
+        {
+            if (this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()] != null)
+            {
+                if ((user.id == this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].id || user.id == this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].employee_delegate) && this.status == (int)RadStatus.RADSCREENING)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool isCanEditFOChoosingSO(UserEntity user)
+        {
+            if (this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()] != null)
+            {
+                if ((user.id == this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].id || user.id == this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].employee_delegate) && this.status <= (int)RadStatus.SPVAPPROVE)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool isCanApproveOperator(UserEntity user)
+        {
+            if (this.userInRadiography.Keys.Where(p => p == UserInRadiography.RADIOGRAPHER1.ToString()).Count() != 0)
+            {
+                if ((user.id == this.userInRadiography[UserInRadiography.RADIOGRAPHER1.ToString()].id || user.id == this.userInRadiography[UserInRadiography.RADIOGRAPHER1.ToString()].employee_delegate) && this.status == (int)RadStatus.FOSCREENING)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool isCanApproveRadiographer2(UserEntity user)
+        {
+            if (this.userInRadiography.Keys.Where(p => p == UserInRadiography.RADIOGRAPHER2.ToString()).Count() != 0)
+            {
+                if ((user.id == this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].id || user.id == this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate) && this.status == (int)RadStatus.OPERATORAPPROVE)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool isCanApproveSpv(UserEntity user)
+        {
+            if (this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()] != null)
+            {
+                if ((user.id == this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].id || user.id == this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].employee_delegate) && this.status == (int)RadStatus.RADAPPROVE)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool isCanApproveSO(UserEntity user)
+        {
+            if (this.userInRadiography[UserInRadiography.SAFETYOFFICER.ToString()] != null)
+            {
+                if ((user.id == this.userInRadiography[UserInRadiography.SAFETYOFFICER.ToString()].id || user.id == this.userInRadiography[UserInRadiography.SAFETYOFFICER.ToString()].employee_delegate) && this.status == (int)RadStatus.SPVAPPROVE)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool isCanApproveFO(UserEntity user)
+        {
+            if (this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()] != null)
+            {
+                if ((user.id == this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].id || user.id == this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].employee_delegate) && this.status == (int)RadStatus.SOAPPROVE)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool isCanCancel(UserEntity user)
+        {
+            if (this.userInRadiography[UserInRadiography.REQUESTOR.ToString()] != null)
+            {
+                if ((user.id == this.userInRadiography[UserInRadiography.REQUESTOR.ToString()].id || user.id == this.userInRadiography[UserInRadiography.REQUESTOR.ToString()].employee_delegate) && this.status <= (int)RadStatus.FOAPPROVE)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool isCanEditSpvCancelScreening(UserEntity user)
+        {
+            if (this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()] != null)
+            {
+                if ((user.id == this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].id || user.id == this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].employee_delegate) && this.status == (int)RadStatus.CLOSING)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool isCanEditRadCancelScreening(UserEntity user)
+        {
+            if (this.userInRadiography.Keys.Where(p => p == UserInRadiography.RADIOGRAPHER2.ToString()).Count() != 0)
+            {
+                if ((user.id == this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].id || user.id == this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate) && this.status == (int)RadStatus.CANSPVSCREENING)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool isCanEditFOCancelScreening(UserEntity user)
+        {
+            if (this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()] != null)
+            {
+                if ((user.id == this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].id || user.id == this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].employee_delegate) && this.status == (int)RadStatus.CANRADSCREENING)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool isCanApproveOperatorCancel(UserEntity user)
+        {
+            if (this.userInRadiography.Keys.Where(p => p == UserInRadiography.RADIOGRAPHER1.ToString()).Count() != 0)
+            {
+                if ((user.id == this.userInRadiography[UserInRadiography.RADIOGRAPHER1.ToString()].id || user.id == this.userInRadiography[UserInRadiography.RADIOGRAPHER1.ToString()].employee_delegate) && this.status == (int)RadStatus.CANFOSCREENING)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool isCanApproveRadiographer2Cancel(UserEntity user)
+        {
+            if (this.userInRadiography.Keys.Where(p => p == UserInRadiography.RADIOGRAPHER2.ToString()).Count() != 0)
+            {
+                if ((user.id == this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].id || user.id == this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate) && this.status == (int)RadStatus.CANOPERATORAPPROVE)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool isCanApproveSpvCancel(UserEntity user)
+        {
+            if (this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()] != null)
+            {
+                if ((user.id == this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].id || user.id == this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].employee_delegate) && this.status == (int)RadStatus.CANRADAPPROVE)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool isCanApproveSOCancel(UserEntity user)
+        {
+            if (this.userInRadiography[UserInRadiography.SAFETYOFFICER.ToString()] != null)
+            {
+                if ((user.id == this.userInRadiography[UserInRadiography.SAFETYOFFICER.ToString()].id || user.id == this.userInRadiography[UserInRadiography.SAFETYOFFICER.ToString()].employee_delegate) && this.status == (int)RadStatus.CANSPVAPPROVE)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool isCanApproveFOCancel(UserEntity user)
+        {
+            if (this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()] != null)
+            {
+                if ((user.id == this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].id || user.id == this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].employee_delegate) && this.status == (int)RadStatus.CANSOAPPROVE)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        #endregion
+
+        #region internal function
+
+        private void generateUserInRadiography(radiography rad, UserEntity user)
+        {
+            ListUser listUser = new ListUser(user.token, user.id);
+            int userId = 0;
+
+            Int32.TryParse(this.@operator, out userId);
+            this.userInRadiography.Add(UserInRadiography.REQUESTOR.ToString(), listUser.listUser.Find(p => p.id == userId));
+
+            userId = 0;
+            if (this.radiographer1 != null)
+            {
+                this.userInRadiography.Add(UserInRadiography.RADIOGRAPHER1.ToString(), this.radiographer1.user);
+            }
+
+            if (this.radiographer2 != null)
+            {
+                this.userInRadiography.Add(UserInRadiography.RADIOGRAPHER2.ToString(), this.radiographer2.user);
+            }
+
+            Int32.TryParse(this.supervisor, out userId);
+            this.userInRadiography.Add(UserInRadiography.SUPERVISOR.ToString(), listUser.listUser.Find(p => p.id == userId));
+
+            userId = 0;
+            Int32.TryParse(this.safety_officer, out userId);
+            this.userInRadiography.Add(UserInRadiography.SAFETYOFFICER.ToString(), listUser.listUser.Find(p => p.id == userId));
+
+            userId = 0;
+            Int32.TryParse(this.facility_owner, out userId);
+            this.userInRadiography.Add(UserInRadiography.FACILITYOWNER.ToString(), listUser.listUser.Find(p => p.id == userId));
+
+            userId = 0;
+            Int32.TryParse(this.operator_delegate, out userId);
+            if (userId != 0)
+            {
+                this.userInRadiography.Add(UserInRadiography.RADIOGRAPHER1DELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
+            }
+
+            userId = 0;
+            Int32.TryParse(this.radiographer_2_delegate, out userId);
+            if (userId != 0)
+            {
+                this.userInRadiography.Add(UserInRadiography.RADIOGRAPHER2DELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
+            }
+
+            userId = 0;
+            Int32.TryParse(this.supervisor_delegate, out userId);
+            if (userId != 0)
+            {
+                this.userInRadiography.Add(UserInRadiography.SUPERVISORDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
+            }
+
+            userId = 0;
+            Int32.TryParse(this.safety_officer_delegate, out userId);
+            if (userId != 0)
+            {
+                this.userInRadiography.Add(UserInRadiography.SAFETYOFFICERDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
+            }
+
+            userId = 0;
+            Int32.TryParse(this.facility_owner_delegate, out userId);
+            if (userId != 0)
+            {
+                this.userInRadiography.Add(UserInRadiography.FACILITYOWNERDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
+            }
+
+            userId = 0;
+            Int32.TryParse(this.can_operator_delegate, out userId);
+            if (userId != 0)
+            {
+                this.userInRadiography.Add(UserInRadiography.CANRADIOGRAPHER1DELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
+            }
+
+            userId = 0;
+            Int32.TryParse(this.can_radiographer_2_delegate, out userId);
+            if (userId != 0)
+            {
+                this.userInRadiography.Add(UserInRadiography.CANRADIOGRAPHER2DELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
+            }
+
+            userId = 0;
+            Int32.TryParse(this.can_supervisor_delegate, out userId);
+            if (userId != 0)
+            {
+                this.userInRadiography.Add(UserInRadiography.CANSUPERVISORDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
+            }
+
+            userId = 0;
+            Int32.TryParse(this.can_safety_officer_delegate, out userId);
+            if (userId != 0)
+            {
+                this.userInRadiography.Add(UserInRadiography.CANSAFETYOFFICERDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
+            }
+
+            userId = 0;
+            Int32.TryParse(this.can_fo_delegate, out userId);
+            if (userId != 0)
+            {
+                this.userInRadiography.Add(UserInRadiography.CANFACILITYOWNERDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
+            }
+        }
+
+        #endregion
+
+        #region assigment user
+
+        internal int assignSupervisor(UserEntity user)
+        {
+            int retVal = 0;
+            radiography rad = this.db.radiographies.Find(this.id);
+            if (rad != null)
+            {
+                rad.supervisor = user.id.ToString();
+
+                this.db.Entry(rad).State = EntityState.Modified;
+                retVal = this.db.SaveChanges();
+            }
+
+            return retVal;
+        }
+
+        internal int assignSafetyOfficer(UserEntity user, string serverUrl)
+        {
+            int retVal = 0;
+            radiography rad = this.db.radiographies.Find(this.id);
+            string prevSO = null;
+            if (rad != null)
+            {
+                prevSO = rad.safety_officer;
+                rad.safety_officer = this.safety_officer;
+
+                this.db.Entry(rad).State = EntityState.Modified;
+                retVal = this.db.SaveChanges();
+
+                // sending email
+                List<string> email = new List<string>();
+                string title = "";
+                if (rad.status == (int)RadStatus.SPVAPPROVE)
+                {
+                    title = "Assigned as Safety Officer of Radiography Clearance Permit and Approval Needed";
+                }
+                else
+                {
+                    title = "Assigned as Safety Officer of Radiography Clearance Permit";
+                }
+                int userId = 0;
+
+                if (Int32.TryParse(this.safety_officer, out userId)) {
+                    if (prevSO != this.safety_officer)
+                    {
+                        UserEntity safetyOfficer = new UserEntity(userId, user.token, user);
+                        //email.add(safetyOfficer.email);
+                        email.Add("septujamasoka@gmail.com");
+                        SendEmail sendEmail = new SendEmail();
+                        string message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+                        sendEmail.Send(email, message, title);
+                    }
+                }
+            }
+
+            return retVal;
+        }
+
+        #endregion
+
+        internal bool isUserInRad(UserEntity user)
+        {
+            foreach (UserEntity us in this.userInRadiography.Values)
+            {
+                if (us != null)
+                {
+                    if (us.id == user.id || us.employee_delegate == user.id)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+    }
+}

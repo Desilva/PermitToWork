@@ -19,6 +19,9 @@ namespace PermitToWork.Models
             this.hira_document = new HashSet<hira_document>();
             this.hot_work = new HashSet<hot_work>();
             this.permit_to_work1 = new HashSet<permit_to_work>();
+            this.fire_impairment = new HashSet<fire_impairment>();
+            this.radiographies = new HashSet<radiography>();
+            this.working_height = new HashSet<working_height>();
         }
     
         public int id { get; set; }
@@ -114,5 +117,8 @@ namespace PermitToWork.Models
         public virtual mst_section mst_section { get; set; }
         public virtual ICollection<permit_to_work> permit_to_work1 { get; set; }
         public virtual permit_to_work permit_to_work2 { get; set; }
+        public virtual ICollection<fire_impairment> fire_impairment { get; set; }
+        public virtual ICollection<radiography> radiographies { get; set; }
+        public virtual ICollection<working_height> working_height { get; set; }
     }
 }

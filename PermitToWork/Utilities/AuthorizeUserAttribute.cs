@@ -17,6 +17,11 @@ namespace PermitToWork.Utilities
                 return false;
             }
 
+            if (httpContext.Session["user"] == null)
+            {
+                return false;
+            }
+
             return true;
         }
 

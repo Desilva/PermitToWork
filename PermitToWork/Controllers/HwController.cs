@@ -49,7 +49,7 @@ namespace PermitToWork.Controllers
 
             if (entity.status >= (int)HwEntity.statusHW.ACCFO && entity.status <= (int)HwEntity.statusHW.EXTACCFO7)
             {
-                ViewBag.ptwStatus = new PtwEntity(entity.id_ptw.Value).status;
+                ViewBag.ptwStatus = new PtwEntity(entity.id_ptw.Value, user).status;
                 ViewBag.isCanAddExt = true;
                 ViewBag.isGasTesterExt1 = entity.isExtGasTester(user, 1);
                 ViewBag.isFOExt1 = entity.isExtFO(user, 1);
@@ -77,7 +77,7 @@ namespace PermitToWork.Controllers
             ViewBag.isCanEditExt7 = entity.isCanEditExt(user, 7);
 
             ViewBag.position = "Edit";
-            ViewBag.listUser = new ListUser();
+            ViewBag.listUser = new ListUser(user.token, user.id);
             ViewBag.listGasTester = (ViewBag.listUser as ListUser).GetHotWorkGasTester();
             return PartialView("create", entity);
         }
@@ -86,13 +86,13 @@ namespace PermitToWork.Controllers
         public JsonResult editHw(HwEntity hw)
         {
             UserEntity user = Session["user"] as UserEntity;
-            int ret = hw.editHotWork();
+            int ret = hw.edit();
             HwEntity hw_new = new HwEntity(hw.id);
 
             if (hw_new.status == (int)HwEntity.statusHW.CREATE && hw_new.isWorkLeader(user))
             {
                 // change status to SPVSCREENING
-                hw_new.sendEmailRandomPIN(fullUrl());
+                hw_new.sendEmailRandomPIN(fullUrl(),user.token,user);
 
                 // send email to facility owner (5)
             }
@@ -113,10 +113,10 @@ namespace PermitToWork.Controllers
                 {
                     if (hw.acc_gas_tester != null)
                     {
-                        UserEntity gasTester = new UserEntity(Int32.Parse(hw.acc_gas_tester));
+                        UserEntity gasTester = new UserEntity(Int32.Parse(hw.acc_gas_tester),user.token,user);
                         hw_new.assignGasTester(gasTester);
                         hw_new.setStatus((int)HwEntity.statusHW.FOSCREENING);
-                        hw_new.sendEmailGasTester(fullUrl(),0);
+                        hw_new.sendEmailGasTester(fullUrl(),user.token,user,0);
                     }
                     else
                     {
@@ -127,7 +127,7 @@ namespace PermitToWork.Controllers
                 {
                     if (hw.acc_gas_tester != null)
                     {
-                        UserEntity gasTester = new UserEntity(Int32.Parse(hw.acc_gas_tester));
+                        UserEntity gasTester = new UserEntity(Int32.Parse(hw.acc_gas_tester),user.token,user);
                         hw_new.assignGasTester(gasTester);
                     }
                 }
@@ -150,7 +150,8 @@ namespace PermitToWork.Controllers
         [HttpPost]
         public JsonResult closeHw(int id, int user_id)
         {
-            UserEntity user = new UserEntity(user_id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.closeHw(user);
 
@@ -168,11 +169,12 @@ namespace PermitToWork.Controllers
 
         private string sendEmailFO(HwEntity hw)
         {
-            ListUser listUser = new ListUser();
+            UserEntity userLogin = Session["user"] as UserEntity;
+            ListUser listUser = new ListUser(userLogin.token, userLogin.id);
 
             List<UserEntity> listHWFO = listUser.GetHotWorkFO();
-            
-            hw.sendEmailFO(listHWFO, fullUrl());
+
+            hw.sendEmailFO(listHWFO, fullUrl(), userLogin.token, userLogin);
 
             return "200";
         }
@@ -182,6 +184,7 @@ namespace PermitToWork.Controllers
         // url to set who is the supervisor
         public ActionResult SetFacilityOwner(string a, string b, string c)
         {
+            UserEntity userLogin = Session["user"] as UserEntity;
             string salt = "susahbangetmencarisaltyangpalingbaikdanbenar";
             string val = "emailfo";
 
@@ -202,12 +205,12 @@ namespace PermitToWork.Controllers
                     int ptw_id = Int32.Parse(s[2]);
 
                     HwEntity hw = new HwEntity(ptw_id);
-                    UserEntity user = new UserEntity(user_id);
+                    UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
 
                     if (!hw.isExistFO(user, Int32.Parse(s[0])))
                     {
                         hw.assignFO(user, Int32.Parse(s[0]));
-                        PtwEntity ptw = new PtwEntity(hw.id_ptw.Value);
+                        PtwEntity ptw = new PtwEntity(hw.id_ptw.Value, user);
                         if (ptw.acc_fo == null)
                         {
                             ptw.assignFO(user);
@@ -241,30 +244,33 @@ namespace PermitToWork.Controllers
         [HttpPost]
         public JsonResult gasTesterAcc(int user_id, int id, int extension)
         {
-            UserEntity user = new UserEntity(user_id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.gasTesterAcc(user, extension);
-            hw.sendEmailRequestor(fullUrl(), extension);
+            hw.sendEmailRequestor(fullUrl(), userLogin.token, user, extension);
             return Json(new { status = retVal });
         }
 
         [HttpPost]
         public JsonResult requestorAcc(int user_id, int id, int extension, string random_pin)
         {
-            UserEntity user = new UserEntity(user_id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
-            string retVal = hw.requestorAcc(user,extension,random_pin);
+            string retVal = hw.requestorAcc(user, userLogin.token, extension, random_pin);
             if (extension == 0 && retVal == "200")
-                hw.sendEmailSupervisor(fullUrl());
+                hw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin);
             else if (extension != 0)
-                hw.sendEmailFOExt(fullUrl(), extension);
+                hw.sendEmailFOExt(fullUrl(), userLogin.token, userLogin, extension);
             return Json(new { status = retVal });
         }
 
         [HttpPost]
         public JsonResult supervisorAcc(int id, int user_id, int? fire_watch_id)
         {
-            UserEntity user = new UserEntity(user_id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             //if (fire_watch_id != null)
             //{
@@ -273,52 +279,56 @@ namespace PermitToWork.Controllers
             //    hw.sendEmailFOAcc(fullUrl());
             //}
             string retVal = hw.supervisorAcc(user);
-            hw.sendEmailFOAcc(fullUrl());
+            hw.sendEmailFOAcc(fullUrl(), userLogin.token, userLogin);
             return Json(new { status = retVal });
         }
 
         [HttpPost]
         public JsonResult supervisorAccReject(int id, int user_id, string comment)
         {
-            UserEntity user = new UserEntity(user_id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.supervisorAccReject(user, comment);
-            hw.sendEmailRequestor(fullUrl(), 0,1,comment);
+            hw.sendEmailRequestor(fullUrl(), userLogin.token, userLogin, 0, 1, comment);
             return Json(new { status = retVal });
         }
 
         [HttpPost]
         public JsonResult fireWatchAcc(int id, int user_id)
         {
-            UserEntity user = new UserEntity(user_id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.fireWatchAccApproval(user);
-            hw.sendEmailFOAcc(fullUrl());
+            hw.sendEmailFOAcc(fullUrl(), userLogin.token, userLogin);
             return Json(new { status = retVal });
         }
 
         [HttpPost]
         public JsonResult fireWatchAccReject(int id, int user_id, string comment)
         {
-            UserEntity user = new UserEntity(user_id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.fireWatchAccReject(user, comment);
-            hw.sendEmailSupervisor(fullUrl(),1,comment);
+            hw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, comment);
             return Json(new { status = retVal });
         }
 
         [HttpPost]
         public JsonResult fOAcc(int id, int user_id, int extension)
         {
-            UserEntity user = new UserEntity(user_id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.fOAccApproval(user,extension);
-            PtwEntity ptw = new PtwEntity(hw.id_ptw.Value);
-            ptw.setHwStatus((int)PtwEntity.statusClearance.COMPLETE);
-            ptw.sendEmailRequestorClearance(fullUrl(), (int)PtwEntity.clearancePermit.HOTWORK, (int)PtwEntity.statusClearance.COMPLETE);
+            PtwEntity ptw = new PtwEntity(hw.id_ptw.Value, user);
+            ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.HOTWORK.ToString());
+            ptw.sendEmailRequestorClearance(fullUrl(), userLogin.token, userLogin, (int)PtwEntity.clearancePermit.HOTWORK, (int)PtwEntity.statusClearance.COMPLETE);
             if (ptw.isAllClearanceComplete())
             {
-                ptw.sendEmailRequestorClearanceCompleted(fullUrl(), (int)PtwEntity.statusClearance.COMPLETE);
+                ptw.sendEmailRequestorClearanceCompleted(fullUrl(), userLogin.token, userLogin, (int)PtwEntity.statusClearance.COMPLETE);
             }
             return Json(new { status = retVal });
         }
@@ -326,81 +336,88 @@ namespace PermitToWork.Controllers
         [HttpPost]
         public JsonResult fOAccReject(int id, int user_id, string comment, int extension)
         {
-            UserEntity user = new UserEntity(user_id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.fOAccReject(user, extension, comment);
             if (extension == 0)
-                hw.sendEmailSupervisor(fullUrl(),1,comment);
+                hw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, comment);
             else
-                hw.sendEmailRequestor(fullUrl(), extension,1,comment);
+                hw.sendEmailRequestor(fullUrl(), userLogin.token, userLogin, extension, 1, comment);
             return Json(new { status = retVal });
         }
 
         [HttpPost]
         public JsonResult requestorCan(int user_id, int id)
         {
-            UserEntity user = new UserEntity(user_id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.requestorCan(user);
-            hw.sendEmailSupervisor(fullUrl());
+            hw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin);
             return Json(new { status = retVal });
         }
 
         [HttpPost]
         public JsonResult supervisorCan(int id, int user_id)
         {
-            UserEntity user = new UserEntity(user_id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.supervisorCan(user);
-            hw.sendEmailFOCan(fullUrl());
+            hw.sendEmailFOCan(fullUrl(), userLogin.token, userLogin);
             return Json(new { status = retVal });
         }
 
         [HttpPost]
         public JsonResult supervisorCanReject(int id, int user_id, string comment)
         {
-            UserEntity user = new UserEntity(user_id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.supervisorCanReject(user, comment);
-            hw.sendEmailRequestor(fullUrl(), 0, 1, comment);
+            hw.sendEmailRequestor(fullUrl(), userLogin.token, userLogin, 0, 1, comment);
             return Json(new { status = retVal });
         }
 
         [HttpPost]
         public JsonResult fireWatchCan(int id, int user_id)
         {
-            UserEntity user = new UserEntity(user_id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.fireWatchCanApproval(user);
             if (hw.can_fo == null)
                 sendEmailFO(hw);
             else
-                hw.sendEmailFOCan(fullUrl());
+                hw.sendEmailFOCan(fullUrl(), userLogin.token, userLogin);
             return Json(new { status = retVal });
         }
 
         [HttpPost]
         public JsonResult fireWatchCanReject(int id, int user_id, string comment)
         {
-            UserEntity user = new UserEntity(user_id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.fireWatchCanReject(user, comment);
-            hw.sendEmailSupervisor(fullUrl(), 1, comment);
+            hw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, comment);
             return Json(new { status = retVal });
         }
 
         [HttpPost]
         public JsonResult fOCan(int id, int user_id)
         {
-            UserEntity user = new UserEntity(user_id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.fOCanApproval(user);
-            PtwEntity ptw = new PtwEntity(hw.id_ptw.Value);
-            ptw.setHwStatus((int)PtwEntity.statusClearance.CLOSE);
-            ptw.sendEmailRequestorClearance(fullUrl(), (int)PtwEntity.clearancePermit.HOTWORK, (int)PtwEntity.statusClearance.CLOSE);
+            PtwEntity ptw = new PtwEntity(hw.id_ptw.Value, user);
+            ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.CLOSE, PtwEntity.clearancePermit.HOTWORK.ToString());
+            ptw.sendEmailRequestorClearance(fullUrl(), userLogin.token, userLogin, (int)PtwEntity.clearancePermit.HOTWORK, (int)PtwEntity.statusClearance.CLOSE);
             if (ptw.isAllClearanceClose())
             {
-                ptw.sendEmailRequestorClearanceCompleted(fullUrl(), (int)PtwEntity.statusClearance.CLOSE);
+                ptw.sendEmailRequestorClearanceCompleted(fullUrl(), userLogin.token, userLogin, (int)PtwEntity.statusClearance.CLOSE);
             }
             return Json(new { status = retVal });
         }
@@ -408,10 +425,11 @@ namespace PermitToWork.Controllers
         [HttpPost]
         public JsonResult fOCanReject(int id, int user_id, string comment)
         {
-            UserEntity user = new UserEntity(user_id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.fOCanReject(user, comment);
-            hw.sendEmailSupervisor(fullUrl(), 1, comment);
+            hw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, comment);
             return Json(new { status = retVal });
         }
 
@@ -465,10 +483,10 @@ namespace PermitToWork.Controllers
                             if (hw.ext_gas_tester_1 != null)
                             {
                                 hw_new.setStatus((int)HwEntity.statusHW.EXTFOSCREENING1);
-                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_1));
+                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_1), user.token, user);
                                 hw_new.assignExtGasTester(gasTester, hw_new.status.Value);
 
-                                hw_new.sendEmailGasTester(fullUrl(), extension);
+                                hw_new.sendEmailGasTester(fullUrl(), user.token, user, extension);
                             }
                             else
                             {
@@ -479,7 +497,7 @@ namespace PermitToWork.Controllers
                         {
                             if (hw.ext_gas_tester_1 != null)
                             {
-                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_1));
+                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_1), user.token, user);
                                 hw_new.assignExtGasTester(gasTester, hw_new.status.Value);
                             }
                         }
@@ -490,10 +508,10 @@ namespace PermitToWork.Controllers
                             if (hw.ext_gas_tester_2 != null)
                             {
                                 hw_new.setStatus((int)HwEntity.statusHW.EXTFOSCREENING2);
-                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_2));
+                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_2), user.token, user);
                                 hw_new.assignExtGasTester(gasTester, hw_new.status.Value);
 
-                                hw_new.sendEmailGasTester(fullUrl(), extension);
+                                hw_new.sendEmailGasTester(fullUrl(), user.token, user, extension);
                             }
                             else
                             {
@@ -504,7 +522,7 @@ namespace PermitToWork.Controllers
                         {
                             if (hw.ext_gas_tester_2 != null)
                             {
-                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_2));
+                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_2), user.token, user);
                                 hw_new.assignExtGasTester(gasTester, hw_new.status.Value);
                             }
                         }
@@ -515,10 +533,10 @@ namespace PermitToWork.Controllers
                             if (hw.ext_gas_tester_3 != null)
                             {
                                 hw_new.setStatus((int)HwEntity.statusHW.EXTFOSCREENING3);
-                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_3));
+                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_3), user.token, user);
                                 hw_new.assignExtGasTester(gasTester, hw_new.status.Value);
 
-                                hw_new.sendEmailGasTester(fullUrl(), extension);
+                                hw_new.sendEmailGasTester(fullUrl(), user.token, user, extension);
                             }
                             else
                             {
@@ -529,7 +547,7 @@ namespace PermitToWork.Controllers
                         {
                             if (hw.ext_gas_tester_3 != null)
                             {
-                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_3));
+                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_3), user.token, user);
                                 hw_new.assignExtGasTester(gasTester, hw_new.status.Value);
                             }
                         }
@@ -540,10 +558,10 @@ namespace PermitToWork.Controllers
                             if (hw.ext_gas_tester_4 != null)
                             {
                                 hw_new.setStatus((int)HwEntity.statusHW.EXTFOSCREENING4);
-                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_4));
+                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_4), user.token, user);
                                 hw_new.assignExtGasTester(gasTester, hw_new.status.Value);
 
-                                hw_new.sendEmailGasTester(fullUrl(), extension);
+                                hw_new.sendEmailGasTester(fullUrl(), user.token, user, extension);
                             }
                             else
                             {
@@ -554,7 +572,7 @@ namespace PermitToWork.Controllers
                         {
                             if (hw.ext_gas_tester_4 != null)
                             {
-                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_4));
+                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_4), user.token, user);
                                 hw_new.assignExtGasTester(gasTester, hw_new.status.Value);
                             }
                         }
@@ -565,10 +583,10 @@ namespace PermitToWork.Controllers
                             if (hw.ext_gas_tester_5 != null)
                             {
                                 hw_new.setStatus((int)HwEntity.statusHW.EXTFOSCREENING5);
-                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_5));
+                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_5), user.token, user);
                                 hw_new.assignExtGasTester(gasTester, hw_new.status.Value);
 
-                                hw_new.sendEmailGasTester(fullUrl(), extension);
+                                hw_new.sendEmailGasTester(fullUrl(), user.token, user, extension);
                             }
                             else
                             {
@@ -579,7 +597,7 @@ namespace PermitToWork.Controllers
                         {
                             if (hw.ext_gas_tester_5 != null)
                             {
-                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_5));
+                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_5), user.token, user);
                                 hw_new.assignExtGasTester(gasTester, hw_new.status.Value);
                             }
                         }
@@ -590,10 +608,10 @@ namespace PermitToWork.Controllers
                             if (hw.ext_gas_tester_6 != null)
                             {
                                 hw_new.setStatus((int)HwEntity.statusHW.EXTFOSCREENING6);
-                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_6));
+                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_6), user.token, user);
                                 hw_new.assignExtGasTester(gasTester, hw_new.status.Value);
 
-                                hw_new.sendEmailGasTester(fullUrl(), extension);
+                                hw_new.sendEmailGasTester(fullUrl(), user.token, user, extension);
                             }
                             else
                             {
@@ -604,7 +622,7 @@ namespace PermitToWork.Controllers
                         {
                             if (hw.ext_gas_tester_6 != null)
                             {
-                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_6));
+                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_6), user.token, user);
                                 hw_new.assignExtGasTester(gasTester, hw_new.status.Value);
                             }
                         }
@@ -615,10 +633,10 @@ namespace PermitToWork.Controllers
                             if (hw.ext_gas_tester_7 != null)
                             {
                                 hw_new.setStatus((int)HwEntity.statusHW.EXTFOSCREENING7);
-                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_7));
+                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_7), user.token, user);
                                 hw_new.assignExtGasTester(gasTester, hw_new.status.Value);
 
-                                hw_new.sendEmailGasTester(fullUrl(), extension);
+                                hw_new.sendEmailGasTester(fullUrl(), user.token, user, extension);
                             }
                             else
                             {
@@ -629,7 +647,7 @@ namespace PermitToWork.Controllers
                         {
                             if (hw.ext_gas_tester_7 != null)
                             {
-                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_7));
+                                UserEntity gasTester = new UserEntity(Int32.Parse(hw.ext_gas_tester_7), user.token, user);
                                 hw_new.assignExtGasTester(gasTester, hw_new.status.Value);
                             }
                         }
@@ -657,8 +675,8 @@ namespace PermitToWork.Controllers
         public ActionResult Print(int id)
         {
             HwEntity hw = new HwEntity(id);
-
-            List<UserEntity> listUser = new ListUser().listUser;
+            UserEntity user = Session["user"] as UserEntity;
+            List<UserEntity> listUser = new ListUser(user.token, user.id).listUser;
             ViewBag.listUser = listUser;
             int a = Int32.Parse(hw.fire_watch);
             hw.fire_watch = listUser.Find(p => p.id == a).alpha_name;

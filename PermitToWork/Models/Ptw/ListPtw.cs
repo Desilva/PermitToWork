@@ -1,4 +1,7 @@
-﻿using PermitToWork.Models.User;
+﻿using PermitToWork.Models.Hw;
+using PermitToWork.Models.Radiography;
+using PermitToWork.Models.User;
+using PermitToWork.Models.WorkingHeight;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,14 +14,14 @@ namespace PermitToWork.Models.Ptw
         public List<PtwEntity> listPtw { get; set; }
         private star_energy_ptwEntities db;
 
-        public ListPtw()
+        public ListPtw(UserEntity user)
         {
             this.db = new star_energy_ptwEntities();
             var result = db.permit_to_work.OrderByDescending(p => p.ptw_no).Select(p => p.id).ToList();
             this.listPtw = new List<PtwEntity>();
             foreach (int i in result)
             {
-                this.listPtw.Add(new PtwEntity(i,db));
+                this.listPtw.Add(new PtwEntity(i, user, db));
             }
         }
 
@@ -33,10 +36,29 @@ namespace PermitToWork.Models.Ptw
                 }
                 else
                 {
-                    if (ptw.hw_id != null && ptw.hw.isUserInHw(user))
+                    if (ptw.hw_id != null && ((HwEntity)ptw.cPermit[PtwEntity.clearancePermit.HOTWORK.ToString()]).isUserInHw(user))
                     {
                         listPtwUser.Add(ptw);
                     }
+
+                    if (ptw.fi_id != null && ((FIEntity)ptw.cPermit[PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString()]).isUserInFI(user))
+                    {
+                        listPtwUser.Add(ptw);
+                    }
+
+                    if (ptw.rad_id != null && ((RadEntity)ptw.cPermit[PtwEntity.clearancePermit.RADIOGRAPHY.ToString()]).isUserInRad(user))
+                    {
+                        listPtwUser.Add(ptw);
+                    }
+
+                    if (ptw.wh_id != null && ((WorkingHeightEntity)ptw.cPermit[PtwEntity.clearancePermit.WORKINGHEIGHT.ToString()]).isUserInWH(user))
+                    {
+                        listPtwUser.Add(ptw);
+                    }
+                    //if (ptw.fi_id != null && ((FIEntity)ptw.cPermit[PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString()]).isUserInFI(user))
+                    //{
+                    //    listPtwUser.Add(ptw);
+                    //}
                 }
             }
 

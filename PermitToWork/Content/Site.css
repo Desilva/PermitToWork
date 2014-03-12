@@ -161,6 +161,11 @@ input[type="file"]
     height : 15px !important;
 }
 
+.table-input-600
+{
+    width : 600px !important;
+}
+
 .table-input-170
 {
     width : 170px !important;

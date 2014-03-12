@@ -61,7 +61,9 @@
         <br />
         All Clearance Permit Related:
         <ul>
-            #if(hw_id != null){#<li>Hot Work: <a href="\#" onclick="goToHotWork(#= hw.id #)" class="btn btn-primary">#= hw_no #</a><br />Status : #= hw.hw_status #</li>#}#
+            #if(hw_id != null){#<li>Hot Work: <a href="\#" onclick="goToHotWork(#= cPermit['HOTWORK'].ids #)" class="btn btn-primary">#= hw_no #</a><br />Status : #= cPermit['HOTWORK'].statusText #</li>#}#
+            #if(fi_id != null){#<li>Fire Impairment: <a href="\#" onclick="goToFireImpairment(#= cPermit['FIREIMPAIRMENT'].ids #)" class="btn btn-primary">#= fi_no #</a><br />Status : #= cPermit['FIREIMPAIRMENT'].statusText #</li>#}#
+            #if(rad_id != null){#<li>Radiography: <a href="\#" onclick="goToRadiography(#= cPermit['RADIOGRAPHY'].ids #)" class="btn btn-primary">#= rad_no #</a><br />Status : #= cPermit['RADIOGRAPHY'].statusText #</li>#}#
         </ul>
     </div>
 </script>
@@ -91,6 +93,8 @@
                             ptw_status: { type: "string", nullable: "true", editable : false },
                             status: { type: "number", editable: false },
                             hw: {},
+                            rad: {},
+                            fi: {},
                             hw_no: { type: "string", editable: false },
                             hw_id: { type: "number", editable: false, nullable: "true" },
                             validity_period_end: { type: "date", editable: false, nullable: "true" },
@@ -187,6 +191,7 @@
     }
 
     function logPtw(id) {
+        $('#history').val('@Url.Action("Index","Home")');
         $('#content').load('Log/Index/' + id + '?permitType=' + 0 + '&backPath=' + 'Home/Index');
     }
 
@@ -195,7 +200,18 @@
     }
 
     function goToHotWork(id) {
-        $('#content').load('Hw/Edit/' + id);
+        $('#history').val('@Url.Action("Index","Home")');
+        $('#content').load('@Url.Action("Edit","Hw")/' + id);
+    }
+
+    function goToFireImpairment(id) {
+        $('#history').val('@Url.Action("Index","Home")');
+        $('#content').load('@Url.Action("Edit","Fi")/' + id);
+    }
+
+    function goToRadiography(id) {
+        $('#history').val('@Url.Action("Index","Home")');
+        $('#content').load('@Url.Action("Edit","Radiography")/' + id);
     }
 </script>
 

@@ -1,7 +1,9 @@
 ﻿using PermitToWork.Models.Hira;
 using PermitToWork.Models.Hw;
 using PermitToWork.Models.Master;
+using PermitToWork.Models.Radiography;
 using PermitToWork.Models.User;
+using PermitToWork.Models.WorkingHeight;
 using PermitToWork.Utilities;
 using System;
 using System.Collections.Generic;
@@ -109,13 +111,23 @@ namespace PermitToWork.Models.Ptw
         public string extend_ptw_no { get; set; }
         public int hw_need { get; set; }
         public string hw_no { get; set; }
+        public int fi_need { get; set; }
+        public string fi_no { get; set; }
+        public int rad_need { get; set; }
+        public string rad_no { get; set; }
+        public int wh_need { get; set; }
+        public string wh_no { get; set; }
         public bool has_clearance { get; set; }
 
         public MstDepartmentEntity department { get; set; }
         public MstSectionEntity section1 { get; set; }
         public MstPtwHolderNoEntity ptw_holder_no { get; set; }
 
-        public HwEntity hw { get; set; }
+        //public HwEntity hw { get; set; }
+        //public FIEntity fi { get; set; }
+        //public RadEntity rad { get; set; }
+
+        public Dictionary<string, IClearancePermitEntity> cPermit { get; set; }
         public string ptw_status { get; set; }
 
         public enum statusPtw
@@ -155,9 +167,11 @@ namespace PermitToWork.Models.Ptw
 
         public PtwEntity() {
             this.db = new star_energy_ptwEntities();
+            this.cPermit = new Dictionary<string, IClearancePermitEntity>();
         }
 
-        public PtwEntity(int id,star_energy_ptwEntities db = null)
+        public PtwEntity(int id, UserEntity user, star_energy_ptwEntities db = null)
+            : this()
         {
             if (db == null)
             {
@@ -262,8 +276,39 @@ namespace PermitToWork.Models.Ptw
 
             if (this.hw_id != null)
             {
-                this.hw = new HwEntity(this.hw_id.Value);
+                IClearancePermitEntity hw = (IClearancePermitEntity)new HwEntity(this.hw_id.Value);
+                hw.ids = this.hw_id.Value;
+                hw.statusText = ((HwEntity)hw).getStatus();
+                this.cPermit.Add(clearancePermit.HOTWORK.ToString(), hw);
                 this.hw_no = ptw.hot_work.ElementAt(0).hw_no;
+                this.has_clearance = true;
+            }
+
+            if (this.fi_id != null)
+            {
+                IClearancePermitEntity fi = (IClearancePermitEntity)new FIEntity(this.fi_id.Value, user);
+                fi.ids = this.fi_id.Value;
+                fi.statusText = ((FIEntity)fi).getStatus();
+                this.cPermit.Add(clearancePermit.FIREIMPAIRMENT.ToString(), fi);
+                this.fi_no = ptw.fire_impairment.ElementAt(0).fi_no;
+                this.has_clearance = true;
+            }
+
+            if (this.rad_id != null)
+            {
+                IClearancePermitEntity rad = (IClearancePermitEntity)new RadEntity(this.rad_id.Value, user);
+                rad.ids = this.rad_id.Value;
+                this.cPermit.Add(clearancePermit.RADIOGRAPHY.ToString(), rad);
+                this.rad_no = ptw.radiographies.ElementAt(0).rg_no;
+                this.has_clearance = true;
+            }
+
+            if (this.wh_id != null)
+            {
+                IClearancePermitEntity wh = (IClearancePermitEntity)new WorkingHeightEntity(this.wh_id.Value, user);
+                wh.ids = this.wh_id.Value;
+                this.cPermit.Add(clearancePermit.WORKINGHEIGHT.ToString(), wh);
+                this.wh_no = ptw.working_height.ElementAt(0).wh_no;
                 this.has_clearance = true;
             }
 
@@ -437,7 +482,7 @@ namespace PermitToWork.Models.Ptw
 
                 if (this.id_parent_ptw != null)
                 {
-                    PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value);
+                    PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value, user);
                     pt.cancelPtw(user);
                 }
                 return "200";
@@ -1121,7 +1166,7 @@ namespace PermitToWork.Models.Ptw
 
                 if (this.id_parent_ptw != null)
                 {
-                    PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value);
+                    PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value, user);
                     pt.requestorCanApproval(user);
                 }
                 return "200";
@@ -1153,7 +1198,7 @@ namespace PermitToWork.Models.Ptw
                 this.db.SaveChanges();
                 if (this.id_parent_ptw != null)
                 {
-                    PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value);
+                    PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value, user);
                     pt.supervisorCanApproval(user);
                 }
                 retVal = "200";
@@ -1171,7 +1216,7 @@ namespace PermitToWork.Models.Ptw
 
                 if (this.id_parent_ptw != null)
                 {
-                    PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value);
+                    PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value, user);
                     pt.supervisorCanApproval(user);
                 }
                 retVal = "201";
@@ -1199,7 +1244,7 @@ namespace PermitToWork.Models.Ptw
                 this.db.SaveChanges();
                 if (this.id_parent_ptw != null)
                 {
-                    PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value);
+                    PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value, user);
                     pt.supervisorCanReject(user,comment);
                 }
                 return "200";
@@ -1233,7 +1278,7 @@ namespace PermitToWork.Models.Ptw
                 this.db.SaveChanges();
                 if (this.id_parent_ptw != null)
                 {
-                    PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value);
+                    PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value, user);
                     pt.assessorCanApproval(user);
                 }
                 return "200";
@@ -1250,7 +1295,7 @@ namespace PermitToWork.Models.Ptw
                 this.db.SaveChanges();
                 if (this.id_parent_ptw != null)
                 {
-                    PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value);
+                    PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value, user);
                     pt.assessorCanApproval(user);
                 }
                 return "201";
@@ -1277,7 +1322,7 @@ namespace PermitToWork.Models.Ptw
                 this.db.SaveChanges();
                 if (this.id_parent_ptw != null)
                 {
-                    PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value);
+                    PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value, user);
                     pt.assessorCanReject(user,comment);
                 }
                 return "200";
@@ -1309,7 +1354,7 @@ namespace PermitToWork.Models.Ptw
                 this.db.SaveChanges();
                 if (this.id_parent_ptw != null)
                 {
-                    PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value);
+                    PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value, user);
                     pt.fOCanApproval(user);
                 }
                 return "200";
@@ -1326,7 +1371,7 @@ namespace PermitToWork.Models.Ptw
                 this.db.SaveChanges();
                 if (this.id_parent_ptw != null)
                 {
-                    PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value);
+                    PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value, user);
                     pt.fOCanApproval(user);
                 }
                 return "201";
@@ -1355,7 +1400,7 @@ namespace PermitToWork.Models.Ptw
                 this.db.SaveChanges();
                 if (this.id_parent_ptw != null)
                 {
-                    PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value);
+                    PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value, user);
                     pt.fOCanReject(user,comment);
                 }
                 return "200";
@@ -1395,11 +1440,11 @@ namespace PermitToWork.Models.Ptw
             return "200";
         }
 
-        public string sendEmailRequestor(string serverUrl, int stat = 0, string comment = null)
+        public string sendEmailRequestor(string serverUrl, string token, UserEntity user, int stat = 0, string comment = null)
         {
             //if (extension == 0)
             //{
-            UserEntity requestor = new UserEntity(Int32.Parse(this.acc_ptw_requestor));
+            UserEntity requestor = new UserEntity(Int32.Parse(this.acc_ptw_requestor), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
             //s.Add(requestor.email);
@@ -1424,7 +1469,7 @@ namespace PermitToWork.Models.Ptw
             return "200";
         }
 
-        public string sendEmailSupervisor(string serverUrl, int pos = 0, int stat = 0, string comment = null)
+        public string sendEmailSupervisor(string serverUrl, string token, UserEntity user, int pos = 0, int stat = 0, string comment = null)
         {
             int supervisor_id = 0;
 
@@ -1432,7 +1477,7 @@ namespace PermitToWork.Models.Ptw
                 supervisor_id = Int32.Parse(this.acc_supervisor);
             else
                 supervisor_id = Int32.Parse(this.can_supervisor);
-            UserEntity supervisor = new UserEntity(supervisor_id);
+            UserEntity supervisor = new UserEntity(supervisor_id, token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
             //s.Add(requestor.email);
@@ -1440,7 +1485,7 @@ namespace PermitToWork.Models.Ptw
 
             if (supervisor.employee_delegate != null)
             {
-                UserEntity del = new UserEntity(supervisor.employee_delegate.Value);
+                UserEntity del = new UserEntity(supervisor.employee_delegate.Value, token, user);
                 //s.Add(del.email);
                 s.Add("septu.jamasoka@gmail.com");
             }
@@ -1463,7 +1508,7 @@ namespace PermitToWork.Models.Ptw
             return "200";
         }
 
-        public string sendEmailAssessor(string serverUrl, int pos = 0, int stat = 0, string comment = null)
+        public string sendEmailAssessor(string serverUrl, string token, UserEntity user, int pos = 0, int stat = 0, string comment = null)
         {
             int assessor_id = 0;
 
@@ -1471,7 +1516,7 @@ namespace PermitToWork.Models.Ptw
                 assessor_id = Int32.Parse(this.acc_assessor);
             else
                 assessor_id = Int32.Parse(this.can_assessor);
-            UserEntity assessor = new UserEntity(assessor_id);
+            UserEntity assessor = new UserEntity(assessor_id, token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
             //s.Add(assessor.email);
@@ -1479,7 +1524,7 @@ namespace PermitToWork.Models.Ptw
 
             if (assessor.employee_delegate != null)
             {
-                UserEntity del = new UserEntity(assessor.employee_delegate.Value);
+                UserEntity del = new UserEntity(assessor.employee_delegate.Value, token, user);
                 //s.Add(del.email);
                 s.Add("septu.jamasoka@gmail.com");
             }
@@ -1502,7 +1547,7 @@ namespace PermitToWork.Models.Ptw
             return "200";
         }
 
-        public string sendEmailFo(string serverUrl, int pos = 0, int stat = 0, string comment = null)
+        public string sendEmailFo(string serverUrl, string token, UserEntity user, int pos = 0, int stat = 0, string comment = null)
         {
             int fo_id = 0;
 
@@ -1511,7 +1556,7 @@ namespace PermitToWork.Models.Ptw
             else
                 fo_id = Int32.Parse(this.can_fo);
 
-            UserEntity facilityOwner = new UserEntity(fo_id);
+            UserEntity facilityOwner = new UserEntity(fo_id, token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
             //s.Add(facilityOwner.email);
@@ -1519,7 +1564,7 @@ namespace PermitToWork.Models.Ptw
 
             if (facilityOwner.employee_delegate != null)
             {
-                UserEntity del = new UserEntity(facilityOwner.employee_delegate.Value);
+                UserEntity del = new UserEntity(facilityOwner.employee_delegate.Value, token, user);
                 //s.Add(del.email);
                 s.Add("septu.jamasoka@gmail.com");
             }
@@ -1542,11 +1587,11 @@ namespace PermitToWork.Models.Ptw
             return "200";
         }
 
-        public string sendEmailRequestorClearance(string serverUrl, int clearance_permit, int status)
+        public string sendEmailRequestorClearance(string serverUrl, string token, UserEntity user, int clearance_permit, int status)
         {
             //if (extension == 0)
             //{
-            UserEntity requestor = new UserEntity(Int32.Parse(this.acc_ptw_requestor));
+            UserEntity requestor = new UserEntity(Int32.Parse(this.acc_ptw_requestor), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
             //s.Add(requestor.email);
@@ -1582,11 +1627,11 @@ namespace PermitToWork.Models.Ptw
             return "200";
         }
 
-        public string sendEmailRequestorClearanceCompleted(string serverUrl, int status)
+        public string sendEmailRequestorClearanceCompleted(string serverUrl, string token, UserEntity user, int status)
         {
             //if (extension == 0)
             //{
-            UserEntity requestor = new UserEntity(Int32.Parse(this.acc_ptw_requestor));
+            UserEntity requestor = new UserEntity(Int32.Parse(this.acc_ptw_requestor), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
             //s.Add(requestor.email);
@@ -1612,11 +1657,11 @@ namespace PermitToWork.Models.Ptw
             return "200";
         }
 
-        public string sendEmailRequestorPermitCompleted(string serverUrl, int status)
+        public string sendEmailRequestorPermitCompleted(string serverUrl, string token, UserEntity user, int status)
         {
             //if (extension == 0)
             //{
-            UserEntity requestor = new UserEntity(Int32.Parse(this.acc_ptw_requestor));
+            UserEntity requestor = new UserEntity(Int32.Parse(this.acc_ptw_requestor), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
             //s.Add(requestor.email);
@@ -1646,42 +1691,123 @@ namespace PermitToWork.Models.Ptw
 
         #region clearance permit
 
-        public string setHw(int? hw_id, int? status)
+        public string setClearancePermit(int? clearance_id, int? status, string typeClerancePermit)
         {
             permit_to_work ptw = this.db.permit_to_work.Find(this.id);
 
-            this.hw_id = hw_id;
-            this.hw_status = status;
+            if (typeClerancePermit == clearancePermit.HOTWORK.ToString())
+            {
+                this.hw_id = clearance_id;
+                this.hw_status = status;
 
-            ptw.hw_id = this.hw_id;
-            ptw.hw_status = this.hw_status;
+                ptw.hw_id = this.hw_id;
+                ptw.hw_status = this.hw_status;
+            }
+            else if (typeClerancePermit == clearancePermit.FIREIMPAIRMENT.ToString())
+            {
+                this.fi_id = clearance_id;
+                this.fi_status = status;
+
+                ptw.fi_id = this.fi_id;
+                ptw.fi_status = this.fi_status;
+            }
+            else if (typeClerancePermit == clearancePermit.RADIOGRAPHY.ToString())
+            {
+                this.rad_id = clearance_id;
+                this.rad_status = status;
+
+                ptw.rad_id = this.rad_id;
+                ptw.rad_status = this.rad_status;
+            }
+            else if (typeClerancePermit == clearancePermit.WORKINGHEIGHT.ToString())
+            {
+                this.wh_id = clearance_id;
+                this.wh_status = status;
+
+                ptw.wh_id = this.wh_id;
+                ptw.wh_status = this.wh_status;
+            }
             this.db.Entry(ptw).State = EntityState.Modified;
             this.db.SaveChanges();
 
             return "200";
         }
 
-        public string setHwStatus(int status)
+        public string setClerancePermitStatus(int status, string typeClerancePermit)
         {
             permit_to_work ptw = this.db.permit_to_work.Find(this.id);
 
-            this.hw_status = status;
+            if (typeClerancePermit == clearancePermit.HOTWORK.ToString())
+            {
+                this.hw_status = status;
 
-            ptw.hw_status = this.hw_status;
+                ptw.hw_status = this.hw_status;
+            }
+            else if (typeClerancePermit == clearancePermit.FIREIMPAIRMENT.ToString())
+            {
+                this.fi_status = status;
+
+                ptw.fi_status = this.fi_status;
+            }
+            else if (typeClerancePermit == clearancePermit.RADIOGRAPHY.ToString())
+            {
+                this.rad_status = status;
+
+                ptw.rad_status = this.rad_status;
+            }
+            else if (typeClerancePermit == clearancePermit.WORKINGHEIGHT.ToString())
+            {
+                this.wh_status = status;
+
+                ptw.wh_status = this.wh_status;
+            }
+
             this.db.Entry(ptw).State = EntityState.Modified;
             this.db.SaveChanges();
 
             return "200";
         }
 
-        public string hwStatus()
+        public string clearancePermitStatus(string typeClerancePermit)
         {
             string retVal = "";
-            switch (this.hw_status) {
-                case (int)statusClearance.NOTCOMPLETE: retVal = "<span class='label'>Not Completed</span>"; break;
-                case (int)statusClearance.COMPLETE: retVal = "<span class='label label-success'>Completed</span>"; break;
-                case (int)statusClearance.CLOSE: retVal = "<span class='label label-error'>Closed</span>"; break;
-            };
+
+            if (typeClerancePermit == clearancePermit.HOTWORK.ToString())
+            {
+                switch (this.hw_status)
+                {
+                    case (int)statusClearance.NOTCOMPLETE: retVal = "<span class='label'>Not Completed</span>"; break;
+                    case (int)statusClearance.COMPLETE: retVal = "<span class='label label-success'>Completed</span>"; break;
+                    case (int)statusClearance.CLOSE: retVal = "<span class='label label-error'>Closed</span>"; break;
+                };
+            }
+            else if (typeClerancePermit == clearancePermit.FIREIMPAIRMENT.ToString())
+            {
+                switch (this.fi_status)
+                {
+                    case (int)statusClearance.NOTCOMPLETE: retVal = "<span class='label'>Not Completed</span>"; break;
+                    case (int)statusClearance.COMPLETE: retVal = "<span class='label label-success'>Completed</span>"; break;
+                    case (int)statusClearance.CLOSE: retVal = "<span class='label label-error'>Closed</span>"; break;
+                };
+            }
+            else if (typeClerancePermit == clearancePermit.RADIOGRAPHY.ToString())
+            {
+                switch (this.rad_status)
+                {
+                    case (int)statusClearance.NOTCOMPLETE: retVal = "<span class='label'>Not Completed</span>"; break;
+                    case (int)statusClearance.COMPLETE: retVal = "<span class='label label-success'>Completed</span>"; break;
+                    case (int)statusClearance.CLOSE: retVal = "<span class='label label-error'>Closed</span>"; break;
+                };
+            }
+            else if (typeClerancePermit == clearancePermit.WORKINGHEIGHT.ToString())
+            {
+                switch (this.wh_status)
+                {
+                    case (int)statusClearance.NOTCOMPLETE: retVal = "<span class='label'>Not Completed</span>"; break;
+                    case (int)statusClearance.COMPLETE: retVal = "<span class='label label-success'>Completed</span>"; break;
+                    case (int)statusClearance.CLOSE: retVal = "<span class='label label-error'>Closed</span>"; break;
+                };
+            }
 
             return retVal;
         }

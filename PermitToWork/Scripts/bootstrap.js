@@ -541,6 +541,12 @@
       var dimension
       if (this.transitioning || !this.$element.hasClass('in')) return
       dimension = this.dimension()
+
+      var startE = $.Event('hide')
+      this.$element.trigger(startE)
+      if (startE.isDefaultPrevented()) return
+
+      
       this.reset(this.$element[dimension]())
       this.transition('removeClass', $.Event('hide'), 'hidden')
       this.$element[dimension](0)
@@ -567,9 +573,8 @@
             that.$element.trigger(completeEvent)
           }
 
-      this.$element.trigger(startEvent)
-
-      if (startEvent.isDefaultPrevented()) return
+      //this.$element.trigger(startEvent)
+      //if (startEvent.isDefaultPrevented()) return
 
       this.transitioning = 1
 

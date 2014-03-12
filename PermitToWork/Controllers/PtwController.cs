@@ -3,7 +3,9 @@ using PermitToWork.Models.Hira;
 using PermitToWork.Models.Hw;
 using PermitToWork.Models.Master;
 using PermitToWork.Models.Ptw;
+using PermitToWork.Models.Radiography;
 using PermitToWork.Models.User;
+using PermitToWork.Models.WorkingHeight;
 using PermitToWork.Utilities;
 using ReportManagement;
 using System;
@@ -25,10 +27,11 @@ namespace PermitToWork.Controllers
         }
 
         public ActionResult Create() {
+            UserEntity userLogin = Session["user"] as UserEntity;
             PtwEntity entity = new PtwEntity();
             ViewBag.position = "Create";
-            ViewBag.listUser = new ListUser();
-            ListPtw listPtw = new ListPtw();
+            ViewBag.listUser = new ListUser(userLogin.token, userLogin.id);
+            ListPtw listPtw = new ListPtw(userLogin);
             ViewBag.listFO = new MstFOEntity().getListMstFO();
             ViewBag.listAssessor = new MstAssessorEntity().getListAssessor();
 
@@ -77,8 +80,8 @@ namespace PermitToWork.Controllers
 
         public ActionResult Edit(int id)
         {
-            PtwEntity entity = new PtwEntity(id);
             UserEntity user = Session["user"] as UserEntity;
+            PtwEntity entity = new PtwEntity(id, user);
             ViewBag.isRequestor = entity.isRequestor(user);
             if (entity.status < (int)PtwEntity.statusPtw.CANCEL)
             {
@@ -97,7 +100,7 @@ namespace PermitToWork.Controllers
             ViewBag.isClearenceComplete = entity.isAllClearanceComplete();
             ViewBag.isClearenceClose = entity.isAllClearanceClose();
             ViewBag.position = "Edit";
-            ViewBag.listUser = new ListUser();
+            ViewBag.listUser = new ListUser(user.token, user.id);
             ViewBag.listFO = new MstFOEntity().getListMstFO();
             ViewBag.listAssessor = new MstAssessorEntity().getListAssessor();
 
@@ -151,11 +154,11 @@ namespace PermitToWork.Controllers
         }
 
         [HttpPost]
-        public JsonResult GenerateNewNumber(int user_id)
+        public JsonResult GenerateNewNumber(int user_id, UserEntity user)
         {
             List<MstFOEntity> listFo = new MstFOEntity().getListMstFO();
             MstFOEntity fo = listFo.Find(p => p.id_employee == user_id);
-            ListPtw listPtw = new ListPtw();
+            ListPtw listPtw = new ListPtw(user);
             
             PtwEntity entity = new PtwEntity();
             entity.generatePtwNumber(listPtw.getLastPtw() != null ? listPtw.getLastPtw().ptw_no : "", fo == null ? null : fo.fo_code);
@@ -164,18 +167,19 @@ namespace PermitToWork.Controllers
         }
 
         [HttpPost]
-        public JsonResult Add(PtwEntity ptw, int hw_need, IList<string> hiras)
+        public JsonResult Add(PtwEntity ptw, int hw_need, int fi_need, int rad_need, int wh_need, IList<string> hiras)
         {
+            UserEntity user = Session["user"] as UserEntity;
             List<MstFOEntity> listFo = new MstFOEntity().getListMstFO();
             int fo_id = Int32.Parse(ptw.acc_fo);
             MstFOEntity fo = listFo.Find(p => p.id_employee == fo_id);
-            ListPtw listPtw = new ListPtw();
+            ListPtw listPtw = new ListPtw(user);
             ptw.generatePtwNumber(listPtw.getLastPtw() != null ? listPtw.getLastPtw().ptw_no : "", fo == null ? null : fo.fo_code);
             int ret = ptw.addPtw();
 
             if (ptw.acc_fo != null)
             {
-                UserEntity fos = new UserEntity(Int32.Parse(ptw.acc_fo));
+                UserEntity fos = new UserEntity(Int32.Parse(ptw.acc_fo), user.token, user);
                 ptw.assignFO(fos);
             }
 
@@ -187,13 +191,32 @@ namespace PermitToWork.Controllers
 
             if (hw_need == 1)
             {
-                HwEntity hw = addHotWork(ptw.id);
-                ptw.setHw(hw.id, (int)PtwEntity.statusClearance.NOTCOMPLETE);
+                HwEntity hw = (HwEntity)addClearancePermit(ptw.id, PtwEntity.clearancePermit.HOTWORK.ToString(), user);
+                ptw.setClearancePermit(hw.id, (int)PtwEntity.statusClearance.NOTCOMPLETE, PtwEntity.clearancePermit.HOTWORK.ToString());
             }
 
+            if (fi_need == 1)
+            {
+                FIEntity fi = (FIEntity)addClearancePermit(ptw.id, PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString(), user);
+                fi.sendEmailAssign(fullUrl(), user);
+                ptw.setClearancePermit(fi.id, (int)PtwEntity.statusClearance.NOTCOMPLETE, PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString());
+            }
 
+            if (rad_need == 1)
+            {
+                RadEntity radiography = (RadEntity)addClearancePermit(ptw.id, PtwEntity.clearancePermit.RADIOGRAPHY.ToString(), user);
+                //radiography.sendEmailAssign(fullUrl(), user);
+                ptw.setClearancePermit(radiography.id, (int)PtwEntity.statusClearance.NOTCOMPLETE, PtwEntity.clearancePermit.RADIOGRAPHY.ToString());
+            }
 
-            ListUser listUser = new ListUser();
+            if (wh_need == 1)
+            {
+                WorkingHeightEntity wh = (WorkingHeightEntity)addClearancePermit(ptw.id, PtwEntity.clearancePermit.WORKINGHEIGHT.ToString(), user);
+                //radiography.sendEmailAssign(fullUrl(), user);
+                ptw.setClearancePermit(wh.id, (int)PtwEntity.statusClearance.NOTCOMPLETE, PtwEntity.clearancePermit.WORKINGHEIGHT.ToString());
+            }
+
+            ListUser listUser = new ListUser(user.token, user.id);
             List<UserEntity> listSpv = listUser.GetSupervisor(Session["user"] as UserEntity);
 
             
@@ -214,24 +237,59 @@ namespace PermitToWork.Controllers
         [HttpPost]
         public JsonResult EditPtw(PtwEntity ptw)
         {
+            UserEntity user = Session["user"] as UserEntity;
             if (ptw.acc_assessor != null)
             {
-                UserEntity assesor = new UserEntity(Int32.Parse(ptw.acc_assessor));
+                UserEntity assesor = new UserEntity(Int32.Parse(ptw.acc_assessor), user.token, user);
                 ptw.assignAssessor(assesor);
                 ptw.setStatus((int)PtwEntity.statusPtw.CHOOSEASS);
-                ptw.sendEmailAssessor(fullUrl(), 0);
+                ptw.sendEmailAssessor(fullUrl(), user.token, user, 0);
             }
             int ret = ptw.editPtw();
-            PtwEntity ptw_new = new PtwEntity(ptw.id);
+            PtwEntity ptw_new = new PtwEntity(ptw.id, user);
             if (ptw.hw_need == 1 && ptw_new.hw_id == null)
             {
-                HwEntity hw = addHotWork(ptw.id);
-                ptw.setHw(hw.id, (int)PtwEntity.statusClearance.NOTCOMPLETE);
+                HwEntity hw = (HwEntity)addClearancePermit(ptw.id, PtwEntity.clearancePermit.HOTWORK.ToString(), user);
+                ptw.setClearancePermit(hw.id, (int)PtwEntity.statusClearance.NOTCOMPLETE, PtwEntity.clearancePermit.HOTWORK.ToString());
             }
             else if (ptw.hw_need == 0 && ptw_new.hw_id != null)
             {
-                deleteHotWork(ptw.id, ptw_new.hw_id.Value);
-                ptw.setHw(null, null);
+                deleteClearancePermit(ptw.id, ptw_new.hw_id.Value, PtwEntity.clearancePermit.HOTWORK.ToString(), user);
+                ptw.setClearancePermit(null, null, PtwEntity.clearancePermit.HOTWORK.ToString());
+            }
+
+            if (ptw.fi_need == 1 && ptw_new.fi_id == null)
+            {
+                FIEntity fi = (FIEntity)addClearancePermit(ptw.id, PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString(), user);
+                fi.sendEmailAssign(fullUrl(), user);
+                ptw.setClearancePermit(fi.id, (int)PtwEntity.statusClearance.NOTCOMPLETE, PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString());
+            }
+            else if (ptw.fi_need == 0 && ptw_new.fi_id != null)
+            {
+                deleteClearancePermit(ptw.id, ptw_new.fi_id.Value, PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString(), user);
+                ptw.setClearancePermit(null, null, PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString());
+            }
+
+            if (ptw.rad_need == 1 && ptw_new.rad_id == null)
+            {
+                RadEntity rad = (RadEntity)addClearancePermit(ptw.id, PtwEntity.clearancePermit.RADIOGRAPHY.ToString(), user);
+                ptw.setClearancePermit(rad.id, (int)PtwEntity.statusClearance.NOTCOMPLETE, PtwEntity.clearancePermit.RADIOGRAPHY.ToString());
+            }
+            else if (ptw.rad_need == 0 && ptw_new.rad_id != null)
+            {
+                deleteClearancePermit(ptw.id, ptw_new.rad_id.Value, PtwEntity.clearancePermit.RADIOGRAPHY.ToString(), user);
+                ptw.setClearancePermit(null, null, PtwEntity.clearancePermit.RADIOGRAPHY.ToString());
+            }
+
+            if (ptw.wh_need == 1 && ptw_new.wh_id == null)
+            {
+                WorkingHeightEntity wh = (WorkingHeightEntity)addClearancePermit(ptw.id, PtwEntity.clearancePermit.WORKINGHEIGHT.ToString(), user);
+                ptw.setClearancePermit(wh.id, (int)PtwEntity.statusClearance.NOTCOMPLETE, PtwEntity.clearancePermit.WORKINGHEIGHT.ToString());
+            }
+            else if (ptw.wh_need == 0 && ptw_new.wh_id != null)
+            {
+                deleteClearancePermit(ptw.id, ptw_new.wh_id.Value, PtwEntity.clearancePermit.WORKINGHEIGHT.ToString(), user);
+                ptw.setClearancePermit(null, null, PtwEntity.clearancePermit.WORKINGHEIGHT.ToString());
             }
 
             if (ret == 1)
@@ -246,9 +304,10 @@ namespace PermitToWork.Controllers
 
         public ActionResult Print(int id)
         {
-            PtwEntity ptw = new PtwEntity(id);
+            UserEntity user = Session["user"] as UserEntity;
+            PtwEntity ptw = new PtwEntity(id, user);
 
-            List<UserEntity> listUser = new ListUser().listUser;
+            List<UserEntity> listUser = new ListUser(user.token, user.id).listUser;
 
             int a = Int32.Parse(ptw.acc_ptw_requestor);
             ptw.acc_ptw_requestor = listUser.Find(p => p.id == a).alpha_name;
@@ -287,18 +346,20 @@ namespace PermitToWork.Controllers
         [HttpPost]
         public JsonResult requestorAcc(int id, int user_id)
         {
-            UserEntity user = new UserEntity(user_id);
-            PtwEntity ptw = new PtwEntity(id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
+            PtwEntity ptw = new PtwEntity(id, user);
             string retVal = ptw.requestorAccApproval(user);
-            ptw.sendEmailSupervisor(fullUrl(), 0);
+            ptw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 0);
             return Json(new { status = retVal });
         }
 
         [HttpPost]
         public JsonResult supervisorAcc(int id, int user_id, int? assessor_id)
         {
-            UserEntity user = new UserEntity(user_id);
-            PtwEntity ptw = new PtwEntity(id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
+            PtwEntity ptw = new PtwEntity(id, user);
             //if (assessor_id != null)
             //{
             //    UserEntity assesor = new UserEntity(assessor_id.Value);
@@ -308,11 +369,11 @@ namespace PermitToWork.Controllers
             string retVal = ptw.supervisorAccApproval(user);
             if (ptw.acc_assessor != null)
             {
-                ptw.sendEmailAssessor(fullUrl(), 0);
+                ptw.sendEmailAssessor(fullUrl(), userLogin.token, userLogin, 0);
             }
             else
             {
-                ptw.sendEmailFo(fullUrl(), 0);
+                ptw.sendEmailFo(fullUrl(), userLogin.token, userLogin, 0);
             }
             return Json(new { status = retVal });
         }
@@ -320,18 +381,20 @@ namespace PermitToWork.Controllers
         [HttpPost]
         public JsonResult supervisorAccReject(int id, int user_id, string comment)
         {
-            UserEntity user = new UserEntity(user_id);
-            PtwEntity ptw = new PtwEntity(id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
+            PtwEntity ptw = new PtwEntity(id, user);
             string retVal = ptw.supervisorAccReject(user, comment);
-            ptw.sendEmailRequestor(fullUrl(), 1, comment);
+            ptw.sendEmailRequestor(fullUrl(), userLogin.token, userLogin, 1, comment);
             return Json(new { status = retVal });
         }
 
         [HttpPost]
         public JsonResult assessorAcc(int id, int user_id, string comment)
         {
-            UserEntity user = new UserEntity(user_id);
-            PtwEntity ptw = new PtwEntity(id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
+            PtwEntity ptw = new PtwEntity(id, user);
             //if (fo_id != null)
             //{
             //    UserEntity fo = new UserEntity(fo_id.Value);
@@ -342,125 +405,136 @@ namespace PermitToWork.Controllers
             //ptw.acc_assessor_delegate = fo.employee_delegate.ToString();
             //ptw.can_assessor_delegate = fo.employee_delegate.ToString();
             string retVal = ptw.assessorAccApproval(user);
-            ptw.sendEmailFo(fullUrl(), 0, 0, comment);
+            ptw.sendEmailFo(fullUrl(), userLogin.token, userLogin, 0, 0, comment);
             return Json(new { status = retVal });
         }
 
         [HttpPost]
         public JsonResult assessorAccReject(int id, int user_id, string comment)
         {
-            UserEntity user = new UserEntity(user_id);
-            PtwEntity ptw = new PtwEntity(id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
+            PtwEntity ptw = new PtwEntity(id, user);
             string retVal = ptw.assessorAccReject(user,comment);
-            ptw.sendEmailSupervisor(fullUrl(), 0, 1, comment);
+            ptw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 0, 1, comment);
             return Json(new { status = retVal });
         }
 
         [HttpPost]
         public JsonResult fOAcc(int id, int user_id)
         {
-            UserEntity user = new UserEntity(user_id);
-            PtwEntity ptw = new PtwEntity(id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
+            PtwEntity ptw = new PtwEntity(id, user);
             string retVal = ptw.fOAccApproval(user);
-            ptw.sendEmailRequestorPermitCompleted(fullUrl(), 1);
+            ptw.sendEmailRequestorPermitCompleted(fullUrl(), userLogin.token, userLogin, 1);
             return Json(new { status = retVal });
         }
 
         [HttpPost]
         public JsonResult fOAccReject(int id, int user_id, string comment)
         {
-            UserEntity user = new UserEntity(user_id);
-            PtwEntity ptw = new PtwEntity(id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
+            PtwEntity ptw = new PtwEntity(id, user);
             string retVal = ptw.fOAccReject(user, comment);
-            ptw.sendEmailSupervisor(fullUrl(), 0, 1, comment);
+            ptw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 0, 1, comment);
             return Json(new { status = retVal });
         }
 
         public JsonResult cancelPtw(int id, int user_id)
         {
-            UserEntity user = new UserEntity(user_id);
-            PtwEntity ptw = new PtwEntity(id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
+            PtwEntity ptw = new PtwEntity(id, user);
             string retVal = ptw.cancelPtw(user);
-            ptw.sendEmailSupervisor(fullUrl(), 1);
+            ptw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1);
             return Json(new { status = retVal });
         }
 
         [HttpPost]
         public JsonResult requestorCan(int id, int user_id)
         {
-            UserEntity user = new UserEntity(user_id);
-            PtwEntity ptw = new PtwEntity(id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
+            PtwEntity ptw = new PtwEntity(id, user);
             string retVal = ptw.requestorCanApproval(user);
-            ptw.sendEmailSupervisor(fullUrl(), 1);
+            ptw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1);
             return Json(new { status = retVal });
         }
 
         [HttpPost]
         public JsonResult supervisorCan(int id, int user_id)
         {
-            UserEntity user = new UserEntity(user_id);
-            PtwEntity ptw = new PtwEntity(id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
+            PtwEntity ptw = new PtwEntity(id, user);
             string retVal = ptw.supervisorCanApproval(user);
-            ptw.sendEmailAssessor(fullUrl(), 1);
+            ptw.sendEmailAssessor(fullUrl(), userLogin.token, userLogin, 1);
             return Json(new { status = retVal });
         }
 
         [HttpPost]
         public JsonResult supervisorCanReject(int id, int user_id, string comment)
         {
-            UserEntity user = new UserEntity(user_id);
-            PtwEntity ptw = new PtwEntity(id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
+            PtwEntity ptw = new PtwEntity(id, user);
             string retVal = ptw.supervisorCanReject(user, comment);
-            ptw.sendEmailRequestor(fullUrl(), 1, comment);
+            ptw.sendEmailRequestor(fullUrl(), userLogin.token, userLogin, 1, comment);
             return Json(new { status = retVal });
         }
 
         [HttpPost]
         public JsonResult assessorCan(int id, int user_id, string comment)
         {
-            UserEntity user = new UserEntity(user_id);
-            PtwEntity ptw = new PtwEntity(id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
+            PtwEntity ptw = new PtwEntity(id, user);
             //ptw.acc_assessor = fo_id.ToString();
             //ptw.can_assessor = fo_id.ToString();
             //ptw.acc_assessor_delegate = fo.employee_delegate.ToString();
             //ptw.can_assessor_delegate = fo.employee_delegate.ToString();
             string retVal = ptw.assessorCanApproval(user);
-            ptw.sendEmailFo(fullUrl(), 1, 0, comment);
+            ptw.sendEmailFo(fullUrl(), userLogin.token, userLogin, 1, 0, comment);
             return Json(new { status = retVal });
         }
 
         [HttpPost]
         public JsonResult assessorCanReject(int id, int user_id, string comment)
         {
-            UserEntity user = new UserEntity(user_id);
-            PtwEntity ptw = new PtwEntity(id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
+            PtwEntity ptw = new PtwEntity(id, user);
             string retVal = ptw.assessorCanReject(user, comment);
-            ptw.sendEmailSupervisor(fullUrl(), 1, 1, comment);
+            ptw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, 1, comment);
             return Json(new { status = retVal });
         }
 
         [HttpPost]
         public JsonResult fOCan(int id, int user_id)
         {
-            UserEntity user = new UserEntity(user_id);
-            PtwEntity ptw = new PtwEntity(id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
+            PtwEntity ptw = new PtwEntity(id, user);
             //ptw.acc_assessor = fo_id.ToString();
             //ptw.can_assessor = fo_id.ToString();
             //ptw.acc_assessor_delegate = fo.employee_delegate.ToString();
             //ptw.can_assessor_delegate = fo.employee_delegate.ToString();
             
             string retVal = ptw.fOCanApproval(user);
-            ptw.sendEmailRequestorPermitCompleted(fullUrl(), 2);
+            ptw.sendEmailRequestorPermitCompleted(fullUrl(), userLogin.token, userLogin, 2);
             return Json(new { status = retVal });
         }
 
         [HttpPost]
         public JsonResult fOCanReject(int id, int user_id, string comment)
         {
-            UserEntity user = new UserEntity(user_id);
-            PtwEntity ptw = new PtwEntity(id);
+            UserEntity userLogin = Session["user"] as UserEntity;
+            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
+            PtwEntity ptw = new PtwEntity(id, user);
             string retVal = ptw.fOCanReject(user, comment);
-            ptw.sendEmailSupervisor(fullUrl(), 1, 1, comment);
+            ptw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, 1, comment);
             return Json(new { status = retVal });
         }
 
@@ -470,7 +544,8 @@ namespace PermitToWork.Controllers
         [HttpPost]
         public JsonResult Binding()
         {
-            ListPtw listPtw = new ListPtw();
+            UserEntity userLogin = Session["user"] as UserEntity;
+            ListPtw listPtw = new ListPtw(userLogin);
             var result = listPtw.listPtw;
             return Json(result,JsonRequestBehavior.AllowGet);
         }
@@ -489,9 +564,10 @@ namespace PermitToWork.Controllers
 
         public ActionResult Extend(int id)
         {
-            PtwEntity entity = new PtwEntity(id);
+            UserEntity user = Session["user"] as UserEntity;
+            PtwEntity entity = new PtwEntity(id, user);
             PtwEntity ptw = new PtwEntity();
-            ViewBag.listUser = new ListUser();
+            ViewBag.listUser = new ListUser(user.token, user.id);
             ptw.extendPtw(entity);
 
             //UserEntity user = Session["user"] as UserEntity;
@@ -523,6 +599,7 @@ namespace PermitToWork.Controllers
         // url to set who is the supervisor
         public ActionResult SetSupervisor(string a, string b, string c)
         {
+            UserEntity userLogin = Session["user"] as UserEntity;
             string salt = "susahbangetmencarisaltyangpalingbaikdanbenar";
             string val = "emailsupervisor";
 
@@ -542,8 +619,8 @@ namespace PermitToWork.Controllers
                     int user_id = Int32.Parse(s[1]);
                     int ptw_id = Int32.Parse(s[2]);
 
-                    PtwEntity ptw = new PtwEntity(ptw_id);
-                    UserEntity user = new UserEntity(user_id);
+                    PtwEntity ptw = new PtwEntity(ptw_id, userLogin);
+                    UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
 
                     if (ptw.acc_supervisor == null)
                     {
@@ -553,6 +630,27 @@ namespace PermitToWork.Controllers
                             HwEntity hw = new HwEntity(ptw.hw_id.Value);
                             if (hw.acc_supervisor == null)
                                 hw.assignSupervisor(user);
+                        }
+
+                        if (ptw.fi_id != null)
+                        {
+                            FIEntity fi = new FIEntity(ptw.fi_id.Value, user);
+                            if (fi.spv == null)
+                                fi.assignSupervisor(user);
+                        }
+
+                        if (ptw.rad_id != null)
+                        {
+                            RadEntity radiography = new RadEntity(ptw.rad_id.Value, user);
+                            if (radiography.supervisor == null)
+                                radiography.assignSupervisor(user);
+                        }
+
+                        if (ptw.wh_id != null)
+                        {
+                            WorkingHeightEntity wh = new WorkingHeightEntity(ptw.wh_id.Value, user);
+                            if (wh.supervisor == null)
+                                wh.assignSupervisor(user);
                         }
                         return RedirectToAction("Index", "Home", new { p = "Ptw/Edit/" + ptw.id });
                     }
@@ -576,22 +674,55 @@ namespace PermitToWork.Controllers
 
         #region addClearancePermit
 
-        private HwEntity addHotWork(int id)
+        private IClearancePermitEntity addClearancePermit(int id, string typePermit, UserEntity user)
         {
-            PtwEntity ptw = new PtwEntity(id);
-            HwEntity hw = new HwEntity(ptw.id, ptw.acc_ptw_requestor, ptw.work_description);
-            HwEntity hwLast = new HwEntity("0");
-            hw.generateHwNumber(hwLast.hw_no,ptw.ptw_no);
-            hw.addHotWork();
+            PtwEntity ptw = new PtwEntity(id, user);
+            IClearancePermitEntity permit = new HwEntity();
+            if (typePermit == PtwEntity.clearancePermit.HOTWORK.ToString())
+            {
+                permit = new HwEntity(ptw.id, ptw.acc_ptw_requestor, ptw.work_description);
+            }
+            else if (typePermit == PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString())
+            {
+                permit = new FIEntity(ptw.id, ptw.acc_ptw_requestor, ptw.work_description, ptw.acc_fo);
+            }
+            else if (typePermit == PtwEntity.clearancePermit.RADIOGRAPHY.ToString())
+            {
+                permit = new RadEntity(ptw.id, ptw.acc_ptw_requestor, ptw.work_description, ptw.acc_fo);
+            }
+            else if (typePermit == PtwEntity.clearancePermit.WORKINGHEIGHT.ToString())
+            {
+                permit = new WorkingHeightEntity(ptw.id, ptw.acc_ptw_requestor, ptw.work_description, ptw.acc_fo);
+            }
 
-            return hw;
+            permit.generateNumber(ptw.ptw_no);
+            permit.create();
+
+            return permit;
         }
 
-        public string deleteHotWork(int id, int hw_id)
+        public string deleteClearancePermit(int id, int permit_id, string typePermit, UserEntity user)
         {
-            PtwEntity ptw = new PtwEntity(id);
-            HwEntity hw = new HwEntity(hw_id);
-            hw.deleteHotWork();
+            PtwEntity ptw = new PtwEntity(id, user);
+            IClearancePermitEntity permit = new HwEntity();
+            if (typePermit == PtwEntity.clearancePermit.HOTWORK.ToString())
+            {
+                permit = new HwEntity(permit_id);
+            }
+            else if (typePermit == PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString())
+            {
+                permit = new FIEntity(permit_id, user);
+            }
+            else if (typePermit == PtwEntity.clearancePermit.RADIOGRAPHY.ToString())
+            {
+                permit = new RadEntity(permit_id, user);
+            }
+            else if (typePermit == PtwEntity.clearancePermit.WORKINGHEIGHT.ToString())
+            {
+                permit = new WorkingHeightEntity(permit_id, user);
+            }
+
+            permit.delete();
 
             return "200";
         }

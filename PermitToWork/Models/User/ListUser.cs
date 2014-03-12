@@ -10,21 +10,26 @@ namespace PermitToWork.Models.User
         public List<UserEntity> listUser { get; set; }
         public star_energi_geoEntities db = new star_energi_geoEntities();
 
-        public ListUser() {
-            var result = from emp in db.employees
-                         orderby emp.alpha_name
-                         select new UserEntity
-                         {
-                             id = emp.id,
-                             alpha_name = emp.alpha_name,
-                             employee_boss = emp.employee_boss,
-                             employee_delegate = emp.employee_delegate,
-                             signature = emp.signature,
-                             position = emp.position,
-                             email = emp.email,
-                         };
+        public ListUser(string token, int curLoginId)
+        {
+            WWUserService.UserServiceClient client = new WWUserService.UserServiceClient();
+            int count = 0;
+            List<UserEntity> listUser = new List<UserEntity>();
+            WWUserService.ResponseModel response = client.listUser(token, curLoginId, 50, 250);
 
-            this.listUser = result.ToList();
+            while (response.status && count < response.results.count)
+            {
+                foreach (WWUserService.UserModel us in response.results.listUserModel)
+                {
+                    listUser.Add(new UserEntity().clone(us));
+                }
+
+                response = client.listUser(token, curLoginId, 50, count);
+                count += 50;
+            }
+
+            client.Close();
+            this.listUser = listUser.OrderBy(p => p.alpha_name).ToList();
         }
 
         public List<UserEntity> GetSupervisor(UserEntity requestor)

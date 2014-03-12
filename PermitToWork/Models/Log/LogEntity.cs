@@ -23,7 +23,7 @@ namespace PermitToWork.Models.Log
         public LogEntity() {
             this.db = new star_energy_ptwEntities();
         }
-        public LogEntity(int id, star_energy_ptwEntities db = null)
+        public LogEntity(int id, UserEntity user, star_energy_ptwEntities db = null)
         {
             if (db != null)
             {
@@ -42,7 +42,7 @@ namespace PermitToWork.Models.Log
             this.status = log.status;
             this.comment = log.comment;
             this.permit_type = log.permit_type;
-            this.user = new UserEntity(this.user_id.Value);
+            this.user = new UserEntity(this.user_id.Value, user.token, user);
         }
 
         public int addLog()
@@ -247,7 +247,7 @@ namespace PermitToWork.Models.Log
             return "200";
         }
 
-        public List<LogEntity> getLogsById(int id_permit, int permit_type)
+        public List<LogEntity> getLogsById(int id_permit, int permit_type, string token, UserEntity user)
         {
             var list = from log in this.db.permit_log
                        where log.id_permit == id_permit && log.permit_type == permit_type
@@ -261,7 +261,7 @@ namespace PermitToWork.Models.Log
             var listLogs = list.ToList();
             foreach (var a in listLogs)
             {
-                a.user = new UserEntity(a.user_id.Value);
+                a.user = new UserEntity(a.user_id.Value, token, user);
             }
             return listLogs;
         }

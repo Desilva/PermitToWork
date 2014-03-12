@@ -1,0 +1,672 @@
+﻿@using PermitToWork.Models.Ptw
+@model PtwEntity
+@{
+    var listUser = ViewBag.listUser as PermitToWork.Models.User.ListUser;
+}
+<table>
+    <tr>
+        <td width="15%">
+            <img src="@Server.MapPath("~/Img/logo-clean.png")" width="60"/>
+        </td>
+        <td width="60%" style="text-align:center">
+            PERMIT TO WORK<br />Star energy Geothermal (Wayang Windu) Limited
+        </td>
+        <td width="25%" style="text-align:right;font-size:10px">
+            <p>&nbsp;<br />PTW No: @Model.ptw_no</p>
+        </td>
+    </tr>
+</table>
+<table border="0.5" cellspacing="3" cellpadding="3">
+    <thead>
+        <tr>
+            <th colspan="4" style="font-size:12px"><b>1.  GENERAL INFORMATION </b><span style="font-size:8px"><i>(Filled by requestor prior to submit PTW request to Facility Owner)</i></span></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td style="font-size:7px" width="21%">
+                <table border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td>
+                            <b>Propose Period</b> <small style="font-size:6px"><i>(max 1 week)</i></small>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td style="font-size:7px" width="19%"><b>From:</b> @(Model.proposed_period_start != null ? Model.proposed_period_start.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
+            <td style="font-size:7px" width="19%"><b>Until:</b> @(Model.proposed_period_end != null ? Model.proposed_period_end.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
+            <td width="41%">
+                <table border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td style="font-size:7px" width="30%"><b>Extension PTW?</b></td>
+                        <td style="font-size:7px" width="6%">
+                            @if (Model.is_extend == 1) {
+                                <img src="@Server.MapPath("~/Img/box-c.png")" width="7"/>
+                            } else {
+                                <img src="@Server.MapPath("~/Img/box.png")" width="7"/>
+                            }
+                        </td>
+                        <td style="font-size:7px" width="46%">
+                            <b>Yes</b> , previous PTW no :
+                        </td>
+                        <td style="font-size:7px" width="6%">
+                            @if (Model.is_extend != 1) {
+                                <img src="@Server.MapPath("~/Img/box-c.png")" width="7"/>
+                            } else {
+                                <img src="@Server.MapPath("~/Img/box.png")" width="7"/>
+                            }
+                        </td>
+                        <td style="font-size:7px" width="12%">
+                            <b>No</b>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td style="font-size:7px">
+                <table border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td>
+                            <b>Dept. of Requestor :</b> @Model.department.department
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td colspan="2" style="font-size:7px"><b>Section / total number of crew :</b> @Model.section1.section / @Model.total_crew</td>
+            <td style="font-size:7px"><b>Requestor's PTW holder no. :</b> @Model.ptw_holder_no.ptw_holder_no</td>
+        </tr>
+        <tr>
+            <td colspan="4" style="font-size:7px">
+                <table border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td style="font-size:7px" width="5%">
+                            <b>Area : </b>
+                        </td>
+                        <td style="font-size:7px" width="2%">
+                            @if (Model.area == "1")
+                            {
+                                <img src="@Server.MapPath("~/Img/box-c.png")" width="7"/>
+                            } else {
+                                <img src="@Server.MapPath("~/Img/box.png")" width="7"/>
+                            }
+                        </td>
+                        <td style="font-size:7px" width="21%">
+                            <b>Power Station</b>
+                        </td>
+                        <td style="font-size:7px" width="4%">
+                            , 
+                            @if (Model.area == "2") {
+                                <img src="@Server.MapPath("~/Img/box-c.png")" width="7"/>
+                            } else {
+                                <img src="@Server.MapPath("~/Img/box.png")" width="7"/>
+                            }
+                        </td>
+                        <td style="font-size:7px" width="21%">
+                            <b>Steam Field</b>
+                        </td>
+                        <td style="font-size:7px" width="4%">
+                            , 
+                            @if (Model.area != "1" && Model.area != "2") {
+                                <img src="@Server.MapPath("~/Img/box-c.png")" width="7"/>
+                            } else {
+                                <img src="@Server.MapPath("~/Img/box.png")" width="7"/>
+                            }
+                        </td>
+                        <td style="font-size:7px" width="41%">
+                            <b>Others: </b> @(Model.area != "1" && Model.area != "2" ? Model.area : "")
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <table border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td style="font-size:7px" width="20%">
+                            <b>Work Location: </b>
+                        </td>
+                        <td style="font-size:7px" width="35%">
+                            @(Model.work_location != null ? Model.work_location : "")
+                        </td>
+                        <td style="font-size:7px" width="16%">
+                            <b>, Area Code:</b>
+                        </td>
+                        <td style="font-size:7px" width="29%">
+                            @(Model.area_code != null ? Model.area_code : "")
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+            <td style="font-size:7px"><b>Work Order No:</b> @(Model.work_order_no != null ? Model.work_order_no : "")</td>
+        </tr>
+        <tr>
+            <td colspan="4" style="font-size:7px"><b>Work Description : </b><br />@(Model.work_description != null ? Model.work_description : "")</textarea>
+            </td>
+        </tr>
+    </tbody>
+</table>
+<table border="0.5" style="font-size:7px">
+    <thead>
+        <tr>
+            <th colspan="4" style="font-size:7px"><strong>Specify Clearance Permit Require</strong> <em><small>(All clearance and Hira must be completed prior to PTW approval)</small></em></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td class="td-centre" width="5%" style="text-align:center"><strong>Check</strong></td>
+            <td class="td-centre" width="25%" style="text-align:center" cellpadding="6"><strong>Clearance Permit Required<br /></strong></td>
+            <td class="td-centre" width="35%" style="text-align:center"><strong>Minimum Document Required</strong></td>
+            <td class="td-centre" width="35%" style="text-align:center"><strong>Form to be Completed and Enclosed</strong></td>
+        </tr>
+        <tr>
+            <td style="text-align:center">
+                &nbsp;&nbsp;&nbsp;
+                @if (Model.loto_id != null) {
+                    <img src="@Server.MapPath("~/Img/box-c.png")" width="7"/>
+                } else {
+                    <img src="@Server.MapPath("~/Img/box.png")" width="7"/>
+                }
+            </td>
+            <td class="small">Lock Out Tag Out (LOTO)</td>
+            <td class="small">Requestor's supervisor LOTO point proposal</td>
+            <td class="small">Lock Appllication Form (102a): description, drawing references, supervisor LOTO point proposal LOTO permit form (102b): general info</td>
+        </tr>
+        <tr>
+            <td style="text-align:center">
+                &nbsp;&nbsp;&nbsp;
+                @if (Model.csep_id != null) {
+                    <img src="@Server.MapPath("~/Img/box-c.png")" width="7"/>
+                } else {
+                    <img src="@Server.MapPath("~/Img/box.png")" width="7"/>
+                }
+            </td>
+            <td class="small">Confined Space Entry Permit (CSEP)</td>
+            <td class="small">Confined space emergency evacuation plan</td>
+            <td class="small">CSEP form(103a) : general info, spv initial hazard screening  emergency evacuation form(101c) Approved emergency evacuation plan</td>
+        </tr>
+        <tr>
+            <td class="td-centre">
+                &nbsp;&nbsp;&nbsp;
+                @if (Model.hw_id != null) {
+                    <img src="@Server.MapPath("~/Img/box-c.png")" width="7"/>
+                } else {
+                    <img src="@Server.MapPath("~/Img/box.png")" width="7"/>
+                }
+            </td>
+            <td class="small">Hot Work (HW)</td>
+            <td class="small">Emergency evacuation plan, competence fire attendance</td>
+            <td class="small">HW form(104a) : general info, initial hazard screening  emergency evacuation form(101c) Approved emergency evacuation plan</td>
+        </tr>
+        <tr>
+            <td class="td-centre">
+                &nbsp;&nbsp;&nbsp;
+                @if (Model.fi_id != null) {
+                    <img src="@Server.MapPath("~/Img/box-c.png")" width="7"/>
+                } else {
+                    <img src="@Server.MapPath("~/Img/box.png")" width="7"/>
+                }
+            </td>
+            <td class="small">Fire Impairment (FI)</td>
+            <td class="small">Fire operation system back up plan</td>
+            <td class="small">FI form(105a) : general info, clearance from spv, ERT leader, safety officer</td>
+        </tr>
+        <tr>
+            <td class="td-centre">
+                &nbsp;&nbsp;&nbsp;
+                @if (Model.ex_id != null) {
+                    <img src="@Server.MapPath("~/Img/box-c.png")" width="7"/>
+                } else {
+                    <img src="@Server.MapPath("~/Img/box.png")" width="7"/>
+                }
+            </td>
+            <td class="small">Excavation (Ex)</td>
+            <td class="small">Excavation clearance from facility + E&I officer</td>
+            <td class="small">Ex form(106a) : general info, clearance from facility + E&I officer</td>
+        </tr>
+        <tr>
+            <td class="td-centre">
+                &nbsp;&nbsp;&nbsp;
+                @if (Model.wh_id != null) {
+                    <img src="@Server.MapPath("~/Img/box-c.png")" width="7"/>
+                } else {
+                    <img src="@Server.MapPath("~/Img/box.png")" width="7"/>
+                }
+            </td>
+            <td class="small">Working at Height (WH)</td>
+            <td class="small">Working at height emergency evacuation plan, scafolder certificate (for scafolding erection)</td>
+            <td class="small">WH form(107a) : general info, supervisor assesment</td>
+        </tr>
+        <tr>
+            <td class="td-centre">
+                &nbsp;&nbsp;&nbsp;
+                @if (Model.rad_id != null) {
+                    <img src="@Server.MapPath("~/Img/box-c.png")" width="7"/>
+                } else {
+                    <img src="@Server.MapPath("~/Img/box.png")" width="7"/>
+                }
+            </td>
+            <td class="small">RadioGraphic (Rad)</td>
+            <td class="small">Copy of certificate of competences: radiographic (engineer, operator, safety), emergency rescue plan, radioactive equipment & material manifest</td>
+            <td class="small">Rad form (108a) : general info, initial assesment (spv, engineer, operator, safety officer)</td>
+        </tr>
+        <tr>
+            <td colspan="4">
+                HIRA no : <em><small>(write HIRA number and copy of HIRA must be attached)</small></em>
+                @{
+                    if(Model.hira_document != null && Model.hira_document.Count > 0){
+                        foreach (PermitToWork.Models.Hira.HiraEntity hira in Model.hira_document) {
+                            <text>@hira.filename, </text>
+                        }
+                    }
+                }   
+            </td>
+        </tr>
+    </tbody>
+</table>
+<br />
+<table cellspacing="0" cellpadding="0">
+    <tr>
+        <td width="60%">
+            <table border="0.5" style="font-size:7px" cellpadding="3">
+                <thead>
+                    <tr cellpadding="3">
+                        <th class="title-form" colspan="4" style="font-size:12px"><strong>2.  PRE-JOB SCREENING </strong></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="2" style="text-align:center" width="10%"><strong>No</strong></td>
+                        <td rowspan="2" style="text-align:left" width="50%"><strong>Description<br/> </strong><em><small style="font-size:5px">(Answer the screening items with Yes, No or N/A)</small></em></td>
+                        <td colspan="2" style="text-align:center" width="40%"><strong>Assesments (Y, No, N/A)</strong></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center" width="20%"><strong>Requestor's Supervisor</strong></td>
+                        <td style="text-align:center" width="20%"><strong>Facility Owner</strong></td>
+                    </tr>
+                    <tr>
+                        <td width="10%" style="text-align:center">1</td>
+                        <td class="small" width="50%">Are the <strong>clearance permit</strong> (see refer to above clearance requirement checked) completed and attach to the permit?</td>
+                        <td width="20%" style="text-align:center">
+                            @(Model.pre_job_1_spv == 1 ? "Yes" : (Model.pre_job_1_spv == 2 ? "No" : (Model.pre_job_1_spv == 0 ? "N/A" : "")))
+                        </td>
+                        <td width="20%" style="text-align:center">
+                            @(Model.pre_job_1_fo == 1 ? "Yes" : (Model.pre_job_1_fo == 2 ? "No" : (Model.pre_job_1_fo == 0 ? "N/A" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">2</td>
+                        <td class="small">Are person to do this job qualified?</td>
+                        <td style="text-align:center">
+                            @(Model.pre_job_2_spv == 1 ? "Yes" : (Model.pre_job_2_spv == 2 ? "No" : (Model.pre_job_2_spv == 0 ? "N/A" : "")))
+                        </td>
+                        <td style="text-align:center">
+                            @(Model.pre_job_2_fo == 1 ? "Yes" : (Model.pre_job_2_fo == 2 ? "No" : (Model.pre_job_2_fo == 0 ? "N/A" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">3</td>
+                        <td class="small">Are the works changing the system or design available this time?</td>
+                        <td style="text-align:center">
+                            @(Model.pre_job_3_spv == 1 ? "Yes" : (Model.pre_job_3_spv == 2 ? "No" : (Model.pre_job_3_spv == 0 ? "N/A" : "")))
+                        </td>
+                        <td style="text-align:center">
+                            @(Model.pre_job_3_fo == 1 ? "Yes" : (Model.pre_job_3_fo == 2 ? "No" : (Model.pre_job_3_fo == 0 ? "N/A" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">4</td>
+                        <td class="small">Is there a valid written procedure (SOP) for the work?</td>
+                        <td style="text-align:center">
+                            @(Model.pre_job_4_spv == 1 ? "Yes" : (Model.pre_job_4_spv == 2 ? "No" : (Model.pre_job_4_spv == 0 ? "N/A" : "")))
+                        </td>
+                        <td style="text-align:center">
+                            @(Model.pre_job_4_fo == 1 ? "Yes" : (Model.pre_job_4_fo == 2 ? "No" : (Model.pre_job_4_fo == 0 ? "N/A" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">5</td>
+                        <td class="small">Are tools suitable and in good condition?</td>
+                        <td style="text-align:center">
+                            @(Model.pre_job_5_spv == 1 ? "Yes" : (Model.pre_job_5_spv == 2 ? "No" : (Model.pre_job_5_spv == 0 ? "N/A" : "")))
+                        </td>
+                        <td style="text-align:center">
+                            @(Model.pre_job_5_fo == 1 ? "Yes" : (Model.pre_job_5_fo == 2 ? "No" : (Model.pre_job_5_fo == 0 ? "N/A" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">6</td>
+                        <td class="small">Is the safety equipments required available and reliable to use?</td>
+                        <td style="text-align:center">
+                            @(Model.pre_job_6_spv == 1 ? "Yes" : (Model.pre_job_6_spv == 2 ? "No" : (Model.pre_job_6_spv == 0 ? "N/A" : "")))
+                        </td>
+                        <td style="text-align:center">
+                            @(Model.pre_job_6_fo == 1 ? "Yes" : (Model.pre_job_6_fo == 2 ? "No" : (Model.pre_job_6_fo == 0 ? "N/A" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">7</td>
+                        <td class="small">Have all identified hazards been controlled</td>
+                        <td style="text-align:center">
+                            @(Model.pre_job_7_spv == 1 ? "Yes" : (Model.pre_job_7_spv == 2 ? "No" : (Model.pre_job_7_spv == 0 ? "N/A" : "")))
+                        </td>
+                        <td style="text-align:center">
+                            @(Model.pre_job_7_fo == 1 ? "Yes" : (Model.pre_job_7_fo == 2 ? "No" : (Model.pre_job_7_fo == 0 ? "N/A" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="small">
+                            <b>Note:</b> <em style="font-size:6px">write any concern related to these assesment and attach other check sheet if necessary; Spv: requestor's 
+                                    supervisor project maanger; FO : Facility owner; All parties have right to stop work when control method is not adequate to control the hazard
+                                  </em><br />
+                            @Model.pre_job_notes
+                        </td>
+                    </tr>
+                    <tr border="0">
+                        <td width="5%"></td>
+                        <td class="small" width="65%"></td>
+                        <td width="15%">
+                        </td>
+                        <td width="15%">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </td>
+        <td width="2%">
+            &nbsp;&nbsp;
+        </td>
+        <td width="38%">
+            <table border="0.5" style="font-size:7px" cellpadding="3">
+                <thead>
+                    <tr>
+                        <th class="title-form" colspan="2" style="font-size:12px" cellpadding="3"><strong>3. ACCEPTANCE & VALIDATION</strong></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <b>Validity period, from :</b> @(Model.validity_period_start != null ? Model.validity_period_start.Value.ToString("MM/dd/yyyy") : "")
+                        </td>
+                        <td>
+                            <b>to :</b>  @(Model.validity_period_end != null ? Model.validity_period_end.Value.ToString("MM/dd/yyyy") : "")
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align:center">
+                            <strong><u>Accepted by,</u></strong><br/>
+                            <small><em style="font-size:6px">(I am satisfied that the work site is safe for work to start. I will brief all parties and supervise the work)</em></small>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">
+                            @if (Model.acc_ptw_requestor_approve != null) {
+                                <img width="50" height="50" @(Model.acc_ptw_requestor_approve != null ? "style='display:none;'" : "style='display:block;text-align:center'")  src="@(Model.acc_ptw_requestor_approve != null ? Model.acc_ptw_requestor_approve.Substring(1) : Server.MapPath("~/Img/blank.png"))"/>
+                            }
+                            <br />
+                            <span>@Model.acc_ptw_requestor</span><br />
+                            <strong><u>PTW Requestor</u></strong>
+                        </td>
+                        <td style="text-align:center">
+                            @if (Model.acc_supervisor_approve != null) {
+                                <img width="50" height="50" @(Model.acc_supervisor_approve != null ? "style='display:none;'" : "style='display:block;text-align:center'")  src="@(Model.acc_supervisor_approve != null ? Model.acc_supervisor_approve.Substring(1) : Server.MapPath("~/Img/blank.png"))"/>
+                            }
+                            <br />
+                            @if (Model.acc_supervisor != null)
+                            {
+                                if ((Model.acc_supervisor_approve != null && Model.acc_supervisor_approve.Substring(0, 1) == "d"))
+                                {
+                                    <span>@Model.acc_supervisor_delegate</span><br />
+                                }
+                                <span>@((Model.acc_supervisor_approve != null && Model.acc_supervisor_approve.Substring(0, 1) == "d") ? "a/n" : "") @Model.acc_supervisor</span><br />
+                            }
+                            <strong><u>Supervisor / Project manager</u></strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align:center">
+                            <strong><u>Authorized by,</u></strong><br/>
+                            <small><em  style="font-size:6px">(I am satisfied that the work site is safe for work to start. I will brief all parties and supervise the work)</em></small><br />
+                        
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">
+                            @if (Model.acc_assessor_approve != null)
+                            {
+                                <img width="50" height="50" @(Model.acc_assessor_approve != null ? "style='display:none;'" : "style='display:block;text-align:center'")  src="@(Model.acc_assessor_approve != null ? Model.acc_assessor_approve.Substring(1) : Server.MapPath("~/Img/blank.png"))"/>
+                            }
+                            <br />
+                            @if (Model.acc_assessor != null)
+                            {
+                                if ((Model.acc_assessor_approve != null && Model.acc_assessor_approve.Substring(0, 1) == "d"))
+                                {
+                                    <span>@Model.acc_assessor_delegate</span><br />
+                                }
+                                <span>@((Model.acc_assessor_approve != null && Model.acc_assessor_approve.Substring(0, 1) == "d") ? "a/n" : "") @Model.acc_assessor</span><br />
+                            }
+                            <strong><u>Assessor</u></strong>
+                        </td>
+                        <td style="text-align:center">
+                            @if (Model.acc_fo_approve != null)
+                            {
+                                <img width="50" height="50" @(Model.acc_fo_approve != null ? "style='display:none;'" : "style='display:block;text-align:center'")  src="@(Model.acc_fo_approve != null ? Model.acc_fo_approve.Substring(1) : Server.MapPath("~/Img/blank.png"))"/>
+                            }
+                            <br />
+                            @if (Model.acc_fo != null)
+                            {
+                                if ((Model.acc_fo_approve != null && Model.acc_fo_approve.Substring(0, 1) == "d"))
+                                {
+                                    <span>@Model.acc_fo_delegate</span><br />
+                                }
+                                <span>@((Model.acc_fo_approve != null && Model.acc_fo_approve.Substring(0, 1) == "d") ? "a/n" : "") @Model.acc_fo</span><br />
+                            }
+                            <strong><u>Facility Owner</u></strong>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+</table>
+<br />
+<table cellspacing="0" cellpadding="0">
+    <tr>
+        <td width="60%">
+            <table border="0.5" style="font-size:7px" cellpadding="3">
+                <thead>
+                    <tr cellpadding="3">
+                        <th class="title-form" colspan="4" style="font-size:12px"><strong>4.  CANCELLATION SCREENING </strong></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="2" style="text-align:center" width="10%"><strong>No</strong></td>
+                        <td rowspan="2" style="text-align:left" width="50%"><strong>Description<br/> </strong><em><small style="font-size:5px">(Answer the screening items with Yes, No or N/A)</small></em></td>
+                        <td colspan="2" style="text-align:center" width="40%"><strong>Assesments (Y, No, N/A)</strong></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center" width="20%"><strong>Requestor's Supervisor</strong></td>
+                        <td style="text-align:center" width="20%"><strong>Facility Owner</strong></td>
+                    </tr>
+                    <tr>
+                        <td width="10%" style="text-align:center">1</td>
+                        <td class="small" width="50%">Have work completed?</td>
+                        <td width="20%" style="text-align:center">
+                            @(Model.cancel_1_spv == 1 ? "Yes" : (Model.cancel_1_spv == 2 ? "No" : (Model.cancel_1_spv == 0 ? "N/A" : "")))
+                        </td>
+                        <td width="20%" style="text-align:center">
+                            @(Model.cancel_1_fo == 1 ? "Yes" : (Model.cancel_1_fo == 2 ? "No" : (Model.cancel_1_fo == 0 ? "N/A" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">2</td>
+                        <td class="small">Have the Clearance Permit(s) Cancelled?</td>
+                        <td style="text-align:center">
+                            @(Model.cancel_2_spv == 1 ? "Yes" : (Model.cancel_2_spv == 2 ? "No" : (Model.cancel_2_spv == 0 ? "N/A" : "")))
+                        </td>
+                        <td style="text-align:center">
+                            @(Model.cancel_2_fo == 1 ? "Yes" : (Model.cancel_2_fo == 2 ? "No" : (Model.cancel_2_fo == 0 ? "N/A" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">3</td>
+                        <td class="small">Personnel(s) have been notified that this PTW is cancelled?</td>
+                        <td style="text-align:center">
+                            @(Model.cancel_3_spv == 1 ? "Yes" : (Model.cancel_3_spv == 2 ? "No" : (Model.cancel_3_spv == 0 ? "N/A" : "")))
+                        </td>
+                        <td style="text-align:center">
+                            @(Model.cancel_3_fo == 1 ? "Yes" : (Model.cancel_3_fo == 2 ? "No" : (Model.cancel_3_fo == 0 ? "N/A" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">4</td>
+                        <td class="small">Worksite and equipment affected left in safe condition?</td>
+                        <td style="text-align:center">
+                            @(Model.cancel_4_spv == 1 ? "Yes" : (Model.cancel_4_spv == 2 ? "No" : (Model.cancel_4_spv == 0 ? "N/A" : "")))
+                        </td>
+                        <td style="text-align:center">
+                            @(Model.cancel_4_fo == 1 ? "Yes" : (Model.cancel_4_fo == 2 ? "No" : (Model.cancel_4_fo == 0 ? "N/A" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">5</td>
+                        <td class="small">Is the work performed / construction accepted by work requestor?</td>
+                        <td style="text-align:center">
+                            @(Model.cancel_5_spv == 1 ? "Yes" : (Model.cancel_5_spv == 2 ? "No" : (Model.cancel_5_spv == 0 ? "N/A" : "")))
+                        </td>
+                        <td style="text-align:center">
+                            @(Model.cancel_5_fo == 1 ? "Yes" : (Model.cancel_5_fo == 2 ? "No" : (Model.cancel_5_fo == 0 ? "N/A" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">6</td>
+                        <td class="small">Are the current procedure(s) require to revise?</td>
+                        <td style="text-align:center">
+                            @(Model.cancel_6_spv == 1 ? "Yes" : (Model.cancel_6_spv == 2 ? "No" : (Model.cancel_6_spv == 0 ? "N/A" : "")))
+                        </td>
+                        <td style="text-align:center">
+                            @(Model.cancel_6_fo == 1 ? "Yes" : (Model.cancel_6_fo == 2 ? "No" : (Model.cancel_6_fo == 0 ? "N/A" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">7</td>
+                        <td class="small">Have the worksite clear, clean and tidy (housekeeping satisfactory)?</td>
+                        <td style="text-align:center">
+                            @(Model.cancel_7_spv == 1 ? "Yes" : (Model.cancel_7_spv == 2 ? "No" : (Model.cancel_7_spv == 0 ? "N/A" : "")))
+                        </td>
+                        <td style="text-align:center">
+                            @(Model.cancel_7_fo == 1 ? "Yes" : (Model.cancel_7_fo == 2 ? "No" : (Model.cancel_7_fo == 0 ? "N/A" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="small">
+                            <b>Note:</b> <em style="font-size:6px">write any concern related to cancellation of PTW, attach other check sheet if necessary; Spv: requestor's 
+                                    supervisor project maanger; FO : Facility owner;</em><br />
+                            @Model.cancel_notes
+                        </td>
+                    </tr>
+                    <tr border="0">
+                        <td width="5%"></td>
+                        <td class="small" width="65%"></td>
+                        <td width="15%">
+                        </td>
+                        <td width="15%">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </td>
+        <td width="2%">
+            &nbsp;&nbsp;
+        </td>
+        <td width="38%">
+            <table border="0.5" style="font-size:7px" cellpadding="3">
+                <thead>
+                    <tr>
+                        <th class="title-form" colspan="2" style="font-size:12px" cellpadding="3"><strong>5. CANCELLATION</strong></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="2">
+                            <b>Cancelation date :</b> @(Model.cancellation_date != null ? Model.cancellation_date.Value.ToString("MM/dd/yyyy") : "")
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align:center">
+                            <strong><u>Permit returned by,</u></strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">
+                            @if (Model.can_ptw_requestor_approve != null) {
+                                <img width="50" height="50" @(Model.can_ptw_requestor_approve != null ? "style='display:none;'" : "style='display:block;text-align:center'")  src="@(Model.can_ptw_requestor_approve != null ? Model.can_ptw_requestor_approve.Substring(1) : Server.MapPath("~/Img/blank.png"))"/>
+                            }
+                            <br />
+                            <span>@Model.can_ptw_requestor</span><br />
+                            <strong><u>PTW Requestor</u></strong>
+                        </td>
+                        <td style="text-align:center">
+                            @if (Model.can_supervisor_approve != null) {
+                                <img width="50" height="50" @(Model.can_supervisor_approve != null ? "style='display:none;'" : "style='display:block;text-align:center'")  src="@(Model.can_supervisor_approve != null ? Model.can_supervisor_approve.Substring(1) : Server.MapPath("~/Img/blank.png"))"/>
+                            }
+                            <br />
+                            @if (Model.can_supervisor != null)
+                            {
+                                if ((Model.can_supervisor_approve != null && Model.can_supervisor_approve.Substring(0, 1) == "d"))
+                                {
+                                    <span>@Model.can_supervisor_delegate</span><br />
+                                }
+                                <span>@((Model.can_supervisor_approve != null && Model.can_supervisor_approve.Substring(0, 1) == "d") ? "a/n" : "") @Model.can_supervisor</span><br />
+                            }
+                            <strong><u>Supervisor / Project manager</u></strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="text-align:center">
+                            <strong><u>Permit Cancelled by,</u></strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align:center">
+                            @if (Model.can_assessor_approve != null)
+                            {
+                                <img width="50" height="50" @(Model.can_assessor_approve != null ? "style='display:none;'" : "style='display:block;text-align:center'")  src="@(Model.can_assessor_approve != null ? Model.can_assessor_approve.Substring(1) : Server.MapPath("~/Img/blank.png"))"/>
+                            }
+                            <br />
+                            @if (Model.can_assessor != null)
+                            {
+                                if ((Model.can_assessor_approve != null && Model.can_assessor_approve.Substring(0, 1) == "d"))
+                                {
+                                    <span>@Model.can_assessor_delegate</span><br />
+                                }
+                                <span>@((Model.can_assessor_approve != null && Model.can_assessor_approve.Substring(0, 1) == "d") ? "a/n" : "") @Model.can_assessor</span><br />
+                            }
+                            <strong><u>Assessor</u></strong>
+                        </td>
+                        <td style="text-align:center">
+                            @if (Model.can_fo_approve != null)
+                            {
+                                <img width="50" height="50" @(Model.can_fo_approve != null ? "style='display:none;'" : "style='display:block;text-align:center'")  src="@(Model.can_fo_approve != null ? Model.can_fo_approve.Substring(1) : Server.MapPath("~/Img/blank.png"))"/>
+                            }
+                            <br />
+                            @if (Model.can_fo != null)
+                            {
+                                if ((Model.can_fo_approve != null && Model.can_fo_approve.Substring(0, 1) == "d"))
+                                {
+                                    <span>@Model.can_fo_delegate</span><br />
+                                }
+                                <span>@((Model.can_fo_approve != null && Model.can_fo_approve.Substring(0, 1) == "d") ? "a/n" : "") @Model.can_fo</span><br />
+                            }
+                            <strong><u>Facility Owner</u></strong>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+</table>

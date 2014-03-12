@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Unicorn Admin</title>
+        <title>Permit To Work - Login</title>
 		<meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="stylesheet" href="@Url.Content("~/Content/bootstrap.min.css")" />
@@ -62,10 +62,10 @@
                     // $.post makes a POST XHR request, the first parameter takes the form's
                     // specified action
                     e.preventDefault();
-                    $.post("Login/ValidateLogin", {username: $('#username').val(), password: $('#password').val()}, function (resp) {
+                    $.post("@Url.Action("ValidateLogin","Login")", { username: $('#username').val(), password: $('#password').val() }, function (resp) {
                         if (resp.status == "200") {
                             $('#success').show(300);
-                            setTimeout(function () { window.location = "/Home"; }, 2000);
+                            setTimeout(function () { window.location = "@Url.Action("Index","Home", new { p = ViewBag.returnUrl })"; }, 2000);
                         } else if (resp.status == "500") {
                             $('#errorMessage').html(resp.message);
                             $('#fail').show(300);

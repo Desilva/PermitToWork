@@ -17,10 +17,13 @@ namespace PermitToWork.Models.User
         public string signature { get; set; }
         public string position { get; set; }
         public string email { get; set; }
+        public int? employee_dept { get; set; }
 
-        public List<user_per_role> roles { get; set; }
+        public string token { get; set; }
 
-        public star_energi_geoEntities db = new star_energi_geoEntities();
+        // public List<user_per_role> roles { get; set; }
+
+        // public star_energi_geoEntities db = new star_energi_geoEntities();
 
         public enum role
         {
@@ -47,45 +50,71 @@ namespace PermitToWork.Models.User
 
         public UserEntity() { }
 
-        public UserEntity(int id)
+        public UserEntity(int id, string token, UserEntity user)
         {
-            employee emp = db.employees.Find(id);
-            if (emp != null)
-            {
-                this.id = emp.id;
-                this.alpha_name = emp.alpha_name;
-                this.employee_boss = emp.employee_boss;
-                this.employee_delegate = emp.employee_delegate;
-                this.signature = ConfigurationManager.AppSettings["fracas"] + emp.signature;
-                this.position = emp.position;
-                this.email = emp.email;
-                this.username = this.db.users.Where(p => p.employee_id == this.id).FirstOrDefault().username;
+            WWUserService.UserServiceClient client = new WWUserService.UserServiceClient();
 
-                this.roles = this.db.user_per_role.Where(p => p.username == this.username).ToList();
+            WWUserService.ResponseModel response = client.getUser(token, user.id, id);
+
+            if (response.status)
+            {
+                this.id = response.result.id;
+                this.alpha_name = response.result.alpha_name;
+                this.employee_boss = response.result.employee_boss;
+                this.employee_delegate = response.result.employee_delegate;
+                this.signature = ConfigurationManager.AppSettings["fracas"] + response.result.signature;
+                this.position = response.result.position;
+                this.email = response.result.email;
+                this.employee_dept = response.result.employee_dept;
+                // this.roles = response.result.;
             }
+
+            client.Close();
         }
 
         public UserEntity(string username, string password)
         {
-            user userCheck = db.users.Find(username);
-            if (userCheck == null || userCheck.password != password)
+            WWUserService.UserServiceClient client = new WWUserService.UserServiceClient();
+
+            WWUserService.ResponseModel response = client.login(username, password, null);
+
+            if (response.status)
             {
-                this.isSuccessLogin = false;
+                this.isSuccessLogin = true;
+                this.id = response.result.id;
+                this.alpha_name = response.result.alpha_name;
+                this.username = username;
+                this.employee_boss = response.result.employee_boss;
+                this.employee_delegate = response.result.employee_delegate;
+                this.signature = ConfigurationManager.AppSettings["fracas"] + response.result.signature;
+                this.position = response.result.position;
+                this.email = response.result.email;
+                this.employee_dept = response.result.employee_dept;
+                // this.roles = response.result.;
+
+                this.token = response.message;
             }
             else
             {
-                this.isSuccessLogin = true;
-                employee emp = db.employees.Find(userCheck.employee_id);
-                this.id = emp.id;
-                this.alpha_name = emp.alpha_name;
-                this.username = username;
-                this.employee_boss = emp.employee_boss;
-                this.employee_delegate = emp.employee_delegate;
-                this.signature = ConfigurationManager.AppSettings["fracas"] + emp.signature;
-                this.position = emp.position;
-                this.email = emp.email;
-                this.roles = this.db.user_per_role.Where(p => p.username == this.username).ToList();
+                this.isSuccessLogin = false;
             }
+
+            client.Close();
+        }
+
+        public UserEntity clone(WWUserService.UserModel cloningUser)
+        {
+            this.id = cloningUser.id;
+            this.alpha_name = cloningUser.alpha_name;
+            this.signature = cloningUser.signature;
+            this.position = cloningUser.position;
+            this.email = cloningUser.email;
+            this.employee_delegate = cloningUser.delagate;
+            this.employee_boss = cloningUser.employee_boss;
+            // this.approval_level = cloningUser.approval_level;
+            // this.department = cloningUser.department;
+
+            return this;
         }
     }
 }

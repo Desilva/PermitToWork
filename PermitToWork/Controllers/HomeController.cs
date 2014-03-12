@@ -53,8 +53,8 @@ namespace PermitToWork.Controllers
         [HttpPost]
         public JsonResult Binding()
         {
-            ListPtw listPtw = new ListPtw();
             UserEntity user = Session["user"] as UserEntity;
+            ListPtw listPtw = new ListPtw(user);
             var result = listPtw.listPtwByUser(user);
             return Json(result);
         }

@@ -2097,7 +2097,7 @@
     {
     <button class="btn" onclick="save()">Save</button>
     }
-    @if (user_hw[0] == true && Model.status >= (int)HwEntity.statusHW.ACCFO && Model.status <= (int)HwEntity.statusHW.CANCEL && ptwStatus == (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.ACCFO)
+    @if (user_hw[0] == true && Model.status >= (int)HwEntity.statusHW.ACCFO && Model.status <= (int)HwEntity.statusHW.CANCEL && ptwStatus >= (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.ACCFO)
     {
         if (Model.isCanAddExtension())
         {

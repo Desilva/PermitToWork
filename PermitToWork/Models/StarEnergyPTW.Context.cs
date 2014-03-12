@@ -34,5 +34,14 @@ namespace PermitToWork.Models
         public DbSet<mst_facility_owner> mst_facility_owner { get; set; }
         public DbSet<hot_work> hot_work { get; set; }
         public DbSet<permit_to_work> permit_to_work { get; set; }
+        public DbSet<mst_dept_head_fo> mst_dept_head_fo { get; set; }
+        public DbSet<mst_safety_officer> mst_safety_officer { get; set; }
+        public DbSet<fire_impairment> fire_impairment { get; set; }
+        public DbSet<radiography> radiographies { get; set; }
+        public DbSet<mst_radiographer> mst_radiographer { get; set; }
+        public DbSet<mst_radiation_po> mst_radiation_po { get; set; }
+        public DbSet<mst_erector> mst_erector { get; set; }
+        public DbSet<mst_inspector> mst_inspector { get; set; }
+        public DbSet<working_height> working_height { get; set; }
     }
 }

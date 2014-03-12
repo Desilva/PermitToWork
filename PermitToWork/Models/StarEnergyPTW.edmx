@@ -6,15 +6,28 @@
     <edmx:StorageModels>
     <Schema Namespace="star_energy_ptwModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityContainer Name="star_energy_ptwModelStoreContainer">
+          <EntitySet Name="fire_impairment" EntityType="star_energy_ptwModel.Store.fire_impairment" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="hira_document" EntityType="star_energy_ptwModel.Store.hira_document" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="hot_work" EntityType="star_energy_ptwModel.Store.hot_work" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="mst_assessor" EntityType="star_energy_ptwModel.Store.mst_assessor" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="mst_department" EntityType="star_energy_ptwModel.Store.mst_department" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="mst_dept_head_fo" EntityType="star_energy_ptwModel.Store.mst_dept_head_fo" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="mst_erector" EntityType="star_energy_ptwModel.Store.mst_erector" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="mst_facility_owner" EntityType="star_energy_ptwModel.Store.mst_facility_owner" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="mst_inspector" EntityType="star_energy_ptwModel.Store.mst_inspector" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="mst_ptw_holder_no" EntityType="star_energy_ptwModel.Store.mst_ptw_holder_no" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="mst_radiation_po" EntityType="star_energy_ptwModel.Store.mst_radiation_po" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="mst_radiographer" EntityType="star_energy_ptwModel.Store.mst_radiographer" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="mst_safety_officer" EntityType="star_energy_ptwModel.Store.mst_safety_officer" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="mst_section" EntityType="star_energy_ptwModel.Store.mst_section" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="permit_log" EntityType="star_energy_ptwModel.Store.permit_log" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="permit_to_work" EntityType="star_energy_ptwModel.Store.permit_to_work" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="radiography" EntityType="star_energy_ptwModel.Store.radiography" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="working_height" EntityType="star_energy_ptwModel.Store.working_height" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="FK_fire_impairment_permit_to_work" Association="star_energy_ptwModel.Store.FK_fire_impairment_permit_to_work">
+            <End Role="permit_to_work" EntitySet="permit_to_work" />
+            <End Role="fire_impairment" EntitySet="fire_impairment" />
+          </AssociationSet>
           <AssociationSet Name="FK_hira_document_permit_to_work" Association="star_energy_ptwModel.Store.FK_hira_document_permit_to_work">
             <End Role="permit_to_work" EntitySet="permit_to_work" />
             <End Role="hira_document" EntitySet="hira_document" />
@@ -39,7 +52,61 @@
             <End Role="permit_to_work" EntitySet="permit_to_work" />
             <End Role="permit_to_work1" EntitySet="permit_to_work" />
           </AssociationSet>
+          <AssociationSet Name="FK_radiography_permit_to_work" Association="star_energy_ptwModel.Store.FK_radiography_permit_to_work">
+            <End Role="permit_to_work" EntitySet="permit_to_work" />
+            <End Role="radiography" EntitySet="radiography" />
+          </AssociationSet>
+          <AssociationSet Name="FK_working_height_permit_to_work" Association="star_energy_ptwModel.Store.FK_working_height_permit_to_work">
+            <End Role="permit_to_work" EntitySet="permit_to_work" />
+            <End Role="working_height" EntitySet="working_height" />
+          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="fire_impairment">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="purpose" Type="text" />
+          <Property Name="area_affected" Type="varchar" MaxLength="255" />
+          <Property Name="requestor" Type="varchar" MaxLength="50" />
+          <Property Name="fire_watch" Type="varchar" MaxLength="50" />
+          <Property Name="screening_spv" Type="varchar" MaxLength="50" />
+          <Property Name="screening_so" Type="varchar" MaxLength="50" />
+          <Property Name="screening_fo" Type="varchar" MaxLength="50" />
+          <Property Name="screening_remark" Type="text" />
+          <Property Name="acc_work_leader" Type="varchar" MaxLength="50" />
+          <Property Name="acc_work_leader_signature" Type="varchar" MaxLength="255" />
+          <Property Name="acc_work_leader_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="acc_fire_watch_signature" Type="varchar" MaxLength="255" />
+          <Property Name="acc_fire_wacth_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="acc_so" Type="varchar" MaxLength="50" />
+          <Property Name="acc_so_signature" Type="varchar" MaxLength="255" />
+          <Property Name="acc_so_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="acc_fo" Type="varchar" MaxLength="50" />
+          <Property Name="acc_fo_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="acc_fo_signature" Type="varchar" MaxLength="255" />
+          <Property Name="spv" Type="varchar" MaxLength="50" />
+          <Property Name="acc_dept_head" Type="varchar" MaxLength="50" />
+          <Property Name="acc_dept_head_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="acc_dept_head_signature" Type="varchar" MaxLength="255" />
+          <Property Name="cancel_spv" Type="varchar" MaxLength="50" />
+          <Property Name="cancel_so" Type="varchar" MaxLength="50" />
+          <Property Name="cancel_fo" Type="varchar" MaxLength="50" />
+          <Property Name="cancel_remark" Type="text" />
+          <Property Name="cancel_work_leader_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="cancel_work_leader_signature" Type="varchar" MaxLength="255" />
+          <Property Name="cancel_fire_watch_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="cancel_fire_watch_signature" Type="varchar" MaxLength="255" />
+          <Property Name="cancel_so_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="cancel_so_signature" Type="varchar" MaxLength="255" />
+          <Property Name="cancel_fo_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="cancel_fo_signature" Type="varchar" MaxLength="255" />
+          <Property Name="cancel_dept_head_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="cancel_dept_head_signature" Type="varchar" MaxLength="255" />
+          <Property Name="id_ptw" Type="int" />
+          <Property Name="status" Type="int" />
+          <Property Name="fi_no" Type="varchar" MaxLength="50" />
+        </EntityType>
         <EntityType Name="hira_document">
           <Key>
             <PropertyRef Name="id" />
@@ -223,6 +290,22 @@
           <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="department" Type="varchar" MaxLength="100" />
         </EntityType>
+        <EntityType Name="mst_dept_head_fo">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="id_dept_head_fo" Type="int" />
+        </EntityType>
+        <EntityType Name="mst_erector">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="id_employee" Type="int" />
+          <Property Name="certificate_no" Type="varchar" MaxLength="100" />
+          <Property Name="valid_date" Type="datetime" />
+        </EntityType>
         <EntityType Name="mst_facility_owner">
           <Key>
             <PropertyRef Name="id" />
@@ -230,6 +313,15 @@
           <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="id_employee" Type="int" />
           <Property Name="fo_code" Type="varchar" MaxLength="10" />
+        </EntityType>
+        <EntityType Name="mst_inspector">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="id_employee" Type="int" />
+          <Property Name="certificate_no" Type="varchar" MaxLength="100" />
+          <Property Name="valid_date" Type="datetime" />
         </EntityType>
         <EntityType Name="mst_ptw_holder_no">
           <Key>
@@ -239,6 +331,32 @@
           <Property Name="id_employee" Type="int" />
           <Property Name="ptw_holder_no" Type="varchar" MaxLength="50" />
           <Property Name="activated_date_until" Type="date" />
+        </EntityType>
+        <EntityType Name="mst_radiation_po">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="employee" Type="varchar" MaxLength="255" />
+          <Property Name="valid_date" Type="date" />
+          <Property Name="license_number" Type="varchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="mst_radiographer">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="employee" Type="varchar" MaxLength="255" />
+          <Property Name="level" Type="int" />
+          <Property Name="license_number" Type="varchar" MaxLength="50" />
+          <Property Name="valid_date" Type="date" />
+        </EntityType>
+        <EntityType Name="mst_safety_officer">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="id_so" Type="int" />
         </EntityType>
         <EntityType Name="mst_section">
           <Key>
@@ -349,6 +467,130 @@
           <Property Name="id_parent_ptw" Type="int" />
           <Property Name="status" Type="int" />
         </EntityType>
+        <EntityType Name="radiography">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="id_ptw" Type="int" />
+          <Property Name="rg_no" Type="varchar" MaxLength="50" />
+          <Property Name="purpose" Type="varchar" MaxLength="255" />
+          <Property Name="radiographer_2" Type="varchar" MaxLength="50" />
+          <Property Name="radiographer_1" Type="varchar" MaxLength="50" />
+          <Property Name="radiographer_2_license_number" Type="varchar" MaxLength="255" />
+          <Property Name="radiographer_1_license_number" Type="varchar" MaxLength="255" />
+          <Property Name="radiation_protection_officer" Type="varchar" MaxLength="50" />
+          <Property Name="radiation_protection_officer_license_number" Type="varchar" MaxLength="255" />
+          <Property Name="potential_area_affected" Type="varchar" MaxLength="255" />
+          <Property Name="total_crew" Type="varchar" MaxLength="50" />
+          <Property Name="supervisor" Type="varchar" MaxLength="50" />
+          <Property Name="radiographic_source" Type="varchar" MaxLength="255" />
+          <Property Name="estimate_time_start" Type="datetime" />
+          <Property Name="estimate_time_end" Type="datetime" />
+          <Property Name="pre_screening_spv" Type="varchar" MaxLength="50" />
+          <Property Name="pre_screening_rad" Type="varchar" MaxLength="50" />
+          <Property Name="pre_screening_fo" Type="varchar" MaxLength="50" />
+          <Property Name="operator_signature" Type="varchar" MaxLength="255" />
+          <Property Name="operator_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="radiographer_2_signature" Type="varchar" MaxLength="255" />
+          <Property Name="radiographer_2_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="supervisor_signature" Type="varchar" MaxLength="255" />
+          <Property Name="supervisor_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="safety_officer" Type="varchar" MaxLength="50" />
+          <Property Name="safety_officer_signature" Type="varchar" MaxLength="255" />
+          <Property Name="safety_officer_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="facility_owner" Type="varchar" MaxLength="50" />
+          <Property Name="facility_owner_signature" Type="varchar" MaxLength="255" />
+          <Property Name="facility_owner_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="pre_remark" Type="text" />
+          <Property Name="can_screening_spv" Type="varchar" MaxLength="50" />
+          <Property Name="can_screening_rad" Type="varchar" MaxLength="50" />
+          <Property Name="can_screening_fo" Type="varchar" MaxLength="50" />
+          <Property Name="can_operator_signature" Type="varchar" MaxLength="255" />
+          <Property Name="can_operator_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="can_radiographer_2_signature" Type="varchar" MaxLength="255" />
+          <Property Name="can_radiographer_2_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="can_supervisor_signature" Type="varchar" MaxLength="255" />
+          <Property Name="can_supervisor_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="can_safety_officer_signature" Type="varchar" MaxLength="255" />
+          <Property Name="can_safety_officer_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="can_fo_signature" Type="varchar" MaxLength="255" />
+          <Property Name="can_fo_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="status" Type="int" Nullable="false" />
+          <Property Name="operator" Type="varchar" MaxLength="50" />
+          <Property Name="work_location" Type="varchar" MaxLength="255" />
+          <Property Name="can_remark" Type="text" />
+        </EntityType>
+        <EntityType Name="working_height">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="id_ptw" Type="int" />
+          <Property Name="wh_no" Type="varchar" MaxLength="50" />
+          <Property Name="description" Type="text" />
+          <Property Name="work_location" Type="varchar" MaxLength="255" />
+          <Property Name="requestor" Type="varchar" MaxLength="50" />
+          <Property Name="from" Type="datetime" />
+          <Property Name="until" Type="datetime" />
+          <Property Name="total_crew" Type="int" />
+          <Property Name="access" Type="int" />
+          <Property Name="workbox_access" Type="varchar" MaxLength="50" />
+          <Property Name="ladder_access" Type="varchar" MaxLength="50" />
+          <Property Name="elevated_access" Type="varchar" MaxLength="50" />
+          <Property Name="scaffolding" Type="int" />
+          <Property Name="load_capacity" Type="varchar" MaxLength="50" />
+          <Property Name="no_person" Type="varchar" MaxLength="50" />
+          <Property Name="erector" Type="int" />
+          <Property Name="erector_certificate_no" Type="varchar" MaxLength="100" />
+          <Property Name="erector_valid_date" Type="datetime" />
+          <Property Name="scaffold_access" Type="varchar" MaxLength="50" />
+          <Property Name="inspector" Type="int" />
+          <Property Name="inspector_certify_no" Type="varchar" MaxLength="50" />
+          <Property Name="utilization_valid_date" Type="datetime" />
+          <Property Name="inspector_signature" Type="varchar" MaxLength="255" />
+          <Property Name="inspector_sign_date" Type="datetime" />
+          <Property Name="mandatory_fall_prevention" Type="varchar" MaxLength="255" />
+          <Property Name="fall_prevention_assess" Type="varchar" MaxLength="25" />
+          <Property Name="pre_screening_req" Type="varchar" MaxLength="50" />
+          <Property Name="pre_screening_fo" Type="varchar" MaxLength="50" />
+          <Property Name="requestor_signature" Type="varchar" MaxLength="255" />
+          <Property Name="requestor_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="requestor_signature_date" Type="datetime" />
+          <Property Name="supervisor" Type="varchar" MaxLength="50" />
+          <Property Name="supervisor_signature" Type="varchar" MaxLength="255" />
+          <Property Name="supervisor_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="supervisor_signature_date" Type="datetime" />
+          <Property Name="facility_owner" Type="varchar" MaxLength="50" />
+          <Property Name="facility_owner_signature" Type="varchar" MaxLength="255" />
+          <Property Name="facility_owner_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="facility_owner_signature_date" Type="datetime" />
+          <Property Name="can_screening_req" Type="varchar" MaxLength="50" />
+          <Property Name="can_screening_fo" Type="varchar" MaxLength="50" />
+          <Property Name="can_requestor_signature" Type="varchar" MaxLength="255" />
+          <Property Name="can_requestor_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="can_requestor_signature_date" Type="datetime" />
+          <Property Name="can_supervisor_signature" Type="varchar" MaxLength="255" />
+          <Property Name="can_supervisor_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="can_supervisor_signature_date" Type="datetime" />
+          <Property Name="can_facility_owner_signature" Type="varchar" MaxLength="255" />
+          <Property Name="can_facility_owner_delegate" Type="varchar" MaxLength="50" />
+          <Property Name="can_facility_owner_signature_date" Type="datetime" />
+          <Property Name="status" Type="int" />
+          <Property Name="pre_screening_note" Type="text" />
+        </EntityType>
+        <Association Name="FK_fire_impairment_permit_to_work">
+          <End Role="permit_to_work" Type="star_energy_ptwModel.Store.permit_to_work" Multiplicity="0..1" />
+          <End Role="fire_impairment" Type="star_energy_ptwModel.Store.fire_impairment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="permit_to_work">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="fire_impairment">
+              <PropertyRef Name="id_ptw" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_hira_document_permit_to_work">
           <End Role="permit_to_work" Type="star_energy_ptwModel.Store.permit_to_work" Multiplicity="0..1">
             <OnDelete Action="Cascade" />
@@ -425,6 +667,32 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_radiography_permit_to_work">
+          <End Role="permit_to_work" Type="star_energy_ptwModel.Store.permit_to_work" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="radiography" Type="star_energy_ptwModel.Store.radiography" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="permit_to_work">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="radiography">
+              <PropertyRef Name="id_ptw" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_working_height_permit_to_work">
+          <End Role="permit_to_work" Type="star_energy_ptwModel.Store.permit_to_work" Multiplicity="0..1" />
+          <End Role="working_height" Type="star_energy_ptwModel.Store.working_height" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="permit_to_work">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="working_height">
+              <PropertyRef Name="id_ptw" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
@@ -462,6 +730,27 @@
           <AssociationSet Name="FK_permit_to_work_permit_to_work" Association="star_energy_ptwModel.FK_permit_to_work_permit_to_work">
             <End Role="permit_to_work" EntitySet="permit_to_work" />
             <End Role="permit_to_work1" EntitySet="permit_to_work" />
+          </AssociationSet>
+          <EntitySet Name="mst_dept_head_fo" EntityType="star_energy_ptwModel.mst_dept_head_fo" />
+          <EntitySet Name="mst_safety_officer" EntityType="star_energy_ptwModel.mst_safety_officer" />
+          <EntitySet Name="fire_impairment" EntityType="star_energy_ptwModel.fire_impairment" />
+          <AssociationSet Name="FK_fire_impairment_permit_to_work" Association="star_energy_ptwModel.FK_fire_impairment_permit_to_work">
+            <End Role="permit_to_work" EntitySet="permit_to_work" />
+            <End Role="fire_impairment" EntitySet="fire_impairment" />
+          </AssociationSet>
+          <EntitySet Name="radiographies" EntityType="star_energy_ptwModel.radiography" />
+          <AssociationSet Name="FK_radiography_permit_to_work" Association="star_energy_ptwModel.FK_radiography_permit_to_work">
+            <End Role="permit_to_work" EntitySet="permit_to_work" />
+            <End Role="radiography" EntitySet="radiographies" />
+          </AssociationSet>
+          <EntitySet Name="mst_radiographer" EntityType="star_energy_ptwModel.mst_radiographer" />
+          <EntitySet Name="mst_radiation_po" EntityType="star_energy_ptwModel.mst_radiation_po" />
+          <EntitySet Name="mst_erector" EntityType="star_energy_ptwModel.mst_erector" />
+          <EntitySet Name="mst_inspector" EntityType="star_energy_ptwModel.mst_inspector" />
+          <EntitySet Name="working_height" EntityType="star_energy_ptwModel.working_height" />
+          <AssociationSet Name="FK_working_height_permit_to_work" Association="star_energy_ptwModel.FK_working_height_permit_to_work">
+            <End Role="permit_to_work" EntitySet="permit_to_work" />
+            <End Role="working_height" EntitySet="working_height" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="hira_document">
@@ -784,6 +1073,9 @@
           <NavigationProperty Name="mst_section" Relationship="star_energy_ptwModel.FK_permit_to_work_mst_section" FromRole="permit_to_work" ToRole="mst_section" />
           <NavigationProperty Name="permit_to_work1" Relationship="star_energy_ptwModel.FK_permit_to_work_permit_to_work" FromRole="permit_to_work" ToRole="permit_to_work1" />
           <NavigationProperty Name="permit_to_work2" Relationship="star_energy_ptwModel.FK_permit_to_work_permit_to_work" FromRole="permit_to_work1" ToRole="permit_to_work" />
+          <NavigationProperty Name="fire_impairment" Relationship="star_energy_ptwModel.FK_fire_impairment_permit_to_work" FromRole="permit_to_work" ToRole="fire_impairment" />
+          <NavigationProperty Name="radiographies" Relationship="star_energy_ptwModel.FK_radiography_permit_to_work" FromRole="permit_to_work" ToRole="radiography" />
+          <NavigationProperty Name="working_height" Relationship="star_energy_ptwModel.FK_working_height_permit_to_work" FromRole="permit_to_work" ToRole="working_height" />
         </EntityType>
         <Association Name="FK_hira_document_permit_to_work">
           <End Type="star_energy_ptwModel.permit_to_work" Role="permit_to_work" Multiplicity="0..1">
@@ -858,6 +1150,256 @@
             </Principal>
             <Dependent Role="permit_to_work1">
               <PropertyRef Name="id_parent_ptw" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="mst_dept_head_fo">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="id_dept_head_fo" />
+        </EntityType>
+        <EntityType Name="mst_safety_officer">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="id_so" />
+        </EntityType>
+        <EntityType Name="fire_impairment">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="purpose" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="area_affected" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="requestor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="fire_watch" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="screening_spv" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="screening_so" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="screening_fo" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="screening_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_work_leader" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_work_leader_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_work_leader_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_fire_watch_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_fire_wacth_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_so" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_so_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_so_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_fo" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_fo_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_fo_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="spv" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_dept_head" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_dept_head_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_dept_head_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="cancel_spv" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="cancel_so" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="cancel_fo" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="cancel_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="cancel_work_leader_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="cancel_work_leader_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="cancel_fire_watch_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="cancel_fire_watch_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="cancel_so_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="cancel_so_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="cancel_fo_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="cancel_fo_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="cancel_dept_head_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="cancel_dept_head_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="id_ptw" />
+          <Property Type="Int32" Name="status" />
+          <Property Type="String" Name="fi_no" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="permit_to_work" Relationship="star_energy_ptwModel.FK_fire_impairment_permit_to_work" FromRole="fire_impairment" ToRole="permit_to_work" />
+        </EntityType>
+        <Association Name="FK_fire_impairment_permit_to_work">
+          <End Type="star_energy_ptwModel.permit_to_work" Role="permit_to_work" Multiplicity="0..1" />
+          <End Type="star_energy_ptwModel.fire_impairment" Role="fire_impairment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="permit_to_work">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="fire_impairment">
+              <PropertyRef Name="id_ptw" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="radiography">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="id_ptw" />
+          <Property Type="String" Name="rg_no" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="purpose" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="radiographer_2" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="radiographer_1" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="radiographer_2_license_number" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="radiographer_1_license_number" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="radiation_protection_officer" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="radiation_protection_officer_license_number" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="potential_area_affected" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="total_crew" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="supervisor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="radiographic_source" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="estimate_time_start" Precision="3" />
+          <Property Type="DateTime" Name="estimate_time_end" Precision="3" />
+          <Property Type="String" Name="pre_screening_spv" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="pre_screening_rad" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="pre_screening_fo" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="operator_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="operator_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="radiographer_2_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="radiographer_2_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="supervisor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="supervisor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="safety_officer" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="safety_officer_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="safety_officer_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="facility_owner" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="facility_owner_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="facility_owner_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="pre_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_screening_spv" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_screening_rad" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_screening_fo" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_operator_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_operator_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_radiographer_2_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_radiographer_2_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_supervisor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_supervisor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_safety_officer_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_safety_officer_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_fo_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_fo_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="status" Nullable="false" />
+          <Property Type="String" Name="operator" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="work_location" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="permit_to_work" Relationship="star_energy_ptwModel.FK_radiography_permit_to_work" FromRole="radiography" ToRole="permit_to_work" />
+        </EntityType>
+        <Association Name="FK_radiography_permit_to_work">
+          <End Type="star_energy_ptwModel.permit_to_work" Role="permit_to_work" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="star_energy_ptwModel.radiography" Role="radiography" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="permit_to_work">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="radiography">
+              <PropertyRef Name="id_ptw" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="mst_radiographer">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="employee" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="level" />
+          <Property Type="String" Name="license_number" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="valid_date" Precision="0" />
+        </EntityType>
+        <EntityType Name="mst_radiation_po">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="employee" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="valid_date" Precision="0" />
+          <Property Type="String" Name="license_number" MaxLength="255" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="mst_erector">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="id_employee" />
+          <Property Type="String" Name="certificate_no" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="valid_date" Precision="3" />
+        </EntityType>
+        <EntityType Name="mst_inspector">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="id_employee" />
+          <Property Type="String" Name="certificate_no" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="valid_date" Precision="3" />
+        </EntityType>
+        <EntityType Name="working_height">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="id_ptw" />
+          <Property Type="String" Name="wh_no" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="description" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="work_location" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="requestor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="from" Precision="3" />
+          <Property Type="DateTime" Name="until" Precision="3" />
+          <Property Type="Int32" Name="total_crew" />
+          <Property Type="Int32" Name="access" />
+          <Property Type="String" Name="workbox_access" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ladder_access" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="elevated_access" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="scaffolding" />
+          <Property Type="String" Name="load_capacity" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="no_person" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="erector" />
+          <Property Type="String" Name="erector_certificate_no" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="erector_valid_date" Precision="3" />
+          <Property Type="String" Name="scaffold_access" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="inspector" />
+          <Property Type="String" Name="inspector_certify_no" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="utilization_valid_date" Precision="3" />
+          <Property Type="String" Name="inspector_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="inspector_sign_date" Precision="3" />
+          <Property Type="String" Name="mandatory_fall_prevention" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="fall_prevention_assess" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="pre_screening_req" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="pre_screening_fo" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="requestor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="requestor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="requestor_signature_date" Precision="3" />
+          <Property Type="String" Name="supervisor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="supervisor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="supervisor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="supervisor_signature_date" Precision="3" />
+          <Property Type="String" Name="facility_owner" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="facility_owner_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="facility_owner_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="facility_owner_signature_date" Precision="3" />
+          <Property Type="String" Name="can_screening_req" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_screening_fo" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_requestor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_requestor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="can_requestor_signature_date" Precision="3" />
+          <Property Type="String" Name="can_supervisor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_supervisor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="can_supervisor_signature_date" Precision="3" />
+          <Property Type="String" Name="can_facility_owner_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_facility_owner_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="can_facility_owner_signature_date" Precision="3" />
+          <Property Type="Int32" Name="status" />
+          <Property Type="String" Name="pre_screening_note" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="permit_to_work" Relationship="star_energy_ptwModel.FK_working_height_permit_to_work" FromRole="working_height" ToRole="permit_to_work" />
+        </EntityType>
+        <Association Name="FK_working_height_permit_to_work">
+          <End Type="star_energy_ptwModel.permit_to_work" Role="permit_to_work" Multiplicity="0..1" />
+          <End Type="star_energy_ptwModel.working_height" Role="working_height" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="permit_to_work">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="working_height">
+              <PropertyRef Name="id_ptw" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1181,6 +1723,224 @@
                 <ScalarProperty Name="proposed_period_end" ColumnName="proposed_period_end" />
                 <ScalarProperty Name="proposed_period_start" ColumnName="proposed_period_start" />
                 <ScalarProperty Name="ptw_no" ColumnName="ptw_no" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="mst_dept_head_fo">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.mst_dept_head_fo">
+              <MappingFragment StoreEntitySet="mst_dept_head_fo">
+                <ScalarProperty Name="id_dept_head_fo" ColumnName="id_dept_head_fo" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="mst_safety_officer">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.mst_safety_officer">
+              <MappingFragment StoreEntitySet="mst_safety_officer">
+                <ScalarProperty Name="id_so" ColumnName="id_so" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="fire_impairment">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.fire_impairment">
+              <MappingFragment StoreEntitySet="fire_impairment">
+                <ScalarProperty Name="fi_no" ColumnName="fi_no" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="id_ptw" ColumnName="id_ptw" />
+                <ScalarProperty Name="cancel_dept_head_signature" ColumnName="cancel_dept_head_signature" />
+                <ScalarProperty Name="cancel_dept_head_delegate" ColumnName="cancel_dept_head_delegate" />
+                <ScalarProperty Name="cancel_fo_signature" ColumnName="cancel_fo_signature" />
+                <ScalarProperty Name="cancel_fo_delegate" ColumnName="cancel_fo_delegate" />
+                <ScalarProperty Name="cancel_so_signature" ColumnName="cancel_so_signature" />
+                <ScalarProperty Name="cancel_so_delegate" ColumnName="cancel_so_delegate" />
+                <ScalarProperty Name="cancel_fire_watch_signature" ColumnName="cancel_fire_watch_signature" />
+                <ScalarProperty Name="cancel_fire_watch_delegate" ColumnName="cancel_fire_watch_delegate" />
+                <ScalarProperty Name="cancel_work_leader_signature" ColumnName="cancel_work_leader_signature" />
+                <ScalarProperty Name="cancel_work_leader_delegate" ColumnName="cancel_work_leader_delegate" />
+                <ScalarProperty Name="cancel_remark" ColumnName="cancel_remark" />
+                <ScalarProperty Name="cancel_fo" ColumnName="cancel_fo" />
+                <ScalarProperty Name="cancel_so" ColumnName="cancel_so" />
+                <ScalarProperty Name="cancel_spv" ColumnName="cancel_spv" />
+                <ScalarProperty Name="acc_dept_head_signature" ColumnName="acc_dept_head_signature" />
+                <ScalarProperty Name="acc_dept_head_delegate" ColumnName="acc_dept_head_delegate" />
+                <ScalarProperty Name="acc_dept_head" ColumnName="acc_dept_head" />
+                <ScalarProperty Name="spv" ColumnName="spv" />
+                <ScalarProperty Name="acc_fo_signature" ColumnName="acc_fo_signature" />
+                <ScalarProperty Name="acc_fo_delegate" ColumnName="acc_fo_delegate" />
+                <ScalarProperty Name="acc_fo" ColumnName="acc_fo" />
+                <ScalarProperty Name="acc_so_delegate" ColumnName="acc_so_delegate" />
+                <ScalarProperty Name="acc_so_signature" ColumnName="acc_so_signature" />
+                <ScalarProperty Name="acc_so" ColumnName="acc_so" />
+                <ScalarProperty Name="acc_fire_wacth_delegate" ColumnName="acc_fire_wacth_delegate" />
+                <ScalarProperty Name="acc_fire_watch_signature" ColumnName="acc_fire_watch_signature" />
+                <ScalarProperty Name="acc_work_leader_delegate" ColumnName="acc_work_leader_delegate" />
+                <ScalarProperty Name="acc_work_leader_signature" ColumnName="acc_work_leader_signature" />
+                <ScalarProperty Name="acc_work_leader" ColumnName="acc_work_leader" />
+                <ScalarProperty Name="screening_remark" ColumnName="screening_remark" />
+                <ScalarProperty Name="screening_fo" ColumnName="screening_fo" />
+                <ScalarProperty Name="screening_so" ColumnName="screening_so" />
+                <ScalarProperty Name="screening_spv" ColumnName="screening_spv" />
+                <ScalarProperty Name="fire_watch" ColumnName="fire_watch" />
+                <ScalarProperty Name="requestor" ColumnName="requestor" />
+                <ScalarProperty Name="area_affected" ColumnName="area_affected" />
+                <ScalarProperty Name="purpose" ColumnName="purpose" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="radiographies">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.radiography">
+              <MappingFragment StoreEntitySet="radiography">
+                <ScalarProperty Name="can_remark" ColumnName="can_remark" />
+                <ScalarProperty Name="work_location" ColumnName="work_location" />
+                <ScalarProperty Name="operator" ColumnName="operator" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="can_fo_delegate" ColumnName="can_fo_delegate" />
+                <ScalarProperty Name="can_fo_signature" ColumnName="can_fo_signature" />
+                <ScalarProperty Name="can_safety_officer_delegate" ColumnName="can_safety_officer_delegate" />
+                <ScalarProperty Name="can_safety_officer_signature" ColumnName="can_safety_officer_signature" />
+                <ScalarProperty Name="can_supervisor_delegate" ColumnName="can_supervisor_delegate" />
+                <ScalarProperty Name="can_supervisor_signature" ColumnName="can_supervisor_signature" />
+                <ScalarProperty Name="can_radiographer_2_delegate" ColumnName="can_radiographer_2_delegate" />
+                <ScalarProperty Name="can_radiographer_2_signature" ColumnName="can_radiographer_2_signature" />
+                <ScalarProperty Name="can_operator_delegate" ColumnName="can_operator_delegate" />
+                <ScalarProperty Name="can_operator_signature" ColumnName="can_operator_signature" />
+                <ScalarProperty Name="can_screening_fo" ColumnName="can_screening_fo" />
+                <ScalarProperty Name="can_screening_rad" ColumnName="can_screening_rad" />
+                <ScalarProperty Name="can_screening_spv" ColumnName="can_screening_spv" />
+                <ScalarProperty Name="pre_remark" ColumnName="pre_remark" />
+                <ScalarProperty Name="facility_owner_delegate" ColumnName="facility_owner_delegate" />
+                <ScalarProperty Name="facility_owner_signature" ColumnName="facility_owner_signature" />
+                <ScalarProperty Name="facility_owner" ColumnName="facility_owner" />
+                <ScalarProperty Name="safety_officer_delegate" ColumnName="safety_officer_delegate" />
+                <ScalarProperty Name="safety_officer_signature" ColumnName="safety_officer_signature" />
+                <ScalarProperty Name="safety_officer" ColumnName="safety_officer" />
+                <ScalarProperty Name="supervisor_delegate" ColumnName="supervisor_delegate" />
+                <ScalarProperty Name="supervisor_signature" ColumnName="supervisor_signature" />
+                <ScalarProperty Name="radiographer_2_delegate" ColumnName="radiographer_2_delegate" />
+                <ScalarProperty Name="radiographer_2_signature" ColumnName="radiographer_2_signature" />
+                <ScalarProperty Name="operator_delegate" ColumnName="operator_delegate" />
+                <ScalarProperty Name="operator_signature" ColumnName="operator_signature" />
+                <ScalarProperty Name="pre_screening_fo" ColumnName="pre_screening_fo" />
+                <ScalarProperty Name="pre_screening_rad" ColumnName="pre_screening_rad" />
+                <ScalarProperty Name="pre_screening_spv" ColumnName="pre_screening_spv" />
+                <ScalarProperty Name="estimate_time_end" ColumnName="estimate_time_end" />
+                <ScalarProperty Name="estimate_time_start" ColumnName="estimate_time_start" />
+                <ScalarProperty Name="radiographic_source" ColumnName="radiographic_source" />
+                <ScalarProperty Name="supervisor" ColumnName="supervisor" />
+                <ScalarProperty Name="total_crew" ColumnName="total_crew" />
+                <ScalarProperty Name="potential_area_affected" ColumnName="potential_area_affected" />
+                <ScalarProperty Name="radiation_protection_officer_license_number" ColumnName="radiation_protection_officer_license_number" />
+                <ScalarProperty Name="radiation_protection_officer" ColumnName="radiation_protection_officer" />
+                <ScalarProperty Name="radiographer_1_license_number" ColumnName="radiographer_1_license_number" />
+                <ScalarProperty Name="radiographer_2_license_number" ColumnName="radiographer_2_license_number" />
+                <ScalarProperty Name="radiographer_1" ColumnName="radiographer_1" />
+                <ScalarProperty Name="radiographer_2" ColumnName="radiographer_2" />
+                <ScalarProperty Name="purpose" ColumnName="purpose" />
+                <ScalarProperty Name="rg_no" ColumnName="rg_no" />
+                <ScalarProperty Name="id_ptw" ColumnName="id_ptw" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="mst_radiographer">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.mst_radiographer">
+              <MappingFragment StoreEntitySet="mst_radiographer">
+                <ScalarProperty Name="valid_date" ColumnName="valid_date" />
+                <ScalarProperty Name="license_number" ColumnName="license_number" />
+                <ScalarProperty Name="level" ColumnName="level" />
+                <ScalarProperty Name="employee" ColumnName="employee" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="mst_radiation_po">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.mst_radiation_po">
+              <MappingFragment StoreEntitySet="mst_radiation_po">
+                <ScalarProperty Name="license_number" ColumnName="license_number" />
+                <ScalarProperty Name="valid_date" ColumnName="valid_date" />
+                <ScalarProperty Name="employee" ColumnName="employee" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="mst_erector">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.mst_erector">
+              <MappingFragment StoreEntitySet="mst_erector">
+                <ScalarProperty Name="valid_date" ColumnName="valid_date" />
+                <ScalarProperty Name="certificate_no" ColumnName="certificate_no" />
+                <ScalarProperty Name="id_employee" ColumnName="id_employee" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="mst_inspector">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.mst_inspector">
+              <MappingFragment StoreEntitySet="mst_inspector">
+                <ScalarProperty Name="valid_date" ColumnName="valid_date" />
+                <ScalarProperty Name="certificate_no" ColumnName="certificate_no" />
+                <ScalarProperty Name="id_employee" ColumnName="id_employee" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="working_height">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.working_height">
+              <MappingFragment StoreEntitySet="working_height">
+                <ScalarProperty Name="pre_screening_note" ColumnName="pre_screening_note" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="can_facility_owner_signature_date" ColumnName="can_facility_owner_signature_date" />
+                <ScalarProperty Name="can_facility_owner_delegate" ColumnName="can_facility_owner_delegate" />
+                <ScalarProperty Name="can_facility_owner_signature" ColumnName="can_facility_owner_signature" />
+                <ScalarProperty Name="can_supervisor_signature_date" ColumnName="can_supervisor_signature_date" />
+                <ScalarProperty Name="can_supervisor_delegate" ColumnName="can_supervisor_delegate" />
+                <ScalarProperty Name="can_supervisor_signature" ColumnName="can_supervisor_signature" />
+                <ScalarProperty Name="can_requestor_signature_date" ColumnName="can_requestor_signature_date" />
+                <ScalarProperty Name="can_requestor_delegate" ColumnName="can_requestor_delegate" />
+                <ScalarProperty Name="can_requestor_signature" ColumnName="can_requestor_signature" />
+                <ScalarProperty Name="can_screening_fo" ColumnName="can_screening_fo" />
+                <ScalarProperty Name="can_screening_req" ColumnName="can_screening_req" />
+                <ScalarProperty Name="facility_owner_signature_date" ColumnName="facility_owner_signature_date" />
+                <ScalarProperty Name="facility_owner_delegate" ColumnName="facility_owner_delegate" />
+                <ScalarProperty Name="facility_owner_signature" ColumnName="facility_owner_signature" />
+                <ScalarProperty Name="facility_owner" ColumnName="facility_owner" />
+                <ScalarProperty Name="supervisor_signature_date" ColumnName="supervisor_signature_date" />
+                <ScalarProperty Name="supervisor_delegate" ColumnName="supervisor_delegate" />
+                <ScalarProperty Name="supervisor_signature" ColumnName="supervisor_signature" />
+                <ScalarProperty Name="supervisor" ColumnName="supervisor" />
+                <ScalarProperty Name="requestor_signature_date" ColumnName="requestor_signature_date" />
+                <ScalarProperty Name="requestor_delegate" ColumnName="requestor_delegate" />
+                <ScalarProperty Name="requestor_signature" ColumnName="requestor_signature" />
+                <ScalarProperty Name="pre_screening_fo" ColumnName="pre_screening_fo" />
+                <ScalarProperty Name="pre_screening_req" ColumnName="pre_screening_req" />
+                <ScalarProperty Name="fall_prevention_assess" ColumnName="fall_prevention_assess" />
+                <ScalarProperty Name="mandatory_fall_prevention" ColumnName="mandatory_fall_prevention" />
+                <ScalarProperty Name="inspector_sign_date" ColumnName="inspector_sign_date" />
+                <ScalarProperty Name="inspector_signature" ColumnName="inspector_signature" />
+                <ScalarProperty Name="utilization_valid_date" ColumnName="utilization_valid_date" />
+                <ScalarProperty Name="inspector_certify_no" ColumnName="inspector_certify_no" />
+                <ScalarProperty Name="inspector" ColumnName="inspector" />
+                <ScalarProperty Name="scaffold_access" ColumnName="scaffold_access" />
+                <ScalarProperty Name="erector_valid_date" ColumnName="erector_valid_date" />
+                <ScalarProperty Name="erector_certificate_no" ColumnName="erector_certificate_no" />
+                <ScalarProperty Name="erector" ColumnName="erector" />
+                <ScalarProperty Name="no_person" ColumnName="no_person" />
+                <ScalarProperty Name="load_capacity" ColumnName="load_capacity" />
+                <ScalarProperty Name="scaffolding" ColumnName="scaffolding" />
+                <ScalarProperty Name="elevated_access" ColumnName="elevated_access" />
+                <ScalarProperty Name="ladder_access" ColumnName="ladder_access" />
+                <ScalarProperty Name="workbox_access" ColumnName="workbox_access" />
+                <ScalarProperty Name="access" ColumnName="access" />
+                <ScalarProperty Name="total_crew" ColumnName="total_crew" />
+                <ScalarProperty Name="until" ColumnName="until" />
+                <ScalarProperty Name="from" ColumnName="from" />
+                <ScalarProperty Name="requestor" ColumnName="requestor" />
+                <ScalarProperty Name="work_location" ColumnName="work_location" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="wh_no" ColumnName="wh_no" />
+                <ScalarProperty Name="id_ptw" ColumnName="id_ptw" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
