@@ -80,7 +80,7 @@ namespace PermitToWork.Models.User
 
         public List<UserEntity> GetHotWorkFO()
         {
-            UserEntity oprSpv = listUser.Where(p => p.position.ToLower() == "operation supervisor").FirstOrDefault();
+            UserEntity oprSpv = listUser.Where(p => p.position != null && p.position.ToLower() == "operation supervisor").FirstOrDefault();
             List<UserEntity> listHotWorkFO = new List<UserEntity>();
             if (oprSpv != null)
             {

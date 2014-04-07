@@ -55,20 +55,16 @@ namespace PermitToWork.Models.WorkingHeight
             CREATE,
             EDITANDSEND,
             INSPECTORSIGN,
-            REQUESTORSCREENING,
-            FOSCREENING,
             REQUESTORAPPROVE,
             SPVAPPROVE,
             FOAPPROVE,
             CLOSING,
-            CANREQUESTORSCREENING,
-            CANFOSCREENING,
             CANREQUESTORAPPROVE,
             CANSPVAPPROVE,
             CANFOAPPROVE,
         }
 
-        public enum UserInRadiography
+        public enum UserInWorkingHeight
         {
             REQUESTOR,
             ERECTOR,
@@ -276,77 +272,497 @@ namespace PermitToWork.Models.WorkingHeight
             this.wh_no = result;
         }
 
-        public int sendInspectorOrPrescreening(UserEntity user, string serverUrl)
+        public int saveAsDraft(int who)
         {
             int retVal = 0;
-            working_height wh = this.db.working_height.Find(this.id);
-            List<string> email = new List<string>();
-            SendEmail sendEmail = new SendEmail();
-            if (wh != null)
+            switch (who)
             {
-                wh.status = (int)WHStatus.EDITANDSEND;
-
-                this.db.Entry(wh).State = EntityState.Modified;
-                retVal = this.db.SaveChanges();
-
-                if (this.access == 4 && this.scaffolding == 2)
-                {
-                    retVal = 2;
-                    // sending email
-                    //email.add(this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].email);
-                    email.Add("septujamasoka@gmail.com");
-                    //s.Add(gasTester.email);
-                    //s.Add("septu.jamasoka@gmail.com");
-
-                    string message = serverUrl + "Home?p=WH/edit/" + this.id;
-
-                    sendEmail.Send(email, message, "Working At Height Inspector Scaffolding Utilization Approval");
-                }
-                else
-                {
-                    // sending email
-                    //email.add(this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].email);
-                    email.Add("septujamasoka@gmail.com");
-                    //s.Add(gasTester.email);
-                    //s.Add("septu.jamasoka@gmail.com");
-
-                    string message = serverUrl + "Home?p=WH/edit/" + this.id;
-
-                    sendEmail.Send(email, message, "Working At Height Clearance Permit Pre-Job Screening");
-                }
-            }
-            return retVal;
-        }
-
-        public int inspectorSign(UserEntity user, string serverUrl)
-        {
-            int retVal = 0;
-            working_height wh = this.db.working_height.Find(this.id);
-            List<string> email = new List<string>();
-            SendEmail sendEmail = new SendEmail();
-            if (wh != null)
-            {
-                wh.inspector_signature = user.signature;
-                wh.inspector_sign_date = DateTime.Now;
-
-                wh.status = (int)WHStatus.INSPECTORSIGN;
-
-                this.db.Entry(wh).State = EntityState.Modified;
-                retVal = this.db.SaveChanges();
-
-                // sending email
-                //email.add(this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].email);
-                email.Add("septujamasoka@gmail.com");
-                //s.Add(gasTester.email);
-                //s.Add("septu.jamasoka@gmail.com");
-
-                string message = serverUrl + "Home?p=WH/edit/" + this.id;
-
-                sendEmail.Send(email, message, "Working At Height Clearance Permit Requestor Pre-Job Screening");
+                case 1 /* Requestor */:
+                    retVal = this.edit();
+                    break;
+                case 3 /* Requestor / Erector */:
+                    retVal = savePreScreening(1);
+                    break;
+                case 5 /* Facility Owner */:
+                    retVal = savePreScreening(2);
+                    break;
+                default:
+                    retVal = 1;
+                    break;
             }
 
             return retVal;
         }
+
+        /// <summary>
+        /// function for signing clearance permit
+        /// </summary>
+        /// <param name="who">1 if requestor, 2 if radiographic operator, 3 if radiographic level 2, 4 if supervisor, 5 if safety officer, 6 if FO</param>
+        /// <returns>1 if success, 0 if fail, -1 if user doesn't exist</returns>
+        public int signClearance(int who, UserEntity user, int @case = 0)
+        {
+            int retVal = 0;
+            working_height wh = this.db.working_height.Find(this.id);
+            UserEntity userWH = null;
+            if (wh != null)
+            {
+                switch (who)
+                {
+                    case 1 /* Requestor */:
+                        wh.status = (int)WHStatus.EDITANDSEND;
+
+                        break;
+                    case 2 /* Inspector */:
+                        userWH = this.userInWorkingHeight[UserInWorkingHeight.INSPECTOR.ToString()];
+                        if (user.id == userWH.id)
+                        {
+                            wh.inspector_signature = "a" + user.signature;
+                        }
+                        else if (user.id == userWH.employee_delegate)
+                        {
+                            wh.inspector_signature = "d" + user.signature;
+                        }
+                        wh.inspector_sign_date = DateTime.Now;
+                        wh.status = (int)WHStatus.INSPECTORSIGN;
+                        break;
+                    case 3 /* Requestor / Erector */:
+                        if (this.access == 4 && (this.scaffolding == 1 || this.scaffolding == 3))
+                        {
+                            userWH = this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()];
+                            if (user.id == userWH.id)
+                            {
+                                wh.requestor_signature = "a" + user.signature;
+                            }
+                            else if (user.id == userWH.employee_delegate)
+                            {
+                                wh.requestor_signature = "d" + user.signature;
+                                wh.requestor_delegate = user.id.ToString();
+                            }
+                        }
+                        else
+                        {
+                            userWH = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()];
+                            if (user.id == userWH.id)
+                            {
+                                wh.requestor_signature = "a" + user.signature;
+                            }
+                            else if (user.id == userWH.employee_delegate)
+                            {
+                                wh.requestor_signature = "d" + user.signature;
+                                wh.requestor_delegate = user.id.ToString();
+                            }
+                        }
+                        wh.requestor_signature_date = DateTime.Now;
+                        wh.status = (int)WHStatus.REQUESTORAPPROVE;
+                        break;
+                    case 4 /* Supervisor */:
+                        userWH = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()];
+                        if (user.id == userWH.id)
+                        {
+                            wh.supervisor_signature = "a" + user.signature;
+                        }
+                        else if (user.id == userWH.employee_delegate)
+                        {
+                            wh.supervisor_signature = "d" + user.signature;
+                            wh.supervisor_delegate = user.id.ToString();
+                        }
+                        wh.supervisor_signature_date = DateTime.Now;
+                        wh.status = (int)WHStatus.SPVAPPROVE;
+                        break;
+                    case 5 /* Facility Owner */:
+                        userWH = this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()];
+                        if (user.id == userWH.id)
+                        {
+                            wh.facility_owner_signature = "a" + user.signature;
+                        }
+                        else if (user.id == userWH.employee_delegate)
+                        {
+                            wh.facility_owner_signature = "d" + user.signature;
+                            wh.facility_owner_delegate = user.id.ToString();
+                        }
+                        wh.facility_owner_signature_date = DateTime.Now;
+                        wh.status = (int)WHStatus.FOAPPROVE;
+
+                        this.ptw = new PtwEntity(wh.id_ptw.Value, user);
+                        this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.WORKINGHEIGHT.ToString());
+                        break;
+                }
+
+                this.db.Entry(wh).State = EntityState.Modified;
+                retVal = this.db.SaveChanges();
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="who"></param>
+        /// <returns></returns>
+        public int rejectClearance(int who)
+        {
+            int retVal = 0;
+            working_height wh = this.db.working_height.Find(this.id);
+            if (wh != null)
+            {
+                switch (who)
+                {
+                    case 1 /* Requestor */:
+                        wh.status = (int)WHStatus.EDITANDSEND;
+                        break;
+                    case 2 /* Inspector */:
+                        wh.status = (int)WHStatus.CREATE;
+                        break;
+                    case 3 /* Requestor / Erector */:
+                        if (wh.inspector_sign_date != null)
+                        {
+                            wh.status = (int)WHStatus.INSPECTORSIGN;
+                        }
+                        else
+                        {
+                            wh.status = (int)WHStatus.CREATE;
+                        }
+                        break;
+                    case 4 /* Supervisor */:
+                        wh.requestor_signature = null;
+                        wh.requestor_delegate = null;
+                        if (wh.inspector_sign_date != null)
+                        {
+                            wh.status = (int)WHStatus.INSPECTORSIGN;
+                        }
+                        else
+                        {
+                            wh.status = (int)WHStatus.EDITANDSEND;
+                        }
+                        break;
+                    case 5 /* Facility Owner */:
+                        wh.supervisor_signature = null;
+                        wh.supervisor_delegate = null;
+                        wh.status = (int)WHStatus.REQUESTORAPPROVE;
+                        break;
+                }
+
+                this.db.Entry(wh).State = EntityState.Modified;
+                retVal = this.db.SaveChanges();
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        /// sending email to user, need the object instatiate first to get user
+        /// </summary>
+        /// <param name="who"></param>
+        /// <param name="serverUrl"></param>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public int sendToUser(int who, int stat, string serverUrl, UserEntity user, int @case = 0, string comment = "")
+        {
+            int retVal = 0;
+            int? userId = null;
+            working_height wh = this.db.working_height.Find(this.id);
+            UserEntity userRad = null;
+            List<string> listEmail = new List<string>();
+            SendEmail sendEmail = new SendEmail();
+            string message = "";
+            string title = "";
+            if (wh != null)
+            {
+                listEmail.Add("septujamasoka@gmail.com");
+                switch (who)
+                {
+                    case 1 /* Requestor */:
+                        if (stat == 1)
+                        {
+
+#if !DEBUG
+                            if (this.access == 4 && (this.scaffolding == 1 || this.scaffolding == 3))
+                            {
+                                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.ERECTOR.ToString()))
+                                {
+                                    listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].email);
+                                    if ((userId = this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].employee_delegate) != null)
+                                    {
+                                        userRad = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userRad.email);
+                                    }
+                                }
+                            } else if (this.access == 4 && this.scaffolding == 2)
+                            {
+                                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.INSPECTOR.ToString()))
+                                {
+                                    listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.INSPECTOR.ToString()].email);
+                                    if ((userId = this.userInWorkingHeight[UserInWorkingHeight.INSPECTOR.ToString()].employee_delegate) != null)
+                                    {
+                                        userRad = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userRad.email);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                                {
+                                    listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                    if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                    {
+                                        userRad = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userRad.email);
+                                    }
+                                }
+                            }
+
+#endif
+                            title = "Working at Height Clearance Permit (" + this.wh_no + ") Need Review and Approval";
+                            message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id;
+                        }
+
+                        retVal = 1;
+                        break;
+                    case 2 /* Inspector */:
+                        if (stat == 1)
+                        {
+#if !DEBUG
+                            if (this.access == 4 && (this.scaffolding == 1 || this.scaffolding == 3))
+                            {
+                                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.ERECTOR.ToString()))
+                                {
+                                    listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].email);
+                                    if ((userId = this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].employee_delegate) != null)
+                                    {
+                                        userRad = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userRad.email);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                                {
+                                    listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                    if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                    {
+                                        userRad = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userRad.email);
+                                    }
+                                }
+                            }
+#endif
+                        }
+
+                        title = "Working at Height Clearance Permit (" + this.wh_no + ") Need Review and Approval";
+                        message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id;
+                        retVal = 1;
+                        break;
+                    case 3 /* Requestor / Erector */:
+                        if (stat == 1) {
+                            if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.SUPERVISOR.ToString()))
+                            {
+#if !DEBUG
+                                listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
+                                {
+                                    userRad = new UserEntity(userId.Value, user.token, user);
+                                    listEmail.Add(userRad.email);
+                                }
+#endif
+                                title = "Working at Height Clearance Permit (" + this.wh_no + ") Need Review and Approval from Supervisor";
+                                message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id;
+                            }
+                            else
+                            {
+                                // send email to accept as supervisor
+                            }
+                        }
+                        else if (stat == 2)
+                        {
+#if !DEBUG
+
+                            if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                            {
+                                listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                {
+                                    userRad = new UserEntity(userId.Value, user.token, user);
+                                    listEmail.Add(userRad.email);
+                                }
+                            }
+
+                            message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id + "<br />Comment: " + comment;
+                            title = "Working at Height Clearance Permit (" + this.wh_no + ") Rejected from Erector";
+
+#endif
+                        }
+                        retVal = 1;
+                        break;
+                    case 4 /* Supervisor */:
+                        if (stat == 1)
+                        {
+#if !DEBUG
+                            if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.FACILITYOWNER.ToString()))
+                            {
+                                listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].email);
+                                if ((userId = this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].employee_delegate) != null)
+                                {
+                                    userRad = new UserEntity(userId.Value, user.token, user);
+                                    listEmail.Add(userRad.email);
+                                }
+                            }
+#endif
+                            title = "Working at Height Clearance Permit (" + this.wh_no + ") Need Review and Approval From Facility Owner";
+                            message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id;
+                        }
+                        else if (stat == 2)
+                        {
+#if !DEBUG
+                            if (this.access == 4 && (this.scaffolding == 1 || this.scaffolding == 3))
+                            {
+                                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.ERECTOR.ToString()))
+                                {
+                                    listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].email);
+                                    if ((userId = this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].employee_delegate) != null)
+                                    {
+                                        userRad = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userRad.email);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                                {
+                                    listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                    if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                    {
+                                        userRad = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userRad.email);
+                                    }
+                                }
+                            }
+#endif
+                            message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id + "<br />Comment: " + comment;
+                            title = "Working at Height Clearance Permit (" + this.wh_no + ") Rejected from Supervisor";
+                        }
+
+                        retVal = 1;
+                        break;
+                    case 5 /* Facility Owner */:
+                        if (stat == 1)
+                        {
+#if !DEBUG
+
+                            if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                            {
+                                listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                {
+                                    userRad = new UserEntity(userId.Value, user.token, user);
+                                    listEmail.Add(userRad.email);
+                                }
+                            }
+
+#endif
+                            title = "Working at Height Clearance Permit (" + this.wh_no + ") Completed and Approved";
+                            message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id;
+                        }
+                        else if (stat == 2)
+                        {
+#if !DEBUG
+                            if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.SUPERVISOR.ToString()))
+                            {
+                                listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
+                                {
+                                    userRad = new UserEntity(userId.Value, user.token, user);
+                                    listEmail.Add(userRad.email);
+                                }
+                            }
+#endif
+                            message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id + "<br />Comment: " + comment;
+                            title = "Working at Height Clearance Permit (" + this.wh_no + ") Rejected from Facility Owner";
+                        }
+                        retVal = 1;
+                        break;
+                }
+
+                sendEmail.Send(listEmail, message, title);
+            }
+
+            return retVal;
+        }
+
+        //public int sendInspectorOrPrescreening(UserEntity user, string serverUrl)
+        //{
+        //    int retVal = 0;
+        //    working_height wh = this.db.working_height.Find(this.id);
+        //    List<string> email = new List<string>();
+        //    SendEmail sendEmail = new SendEmail();
+        //    if (wh != null)
+        //    {
+        //        wh.status = (int)WHStatus.EDITANDSEND;
+
+        //        this.db.Entry(wh).State = EntityState.Modified;
+        //        retVal = this.db.SaveChanges();
+
+        //        if (this.access == 4 && this.scaffolding == 2)
+        //        {
+        //            retVal = 2;
+        //            // sending email
+        //            //email.add(this.userInRadiography[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+        //            email.Add("septujamasoka@gmail.com");
+        //            //s.Add(gasTester.email);
+        //            //s.Add("septu.jamasoka@gmail.com");
+
+        //            string message = serverUrl + "Home?p=WH/edit/" + this.id;
+
+        //            sendEmail.Send(email, message, "Working At Height Inspector Scaffolding Utilization Approval");
+        //        }
+        //        else
+        //        {
+        //            // sending email
+        //            //email.add(this.userInRadiography[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+        //            email.Add("septujamasoka@gmail.com");
+        //            //s.Add(gasTester.email);
+        //            //s.Add("septu.jamasoka@gmail.com");
+
+        //            string message = serverUrl + "Home?p=WH/edit/" + this.id;
+
+        //            sendEmail.Send(email, message, "Working At Height Clearance Permit Pre-Job Screening");
+        //        }
+        //    }
+        //    return retVal;
+        //}
+
+        //public int inspectorSign(UserEntity user, string serverUrl)
+        //{
+        //    int retVal = 0;
+        //    working_height wh = this.db.working_height.Find(this.id);
+        //    List<string> email = new List<string>();
+        //    SendEmail sendEmail = new SendEmail();
+        //    if (wh != null)
+        //    {
+        //        wh.inspector_signature = user.signature;
+        //        wh.inspector_sign_date = DateTime.Now;
+
+        //        wh.status = (int)WHStatus.INSPECTORSIGN;
+
+        //        this.db.Entry(wh).State = EntityState.Modified;
+        //        retVal = this.db.SaveChanges();
+
+        //        // sending email
+        //        //email.add(this.userInRadiography[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+        //        email.Add("septujamasoka@gmail.com");
+        //        //s.Add(gasTester.email);
+        //        //s.Add("septu.jamasoka@gmail.com");
+
+        //        string message = serverUrl + "Home?p=WH/edit/" + this.id;
+
+        //        sendEmail.Send(email, message, "Working At Height Clearance Permit Requestor Pre-Job Screening");
+        //    }
+
+        //    return retVal;
+        //}
 
         public int savePreScreening(int who)
         {
@@ -370,218 +786,218 @@ namespace PermitToWork.Models.WorkingHeight
             return retVal;
         }
 
-        public int completePreScreening(int who, string serverUrl, UserEntity user)
-        {
-            int retVal = 0;
-            working_height wh = this.db.working_height.Find(this.id);
-            List<string> email = new List<string>();
-            SendEmail sendEmail = new SendEmail();
-            if (wh != null)
-            {
-                if (who == 1)
-                {
-                    wh.status = (int)WHStatus.REQUESTORSCREENING;
+        //public int completePreScreening(int who, string serverUrl, UserEntity user)
+        //{
+        //    int retVal = 0;
+        //    working_height wh = this.db.working_height.Find(this.id);
+        //    List<string> email = new List<string>();
+        //    SendEmail sendEmail = new SendEmail();
+        //    if (wh != null)
+        //    {
+        //        if (who == 1)
+        //        {
+        //            // wh.status = (int)WHStatus.REQUESTORSCREENING;
 
-                    // sending email
-                    //email.add(this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].email);
-                    email.Add("septujamasoka@gmail.com");
-                    //s.Add(gasTester.email);
-                    //s.Add("septu.jamasoka@gmail.com");
+        //            // sending email
+        //            //email.add(this.userInRadiography[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+        //            email.Add("septujamasoka@gmail.com");
+        //            //s.Add(gasTester.email);
+        //            //s.Add("septu.jamasoka@gmail.com");
 
-                    string message = serverUrl + "Home?p=WH/edit/" + this.id;
+        //            string message = serverUrl + "Home?p=WH/edit/" + this.id;
 
-                    sendEmail.Send(email, message, "Working At Height Clearance Permit Facility Owner Pre-Job Screening");
-                }
-                else if (who == 2)
-                {
-                    wh.status = (int)WHStatus.FOSCREENING;
+        //            sendEmail.Send(email, message, "Working At Height Clearance Permit Facility Owner Pre-Job Screening");
+        //        }
+        //        else if (who == 2)
+        //        {
+        //            // wh.status = (int)WHStatus.FOSCREENING;
 
-                    // sending email
-                    //email.add(this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].email);
-                    email.Add("septujamasoka@gmail.com");
-                    //s.Add(gasTester.email);
-                    //s.Add("septu.jamasoka@gmail.com");
+        //            // sending email
+        //            //email.add(this.userInRadiography[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+        //            email.Add("septujamasoka@gmail.com");
+        //            //s.Add(gasTester.email);
+        //            //s.Add("septu.jamasoka@gmail.com");
 
-                    string message = serverUrl + "Home?p=WH/edit/" + this.id;
+        //            string message = serverUrl + "Home?p=WH/edit/" + this.id;
 
-                    sendEmail.Send(email, message, "Working At Height Clearance Permit Pre-Job Screening Completed");
-                }
+        //            sendEmail.Send(email, message, "Working At Height Clearance Permit Pre-Job Screening Completed");
+        //        }
 
-                this.db.Entry(wh).State = EntityState.Modified;
-                retVal = this.db.SaveChanges();
-            }
+        //        this.db.Entry(wh).State = EntityState.Modified;
+        //        retVal = this.db.SaveChanges();
+        //    }
 
-            return retVal;
-        }
+        //    return retVal;
+        //}
 
-        public int rejectPreScreening(int who, string serverUrl, UserEntity user, string comment)
-        {
-            int retVal = 0;
-            working_height wh = this.db.working_height.Find(this.id);
-            List<string> email = new List<string>();
-            SendEmail sendEmail = new SendEmail();
-            if (wh != null)
-            {
-                if (who == 2)
-                {
-                    // sending email
-                    //email.add(this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].email);
-                    email.Add("septujamasoka@gmail.com");
-                    //s.Add(gasTester.email);
-                    //s.Add("septu.jamasoka@gmail.com");
+        //public int rejectPreScreening(int who, string serverUrl, UserEntity user, string comment)
+        //{
+        //    int retVal = 0;
+        //    working_height wh = this.db.working_height.Find(this.id);
+        //    List<string> email = new List<string>();
+        //    SendEmail sendEmail = new SendEmail();
+        //    if (wh != null)
+        //    {
+        //        if (who == 2)
+        //        {
+        //            // sending email
+        //            //email.add(this.userInRadiography[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+        //            email.Add("septujamasoka@gmail.com");
+        //            //s.Add(gasTester.email);
+        //            //s.Add("septu.jamasoka@gmail.com");
 
-                    string message = serverUrl + "Home?p=WH/edit/" + this.id;
+        //            string message = serverUrl + "Home?p=WH/edit/" + this.id;
 
-                    sendEmail.Send(email, message, "Working At Height Clearance Permit Pre-Job Screening Rejected");
-                }
-            }
+        //            sendEmail.Send(email, message, "Working At Height Clearance Permit Pre-Job Screening Rejected");
+        //        }
+        //    }
 
-            return retVal;
-        }
+        //    return retVal;
+        //}
 
-        internal int signPermitStart(UserEntity user, int who, string serverUrl, out string messages)
-        {
-            int retVal = 0;
-            working_height wh = this.db.working_height.Find(this.id);
+        //internal int signPermitStart(UserEntity user, int who, string serverUrl, out string messages)
+        //{
+        //    int retVal = 0;
+        //    working_height wh = this.db.working_height.Find(this.id);
 
-            List<string> email = new List<string>();
-            string title = "";
-            SendEmail sendEmail = new SendEmail();
-            string message = "";
-            messages = "";
-            if (wh != null)
-            {
-                switch (who)
-                {
-                    case 1:
-                        if (this.access == 4 && (this.scaffolding == 1 || this.scaffolding == 3))
-                        {
-                            if (user.id == this.userInWorkingHeight[UserInRadiography.ERECTOR.ToString()].id)
-                            {
-                                wh.requestor_signature = "a" + user.signature;
-                            }
-                            else if (user.id == this.userInWorkingHeight[UserInRadiography.ERECTOR.ToString()].employee_delegate)
-                            {
-                                wh.requestor_delegate = user.id.ToString();
-                                wh.requestor_signature = "d" + user.signature;
-                            }
-                        }
-                        else
-                        {
-                            if (user.id == this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()].id)
-                            {
-                                wh.requestor_signature = "a" + user.signature;
-                            }
-                            else if (user.id == this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()].employee_delegate)
-                            {
-                                wh.requestor_delegate = user.id.ToString();
-                                wh.requestor_signature = "d" + user.signature;
-                            }
-                        }
+        //    List<string> email = new List<string>();
+        //    string title = "";
+        //    SendEmail sendEmail = new SendEmail();
+        //    string message = "";
+        //    messages = "";
+        //    if (wh != null)
+        //    {
+        //        switch (who)
+        //        {
+        //            case 1:
+        //                if (this.access == 4 && (this.scaffolding == 1 || this.scaffolding == 3))
+        //                {
+        //                    if (user.id == this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].id)
+        //                    {
+        //                        wh.requestor_signature = "a" + user.signature;
+        //                    }
+        //                    else if (user.id == this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].employee_delegate)
+        //                    {
+        //                        wh.requestor_delegate = user.id.ToString();
+        //                        wh.requestor_signature = "d" + user.signature;
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    if (user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id)
+        //                    {
+        //                        wh.requestor_signature = "a" + user.signature;
+        //                    }
+        //                    else if (user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate)
+        //                    {
+        //                        wh.requestor_delegate = user.id.ToString();
+        //                        wh.requestor_signature = "d" + user.signature;
+        //                    }
+        //                }
 
-                        wh.requestor_signature_date = DateTime.Now;
-                        wh.status = (int)WHStatus.REQUESTORAPPROVE;
+        //                wh.requestor_signature_date = DateTime.Now;
+        //                wh.status = (int)WHStatus.REQUESTORAPPROVE;
 
-                        this.db.Entry(wh).State = EntityState.Modified;
-                        retVal = this.db.SaveChanges();
+        //                this.db.Entry(wh).State = EntityState.Modified;
+        //                retVal = this.db.SaveChanges();
 
-                        //email.Add(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].email);
-                        //if (this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate != null)
-                        //{
-                        //    UserEntity @delegate = new UserEntity(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate.Value, user.token, user);
-                        //    email.Add(@delegate.email);
-                        //}
+        //                //email.Add(this.userInRadiography[UserInWorkingHeight.RADIOGRAPHER2.ToString()].email);
+        //                //if (this.userInRadiography[UserInWorkingHeight.RADIOGRAPHER2.ToString()].employee_delegate != null)
+        //                //{
+        //                //    UserEntity @delegate = new UserEntity(this.userInRadiography[UserInWorkingHeight.RADIOGRAPHER2.ToString()].employee_delegate.Value, user.token, user);
+        //                //    email.Add(@delegate.email);
+        //                //}
 
-                        if (this.userInWorkingHeight[UserInRadiography.SUPERVISOR.ToString()] == null)
-                        {
-                            //email.Add(this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].email);
-                            email.Add("septujamasoka@gmail.com");
-                            title = "Working At Height Clearance Permit Supervisor Assignment Needed";
-                            message = serverUrl + "Home?p=Radiography/edit/" + this.id;
-                            messages = "Working At Height Clearance Permit is signed. Notification has been sent to Supervisor for clicking link in email.";
-                        }
-                        else
-                        {
-                            //email.Add(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].email);
-                            //if (this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate != null)
-                            //{
-                            //    UserEntity @delegate = new UserEntity(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate.Value, user.token, user);
-                            //    email.Add(@delegate.email);
-                            //}
-                            email.Add("septujamasoka@gmail.com");
-                            title = "Working At Height Clearance Permit Supervisor Approval";
-                            message = serverUrl + "Home?p=WH/edit/" + this.id;
-                            messages = "Working At Height Clearance Permit is signed. Notification has been sent to Supervisor for Signing.";
-                        }
-                        break;
-                    case 2:
-                        if (user.id == this.userInWorkingHeight[UserInRadiography.SUPERVISOR.ToString()].id)
-                        {
-                            wh.supervisor_signature = "a" + user.signature;
-                        }
-                        else if (user.id == this.userInWorkingHeight[UserInRadiography.SUPERVISOR.ToString()].employee_delegate)
-                        {
-                            wh.supervisor_delegate = user.id.ToString();
-                            wh.supervisor_signature = "d" + user.signature;
-                        }
+        //                if (this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()] == null)
+        //                {
+        //                    //email.Add(this.userInRadiography[UserInWorkingHeight.FACILITYOWNER.ToString()].email);
+        //                    email.Add("septujamasoka@gmail.com");
+        //                    title = "Working At Height Clearance Permit Supervisor Assignment Needed";
+        //                    message = serverUrl + "Home?p=Radiography/edit/" + this.id;
+        //                    messages = "Working At Height Clearance Permit is signed. Notification has been sent to Supervisor for clicking link in email.";
+        //                }
+        //                else
+        //                {
+        //                    //email.Add(this.userInRadiography[UserInWorkingHeight.RADIOGRAPHER2.ToString()].email);
+        //                    //if (this.userInRadiography[UserInWorkingHeight.RADIOGRAPHER2.ToString()].employee_delegate != null)
+        //                    //{
+        //                    //    UserEntity @delegate = new UserEntity(this.userInRadiography[UserInWorkingHeight.RADIOGRAPHER2.ToString()].employee_delegate.Value, user.token, user);
+        //                    //    email.Add(@delegate.email);
+        //                    //}
+        //                    email.Add("septujamasoka@gmail.com");
+        //                    title = "Working At Height Clearance Permit Supervisor Approval";
+        //                    message = serverUrl + "Home?p=WH/edit/" + this.id;
+        //                    messages = "Working At Height Clearance Permit is signed. Notification has been sent to Supervisor for Signing.";
+        //                }
+        //                break;
+        //            case 2:
+        //                if (user.id == this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].id)
+        //                {
+        //                    wh.supervisor_signature = "a" + user.signature;
+        //                }
+        //                else if (user.id == this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate)
+        //                {
+        //                    wh.supervisor_delegate = user.id.ToString();
+        //                    wh.supervisor_signature = "d" + user.signature;
+        //                }
 
-                        wh.supervisor_signature_date = DateTime.Now;
-                        wh.status = (int)WHStatus.SPVAPPROVE;
+        //                wh.supervisor_signature_date = DateTime.Now;
+        //                wh.status = (int)WHStatus.SPVAPPROVE;
 
-                        this.db.Entry(wh).State = EntityState.Modified;
-                        retVal = this.db.SaveChanges();
+        //                this.db.Entry(wh).State = EntityState.Modified;
+        //                retVal = this.db.SaveChanges();
 
-                        //email.Add(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].email);
-                        //if (this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate != null)
-                        //{
-                        //    UserEntity @delegate = new UserEntity(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate.Value, user.token, user);
-                        //    email.Add(@delegate.email);
-                        //}
-                        email.Add("septujamasoka@gmail.com");
-                        title = "Working At Height Clearance Permit Facility Owner Approval";
-                        message = serverUrl + "Home?p=WH/edit/" + this.id;
-                        messages = "Working At Height Clearance Permit is signed. Notification has been sent to Facility Owner for Signing.";
-                        break;
-                    case 3:
-                        if (user.id == this.userInWorkingHeight[UserInRadiography.FACILITYOWNER.ToString()].id)
-                        {
-                            wh.facility_owner_signature = "a" + user.signature;
-                        }
-                        else if (user.id == this.userInWorkingHeight[UserInRadiography.FACILITYOWNER.ToString()].employee_delegate)
-                        {
-                            wh.facility_owner_delegate = user.id.ToString();
-                            wh.facility_owner_signature = "d" + user.signature;
-                        }
+        //                //email.Add(this.userInRadiography[UserInWorkingHeight.RADIOGRAPHER2.ToString()].email);
+        //                //if (this.userInRadiography[UserInWorkingHeight.RADIOGRAPHER2.ToString()].employee_delegate != null)
+        //                //{
+        //                //    UserEntity @delegate = new UserEntity(this.userInRadiography[UserInWorkingHeight.RADIOGRAPHER2.ToString()].employee_delegate.Value, user.token, user);
+        //                //    email.Add(@delegate.email);
+        //                //}
+        //                email.Add("septujamasoka@gmail.com");
+        //                title = "Working At Height Clearance Permit Facility Owner Approval";
+        //                message = serverUrl + "Home?p=WH/edit/" + this.id;
+        //                messages = "Working At Height Clearance Permit is signed. Notification has been sent to Facility Owner for Signing.";
+        //                break;
+        //            case 3:
+        //                if (user.id == this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].id)
+        //                {
+        //                    wh.facility_owner_signature = "a" + user.signature;
+        //                }
+        //                else if (user.id == this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].employee_delegate)
+        //                {
+        //                    wh.facility_owner_delegate = user.id.ToString();
+        //                    wh.facility_owner_signature = "d" + user.signature;
+        //                }
 
-                        wh.facility_owner_signature_date = DateTime.Now;
-                        wh.status = (int)WHStatus.FOAPPROVE;
+        //                wh.facility_owner_signature_date = DateTime.Now;
+        //                wh.status = (int)WHStatus.FOAPPROVE;
 
-                        this.db.Entry(wh).State = EntityState.Modified;
-                        retVal = this.db.SaveChanges();
+        //                this.db.Entry(wh).State = EntityState.Modified;
+        //                retVal = this.db.SaveChanges();
 
-                        this.ptw = new PtwEntity(wh.id_ptw.Value, user);
+        //                this.ptw = new PtwEntity(wh.id_ptw.Value, user);
 
-                        this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.WORKINGHEIGHT.ToString());
+        //                this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.WORKINGHEIGHT.ToString());
 
-                        //email.Add(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].email);
-                        //if (this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate != null)
-                        //{
-                        //    UserEntity @delegate = new UserEntity(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate.Value, user.token, user);
-                        //    email.Add(@delegate.email);
-                        //}
-                        email.Add("septujamasoka@gmail.com");
-                        title = "Working At Height Clearance Permit Signed";
-                        message = serverUrl + "Home?p=WH/edit/" + this.id;
-                        messages = "Working At Height Clearance Permit is signed.";
-                        break;
-                }
+        //                //email.Add(this.userInRadiography[UserInWorkingHeight.RADIOGRAPHER2.ToString()].email);
+        //                //if (this.userInRadiography[UserInWorkingHeight.RADIOGRAPHER2.ToString()].employee_delegate != null)
+        //                //{
+        //                //    UserEntity @delegate = new UserEntity(this.userInRadiography[UserInWorkingHeight.RADIOGRAPHER2.ToString()].employee_delegate.Value, user.token, user);
+        //                //    email.Add(@delegate.email);
+        //                //}
+        //                email.Add("septujamasoka@gmail.com");
+        //                title = "Working At Height Clearance Permit Signed";
+        //                message = serverUrl + "Home?p=WH/edit/" + this.id;
+        //                messages = "Working At Height Clearance Permit is signed.";
+        //                break;
+        //        }
 
 
-                sendEmail.Send(email, message, title);
-            }
+        //        sendEmail.Send(email, message, title);
+        //    }
 
-            return retVal;
-        }
+        //    return retVal;
+        //}
 
         internal int cancelPermit(UserEntity user, string serverUrl)
         {
@@ -599,11 +1015,353 @@ namespace PermitToWork.Models.WorkingHeight
                 this.db.Entry(rad).State = EntityState.Modified;
                 retVal = this.db.SaveChanges();
 
-                //email.add(this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].email);
+                //email.add(this.userInRadiography[UserInWorkingHeight.SUPERVISOR.ToString()].email);
                 email.Add("septujamasoka@gmail.com");
                 title = "Working At Height Clearance Permit Requestor / Erector Cancellation Screening";
                 string message = serverUrl + "Home?p=Radiography/edit/" + this.id;
                 sendEmail.Send(email, message, title);
+            }
+
+            return retVal;
+        }
+
+        public int saveAsDraftCancel(int who)
+        {
+            int retVal = 0;
+            switch (who)
+            {
+                case 2 /* Requestor / Erector */:
+                    retVal = saveCancelScreening(1);
+                    break;
+                case 4 /* Facility Owner */:
+                    retVal = saveCancelScreening(2);
+                    break;
+                default:
+                    retVal = 1;
+                    break;
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        /// function for signing clearance permit
+        /// </summary>
+        /// <param name="who">1 if requestor, 2 if radiographic operator, 3 if radiographic level 2, 4 if supervisor, 5 if safety officer, 6 if FO</param>
+        /// <returns>1 if success, 0 if fail, -1 if user doesn't exist</returns>
+        public int signClearanceCancel(int who, UserEntity user)
+        {
+            int retVal = 0;
+            working_height wh = this.db.working_height.Find(this.id);
+            UserEntity userWH = null;
+            if (wh != null)
+            {
+                switch (who)
+                {
+                    case 1 /* Requestor */:
+                        wh.status = (int)WHStatus.CLOSING;
+
+                        break;
+                    case 2 /* Requestor / Erector */:
+                        if (this.access == 4 && (this.scaffolding == 1 || this.scaffolding == 3))
+                        {
+                            userWH = this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()];
+                            if (user.id == userWH.id)
+                            {
+                                wh.can_requestor_signature = "a" + user.signature;
+                            }
+                            else if (user.id == userWH.employee_delegate)
+                            {
+                                wh.can_requestor_signature = "d" + user.signature;
+                                wh.can_requestor_delegate = user.id.ToString();
+                            }
+                        }
+                        else
+                        {
+                            userWH = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()];
+                            if (user.id == userWH.id)
+                            {
+                                wh.can_requestor_signature = "a" + user.signature;
+                            }
+                            else if (user.id == userWH.employee_delegate)
+                            {
+                                wh.can_requestor_signature = "d" + user.signature;
+                                wh.can_requestor_delegate = user.id.ToString();
+                            }
+                        }
+                        wh.can_requestor_signature_date = DateTime.Now;
+                        wh.status = (int)WHStatus.CANREQUESTORAPPROVE;
+                        break;
+                    case 3 /* Supervisor */:
+                        userWH = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()];
+                        if (user.id == userWH.id)
+                        {
+                            wh.can_supervisor_signature = "a" + user.signature;
+                        }
+                        else if (user.id == userWH.employee_delegate)
+                        {
+                            wh.can_supervisor_signature = "d" + user.signature;
+                            wh.can_supervisor_delegate = user.id.ToString();
+                        }
+                        wh.can_supervisor_signature_date = DateTime.Now;
+                        wh.status = (int)WHStatus.CANSPVAPPROVE;
+                        break;
+                    case 4 /* Facility Owner */:
+                        userWH = this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()];
+                        if (user.id == userWH.id)
+                        {
+                            wh.can_facility_owner_signature = "a" + user.signature;
+                        }
+                        else if (user.id == userWH.employee_delegate)
+                        {
+                            wh.can_facility_owner_signature = "d" + user.signature;
+                            wh.can_facility_owner_delegate = user.id.ToString();
+                        }
+                        wh.can_facility_owner_signature_date = DateTime.Now;
+                        wh.status = (int)WHStatus.CANFOAPPROVE;
+
+                        this.ptw = new PtwEntity(wh.id_ptw.Value, user);
+                        this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.WORKINGHEIGHT.ToString());
+                        break;
+                }
+
+                this.db.Entry(wh).State = EntityState.Modified;
+                retVal = this.db.SaveChanges();
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="who"></param>
+        /// <returns></returns>
+        public int rejectClearanceCancel(int who)
+        {
+            int retVal = 0;
+            working_height wh = this.db.working_height.Find(this.id);
+            if (wh != null)
+            {
+                switch (who)
+                {
+                    case 1 /* Requestor */:
+                        wh.status = (int)WHStatus.CLOSING;
+                        break;
+                    case 2 /* Requestor / Erector */:
+                        wh.status = (int)WHStatus.CLOSING;
+                        break;
+                    case 3 /* Supervisor */:
+                        wh.can_requestor_signature = null;
+                        wh.can_requestor_delegate = null;
+                        wh.status = (int)WHStatus.CLOSING;
+                        break;
+                    case 4 /* Facility Owner */:
+                        wh.can_supervisor_signature = null;
+                        wh.can_supervisor_delegate = null;
+                        wh.status = (int)WHStatus.CANREQUESTORAPPROVE;
+                        break;
+                }
+
+                this.db.Entry(wh).State = EntityState.Modified;
+                retVal = this.db.SaveChanges();
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        /// sending email to user, need the object instatiate first to get user
+        /// </summary>
+        /// <param name="who"></param>
+        /// <param name="serverUrl"></param>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public int sendToUserCancel(int who, int stat, string serverUrl, UserEntity user, int @case = 0, string comment = "")
+        {
+            int retVal = 0;
+            int? userId = null;
+            working_height wh = this.db.working_height.Find(this.id);
+            UserEntity userRad = null;
+            List<string> listEmail = new List<string>();
+            SendEmail sendEmail = new SendEmail();
+            string message = "";
+            string title = "";
+            if (wh != null)
+            {
+                listEmail.Add("septujamasoka@gmail.com");
+                switch (who)
+                {
+                    case 1 /* Requestor */:
+                        if (stat == 1)
+                        {
+
+#if !DEBUG
+                            if (this.access == 4 && (this.scaffolding == 1 || this.scaffolding == 3))
+                            {
+                                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.ERECTOR.ToString()))
+                                {
+                                    listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].email);
+                                    if ((userId = this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].employee_delegate) != null)
+                                    {
+                                        userRad = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userRad.email);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                                {
+                                    listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                    if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                    {
+                                        userRad = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userRad.email);
+                                    }
+                                }
+                            }
+
+#endif
+                            title = "Working at Height Clearance Permit (" + this.wh_no + ") Cancellation Need Review and Approval";
+                            message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id;
+                        }
+
+                        retVal = 1;
+                        break;
+                    case 2 /* Requestor / Erector */:
+                        if (stat == 1)
+                        {
+                            if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.SUPERVISOR.ToString()))
+                            {
+#if !DEBUG
+                                listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
+                                {
+                                    userRad = new UserEntity(userId.Value, user.token, user);
+                                    listEmail.Add(userRad.email);
+                                }
+#endif
+                                title = "Working at Height Clearance Permit (" + this.wh_no + ") Need Review and Approval from Supervisor";
+                                message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id;
+                            }
+                            else
+                            {
+                                // send email to accept as supervisor
+                            }
+                        }
+                        else if (stat == 2)
+                        {
+#if !DEBUG
+
+                            if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                            {
+                                listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                {
+                                    userRad = new UserEntity(userId.Value, user.token, user);
+                                    listEmail.Add(userRad.email);
+                                }
+                            }
+
+                            message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id + "<br />Comment: " + comment;
+                            title = "Working at Height Clearance Permit (" + this.wh_no + ") Rejected from Erector";
+
+#endif
+                        }
+                        retVal = 1;
+                        break;
+                    case 3 /* Supervisor */:
+                        if (stat == 1)
+                        {
+#if !DEBUG
+                            if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.FACILITYOWNER.ToString()))
+                            {
+                                listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].email);
+                                if ((userId = this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].employee_delegate) != null)
+                                {
+                                    userRad = new UserEntity(userId.Value, user.token, user);
+                                    listEmail.Add(userRad.email);
+                                }
+                            }
+#endif
+                            title = "Working at Height Clearance Permit (" + this.wh_no + ") Cancellation Need Review and Approval From Facility Owner";
+                            message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id;
+                        }
+                        else if (stat == 2)
+                        {
+#if !DEBUG
+                            if (this.access == 4 && (this.scaffolding == 1 || this.scaffolding == 3))
+                            {
+                                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.ERECTOR.ToString()))
+                                {
+                                    listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].email);
+                                    if ((userId = this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].employee_delegate) != null)
+                                    {
+                                        userRad = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userRad.email);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                                {
+                                    listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                    if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                    {
+                                        userRad = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userRad.email);
+                                    }
+                                }
+                            }
+#endif
+                            message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id + "<br />Comment: " + comment;
+                            title = "Working at Height Clearance Permit (" + this.wh_no + ") Cancellation Rejected from Supervisor";
+                        }
+
+                        retVal = 1;
+                        break;
+                    case 4 /* Facility Owner */:
+                        if (stat == 1)
+                        {
+#if !DEBUG
+
+                            if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                            {
+                                listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                {
+                                    userRad = new UserEntity(userId.Value, user.token, user);
+                                    listEmail.Add(userRad.email);
+                                }
+                            }
+
+#endif
+                            title = "Working at Height Clearance Permit (" + this.wh_no + ") Cancellation Completed and Approved";
+                            message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id;
+                        }
+                        else if (stat == 2)
+                        {
+#if !DEBUG
+                            if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.SUPERVISOR.ToString()))
+                            {
+                                listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
+                                {
+                                    userRad = new UserEntity(userId.Value, user.token, user);
+                                    listEmail.Add(userRad.email);
+                                }
+                            }
+#endif
+                            message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id + "<br />Comment: " + comment;
+                            title = "Working at Height Clearance Permit (" + this.wh_no + ") Cancellation Rejected from Facility Owner";
+                        }
+                        retVal = 1;
+                        break;
+                }
+
+                sendEmail.Send(listEmail, message, title);
             }
 
             return retVal;
@@ -641,10 +1399,10 @@ namespace PermitToWork.Models.WorkingHeight
             {
                 if (who == 1)
                 {
-                    wh.status = (int)WHStatus.CANREQUESTORSCREENING;
+                    // wh.status = (int)WHStatus.CANREQUESTORSCREENING;
 
                     // sending email
-                    //email.add(this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].email);
+                    //email.add(this.userInRadiography[UserInWorkingHeight.SUPERVISOR.ToString()].email);
                     email.Add("septujamasoka@gmail.com");
                     //s.Add(gasTester.email);
                     //s.Add("septu.jamasoka@gmail.com");
@@ -655,10 +1413,10 @@ namespace PermitToWork.Models.WorkingHeight
                 }
                 else if (who == 2)
                 {
-                    wh.status = (int)WHStatus.CANFOSCREENING;
+                    // wh.status = (int)WHStatus.CANFOSCREENING;
 
                     // sending email
-                    //email.add(this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].email);
+                    //email.add(this.userInRadiography[UserInWorkingHeight.SUPERVISOR.ToString()].email);
                     email.Add("septujamasoka@gmail.com");
                     //s.Add(gasTester.email);
                     //s.Add("septu.jamasoka@gmail.com");
@@ -686,7 +1444,7 @@ namespace PermitToWork.Models.WorkingHeight
                 if (who == 2)
                 {
                     // sending email
-                    //email.add(this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].email);
+                    //email.add(this.userInRadiography[UserInWorkingHeight.SUPERVISOR.ToString()].email);
                     email.Add("septujamasoka@gmail.com");
                     //s.Add(gasTester.email);
                     //s.Add("septu.jamasoka@gmail.com");
@@ -717,11 +1475,11 @@ namespace PermitToWork.Models.WorkingHeight
                     case 1:
                         if (this.access == 4 && (this.scaffolding == 1 || this.scaffolding == 3))
                         {
-                            if (user.id == this.userInWorkingHeight[UserInRadiography.ERECTOR.ToString()].id)
+                            if (user.id == this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].id)
                             {
                                 wh.can_requestor_signature = "a" + user.signature;
                             }
-                            else if (user.id == this.userInWorkingHeight[UserInRadiography.ERECTOR.ToString()].employee_delegate)
+                            else if (user.id == this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].employee_delegate)
                             {
                                 wh.can_requestor_delegate = user.id.ToString();
                                 wh.can_requestor_signature = "d" + user.signature;
@@ -729,11 +1487,11 @@ namespace PermitToWork.Models.WorkingHeight
                         }
                         else
                         {
-                            if (user.id == this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()].id)
+                            if (user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id)
                             {
                                 wh.can_requestor_signature = "a" + user.signature;
                             }
-                            else if (user.id == this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()].employee_delegate)
+                            else if (user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate)
                             {
                                 wh.can_requestor_delegate = user.id.ToString();
                                 wh.can_requestor_signature = "d" + user.signature;
@@ -747,10 +1505,10 @@ namespace PermitToWork.Models.WorkingHeight
                         retVal = this.db.SaveChanges();
 
                         
-                        //email.Add(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].email);
-                        //if (this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate != null)
+                        //email.Add(this.userInRadiography[UserInWorkingHeight.RADIOGRAPHER2.ToString()].email);
+                        //if (this.userInRadiography[UserInWorkingHeight.RADIOGRAPHER2.ToString()].employee_delegate != null)
                         //{
-                        //    UserEntity @delegate = new UserEntity(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate.Value, user.token, user);
+                        //    UserEntity @delegate = new UserEntity(this.userInRadiography[UserInWorkingHeight.RADIOGRAPHER2.ToString()].employee_delegate.Value, user.token, user);
                         //    email.Add(@delegate.email);
                         //}
                         email.Add("septujamasoka@gmail.com");
@@ -759,11 +1517,11 @@ namespace PermitToWork.Models.WorkingHeight
                         messages = "Working At Height Clearance Permit Cancellation is signed. Notification has been sent to Supervisor for Signing.";
                         break;
                     case 2:
-                        if (user.id == this.userInWorkingHeight[UserInRadiography.SUPERVISOR.ToString()].id)
+                        if (user.id == this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].id)
                         {
                             wh.can_supervisor_signature = "a" + user.signature;
                         }
-                        else if (user.id == this.userInWorkingHeight[UserInRadiography.SUPERVISOR.ToString()].employee_delegate)
+                        else if (user.id == this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate)
                         {
                             wh.can_supervisor_delegate = user.id.ToString();
                             wh.can_supervisor_signature = "d" + user.signature;
@@ -775,10 +1533,10 @@ namespace PermitToWork.Models.WorkingHeight
                         this.db.Entry(wh).State = EntityState.Modified;
                         retVal = this.db.SaveChanges();
 
-                        //email.Add(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].email);
-                        //if (this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate != null)
+                        //email.Add(this.userInRadiography[UserInWorkingHeight.RADIOGRAPHER2.ToString()].email);
+                        //if (this.userInRadiography[UserInWorkingHeight.RADIOGRAPHER2.ToString()].employee_delegate != null)
                         //{
-                        //    UserEntity @delegate = new UserEntity(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate.Value, user.token, user);
+                        //    UserEntity @delegate = new UserEntity(this.userInRadiography[UserInWorkingHeight.RADIOGRAPHER2.ToString()].employee_delegate.Value, user.token, user);
                         //    email.Add(@delegate.email);
                         //}
                         email.Add("septujamasoka@gmail.com");
@@ -787,11 +1545,11 @@ namespace PermitToWork.Models.WorkingHeight
                         messages = "Working At Height Clearance Permit Cancellation is signed. Notification has been sent to Facility Owner for Signing.";
                         break;
                     case 3:
-                        if (user.id == this.userInWorkingHeight[UserInRadiography.FACILITYOWNER.ToString()].id)
+                        if (user.id == this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].id)
                         {
                             wh.can_facility_owner_signature = "a" + user.signature;
                         }
-                        else if (user.id == this.userInWorkingHeight[UserInRadiography.FACILITYOWNER.ToString()].employee_delegate)
+                        else if (user.id == this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].employee_delegate)
                         {
                             wh.can_facility_owner_delegate = user.id.ToString();
                             wh.can_facility_owner_signature = "d" + user.signature;
@@ -807,10 +1565,10 @@ namespace PermitToWork.Models.WorkingHeight
 
                         this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.CLOSE, PtwEntity.clearancePermit.WORKINGHEIGHT.ToString());
 
-                        //email.Add(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].email);
-                        //if (this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate != null)
+                        //email.Add(this.userInRadiography[UserInWorkingHeight.RADIOGRAPHER2.ToString()].email);
+                        //if (this.userInRadiography[UserInWorkingHeight.RADIOGRAPHER2.ToString()].employee_delegate != null)
                         //{
-                        //    UserEntity @delegate = new UserEntity(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].employee_delegate.Value, user.token, user);
+                        //    UserEntity @delegate = new UserEntity(this.userInRadiography[UserInWorkingHeight.RADIOGRAPHER2.ToString()].employee_delegate.Value, user.token, user);
                         //    email.Add(@delegate.email);
                         //}
                         email.Add("septujamasoka@gmail.com");
@@ -835,66 +1593,66 @@ namespace PermitToWork.Models.WorkingHeight
             int userId = 0;
 
             Int32.TryParse(this.requestor, out userId);
-            this.userInWorkingHeight.Add(UserInRadiography.REQUESTOR.ToString(), listUser.listUser.Find(p => p.id == userId));
+            this.userInWorkingHeight.Add(UserInWorkingHeight.REQUESTOR.ToString(), listUser.listUser.Find(p => p.id == userId));
 
             userId = 0;
             if (this.inspectorUser != null)
             {
-                this.userInWorkingHeight.Add(UserInRadiography.INSPECTOR.ToString(), this.inspectorUser.user);
+                this.userInWorkingHeight.Add(UserInWorkingHeight.INSPECTOR.ToString(), this.inspectorUser.user);
             }
 
             if (this.erectorUser != null)
             {
-                this.userInWorkingHeight.Add(UserInRadiography.ERECTOR.ToString(), this.erectorUser.user);
+                this.userInWorkingHeight.Add(UserInWorkingHeight.ERECTOR.ToString(), this.erectorUser.user);
             }
 
             Int32.TryParse(this.supervisor, out userId);
-            this.userInWorkingHeight.Add(UserInRadiography.SUPERVISOR.ToString(), listUser.listUser.Find(p => p.id == userId));
+            this.userInWorkingHeight.Add(UserInWorkingHeight.SUPERVISOR.ToString(), listUser.listUser.Find(p => p.id == userId));
 
             userId = 0;
             Int32.TryParse(this.facility_owner, out userId);
-            this.userInWorkingHeight.Add(UserInRadiography.FACILITYOWNER.ToString(), listUser.listUser.Find(p => p.id == userId));
+            this.userInWorkingHeight.Add(UserInWorkingHeight.FACILITYOWNER.ToString(), listUser.listUser.Find(p => p.id == userId));
 
             userId = 0;
             Int32.TryParse(this.requestor_delegate, out userId);
             if (userId != 0)
             {
-                this.userInWorkingHeight.Add(UserInRadiography.REQUESTORDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
+                this.userInWorkingHeight.Add(UserInWorkingHeight.REQUESTORDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
             userId = 0;
             Int32.TryParse(this.supervisor_delegate, out userId);
             if (userId != 0)
             {
-                this.userInWorkingHeight.Add(UserInRadiography.SUPERVISORDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
+                this.userInWorkingHeight.Add(UserInWorkingHeight.SUPERVISORDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
             userId = 0;
             Int32.TryParse(this.facility_owner_delegate, out userId);
             if (userId != 0)
             {
-                this.userInWorkingHeight.Add(UserInRadiography.FACILITYOWNERDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
+                this.userInWorkingHeight.Add(UserInWorkingHeight.FACILITYOWNERDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
             userId = 0;
             Int32.TryParse(this.can_requestor_delegate, out userId);
             if (userId != 0)
             {
-                this.userInWorkingHeight.Add(UserInRadiography.CANREQUESTORDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
+                this.userInWorkingHeight.Add(UserInWorkingHeight.CANREQUESTORDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
             userId = 0;
             Int32.TryParse(this.can_supervisor_delegate, out userId);
             if (userId != 0)
             {
-                this.userInWorkingHeight.Add(UserInRadiography.CANSUPERVISORDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
+                this.userInWorkingHeight.Add(UserInWorkingHeight.CANSUPERVISORDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
             userId = 0;
             Int32.TryParse(this.can_facility_owner_delegate, out userId);
             if (userId != 0)
             {
-                this.userInWorkingHeight.Add(UserInRadiography.CANFACILITYOWNERDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
+                this.userInWorkingHeight.Add(UserInWorkingHeight.CANFACILITYOWNERDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
         }
 
@@ -923,9 +1681,13 @@ namespace PermitToWork.Models.WorkingHeight
 
         public bool isCanEditFormRequestor(UserEntity user)
         {
-            if (this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()] != null)
+            if (this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()] != null)
             {
-                if ((user.id == this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()].employee_delegate) && this.status <= (int)WHStatus.REQUESTORSCREENING)
+                if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.CREATE)
+                {
+                    return true;
+                }
+                else if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) && (this.access != 4 || (this.scaffolding != 1 && this.scaffolding != 3)))
                 {
                     return true;
                 }
@@ -936,61 +1698,14 @@ namespace PermitToWork.Models.WorkingHeight
 
         public bool isCanSignInspector(UserEntity user)
         {
-            if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInRadiography.INSPECTOR.ToString()) && this.access == 4 && this.scaffolding == 2)
+            if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.INSPECTOR.ToString()) && this.access == 4 && this.scaffolding == 2)
             {
-                if ((user.id == this.userInWorkingHeight[UserInRadiography.INSPECTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInRadiography.INSPECTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.EDITANDSEND)
+                if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.INSPECTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.INSPECTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.EDITANDSEND)
                 {
                     return true;
                 }
             }
 
-            return false;
-        }
-
-        public bool isCanPreScreeningRequestor(UserEntity user)
-        {
-            if (this.access == 4 && (this.scaffolding == 1 || this.scaffolding == 3))
-            {
-                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInRadiography.ERECTOR.ToString()))
-                {
-                    if ((user.id == this.userInWorkingHeight[UserInRadiography.ERECTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInRadiography.ERECTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.EDITANDSEND)
-                    {
-                        return true;
-                    }
-                }
-            }
-            else if (this.access == 4 && this.scaffolding == 2)
-            {
-                if (this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()] != null)
-                {
-                    if ((user.id == this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.INSPECTORSIGN)
-                    {
-                        return true;
-                    }
-                }
-            }
-            else
-            {
-                if (this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()] != null)
-                {
-                    if ((user.id == this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.EDITANDSEND)
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        public bool isCanPreScreeningFO(UserEntity user)
-        {
-            if (this.userInWorkingHeight[UserInRadiography.FACILITYOWNER.ToString()] != null)
-            {
-                if ((user.id == this.userInWorkingHeight[UserInRadiography.FACILITYOWNER.ToString()].id || user.id == this.userInWorkingHeight[UserInRadiography.FACILITYOWNER.ToString()].employee_delegate) && this.status == (int)WHStatus.REQUESTORSCREENING)
-                {
-                    return true;
-                }
-            }
             return false;
         }
 
@@ -998,9 +1713,19 @@ namespace PermitToWork.Models.WorkingHeight
         {
             if (this.access == 4 && (this.scaffolding == 1 || this.scaffolding == 3))
             {
-                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInRadiography.ERECTOR.ToString()))
+                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.ERECTOR.ToString()))
                 {
-                    if ((user.id == this.userInWorkingHeight[UserInRadiography.ERECTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInRadiography.ERECTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.FOSCREENING)
+                    if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.EDITANDSEND)
+                    {
+                        return true;
+                    }
+                }
+            }
+            else if (this.access == 4 && this.scaffolding == 2)
+            {
+                if (this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()] != null)
+                {
+                    if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.INSPECTORSIGN)
                     {
                         return true;
                     }
@@ -1008,9 +1733,9 @@ namespace PermitToWork.Models.WorkingHeight
             }
             else
             {
-                if (this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()] != null)
+                if (this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()] != null)
                 {
-                    if ((user.id == this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.FOSCREENING)
+                    if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.EDITANDSEND)
                     {
                         return true;
                     }
@@ -1019,11 +1744,48 @@ namespace PermitToWork.Models.WorkingHeight
             return false;
         }
 
+        //public bool isCanPreScreeningFO(UserEntity user)
+        //{
+        //    if (this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()] != null)
+        //    {
+        //        if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].employee_delegate) && this.status == (int)WHStatus.REQUESTORSCREENING)
+        //        {
+        //            return true;
+        //        }
+        //    }
+        //    return false;
+        //}
+
+        //public bool isCanSignRequestor(UserEntity user)
+        //{
+        //    if (this.access == 4 && (this.scaffolding == 1 || this.scaffolding == 3))
+        //    {
+        //        if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.ERECTOR.ToString()))
+        //        {
+        //            if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.FOSCREENING)
+        //            {
+        //                return true;
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()] != null)
+        //        {
+        //            if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.FOSCREENING)
+        //            {
+        //                return true;
+        //            }
+        //        }
+        //    }
+        //    return false;
+        //}
+
         public bool isCanSignSpv(UserEntity user)
         {
-            if (this.userInWorkingHeight[UserInRadiography.SUPERVISOR.ToString()] != null)
+            if (this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()] != null)
             {
-                if ((user.id == this.userInWorkingHeight[UserInRadiography.SUPERVISOR.ToString()].id || user.id == this.userInWorkingHeight[UserInRadiography.SUPERVISOR.ToString()].employee_delegate) && this.status == (int)WHStatus.REQUESTORAPPROVE)
+                if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) && this.status == (int)WHStatus.REQUESTORAPPROVE)
                 {
                     return true;
                 }
@@ -1033,9 +1795,9 @@ namespace PermitToWork.Models.WorkingHeight
 
         public bool isCanSignFO(UserEntity user)
         {
-            if (this.userInWorkingHeight[UserInRadiography.FACILITYOWNER.ToString()] != null)
+            if (this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()] != null)
             {
-                if ((user.id == this.userInWorkingHeight[UserInRadiography.FACILITYOWNER.ToString()].id || user.id == this.userInWorkingHeight[UserInRadiography.FACILITYOWNER.ToString()].employee_delegate) && this.status == (int)WHStatus.SPVAPPROVE)
+                if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].employee_delegate) && this.status == (int)WHStatus.SPVAPPROVE)
                 {
                     return true;
                 }
@@ -1046,9 +1808,9 @@ namespace PermitToWork.Models.WorkingHeight
         public bool isCanCancel(UserEntity user)
         {
             this.ptw = new PtwEntity(this.id_ptw.Value, user);
-            if (this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()] != null)
+            if (this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()] != null)
             {
-                if ((user.id == this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()].employee_delegate) && this.status <= (int)WHStatus.FOAPPROVE && this.ptw.status == (int)PtwEntity.statusPtw.ACCFO)
+                if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) && this.status <= (int)WHStatus.FOAPPROVE && this.ptw.status == (int)PtwEntity.statusPtw.ACCFO)
                 {
                     return true;
                 }
@@ -1057,50 +1819,50 @@ namespace PermitToWork.Models.WorkingHeight
             return false;
         }
 
-        public bool isCanCancelScreeningRequestor(UserEntity user)
-        {
-            if (this.access == 4 && (this.scaffolding == 1 || this.scaffolding == 3))
-            {
-                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInRadiography.ERECTOR.ToString()))
-                {
-                    if ((user.id == this.userInWorkingHeight[UserInRadiography.ERECTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInRadiography.ERECTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.CLOSING)
-                    {
-                        return true;
-                    }
-                }
-            }
-            else
-            {
-                if (this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()] != null)
-                {
-                    if ((user.id == this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.CLOSING)
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
+        //public bool isCanCancelScreeningRequestor(UserEntity user)
+        //{
+        //    if (this.access == 4 && (this.scaffolding == 1 || this.scaffolding == 3))
+        //    {
+        //        if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.ERECTOR.ToString()))
+        //        {
+        //            if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.CLOSING)
+        //            {
+        //                return true;
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        if (this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()] != null)
+        //        {
+        //            if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.CLOSING)
+        //            {
+        //                return true;
+        //            }
+        //        }
+        //    }
+        //    return false;
+        //}
 
-        public bool isCanCancelScreeningFO(UserEntity user)
-        {
-            if (this.userInWorkingHeight[UserInRadiography.FACILITYOWNER.ToString()] != null)
-            {
-                if ((user.id == this.userInWorkingHeight[UserInRadiography.FACILITYOWNER.ToString()].id || user.id == this.userInWorkingHeight[UserInRadiography.FACILITYOWNER.ToString()].employee_delegate) && this.status == (int)WHStatus.CANREQUESTORSCREENING)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
+        //public bool isCanCancelScreeningFO(UserEntity user)
+        //{
+        //    if (this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()] != null)
+        //    {
+        //        if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].employee_delegate) && this.status == (int)WHStatus.CLOSING)
+        //        {
+        //            return true;
+        //        }
+        //    }
+        //    return false;
+        //}
 
         public bool isCanSignRequestorCancel(UserEntity user)
         {
             if (this.access == 4 && (this.scaffolding == 1 || this.scaffolding == 3))
             {
-                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInRadiography.ERECTOR.ToString()))
+                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.ERECTOR.ToString()))
                 {
-                    if ((user.id == this.userInWorkingHeight[UserInRadiography.ERECTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInRadiography.ERECTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.CANFOSCREENING)
+                    if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.CLOSING)
                     {
                         return true;
                     }
@@ -1108,9 +1870,9 @@ namespace PermitToWork.Models.WorkingHeight
             }
             else
             {
-                if (this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()] != null)
+                if (this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()] != null)
                 {
-                    if ((user.id == this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInRadiography.REQUESTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.CANFOSCREENING)
+                    if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.CLOSING)
                     {
                         return true;
                     }
@@ -1121,9 +1883,9 @@ namespace PermitToWork.Models.WorkingHeight
 
         public bool isCanSignSpvCancel(UserEntity user)
         {
-            if (this.userInWorkingHeight[UserInRadiography.SUPERVISOR.ToString()] != null)
+            if (this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()] != null)
             {
-                if ((user.id == this.userInWorkingHeight[UserInRadiography.SUPERVISOR.ToString()].id || user.id == this.userInWorkingHeight[UserInRadiography.SUPERVISOR.ToString()].employee_delegate) && this.status == (int)WHStatus.CANREQUESTORAPPROVE)
+                if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) && this.status == (int)WHStatus.CANREQUESTORAPPROVE)
                 {
                     return true;
                 }
@@ -1133,9 +1895,9 @@ namespace PermitToWork.Models.WorkingHeight
 
         public bool isCanSignFOCancel(UserEntity user)
         {
-            if (this.userInWorkingHeight[UserInRadiography.FACILITYOWNER.ToString()] != null)
+            if (this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()] != null)
             {
-                if ((user.id == this.userInWorkingHeight[UserInRadiography.FACILITYOWNER.ToString()].id || user.id == this.userInWorkingHeight[UserInRadiography.FACILITYOWNER.ToString()].employee_delegate) && this.status == (int)WHStatus.CANSPVAPPROVE)
+                if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].employee_delegate) && this.status == (int)WHStatus.CANSPVAPPROVE)
                 {
                     return true;
                 }

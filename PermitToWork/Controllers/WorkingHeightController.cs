@@ -37,17 +37,13 @@ namespace PermitToWork.Controllers
 
             isCanEdit[0] = entity.isCanEditFormRequestor(user);
             isCanEdit[1] = entity.isCanSignInspector(user);
-            isCanEdit[2] = entity.isCanPreScreeningRequestor(user);
-            isCanEdit[3] = entity.isCanPreScreeningFO(user);
-            isCanEdit[4] = entity.isCanSignRequestor(user);
-            isCanEdit[5] = entity.isCanSignSpv(user);
-            isCanEdit[6] = entity.isCanSignFO(user);
-            isCanEdit[7] = entity.isCanCancel(user);
-            isCanEdit[8] = entity.isCanCancelScreeningRequestor(user);
-            isCanEdit[9] = entity.isCanCancelScreeningFO(user);
-            isCanEdit[10] = entity.isCanSignRequestorCancel(user);
-            isCanEdit[11] = entity.isCanSignSpvCancel(user);
-            isCanEdit[12] = entity.isCanSignFOCancel(user);
+            isCanEdit[2] = entity.isCanSignRequestor(user);
+            isCanEdit[3] = entity.isCanSignSpv(user);
+            isCanEdit[4] = entity.isCanSignFO(user);
+            isCanEdit[5] = entity.isCanCancel(user);
+            isCanEdit[6] = entity.isCanSignRequestorCancel(user);
+            isCanEdit[7] = entity.isCanSignSpvCancel(user);
+            isCanEdit[8] = entity.isCanSignFOCancel(user);
 
             ViewBag.isCanEdit = isCanEdit;
 
@@ -119,31 +115,80 @@ namespace PermitToWork.Controllers
         }
 
         [HttpPost]
-        public JsonResult saveAsDraft(WorkingHeightEntity wh)
+        public JsonResult saveAsDraft(WorkingHeightEntity wh, int who)
         {
             UserEntity user = Session["user"] as UserEntity;
-            int status = wh.edit();
-
-            return Json(new { status = status == 1 ? "200" : "404" });
+            int retVal = 1;
+            retVal = retVal & wh.saveAsDraft(who);
+            return Json(new { status = retVal == 1 ? "200" : "404" });
         }
 
         [HttpPost]
-        public JsonResult saveAndSend(WorkingHeightEntity wh)
+        public JsonResult saveAndSend(WorkingHeightEntity wh, int who, int? c)
         {
             UserEntity user = Session["user"] as UserEntity;
-            int status = wh.edit();
+            int retVal = 1;
+            retVal = retVal & wh.saveAsDraft(who);
             wh = new WorkingHeightEntity(wh.id, user);
-            status = wh.sendInspectorOrPrescreening(user, fullUrl());
-            return Json(new { status = status == 1 ? "200" : (status == 2 ? "201" : "404") });
+            retVal = retVal & wh.signClearance(who, user, c != null ? c.Value : 0);
+            retVal = retVal & wh.sendToUser(who, 1, fullUrl(), user);
+            return Json(new { status = retVal > 0 ? "200" : "404" });
+        }
+
+        [HttpPost]
+        public JsonResult rejectPermit(WorkingHeightEntity wh, int who, string comment)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            int retVal = 1;
+            retVal = retVal & wh.saveAsDraft(who);
+            wh = new WorkingHeightEntity(wh.id, user);
+            retVal = retVal & wh.rejectClearance(who);
+            retVal = retVal & wh.sendToUser(who, 2, fullUrl(), user, 0, comment);
+            return Json(new { status = retVal > 0 ? "200" : "404" });
         }
 
         [HttpPost]
         public JsonResult inspectorSign(WorkingHeightEntity wh)
         {
             UserEntity user = Session["user"] as UserEntity;
-            int status = 0;
-            status = wh.inspectorSign(user, fullUrl());
-            return Json(new { status = status == 1 ? "200" : (status == 2 ? "201" : "404") });
+            int retVal = 1;
+            wh = new WorkingHeightEntity(wh.id, user);
+            retVal = retVal & wh.signClearance(2, user);
+            retVal = retVal & wh.sendToUser(2, 1, fullUrl(), user);
+            return Json(new { status = retVal > 0 ? "200" : "404" });
+        }
+
+        [HttpPost]
+        public JsonResult saveAsDraftCancel(WorkingHeightEntity wh, int who)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            int retVal = 1;
+            retVal = retVal & wh.saveAsDraftCancel(who);
+            return Json(new { status = retVal == 1 ? "200" : "404" });
+        }
+
+        [HttpPost]
+        public JsonResult saveAndSendCancel(WorkingHeightEntity wh, int who, int? c)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            int retVal = 1;
+            retVal = retVal & wh.saveAsDraftCancel(who);
+            wh = new WorkingHeightEntity(wh.id, user);
+            retVal = retVal & wh.signClearanceCancel(who, user);
+            retVal = retVal & wh.sendToUserCancel(who, 1, fullUrl(), user);
+            return Json(new { status = retVal > 0 ? "200" : "404" });
+        }
+
+        [HttpPost]
+        public JsonResult rejectPermitCancel(WorkingHeightEntity wh, int who, string comment)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            int retVal = 1;
+            retVal = retVal & wh.saveAsDraftCancel(who);
+            wh = new WorkingHeightEntity(wh.id, user);
+            retVal = retVal & wh.rejectClearanceCancel(who);
+            retVal = retVal & wh.sendToUserCancel(who, 2, fullUrl(), user, 0, comment);
+            return Json(new { status = retVal > 0 ? "200" : "404" });
         }
 
         [HttpPost]
@@ -159,49 +204,50 @@ namespace PermitToWork.Controllers
             return Json(new { status = status == 1 ? "200" : "404" });
         }
 
-        [HttpPost]
-        public JsonResult saveAndSendPreScreening(WorkingHeightEntity wh, int who)
-        {
-            UserEntity user = Session["user"] as UserEntity;
-            int status = 0;
-            if (who == 1)
-            {
-                status = wh.edit();
-            }
-            status = wh.savePreScreening(who);
-            wh = new WorkingHeightEntity(wh.id, user);
-            status = wh.completePreScreening(who, fullUrl(), user);
-            return Json(new { status = status == 1 ? "200" : (status == 2 ? "201" : "404") });
-        }
+        //[HttpPost]
+        //public JsonResult saveAndSendPreScreening(WorkingHeightEntity wh, int who)
+        //{
+        //    UserEntity user = Session["user"] as UserEntity;
+        //    int status = 0;
+        //    if (who == 1)
+        //    {
+        //        status = wh.edit();
+        //    }
+        //    status = wh.savePreScreening(who);
+        //    wh = new WorkingHeightEntity(wh.id, user);
+        //    status = wh.completePreScreening(who, fullUrl(), user);
+        //    return Json(new { status = status == 1 ? "200" : (status == 2 ? "201" : "404") });
+        //}
 
-        [HttpPost]
-        public JsonResult rejectPreScreening(WorkingHeightEntity wh, string comment)
-        {
-            UserEntity user = Session["user"] as UserEntity;
-            int status = 0;
-            status = wh.savePreScreening(2);
-            wh = new WorkingHeightEntity(wh.id, user);
-            status = wh.rejectPreScreening(2, fullUrl(), user, comment);
-            return Json(new { status = status == 1 ? "200" : (status == 2 ? "201" : "404") });
-        }
+        //[HttpPost]
+        //public JsonResult rejectPreScreening(WorkingHeightEntity wh, string comment)
+        //{
+        //    UserEntity user = Session["user"] as UserEntity;
+        //    int status = 0;
+        //    status = wh.savePreScreening(2);
+        //    wh = new WorkingHeightEntity(wh.id, user);
+        //    status = wh.rejectPreScreening(2, fullUrl(), user, comment);
+        //    return Json(new { status = status == 1 ? "200" : (status == 2 ? "201" : "404") });
+        //}
 
-        [HttpPost]
-        public JsonResult signStartPermit(int id, int who)
-        {
-            UserEntity user = Session["user"] as UserEntity;
-            WorkingHeightEntity wh = new WorkingHeightEntity(id, user);
-            string message = "";
-            int retVal = wh.signPermitStart(user, who, fullUrl(), out message);
+        //[HttpPost]
+        //public JsonResult signStartPermit(int id, int who)
+        //{
+        //    UserEntity user = Session["user"] as UserEntity;
+        //    WorkingHeightEntity wh = new WorkingHeightEntity(id, user);
+        //    string message = "";
+        //    int retVal = wh.signPermitStart(user, who, fullUrl(), out message);
 
-            return Json(new { status = retVal == 0 ? "400" : "200", message = message });
-        }
+        //    return Json(new { status = retVal == 0 ? "400" : "200", message = message });
+        //}
 
         [HttpPost]
         public JsonResult cancelWHPermit(int id)
         {
             UserEntity user = Session["user"] as UserEntity;
             WorkingHeightEntity wh = new WorkingHeightEntity(id, user);
-            int retVal = wh.cancelPermit(user, fullUrl());
+            int retVal = wh.signClearanceCancel(1, user);
+            retVal = retVal & wh.sendToUserCancel(1, 1, fullUrl(), user);
 
             return Json(new { status = retVal == 0 ? "400" : "200" });
         }

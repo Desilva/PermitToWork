@@ -164,11 +164,19 @@
         $("#cancellation_date").kendoDatePicker().data("kendoDatePicker");
 
         //checkbox
-        $('#loto').change(function () {
+        $('#loto_id').click(function () {
+            console.log($(this).attr('data-id'));
+            if ($(this).attr('data-id') == "") {
+                $('#loto-new').modal('show');
+            } else {
+                $('#history').val('@Url.Action("Edit","Ptw", new { id = Model.id })');
+                changeContent('Loto/index/' + $(this).attr('data-id'));
+            }
             //changeContent('loto/create');
         })
-        $('#csep').change(function () {
-            //changeContent('csep/create');
+        $('#csep_id').click(function () {
+            $('#history').val('@Url.Action("Edit","Ptw", new { id = Model.id })');
+            changeContent('Csep/edit/' + $(this).attr('data-id'));
         })
         $('#hw_id').click(function () {
             $('#history').val('@Url.Action("Edit","Ptw", new { id = Model.id })');
@@ -179,8 +187,10 @@
             $('#history').val('@Url.Action("Edit","Ptw", new { id = Model.id })');
             changeContent('fi/edit/' + $(this).attr('data-id'));
         })
-        $('#ex').change(function () {
+        $('#ex_id').click(function () {
             //changeContent('ex/create');
+            $('#history').val('@Url.Action("Edit","Ptw", new { id = Model.id })');
+            changeContent('excavation/edit/' + $(this).attr('data-id'));
         })
         $('#wh_id').click(function () {
             $('#history').val('@Url.Action("Edit","Ptw", new { id = Model.id })');
@@ -522,6 +532,88 @@
                 }
             });
         });
+
+        $('#new-loto').click(function () {
+            var values = {
+                id: '@Model.id',
+            };
+            $.post("@Url.Action("CreateNewLOTO","Ptw")", values, function (resp) {
+                if (resp.status == "200") {
+                    $('#history').val('@Url.Action("Edit","Ptw", new { id = Model.id })');
+                    changeContent('@Url.Action("Index","Loto")' + '/?id=' + resp.id);
+                }
+            });
+        });
+
+        $('#prev-loto').click(function () {
+            $('#loto-new').modal('hide');
+            $('#loto-prev').modal('show');
+        });
+
+        $('#create-loto').click(function () {
+            var values = {
+                id: '@Model.id',
+                id_prev_loto: $('#selected-id').val(),
+            };
+            $.post("@Url.Action("FromPreviousLOTO","Ptw")", values, function (resp) {
+                if (resp.status == "200") {
+                    $('#history').val('@Url.Action("Edit","Ptw", new { id = Model.id })');
+                    changeContent('@Url.Action("Index","Loto")' + '/?id=' + resp.id);
+                }
+            });
+        });
+
+        var dataSourceIn = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("BindingListLOTO", "Ptw")',
+                    type: "POST"
+                },
+                parameterMap: function (options, operation) {
+                    if (operation !== "read" && options.models) {
+                        var result = {};
+
+                        return result;
+                    }
+                }
+            },
+            batch: true,
+            pageSize: 30,
+            schema: {
+                model: {
+                    id: "id",
+                    fields: {
+                        id: { type: "number", editable: false },
+                        loto_no: { type: "string" },
+                        work_location: { type: "string" },
+                    }
+                }
+            },
+            pageSize: 10
+        });
+
+        $("#loto-prev-grid").kendoGrid({
+            dataSource: dataSourceIn,
+            pageable: true,
+            sortable: true,
+            filterable: true,
+            selectable: "row",
+            columns: [
+                { field: "id", hidden: true },
+                { field: "loto_no", title: "LOTO No.", type: "string", width: 150 },
+                { field: "work_location", title: "Work Location", type: "string" },
+            ],
+            height: 400,
+            change: function (e) {
+                var selectedRows = this.select();
+                var selectedDataItems = [];
+                for (var i = 0; i < selectedRows.length; i++) {
+                    var dataItem = this.dataItem(selectedRows[i]);
+                    $('#selected-id').val(dataItem.id);
+                }
+                // selectedDataItems contains all selected data items
+            }
+        });
     })
 
     function onUpload(e) {
@@ -612,6 +704,9 @@
             fi_need: $('#fi').is(':checked') ? 1 : 0,
             rad_need: $('#rad').is(':checked') ? 1 : 0,
             wh_need: $('#wh').is(':checked') ? 1 : 0,
+            ex_need: $('#ex').is(':checked') ? 1 : 0,
+            csep_need: $('#csep').is(':checked') ? 1 : 0,
+            loto_need: $('#loto').is(':checked') ? 1 : 0,
         };
 
         if ('@isPosition' == 1) {
@@ -841,18 +936,32 @@
                     <td class="td-centre" style="width:25%"><strong>Form to be Completed and Enclosed</strong></td>
                 </tr>
                 <tr>
-                    <td class="td-centre"><input id="loto" type="checkbox" @(isCanEdit == true ? "" : "disabled")/></td>
+                    <td class="td-centre"><input id="loto" type="checkbox" @(isCanEdit == true ? "" : "disabled") @(Model.loto_need == 1 ? "checked" : "") /></td>
                     <td class="small">Lock Out Tag Out (LOTO)</td>
-                    <td class="small">&nbsp;</td>
-                    <td class="small">&nbsp;</td>
+                    <td class="small">
+                        @if (Model.loto_need == 1)
+                        {
+                            <button class="btn btn-small" id="loto_id" data-id="@Model.loto_id">Go To LOTO Permit</button>
+                        }
+                    </td>
+                    <td class="small">
+                        @Html.Raw(Model.clearancePermitStatus(PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString()))
+                    </td>
                     <td class="small">Requestor's supervisor LOTO point proposal</td>
                     <td class="small">Lock Appllication Form (102a): description, drawing references, supervisor LOTO point proposal LOTO permit form (102b): general info</td>
                 </tr>
                 <tr>
-                    <td class="td-centre"><input id="csep" type="checkbox" @(isCanEdit == true ? "" : "disabled")/></td>
+                    <td class="td-centre"><input id="csep" type="checkbox" @(isCanEdit == true ? "" : "disabled") @(Model.csep_id != null ? "checked" : "") /></td>
                     <td class="small">Confined Space Entry Permit (CSEP)</td>
-                    <td class="small">&nbsp;</td>
-                    <td class="small">&nbsp;</td>
+                    <td class="small">
+                        @if (Model.csep_id != null)
+                        {
+                            <button class="btn btn-small" id="csep_id" data-id="@Model.csep_id">@Model.csep_no</button>
+                        }
+                    </td>
+                    <td class="small">
+                        @Html.Raw(Model.clearancePermitStatus(PtwEntity.clearancePermit.CONFINEDSPACE.ToString()))
+                    </td>
                     <td class="small">Confined space emergency evacuation plan</td>
                     <td class="small">CSEP form(103a) : general info, spv initial hazard screening  emergency evacuation form(101c) Approved emergency evacuation plan</td>
                 </tr>
@@ -862,7 +971,7 @@
                     <td class="small">
                         @if (Model.hw_id != null)
                         {
-                            <button class="btn btn-small" id="hw_id" data-id="@Model.hw_id">@Model.hw_no&nbsp;</button>
+                            <button class="btn btn-small" id="hw_id" data-id="@Model.hw_id">@Model.hw_no</button>
                         }
                     </td>
                     <td class="small">
@@ -884,10 +993,13 @@
                     <td class="small">FI form(105a) : general info, clearance from spv, ERT leader, safety officer</td>
                 </tr>
                 <tr>
-                    <td class="td-centre"><input id="ex" type="checkbox" @(isCanEdit == true ? "" : "disabled")/></td>
+                    <td class="td-centre"><input id="ex" type="checkbox" @(isCanEdit == true ? "" : "disabled") @(Model.ex_id != null ? "checked" : "") /></td>
                     <td class="small">Excavation (Ex)</td>
-                    <td class="small">&nbsp;</td>
-                    <td class="small">&nbsp;</td>
+                    <td class="small">@if (Model.ex_id != null)
+                        {
+                            <button class="btn btn-small" id="ex_id" data-id="@Model.ex_id">@Model.ex_no&nbsp;</button>
+                        }</td>
+                    <td class="small">@Html.Raw(Model.clearancePermitStatus(PtwEntity.clearancePermit.EXCAVATION.ToString()))</td>
                     <td class="small">Excavation clearance from facility + E&I officer</td>
                     <td class="small">Ex form(106a) : general info, clearance from facility + E&I officer</td>
                 </tr>
@@ -1519,6 +1631,39 @@
     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
     <button class="btn btn-primary" id="assessor_acc_rej">Send and Sign</button>
     <span id="loading_ass_acc_rej" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="loto-new" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="loto" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="loto-label">LOTO Permit</h3>
+  </div>
+  <div class="modal-body">
+    <p>Are you want to create new LOTO or from previous LOTO?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="new-loto">New LOTO</button>
+    <button class="btn btn-warning" id="prev-loto">Previous LOTO</button>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="loto-prev" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="loto" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="loto-prev-label">Available LOTO Permit</h3>
+  </div>
+  <div class="modal-body">
+    <p>Please select one LOTO</p>
+    <input type="hidden" id="selected-id" value="0" />
+    <div id="loto-prev-grid"></div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="create-loto">Create LOTO</button>
   </div>
 </div>
 

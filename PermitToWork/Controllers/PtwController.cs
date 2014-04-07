@@ -1,4 +1,5 @@
 ﻿using PermitToWork.Models;
+using PermitToWork.Models.ClearancePermit;
 using PermitToWork.Models.Hira;
 using PermitToWork.Models.Hw;
 using PermitToWork.Models.Master;
@@ -75,6 +76,7 @@ namespace PermitToWork.Controllers
             entity.requestor_ptw_holder_no = entity.ptw_holder_no.id;
 
             entity.generatePtwNumber(listPtw.getLastPtw() != null ? listPtw.getLastPtw().ptw_no : "");
+
             return PartialView(entity);
         }
 
@@ -140,6 +142,7 @@ namespace PermitToWork.Controllers
                 });
             }
             ViewBag.listTotalCrew = listTotalCrew;
+
             return PartialView("create", entity);
         }
 
@@ -167,7 +170,7 @@ namespace PermitToWork.Controllers
         }
 
         [HttpPost]
-        public JsonResult Add(PtwEntity ptw, int hw_need, int fi_need, int rad_need, int wh_need, IList<string> hiras)
+        public JsonResult Add(PtwEntity ptw, int hw_need, int fi_need, int rad_need, int wh_need, int ex_need, int csep_need, IList<string> hiras)
         {
             UserEntity user = Session["user"] as UserEntity;
             List<MstFOEntity> listFo = new MstFOEntity().getListMstFO();
@@ -214,6 +217,18 @@ namespace PermitToWork.Controllers
                 WorkingHeightEntity wh = (WorkingHeightEntity)addClearancePermit(ptw.id, PtwEntity.clearancePermit.WORKINGHEIGHT.ToString(), user);
                 //radiography.sendEmailAssign(fullUrl(), user);
                 ptw.setClearancePermit(wh.id, (int)PtwEntity.statusClearance.NOTCOMPLETE, PtwEntity.clearancePermit.WORKINGHEIGHT.ToString());
+            }
+
+            if (ex_need == 1)
+            {
+                ExcavationEntity ex = (ExcavationEntity)addClearancePermit(ptw.id, PtwEntity.clearancePermit.EXCAVATION.ToString(), user);
+                ptw.setClearancePermit(ex.id, (int)PtwEntity.statusClearance.NOTCOMPLETE, PtwEntity.clearancePermit.EXCAVATION.ToString());
+            }
+
+            if (csep_need == 1)
+            {
+                CsepEntity csep = (CsepEntity)addClearancePermit(ptw.id, PtwEntity.clearancePermit.CONFINEDSPACE.ToString(), user);
+                ptw.setClearancePermit(csep.id, (int)PtwEntity.statusClearance.NOTCOMPLETE, PtwEntity.clearancePermit.CONFINEDSPACE.ToString());
             }
 
             ListUser listUser = new ListUser(user.token, user.id);
@@ -292,6 +307,34 @@ namespace PermitToWork.Controllers
                 ptw.setClearancePermit(null, null, PtwEntity.clearancePermit.WORKINGHEIGHT.ToString());
             }
 
+            if (ptw.ex_need == 1 && ptw_new.ex_id == null)
+            {
+                ExcavationEntity ex = (ExcavationEntity)addClearancePermit(ptw.id, PtwEntity.clearancePermit.EXCAVATION.ToString(), user);
+                ptw.setClearancePermit(ex.id, (int)PtwEntity.statusClearance.NOTCOMPLETE, PtwEntity.clearancePermit.EXCAVATION.ToString());
+            }
+            else if (ptw.ex_need == 0 && ptw_new.ex_id != null)
+            {
+                deleteClearancePermit(ptw.id, ptw_new.ex_id.Value, PtwEntity.clearancePermit.EXCAVATION.ToString(), user);
+                ptw.setClearancePermit(null, null, PtwEntity.clearancePermit.EXCAVATION.ToString());
+            }
+
+            if (ptw.csep_need == 1 && ptw_new.csep_id == null)
+            {
+                CsepEntity csep = (CsepEntity)addClearancePermit(ptw.id, PtwEntity.clearancePermit.CONFINEDSPACE.ToString(), user);
+                ptw.setClearancePermit(csep.id, (int)PtwEntity.statusClearance.NOTCOMPLETE, PtwEntity.clearancePermit.CONFINEDSPACE.ToString());
+            }
+            else if (ptw.csep_need == 0 && ptw_new.csep_id != null)
+            {
+                deleteClearancePermit(ptw.id, ptw_new.csep_id.Value, PtwEntity.clearancePermit.CONFINEDSPACE.ToString(), user);
+                ptw.setClearancePermit(null, null, PtwEntity.clearancePermit.CONFINEDSPACE.ToString());
+            }
+
+            if (ptw.loto_need == 0 && ptw_new.loto_need != null)
+            {
+                deleteClearancePermit(ptw.id, ptw_new.csep_id.Value, PtwEntity.clearancePermit.CONFINEDSPACE.ToString(), user);
+                ptw.setClearancePermit(null, null, PtwEntity.clearancePermit.CONFINEDSPACE.ToString());
+            }
+
             if (ret == 1)
             {
                 return Json(new { status = "200", message = "" });
@@ -339,6 +382,26 @@ namespace PermitToWork.Controllers
             ptw.can_fo_delegate = a != 0 ? listUser.Find(p => p.id == a).alpha_name : "";
 
             return this.ViewPdf("", "Print", ptw);
+        }
+
+        [HttpPost]
+        public JsonResult CreateNewLOTO(int id)
+        {
+            UserEntity userLogin = Session["user"] as UserEntity;
+            PtwEntity ptw = new PtwEntity(id, userLogin);
+            LotoGlarfEntity loto = addNewLoto(id, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString(), userLogin);
+            ptw.setClearancePermit(loto.id, (int)PtwEntity.statusClearance.NOTCOMPLETE, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
+            return Json(new { status = "200", id = loto.id });
+        }
+
+        [HttpPost]
+        public JsonResult FromPreviousLOTO(int id, int id_prev_loto)
+        {
+            UserEntity userLogin = Session["user"] as UserEntity;
+            PtwEntity ptw = new PtwEntity(id, userLogin);
+            LotoGlarfEntity loto = createFromPreviousLoto(id, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString(), userLogin, id_prev_loto);
+            ptw.setClearancePermit(loto.id, (int)PtwEntity.statusClearance.NOTCOMPLETE, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
+            return Json(new { status = "200", id = loto.id });
         }
 
         #region approve and reject PTW and Cancellation PTW
@@ -550,6 +613,14 @@ namespace PermitToWork.Controllers
             return Json(result,JsonRequestBehavior.AllowGet);
         }
 
+        [HttpPost]
+        public JsonResult BindingListLoto()
+        {
+            UserEntity userLogin = Session["user"] as UserEntity;
+            List<LotoEntity> listLoto = new LotoEntity().listLoto(userLogin);
+            return Json(listLoto);
+        }
+
         #region extends PTW
 
         [HttpPost]
@@ -652,6 +723,27 @@ namespace PermitToWork.Controllers
                             if (wh.supervisor == null)
                                 wh.assignSupervisor(user);
                         }
+
+                        if (ptw.ex_id != null)
+                        {
+                            ExcavationEntity ex = new ExcavationEntity(ptw.ex_id.Value, user);
+                            if (ex.supervisor == null)
+                                ex.assignSpv(fullUrl(),user);
+                        }
+
+                        if (ptw.csep_id != null)
+                        {
+                            CsepEntity csep = new CsepEntity(ptw.csep_id.Value, user);
+                            if (csep.acc_supervisor == null)
+                                csep.assignSupervisor(user);
+                        }
+
+                        if (ptw.loto_id != null)
+                        {
+                            LotoGlarfEntity loto = new LotoGlarfEntity(ptw.loto_id.Value, user);
+                            if (loto.supervisor == null)
+                                loto.assignSupervisor(user);
+                        }
                         return RedirectToAction("Index", "Home", new { p = "Ptw/Edit/" + ptw.id });
                     }
                     else
@@ -694,11 +786,72 @@ namespace PermitToWork.Controllers
             {
                 permit = new WorkingHeightEntity(ptw.id, ptw.acc_ptw_requestor, ptw.work_description, ptw.acc_fo);
             }
+            else if (typePermit == PtwEntity.clearancePermit.EXCAVATION.ToString())
+            {
+                permit = new ExcavationEntity(ptw.id, ptw.acc_ptw_requestor, ptw.work_description, ptw.acc_fo, ptw.work_location, ptw.proposed_period_start, ptw.proposed_period_end);
+            }
+            else if (typePermit == PtwEntity.clearancePermit.CONFINEDSPACE.ToString())
+            {
+                permit = new CsepEntity(ptw.id, ptw.acc_ptw_requestor, ptw.work_description);
+            }
 
             permit.generateNumber(ptw.ptw_no);
             permit.create();
 
             return permit;
+        }
+
+        public LotoGlarfEntity addNewLoto(int id, string typePermit, UserEntity user)
+        {
+            UserEntity userLogin = Session["user"] as UserEntity;
+            PtwEntity ptw = new PtwEntity(id, user);
+            ListUser listUser = new ListUser(userLogin.token, userLogin.id);
+
+            LotoGlarfEntity glarf = new LotoGlarfEntity(ptw.acc_ptw_requestor, ptw.acc_supervisor);
+            glarf.create();
+
+            LotoEntity loto = new LotoEntity(ptw.acc_ptw_requestor, ptw.work_location, glarf.id, ptw.acc_supervisor);
+            List<UserEntity> listHWFO = listUser.GetHotWorkFO();
+            loto.generateNumber(ptw.ptw_no);
+            loto.create();
+            loto.sendEmailFO(listHWFO, fullUrl(), userLogin.token, user, 0);
+
+            
+            glarf.assignLotoForm(loto.id, loto.loto_no);
+
+            return glarf;
+        }
+
+        public LotoGlarfEntity createFromPreviousLoto(int id, string typePermit, UserEntity user, int id_prev_loto)
+        {
+            UserEntity userLogin = Session["user"] as UserEntity;
+            PtwEntity ptw = new PtwEntity(id, user);
+            LotoEntity prevLoto = new LotoEntity(id_prev_loto, userLogin);
+            LotoEntity loto = new LotoEntity(prevLoto, user);
+            ListUser listUser = new ListUser(userLogin.token, userLogin.id);
+
+            List<UserEntity> listHWFO = listUser.GetHotWorkFO();
+            loto.generateLotoReviewNumber(prevLoto.loto_no);
+            loto.create();
+
+            foreach (LotoPointEntity lotoPointPrev in prevLoto.lotoPoint)
+            {
+                LotoPointEntity lotoPoint = new LotoPointEntity(lotoPointPrev, loto.id);
+                lotoPoint.create();
+            }
+
+            LotoGlarfEntity glarf = new LotoGlarfEntity(ptw.acc_ptw_requestor, ptw.acc_supervisor);
+            glarf.create();
+            glarf.assignLotoForm(loto.id, loto.loto_no);
+            loto.addNewHolder(userLogin.id.ToString(), glarf.id);
+
+            List<LotoGlarfEntity> listGlarf = new LotoGlarfEntity().listLotoGlarfWithSameLotoPermit(prevLoto.id, userLogin);
+            foreach (LotoGlarfEntity gl in listGlarf)
+            {
+                gl.assignLotoForm(loto.id, loto.loto_no);
+            }
+
+            return glarf;
         }
 
         public string deleteClearancePermit(int id, int permit_id, string typePermit, UserEntity user)
@@ -720,6 +873,14 @@ namespace PermitToWork.Controllers
             else if (typePermit == PtwEntity.clearancePermit.WORKINGHEIGHT.ToString())
             {
                 permit = new WorkingHeightEntity(permit_id, user);
+            }
+            else if (typePermit == PtwEntity.clearancePermit.EXCAVATION.ToString())
+            {
+                permit = new ExcavationEntity(permit_id, user);
+            }
+            else if (typePermit == PtwEntity.clearancePermit.CONFINEDSPACE.ToString())
+            {
+                permit = new CsepEntity(permit_id, user);
             }
 
             permit.delete();

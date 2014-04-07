@@ -16,10 +16,12 @@ namespace PermitToWork.Models
     {
         public permit_to_work()
         {
+            this.confined_space = new HashSet<confined_space>();
+            this.excavations = new HashSet<excavation>();
+            this.fire_impairment = new HashSet<fire_impairment>();
             this.hira_document = new HashSet<hira_document>();
             this.hot_work = new HashSet<hot_work>();
             this.permit_to_work1 = new HashSet<permit_to_work>();
-            this.fire_impairment = new HashSet<fire_impairment>();
             this.radiographies = new HashSet<radiography>();
             this.working_height = new HashSet<working_height>();
         }
@@ -71,6 +73,7 @@ namespace PermitToWork.Models
         public Nullable<System.DateTime> validity_period_start { get; set; }
         public Nullable<System.DateTime> validity_period_end { get; set; }
         public Nullable<System.DateTime> cancellation_date { get; set; }
+        public Nullable<int> loto_need { get; set; }
         public Nullable<int> loto_id { get; set; }
         public Nullable<int> loto_status { get; set; }
         public Nullable<int> csep_id { get; set; }
@@ -110,14 +113,17 @@ namespace PermitToWork.Models
         public Nullable<int> id_parent_ptw { get; set; }
         public Nullable<int> status { get; set; }
     
+        public virtual ICollection<confined_space> confined_space { get; set; }
+        public virtual ICollection<excavation> excavations { get; set; }
+        public virtual ICollection<fire_impairment> fire_impairment { get; set; }
         public virtual ICollection<hira_document> hira_document { get; set; }
         public virtual ICollection<hot_work> hot_work { get; set; }
+        public virtual loto_glarf loto_glarf { get; set; }
         public virtual mst_department mst_department { get; set; }
         public virtual mst_ptw_holder_no mst_ptw_holder_no { get; set; }
         public virtual mst_section mst_section { get; set; }
         public virtual ICollection<permit_to_work> permit_to_work1 { get; set; }
         public virtual permit_to_work permit_to_work2 { get; set; }
-        public virtual ICollection<fire_impairment> fire_impairment { get; set; }
         public virtual ICollection<radiography> radiographies { get; set; }
         public virtual ICollection<working_height> working_height { get; set; }
     }

@@ -1,0 +1,310 @@
+﻿@model PermitToWork.Models.ClearancePermit.LotoGlarfEntity
+@{
+    bool[] isCanEdit = ViewBag.isCanEdit as bool[];
+    PermitToWork.Models.User.UserEntity requestor = Session["user"] as PermitToWork.Models.User.UserEntity;
+}
+<style>
+    .k-grid  .k-grid-header  .k-header  .k-link {
+        height: auto;
+    }
+  
+    .k-grid  .k-grid-header  .k-header {
+        white-space: normal;
+    }
+</style>
+<div id="content-header">
+	<h1>GROUP LOCKOUT APPLICATION & RELEASE FORM</h1>
+</div>
+<div id="breadcrumb">
+	<a href="#" title="Go to Home" class="tip-bottom home"><i class="icon-home"></i> Home</a>
+	<a href="#"  class="tip-bottom ptw">LOTO</a>
+    <a href="#" class="current">GLARF</a>
+</div>
+
+<div style="overflow-x:scroll; position:relative;">
+    <div>
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="span3 logo">
+                    <img src="../../Img/logo-clean.png" />
+                </div>
+                <div class="span6 title">
+                    <b>GROUP LOCKOUT APPLICATION & RELEASE FORM</b><br />
+                    Star Energy Geothermal (Wayang Windu) Limited
+                </div>
+                <div class="span3 no">
+                    <br /><i>No : @Model.loto_no</i>
+                </div> 
+            </div>
+            <div class="row-fluid separator"></div>
+        </div>
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="span12 text-center">
+                   <h5>Personnel Under GLARF</h5>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span12">
+                   <div id="glarf-user-grid"></div>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span12">
+                    <small><i>Note: 1st row for supervisor, 2nd row for LOTO permit Holder, other for GLARF member Attach additional sheet if necessary. Original must be showed to facility owner prior cancellation.</i></small>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span6 text-center">
+                    <b>Briefed by,</b>
+                    <br />
+                    <div style="height:100px">
+                        @if (isCanEdit[2]) {
+                            <input type="button" class="btn btn-small btn-success" value="Sign" id="sign-requestor" />    
+                        } else if (Model.requestor_signature != null) {
+                            <img src="@Model.requestor_signature" width="100" height="100" />   
+                        }
+                    </div>
+                    @Model.requestorUser.alpha_name<br />
+                    LOTO HOLDER
+                </div>
+                <div class="span6 text-center">
+                    <b>Approved by,</b>
+                    <br />
+                    <div style="height:100px">
+                        @if (isCanEdit[3]) {
+                            <input type="button" class="btn btn-small btn-success" value="Sign" id="sign-spv" />    
+                        } else if (Model.supervisor_signature != null) {
+                            <img src="@Model.supervisor_signature" width="100" height="100" />   
+                        }
+                    </div>
+                    @(Model.supervisorUser != null ? Model.supervisorUser.alpha_name : "")<br />
+                    SUPERVISOR / PROJECT MANAGER
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span12">
+                    @if (isCanEdit[0])
+                    {
+                        <input type="button" class="btn btn-success" value="Send for Signing" id="send" />
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/x-kendo-template" id="command-template">
+    <div class="row-command">
+    # if('@isCanEdit[0]' == 'True' && can_edit == 1) { #
+        <a class="k-button k-button-icontext k-grid-edit" href="\#" title="Edit"><span class="k-icon k-edit"></span>Edit</a>
+        <a class="k-button k-button-icontext k-grid-delete" href="\#" title="Delete"><span class="k-icon k-delete"></span>Delete</a>
+    # } #
+    # if ('@isCanEdit[1]' == 'True' && userEntity.id == parseInt('@requestor.id') && user_application_signature == null) { #
+        <a class="k-button k-button-icontext k-grid-agree" href="\#" title="Sign" onclick="event.preventDefault();signApplication(#= id #)"><span class="k-icon k-agree"></span>Sign</a>
+    #} #
+    # if ('@isCanEdit[4]' == 'True' && userEntity.id == parseInt('@requestor.id') && user_cancellation_signature == null) { #
+        <a class="k-button k-button-icontext k-grid-cancel" href="\#" title="Sign" onclick="event.preventDefault();signCancellation(#= id #)"><span class="k-icon k-cancel"></span>Sign</a>
+    #} #
+    </div>
+</script>
+<script>
+    $(document).ready(function () {
+        var dataSourceIn = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("BindingGlarfUser", "Loto", new { id_loto = Model.id })',
+                    type: "POST"
+                },
+                create: {
+                    url: '@Url.Action("AddGlarfUser", "Loto", new { id_glarf = Model.id })',
+                    type: "POST",
+                    complete: function (e) {
+                        $("#glarf-user-grid").data("kendoGrid").dataSource.read();
+                    }
+                },
+                update: {
+                    url: '@Url.Action("EditGlarfUser", "Loto", new { id_glarf = Model.id })',
+                    type: "POST",
+                    complete: function (e) {
+                        $("#glarf-user-grid").data("kendoGrid").dataSource.read();
+                    }
+                },
+                destroy: {
+                    url: '@Url.Action("DeleteGlarfUser", "Loto", new { id_glarf = Model.id })',
+                    type: "POST",
+                    complete: function (e) {
+                        $("#glarf-user-grid").data("kendoGrid").dataSource.read();
+                    }
+                },
+                parameterMap: function (options, operation) {
+                    if (operation !== "read" && options.models) {
+                        var result = {};
+
+                        for (var i = 0; i < options.models.length; i++) {
+                            var product = options.models[i];
+                            console.log(product);
+                            for (var member in product) {
+                                if (member == "userEntity") {
+                                    result["user"] = product[member];
+                                } if (member == "can_edit") {
+                                    result["can_edit"] = 1;
+                                } else {
+                                    if (product[member] == null) {
+                                        result[member] = "";
+                                    } else {
+                                        result[member] = product[member];
+                                    }
+                                }
+                            }
+                        }
+
+                        return result;
+                    }
+                }
+            },
+            batch: true,
+            pageSize: 30,
+            schema: {
+                model: {
+                    id: "id",
+                    fields: {
+                        id: { type: "number", editable: false },
+                        userEntity: { },
+                        user_application_signature: { type: "string", editable: false, nullable: true },
+                        user_application_signature_date: { type: "date",editable: false, format: "{0:MM/dd/yyyy hh:mm tt}", nullable: true },
+                        user_cancellation_signature: { type: "string", editable: false, nullable: true },
+                        user_cancellation_signature_date: { type: "date", editable: false, format: "{0:MM/dd/yyyy hh:mm tt}", nullable: true },
+                        can_edit: { type: "number", editable: false, nullable: true }
+                    }
+                }
+            },
+            pageSize: 10
+        });
+
+        $("#glarf-user-grid").kendoGrid({
+            dataSource: dataSourceIn,
+            pageable: true,
+            sortable: true,
+            filterable: true,
+            toolbar: ["create"],
+            columns: [
+                {
+                    template: kendo.template($("#command-template").html()), title: "Command", width: "200px"
+                },
+                //{ command: ["edit","delete"], title: "Command", width: "200px" },
+                { field: "id", hidden: true },
+                { field: "userEntity", title: "Name", editor: userEditor, template: "#= getName(userEntity) #", width: 200 },
+                { field: "user_application_signature", title: "Lockout Application Sign", type: "string", width: 75, template: "#=inspectedImage(user_application_signature)#" },
+                { field: "user_application_signature_date", title: "Lockout Application Sign Date / Time", type: "date", width: 75, format: "{0:MM/dd/yyyy hh:mm tt}" },
+                { field: "user_cancellation_signature", title: "Lockout Cancellation Sign", type: "string", width: 75, template: "#=inspectedImage(user_cancellation_signature)#" },
+                { field: "user_cancellation_signature_date", title: "Lockout Cancellation Sign Date / Time", type: "date", width: 75, format: "{0:MM/dd/yyyy hh:mm tt}" },
+                //{
+                //    command: [
+                //        {
+                //            name: "Edit",
+                //            click: editPtw
+                //        },
+                //        {
+                //            template: kendo.template($("#extend-template").html()),
+                //            name: "Extend",
+                //            click: extendPtw
+                //        },
+                //    ],
+                //    editable: {
+                //        destroy: false
+                //    },
+                //    width: 180
+                //}
+            ],
+            height: 400,
+            editable: "inline",
+            edit: function (e) {
+                console.log(e.container.find('.row-command'));
+                e.container.find('.row-command').html('<a class="k-button k-button-icontext k-grid-update" href="#" title="Update"><span class="k-icon k-update"></span>Update</a><a class="k-button k-button-icontext k-grid-cancel" href="#" title="Cancel"><span class="k-icon k-cancel"></span>Cancel</a>');
+            }
+        });
+
+        function userEditor(container, options) {
+            $('<input data-text-field="alpha_name" data-value-field="id" data-bind="value:' + options.field + '" />')
+                .appendTo(container)
+                .kendoDropDownList({
+                    autoBind: true,
+                    dataSource: {
+                        transport: {
+                            dataType: "json",
+                            read: '@Url.Action("ListingEmployee", "Loto")'
+                        }
+                    },
+                    optionLabel: "--Select One--",
+                });
+        }
+
+        $('#send').click(function () {
+            var values = {
+                id: '@Model.id',
+            }
+
+            $.post('@Url.Action("SendToSigning","Loto")', values, function (resp) {
+                alert('All members has been informed to sign GLARF.');
+                $('#content').load('@Url.Action("Glarf","Loto")');
+            });
+        });
+
+        $('#sign-requestor').click(function () {
+            var values = {
+                id: '@Model.id',
+            }
+
+            $.post('@Url.Action("SignRequestorGlarf","Loto")', values, function (resp) {
+                alert('Supervisor has been informed to approve GLARF.');
+                $('#content').load('@Url.Action("Glarf","Loto")');
+            });
+        });
+
+        $('#sign-spv').click(function () {
+            var values = {
+                id: '@Model.id',
+            }
+
+            $.post('@Url.Action("SignSupervisorGlarf","Loto")', values, function (resp) {
+                alert('GLARF is approved.');
+                $('#content').load('@Url.Action("Glarf","Loto")');
+            });
+        });
+    });
+
+    function getName(user) {
+        if (user != null) {
+            return user.alpha_name;
+        }
+        return "";
+    }
+
+    function inspectedImage(url) {
+        if (url != null) {
+            return "<img src='" + url + "' width='25' height='25' />";
+        }
+        return "";
+    }
+
+    function signApplication(id) {
+        var values = {
+            id: id,
+        }
+
+        $.post('@Url.Action("SignApplication","Loto")', values, function (resp) {
+            $("#glarf-user-grid").data("kendoGrid").dataSource.read();
+        });
+    }
+
+    function signCancellation(id) {
+        var values = {
+            id: id,
+        }
+
+        $.post('@Url.Action("SignCancellation","Loto")', values, function (resp) {
+            $("#glarf-user-grid").data("kendoGrid").dataSource.read();
+        });
+    }
+</script>

@@ -1,4 +1,5 @@
-﻿using PermitToWork.Models.Hira;
+﻿using PermitToWork.Models.ClearancePermit;
+using PermitToWork.Models.Hira;
 using PermitToWork.Models.Hw;
 using PermitToWork.Models.Master;
 using PermitToWork.Models.Radiography;
@@ -66,6 +67,7 @@ namespace PermitToWork.Models.Ptw
         public Nullable<System.DateTime> validity_period_start { get; set; }
         public Nullable<System.DateTime> validity_period_end { get; set; }
         public Nullable<System.DateTime> cancellation_date { get; set; }
+        public Nullable<int> loto_need { get; set; }
         public Nullable<int> loto_id { get; set; }
         public Nullable<int> loto_status { get; set; }
         public Nullable<int> csep_id { get; set; }
@@ -117,6 +119,11 @@ namespace PermitToWork.Models.Ptw
         public string rad_no { get; set; }
         public int wh_need { get; set; }
         public string wh_no { get; set; }
+        public int ex_need { get; set; }
+        public string ex_no { get; set; }
+        public int csep_need { get; set; }
+        public string csep_no { get; set; }
+        public string loto_no { get; set; }
         public bool has_clearance { get; set; }
 
         public MstDepartmentEntity department { get; set; }
@@ -155,7 +162,7 @@ namespace PermitToWork.Models.Ptw
         public enum clearancePermit
         {
             LOCKOUTTAGOUT,
-            CONFIRMSPACE,
+            CONFINEDSPACE,
             HOTWORK,
             FIREIMPAIRMENT,
             EXCAVATION,
@@ -229,6 +236,7 @@ namespace PermitToWork.Models.Ptw
             this.validity_period_start = ptw.validity_period_start;
             this.validity_period_end = ptw.validity_period_end;
             this.cancellation_date = ptw.cancellation_date;
+            this.loto_need = ptw.loto_need;
             this.loto_id = ptw.loto_id;
             this.loto_status = ptw.loto_status;
             this.csep_id = ptw.csep_id;
@@ -312,6 +320,31 @@ namespace PermitToWork.Models.Ptw
                 this.has_clearance = true;
             }
 
+            if (this.ex_id != null)
+            {
+                IClearancePermitEntity ex = (IClearancePermitEntity)new ExcavationEntity(this.ex_id.Value, user);
+                ex.ids = this.ex_id.Value;
+                this.cPermit.Add(clearancePermit.EXCAVATION.ToString(), ex);
+                this.ex_no = ptw.excavations.ElementAt(0).ex_no;
+                this.has_clearance = true;
+            }
+
+            if (this.csep_id != null)
+            {
+                IClearancePermitEntity csep = (IClearancePermitEntity)new CsepEntity(this.csep_id.Value, user);
+                csep.ids = this.csep_id.Value;
+                this.cPermit.Add(clearancePermit.CONFINEDSPACE.ToString(), csep);
+                this.csep_no = ptw.confined_space.ElementAt(0).csep_no;
+                this.has_clearance = true;
+            }
+
+            if (this.loto_id != null)
+            {
+                LotoGlarfEntity loto = new LotoGlarfEntity(this.loto_id.Value, user);
+                this.loto_no = ptw.loto_glarf.loto_no;
+                this.has_clearance = true;
+            }
+
             this.ptw_status = getPtwStatus();
 
             this.hira_document = new ListHira(this.id,this.db).listHira;
@@ -339,6 +372,7 @@ namespace PermitToWork.Models.Ptw
                 acc_ptw_requestor = acc_ptw_requestor,
                 can_ptw_requestor = can_ptw_requestor,
                 status = (int)statusPtw.CREATE,
+                loto_need = loto_need,
             };
 
             if (stat == 1)
@@ -408,6 +442,7 @@ namespace PermitToWork.Models.Ptw
             ptw.cancel_5_fo = cancel_5_fo;
             ptw.cancel_6_fo = cancel_6_fo;
             ptw.cancel_7_fo = cancel_7_fo;
+            ptw.loto_need = loto_need;
             ptw.pre_job_notes = pre_job_notes;
             ptw.cancel_notes = cancel_notes;
             ptw.validity_period_start = validity_period_start;
@@ -1606,7 +1641,11 @@ namespace PermitToWork.Models.Ptw
                 {
                     case (int)clearancePermit.HOTWORK:
                         message = "Hot Work Permit has approved by facility owner.<br />" + serverUrl + "Home?p=Hw/edit/" + this.hw_id;
-                        subject = "Hot Work Permit Number " + hw_no + " Approved";
+                        subject = "Hot Work Permit Number " + hw_no + " Has Been Approved";
+                        break;
+                    case (int)clearancePermit.CONFINEDSPACE:
+                        message = "Confined Space Entry Permit has approved by facility owner.<br />" + serverUrl + "Home?p=Csep/edit/" + this.hw_id;
+                        subject = "Confined Space Entry Permit Number " + csep_no + " Has Been Approved";
                         break;
                 }
             }
@@ -1616,7 +1655,11 @@ namespace PermitToWork.Models.Ptw
                 {
                     case (int)clearancePermit.HOTWORK:
                         message = "Hot Work Permit has approved to close by facility owner.<br />" + serverUrl + "Home?p=Hw/edit/" + this.hw_id;
-                        subject = "Hot Work Permit Number " + hw_no + " Closed";
+                        subject = "Hot Work Permit Number " + hw_no + " Has Been Closed";
+                        break;
+                    case (int)clearancePermit.CONFINEDSPACE:
+                        message = "Confined Space Entry Permit has approved to close by facility owner.<br />" + serverUrl + "Home?p=Csep/edit/" + this.hw_id;
+                        subject = "Confined Space Entry Permit Number " + csep_no + " Has Been Closed";
                         break;
                 }
             }
@@ -1727,6 +1770,30 @@ namespace PermitToWork.Models.Ptw
                 ptw.wh_id = this.wh_id;
                 ptw.wh_status = this.wh_status;
             }
+            else if (typeClerancePermit == clearancePermit.EXCAVATION.ToString())
+            {
+                this.ex_id = clearance_id;
+                this.ex_status = status;
+
+                ptw.ex_id = this.ex_id;
+                ptw.ex_status = this.ex_status;
+            }
+            else if (typeClerancePermit == clearancePermit.CONFINEDSPACE.ToString())
+            {
+                this.csep_id = clearance_id;
+                this.csep_status = status;
+
+                ptw.csep_id = this.csep_id;
+                ptw.csep_status = this.csep_status;
+            }
+            else if (typeClerancePermit == clearancePermit.LOCKOUTTAGOUT.ToString())
+            {
+                this.loto_id = clearance_id;
+                this.loto_status = status;
+
+                ptw.loto_id = this.loto_id;
+                ptw.loto_status = this.loto_status;
+            }
             this.db.Entry(ptw).State = EntityState.Modified;
             this.db.SaveChanges();
 
@@ -1761,6 +1828,24 @@ namespace PermitToWork.Models.Ptw
 
                 ptw.wh_status = this.wh_status;
             }
+            else if (typeClerancePermit == clearancePermit.EXCAVATION.ToString())
+            {
+                this.ex_status = status;
+
+                ptw.ex_status = this.ex_status;
+            }
+            else if (typeClerancePermit == clearancePermit.CONFINEDSPACE.ToString())
+            {
+                this.csep_status = status;
+
+                ptw.csep_status = this.csep_status;
+            }
+            else if (typeClerancePermit == clearancePermit.LOCKOUTTAGOUT.ToString())
+            {
+                this.loto_status = status;
+
+                ptw.loto_status = this.loto_status;
+            }
 
             this.db.Entry(ptw).State = EntityState.Modified;
             this.db.SaveChanges();
@@ -1778,7 +1863,7 @@ namespace PermitToWork.Models.Ptw
                 {
                     case (int)statusClearance.NOTCOMPLETE: retVal = "<span class='label'>Not Completed</span>"; break;
                     case (int)statusClearance.COMPLETE: retVal = "<span class='label label-success'>Completed</span>"; break;
-                    case (int)statusClearance.CLOSE: retVal = "<span class='label label-error'>Closed</span>"; break;
+                    case (int)statusClearance.CLOSE: retVal = "<span class='label label-danger'>Closed</span>"; break;
                 };
             }
             else if (typeClerancePermit == clearancePermit.FIREIMPAIRMENT.ToString())
@@ -1787,7 +1872,7 @@ namespace PermitToWork.Models.Ptw
                 {
                     case (int)statusClearance.NOTCOMPLETE: retVal = "<span class='label'>Not Completed</span>"; break;
                     case (int)statusClearance.COMPLETE: retVal = "<span class='label label-success'>Completed</span>"; break;
-                    case (int)statusClearance.CLOSE: retVal = "<span class='label label-error'>Closed</span>"; break;
+                    case (int)statusClearance.CLOSE: retVal = "<span class='label label-danger'>Closed</span>"; break;
                 };
             }
             else if (typeClerancePermit == clearancePermit.RADIOGRAPHY.ToString())
@@ -1796,7 +1881,7 @@ namespace PermitToWork.Models.Ptw
                 {
                     case (int)statusClearance.NOTCOMPLETE: retVal = "<span class='label'>Not Completed</span>"; break;
                     case (int)statusClearance.COMPLETE: retVal = "<span class='label label-success'>Completed</span>"; break;
-                    case (int)statusClearance.CLOSE: retVal = "<span class='label label-error'>Closed</span>"; break;
+                    case (int)statusClearance.CLOSE: retVal = "<span class='label label-danger'>Closed</span>"; break;
                 };
             }
             else if (typeClerancePermit == clearancePermit.WORKINGHEIGHT.ToString())
@@ -1805,7 +1890,34 @@ namespace PermitToWork.Models.Ptw
                 {
                     case (int)statusClearance.NOTCOMPLETE: retVal = "<span class='label'>Not Completed</span>"; break;
                     case (int)statusClearance.COMPLETE: retVal = "<span class='label label-success'>Completed</span>"; break;
-                    case (int)statusClearance.CLOSE: retVal = "<span class='label label-error'>Closed</span>"; break;
+                    case (int)statusClearance.CLOSE: retVal = "<span class='label label-danger'>Closed</span>"; break;
+                };
+            }
+            else if (typeClerancePermit == clearancePermit.EXCAVATION.ToString())
+            {
+                switch (this.ex_status)
+                {
+                    case (int)statusClearance.NOTCOMPLETE: retVal = "<span class='label'>Not Completed</span>"; break;
+                    case (int)statusClearance.COMPLETE: retVal = "<span class='label label-success'>Completed</span>"; break;
+                    case (int)statusClearance.CLOSE: retVal = "<span class='label label-danger'>Closed</span>"; break;
+                };
+            }
+            else if (typeClerancePermit == clearancePermit.CONFINEDSPACE.ToString())
+            {
+                switch (this.csep_status)
+                {
+                    case (int)statusClearance.NOTCOMPLETE: retVal = "<span class='label'>Not Completed</span>"; break;
+                    case (int)statusClearance.COMPLETE: retVal = "<span class='label label-success'>Completed</span>"; break;
+                    case (int)statusClearance.CLOSE: retVal = "<span class='label label-danger'>Closed</span>"; break;
+                };
+            }
+            else if (typeClerancePermit == clearancePermit.LOCKOUTTAGOUT.ToString())
+            {
+                switch (this.loto_status)
+                {
+                    case (int)statusClearance.NOTCOMPLETE: retVal = "<span class='label'>Not Completed</span>"; break;
+                    case (int)statusClearance.COMPLETE: retVal = "<span class='label label-success'>Completed</span>"; break;
+                    case (int)statusClearance.CLOSE: retVal = "<span class='label label-danger'>Closed</span>"; break;
                 };
             }
 

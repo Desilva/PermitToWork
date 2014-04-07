@@ -29,7 +29,7 @@ textarea
     margin:0.5em 0 0 0;
 }
 
-input[type="file"] 
+.k-upload-button
 {
     width:200px !important;
 }
@@ -138,16 +138,6 @@ input[type="file"]
     font-size :12px !important;
     text-align:left !important;
     font-weight : normal !important;
-}
-
-.k-datetimepicker
-{
-    width : 155px;
-}
-
-.k-datetimepicker .k-input
-{
-    font-size : 11px;
 }
 
 .table-ul

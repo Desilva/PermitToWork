@@ -49,20 +49,15 @@ namespace PermitToWork.Models
         /// </summary>
         public enum FIStatus {
             CREATE,
-            EDITANDSEND,
-            SPVSCREENING,
-            SOSCREENING,
-            FOSCREENING,
             REQUESTORAPPROVE,
             FIREWATCHAPPROVE,
+            SPVSCREENING,
             SOAPPROVE,
             FOAPPROVE,
             DEPTFOAPPROVE,
             CLOSING,
-            CANSPVSCREENING,
-            CANSOSCREENING,
-            CANFOSCREENING,
             CANREQUESTORAPPROVE,
+            CANSPVSCREENING,
             CANFIREWATCHAPPROVE,
             CANSOAPPROVE,
             CANFOAPPROVE,
@@ -188,82 +183,451 @@ namespace PermitToWork.Models
         }
 
         /// <summary>
+        /// save as draft Fire Impairment Clearance Permit
+        /// </summary>
+        /// <param name="who">1 if requestor, 2 if supervisor, 3 if fire watch, 4 if safety officer, 5 if facility owner, 6 if dept. head FO</param>
+        /// <returns>1 if success, 0 if fail</returns>
+        public int saveAsDraft(int who)
+        {
+            int retVal = 0;
+            switch (who)
+            {
+                case 1 /* Requestor */:
+                    retVal = this.edit();
+                    break;
+                case 3 /* Supervisor */:
+                    retVal = SavePreScreening(1);
+                    break;
+                case 4 /* Safety Officer */:
+                    retVal = SavePreScreening(2);
+                    break;
+                case 5 /* Facility Owner */:
+                    retVal = SavePreScreening(3);
+                    break;
+                default:
+                    retVal = 1;
+                    break;
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        /// function for signing clearance permit
+        /// </summary>
+        /// <param name="who">1 if requestor, 2 if supervisor, 3 if fire watch, 4 if safety officer, 5 if facility owner, 6 if dept. head FO</param>
+        /// <returns>1 if success, 0 if fail, -1 if user doesn't exist</returns>
+        public int signClearance(int who, UserEntity user) {
+            int retVal = 0, userId = 0;
+            fire_impairment fi = this.db.fire_impairment.Find(this.id);
+            UserEntity userFi = null;
+            if (fi != null)
+            {
+                switch (who)
+                {
+                    case 1 /* Requestor */:
+                        Int32.TryParse(fi.requestor, out userId);
+                        userFi = new UserEntity(userId, user.token, user);
+                        if (user.id == userFi.id)
+                        {
+                            fi.acc_work_leader_signature = "a" + user.signature;
+                        }
+                        else if (user.id == userFi.employee_delegate)
+                        {
+                            fi.acc_work_leader_signature = "d" + user.signature;
+                            fi.acc_work_leader_delegate = user.id.ToString();
+                        }
+
+                        fi.status = (int)FIStatus.REQUESTORAPPROVE;
+
+                        break;
+                    case 2 /* Fire Watch */:
+                        Int32.TryParse(fi.fire_watch, out userId);
+                        userFi = new UserEntity(userId, user.token, user);
+                        if (user.id == userFi.id)
+                        {
+                            fi.acc_fire_watch_signature = "a" + user.signature;
+                        }
+                        else if (user.id == userFi.employee_delegate)
+                        {
+                            fi.acc_fire_watch_signature = "d" + user.signature;
+                            fi.acc_fire_wacth_delegate = user.id.ToString();
+                        }
+
+                        fi.status = (int)FIStatus.FIREWATCHAPPROVE;
+                        break;
+                    case 3 /* Supervisor */:
+                        fi.status = (int)FIStatus.SPVSCREENING;
+                        break;
+                    case 4 /* Safety Officer */:
+                        Int32.TryParse(fi.acc_so, out userId);
+                        userFi = new UserEntity(userId, user.token, user);
+                        if (user.id == userFi.id)
+                        {
+                            fi.acc_so_signature = "a" + user.signature;
+                        }
+                        else if (user.id == userFi.employee_delegate)
+                        {
+                            fi.acc_so_signature = "d" + user.signature;
+                            fi.acc_so_delegate = user.id.ToString();
+                        }
+
+                        fi.status = (int)FIStatus.SOAPPROVE;
+                        break;
+                    case 5 /* Facility Owner */:
+                        Int32.TryParse(fi.acc_fo, out userId);
+                        userFi = new UserEntity(userId, user.token, user);
+                        if (user.id == userFi.id)
+                        {
+                            fi.acc_fo_signature = "a" + user.signature;
+                        }
+                        else if (user.id == userFi.employee_delegate)
+                        {
+                            fi.acc_fo_signature = "d" + user.signature;
+                            fi.acc_fo_delegate = user.id.ToString();
+                        }
+
+                        fi.status = (int)FIStatus.FOAPPROVE;
+                        break;
+                    case 6 /* Dept. Head Facility Owner */:
+                        Int32.TryParse(fi.acc_dept_head, out userId);
+                        userFi = new UserEntity(userId, user.token, user);
+                        if (user.id == userFi.id)
+                        {
+                            fi.acc_dept_head_signature = "a" + user.signature;
+                        }
+                        else if (user.id == userFi.employee_delegate)
+                        {
+                            fi.acc_dept_head_signature = "d" + user.signature;
+                            fi.acc_dept_head_delegate = user.id.ToString();
+                        }
+
+                        fi.status = (int)FIStatus.DEPTFOAPPROVE;
+
+                        this.ptw = new PtwEntity(fi.id_ptw.Value, user);
+                        this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString());
+                        break;
+                }
+
+                this.db.Entry(fi).State = EntityState.Modified;
+                retVal = this.db.SaveChanges();
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
         /// 
         /// </summary>
-        /// <param name="serverUrl"></param>
-        /// <param name="user"></param>
+        /// <param name="who"></param>
         /// <returns></returns>
-        public int sendToSPV(string serverUrl, UserEntity user)
+        public int rejectClearance(int who)
         {
             int retVal = 0;
             fire_impairment fi = this.db.fire_impairment.Find(this.id);
             if (fi != null)
             {
-                if (this.status == (int)FIStatus.CREATE)
+                switch (who)
                 {
-                    if (this.userInFI[UserInFI.SUPERVISOR.ToString()] != null)
-                    {
-                        fi.status = (int)FIStatus.EDITANDSEND;
+                    case 1 /* Requestor */:
 
-                        this.db.Entry(fi).State = EntityState.Modified;
-                        this.db.SaveChanges();
+                        fi.status = (int)FIStatus.REQUESTORAPPROVE;
 
-                        // sending email
-                        List<string> email = new List<string>();
-                        //email.Add(this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].email);
-                        email.Add("septujamasoka@gmail.com");
-                        SendEmail sendEmail = new SendEmail();
-                        //s.Add(gasTester.email);
-                        //s.Add("septu.jamasoka@gmail.com");
-
-                        string message = serverUrl + "Home?p=FI/edit/" + this.id;
-
-                        sendEmail.Send(email, message, "Fire Impairment Clearance Permit Supervisor Pre-Job Screening");
-                    }
-                    else
-                    {
-                        retVal = -1;
-                    }
+                        break;
+                    case 2 /* Fire Watch */:
+                        fi.acc_work_leader_signature = null;
+                        fi.acc_work_leader_delegate = null;
+                        fi.status = (int)FIStatus.CREATE;
+                        break;
+                    case 3 /* Supervisor */:
+                        fi.acc_fire_watch_signature = null;
+                        fi.acc_fire_wacth_delegate = null;
+                        fi.status = (int)FIStatus.REQUESTORAPPROVE;
+                        break;
+                    case 4 /* Safety Officer */:
+                        fi.status = (int)FIStatus.FIREWATCHAPPROVE;
+                        break;
+                    case 5 /* Facility Owner */:
+                        fi.acc_so_signature = null;
+                        fi.acc_so_delegate = null;
+                        fi.status = (int)FIStatus.SPVSCREENING;
+                        break;
+                    case 6 /* Dept. Head Facility Owner */:
+                        fi.acc_fo_signature = null;
+                        fi.acc_fo_delegate = null;
+                        fi.status = (int)FIStatus.SOAPPROVE;
+                        break;
                 }
-                else
-                {
-                    List<string> email = new List<string>();
-                    SendEmail sendEmail = new SendEmail();
-                    string message = "";
-                    switch (this.status)
-                    {
-                        case (int)FIStatus.EDITANDSEND:
-                            // sending email
 
-                            //email.add(this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].email);
-                            email.Add("septujamasoka@gmail.com");
-                            message = serverUrl + "Home?p=FI/edit/" + this.id;
-                            sendEmail.Send(email, message, "Fire Impairment Clearance Permit Supervisor Pre-Job Screening");
-                            break;
-                        case (int)FIStatus.SPVSCREENING:
-                            // sending email
-
-                            //email.add(this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()].email);
-                            email.Add("septujamasoka@gmail.com");
-                            message = serverUrl + "Home?p=FI/edit/" + this.id;
-                            sendEmail.Send(email, message, "Fire Impairment Clearance Permit Safety Officer Pre-Job Screening");
-                            break;
-                        case (int)FIStatus.SOSCREENING:
-                            // sending email
-
-                            //email.add(this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].email);
-                            email.Add("septujamasoka@gmail.com");
-                            message = serverUrl + "Home?p=FI/edit/" + this.id;
-                            sendEmail.Send(email, message, "Fire Impairment Clearance Permit Facility Owner Pre-Job Screening");
-                            break;
-                    }
-
-                    retVal = 1;
-                }
+                this.db.Entry(fi).State = EntityState.Modified;
+                retVal = this.db.SaveChanges();
             }
 
             return retVal;
         }
+
+
+        /// <summary>
+        /// sending email to user, need the object instatiate first to get user
+        /// </summary>
+        /// <param name="who"></param>
+        /// <param name="serverUrl"></param>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public int sendToUser(int who, int stat, string serverUrl, UserEntity user, string comment = "")
+        {
+            int retVal = 0;
+            int? userId = null;
+            fire_impairment fi = this.db.fire_impairment.Find(this.id);
+            UserEntity userFi = null;
+            List<string> listEmail = new List<string>();
+            SendEmail sendEmail = new SendEmail();
+            string message = "";
+            string title = "";
+            if (fi != null)
+            {
+                listEmail.Add("septujamasoka@gmail.com");
+                switch (who)
+                {
+                    case 1 /* Requestor */:
+                        #if !DEBUG
+
+                        if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.REQUESTOR.ToString()))
+                        {
+                            listEmail.Add(this.userInFI[UserInFI.REQUESTOR.ToString()].email);
+                            if ((userId = this.userInFI[UserInFI.REQUESTOR.ToString()].employee_delegate) != null)
+                            {
+                                userFi = new UserEntity(userId.Value, user.token, user);
+                                listEmail.Add(userFi.email);
+                            }
+                        }
+
+                        #endif
+
+                        if (stat == 1)
+                        {
+                            title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Need Review and Approval";
+                            message = serverUrl + "Home?p=FI/edit/" + this.id;
+                        }
+                        else if (stat == 2)
+                        {
+                            message = serverUrl + "Home?p=FI/edit/" + this.id + "<br />Comment: " + comment;
+                            title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Rejected from Fire Watch";
+                        }
+
+                        retVal = 1;
+                        break;
+                    case 2 /* Fire Watch */:
+                        #if !DEBUG
+
+                        if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.FIREWATCH.ToString()))
+                        {
+                            listEmail.Add(this.userInFI[UserInFI.FIREWATCH.ToString()].email);
+                            if ((userId = this.userInFI[UserInFI.FIREWATCH.ToString()].employee_delegate) != null)
+                            {
+                                userFi = new UserEntity(userId.Value, user.token, user);
+                                listEmail.Add(userFi.email);
+                            }
+                        }
+
+                        #endif
+
+                        if (stat == 1)
+                        {
+                            title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Need Review and Approval";
+                            message = serverUrl + "Home?p=FI/edit/" + this.id;
+                        }
+                        else if (stat == 2)
+                        {
+                            message = serverUrl + "Home?p=FI/edit/" + this.id + "<br />Comment: " + comment;
+                            title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Rejected from Supervisor";
+                        }
+                        retVal = 1;
+                        break;
+                    case 3 /* Supervisor */:
+                        #if !DEBUG
+
+                        if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.SUPERVISOR.ToString()))
+                        {
+                            listEmail.Add(this.userInFI[UserInFI.SUPERVISOR.ToString()].email);
+                            if ((userId = this.userInFI[UserInFI.SUPERVISOR.ToString()].employee_delegate) != null)
+                            {
+                                userFi = new UserEntity(userId.Value, user.token, user);
+                                listEmail.Add(userFi.email);
+                            }
+                        }
+                        else
+                        {
+
+                        }
+
+                        #endif
+
+                        if (stat == 1)
+                        {
+                            title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Need Review and Approval";
+                            message = serverUrl + "Home?p=FI/edit/" + this.id;
+                        }
+                        else if (stat == 2)
+                        {
+                            message = serverUrl + "Home?p=FI/edit/" + this.id + "<br />Comment: " + comment;
+                            title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Rejected from Safety Officer";
+                        }
+                        retVal = 1;
+                        break;
+                    case 4 /* Safety Officer */:
+                        if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.SAFETYOFFICER.ToString()))
+                        {
+                            #if !DEBUG
+                            listEmail.Add(this.userInFI[UserInFI.SAFETYOFFICER.ToString()].email);
+                            if ((userId = this.userInFI[UserInFI.SAFETYOFFICER.ToString()].employee_delegate) != null)
+                            {
+                                userFi = new UserEntity(userId.Value, user.token, user);
+                                listEmail.Add(userFi.email);
+                            }
+                            #endif
+
+                            if (stat == 1)
+                            {
+                                title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Need Review and Approval";
+                                message = serverUrl + "Home?p=FI/edit/" + this.id;
+                            }
+                            else if (stat == 2)
+                            {
+                                message = serverUrl + "Home?p=FI/edit/" + this.id + "<br />Comment: " + comment;
+                                title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Rejected from Facility Owner";
+                            }
+                        } else {
+                            #if !DEBUG
+                            listEmail.Add(this.userInFI[UserInFI.FACILITYOWNER.ToString()].email);
+                            if ((userId = this.userInFI[UserInFI.FACILITYOWNER.ToString()].employee_delegate) != null)
+                            {
+                                userFi = new UserEntity(userId.Value, user.token, user);
+                                listEmail.Add(userFi.email);
+                            }
+                            #endif
+
+                            title = "[URGENT] Fire Impairment Clearance Permit (" + this.fi_no + ") Safety Officer hasn't been Chosen";
+                            message = serverUrl + "Home?p=FI/edit/" + this.id;
+                        }
+                        retVal = 1;
+                        break;
+                    case 5 /* Facility Owner */:
+                        #if !DEBUG
+                        if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.FACILITYOWNER.ToString()))
+                        {
+                            listEmail.Add(this.userInFI[UserInFI.FACILITYOWNER.ToString()].email);
+                            if ((userId = this.userInFI[UserInFI.FACILITYOWNER.ToString()].employee_delegate) != null)
+                            {
+                                userFi = new UserEntity(userId.Value, user.token, user);
+                                listEmail.Add(userFi.email);
+                            }
+                        }
+                        #endif
+
+                        if (stat == 1)
+                        {
+                            title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Need Review and Approval";
+                            message = serverUrl + "Home?p=FI/edit/" + this.id;
+                        }
+                        else if (stat == 2)
+                        {
+                            message = serverUrl + "Home?p=FI/edit/" + this.id + "<br />Comment: " + comment;
+                            title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Rejected from Dept. Head FO";
+                        }
+                        retVal = 1;
+                        break;
+                    case 6 /* Dept. Head Facility Owner */:
+                        #if !DEBUG
+                        if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.DEPTHEADFO.ToString()))
+                        {
+                            listEmail.Add(this.userInFI[UserInFI.DEPTHEADFO.ToString()].email);
+                            if ((userId = this.userInFI[UserInFI.DEPTHEADFO.ToString()].employee_delegate) != null)
+                            {
+                                userFi = new UserEntity(userId.Value, user.token, user);
+                                listEmail.Add(userFi.email);
+                            }
+                        }
+                        #endif
+
+                        if (stat == 1)
+                        {
+                            title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Need Review and Approval";
+                            message = serverUrl + "Home?p=FI/edit/" + this.id;
+                        }
+                        retVal = 1;
+                        break;
+
+                    case 7 /* Requestor */:
+#if !DEBUG
+
+                        if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.REQUESTOR.ToString()))
+                        {
+                            listEmail.Add(this.userInFI[UserInFI.REQUESTOR.ToString()].email);
+                            if ((userId = this.userInFI[UserInFI.REQUESTOR.ToString()].employee_delegate) != null)
+                            {
+                                userFi = new UserEntity(userId.Value, user.token, user);
+                                listEmail.Add(userFi.email);
+                            }
+                        }
+
+#endif
+
+                        if (stat == 1)
+                        {
+                            title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Completed and Approved";
+                            message = serverUrl + "Home?p=FI/edit/" + this.id;
+                        }
+
+                        retVal = 1;
+                        break;
+                }
+
+                sendEmail.Send(listEmail, message, title);
+            }
+
+            return retVal;
+        }
+
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="serverUrl"></param>
+        ///// <param name="user"></param>
+        ///// <returns></returns>
+        //public int sendToSPV(string serverUrl, UserEntity user)
+        //{
+        //    int retVal = 0;
+        //    fire_impairment fi = this.db.fire_impairment.Find(this.id);
+        //    if (fi != null)
+        //    {
+        //        if (this.userInFI[UserInFI.SUPERVISOR.ToString()] != null)
+        //        {
+        //            fi.status = (int)FIStatus.EDITANDSEND;
+
+        //            this.db.Entry(fi).State = EntityState.Modified;
+        //            this.db.SaveChanges();
+
+        //            // sending email
+        //            List<string> email = new List<string>();
+        //            //email.Add(this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].email);
+        //            email.Add("septujamasoka@gmail.com");
+        //            SendEmail sendEmail = new SendEmail();
+        //            //s.Add(gasTester.email);
+        //            //s.Add("septu.jamasoka@gmail.com");
+
+        //            string message = serverUrl + "Home?p=FI/edit/" + this.id;
+
+        //            sendEmail.Send(email, message, "Fire Impairment Clearance Permit Supervisor Pre-Job Screening");
+        //        }
+        //        else
+        //        {
+        //            retVal = -1;
+        //        }
+        //    }
+
+        //    return retVal;
+        //}
 
         public int SavePreScreening(int type /* 1 = Spv, 2 = SO, 3 = FO */)
         {
@@ -284,7 +648,7 @@ namespace PermitToWork.Models
                         fi.screening_fo = this.screening_fo;
                         break;
                 }
-                
+
 
                 this.db.Entry(fi).State = EntityState.Modified;
                 retVal = this.db.SaveChanges();
@@ -293,88 +657,88 @@ namespace PermitToWork.Models
             return retVal;
         }
 
-        public int completePreScreening(int type /* 1 = Spv, 2 = SO, 3 = FO */, UserEntity user, string serverUrl = "")
-        {
-            int retVal = 0;
-            List<string> email = new List<string>();
-            string message = "";
-            string subject = "";
-            SendEmail sendEmail = new SendEmail();
-            fire_impairment fi = this.db.fire_impairment.Find(this.id);
-            if (fi != null)
-            {
-                switch (type)
-                {
-                    case 1:
-                        fi.status = (int)FIStatus.SPVSCREENING;
-                        if (this.userInFI[UserInFI.SAFETYOFFICER.ToString()] != null)
-                        {
-                            email.Add(this.userInFI[UserInFI.SAFETYOFFICER.ToString()].email);
-                            if (this.userInFI[UserInFI.SAFETYOFFICER.ToString()].employee_delegate != null)
-                            {
-                                UserEntity @delegate = new UserEntity(this.userInFI[UserInFI.SAFETYOFFICER.ToString()].employee_delegate.Value, user.token, user);
-                                email.Add(@delegate.email);
-                            }
-                            subject = "Fire Impairment Clearance Permit Safety Officer Pre-Job Screening";
-                        }
-                        else
-                        {
-                            email.Add(this.userInFI[UserInFI.REQUESTOR.ToString()].email);
-                            if (this.userInFI[UserInFI.REQUESTOR.ToString()].employee_delegate != null)
-                            {
-                                UserEntity @delegate = new UserEntity(this.userInFI[UserInFI.REQUESTOR.ToString()].employee_delegate.Value, user.token, user);
-                                email.Add(@delegate.email);
-                            }
-                            subject = "Fire Impairment Clearance Permit Safety Officer hasn't been Chosen";
-                            message = "Fire Impairement Clearance Permit can not be continued because Safety Officer hasn't been chosen yet. Please inform Facility Owner to choose Safety Officer Immediately.";
-                            email.Clear(); // for testing purpose, remove if not testing anymore
-                            sendEmail.Send(email, message, subject);
-                            email.Add(this.userInFI[UserInFI.FACILITYOWNER.ToString()].email);
-                            if (this.userInFI[UserInFI.FACILITYOWNER.ToString()].employee_delegate != null)
-                            {
-                                UserEntity @delegate = new UserEntity(this.userInFI[UserInFI.FACILITYOWNER.ToString()].employee_delegate.Value, user.token, user);
-                                email.Add(@delegate.email);
-                            }
-                            subject = "[URGENT] Fire Impairment Clearance Permit Safety Officer hasn't been Chosen";
-                            message = "Fire Impairement Clearance Permit can not be continued because Safety Officer hasn't been chosen yet. Please choose Safety Officer Immediately. Link: " + serverUrl + "Home?p=FI/edit/" + this.id;
-                        }
-                        break;
-                    case 2:
-                        fi.status = (int)FIStatus.SOSCREENING;
-                        email.Add(this.userInFI[UserInFI.FACILITYOWNER.ToString()].email);
-                        if (this.userInFI[UserInFI.FACILITYOWNER.ToString()].employee_delegate != null)
-                        {
-                            UserEntity @delegate = new UserEntity(this.userInFI[UserInFI.FACILITYOWNER.ToString()].employee_delegate.Value, user.token, user);
-                            email.Add(@delegate.email);
-                        }
-                        subject = "Fire Impairment Clearance Permit Facility Owner Pre-Job Screening";
-                        break;
-                    case 3:
-                        fi.status = (int)FIStatus.FOSCREENING;
-                        email.Add(this.userInFI[UserInFI.REQUESTOR.ToString()].email);
-                        if (this.userInFI[UserInFI.REQUESTOR.ToString()].employee_delegate != null)
-                        {
-                            UserEntity @delegate = new UserEntity(this.userInFI[UserInFI.REQUESTOR.ToString()].employee_delegate.Value, user.token, user);
-                            email.Add(@delegate.email);
-                        }
-                        subject = "Fire Impairment Clearance Permit Pre-Job Screening Completed";
-                        break;
-                }
+        //public int completePreScreening(int type /* 1 = Spv, 2 = SO, 3 = FO */, UserEntity user, string serverUrl = "")
+        //{
+        //    int retVal = 0;
+        //    List<string> email = new List<string>();
+        //    string message = "";
+        //    string subject = "";
+        //    SendEmail sendEmail = new SendEmail();
+        //    fire_impairment fi = this.db.fire_impairment.Find(this.id);
+        //    if (fi != null)
+        //    {
+        //        switch (type)
+        //        {
+        //            case 1:
+        //                fi.status = (int)FIStatus.SPVSCREENING;
+        //                if (this.userInFI[UserInFI.SAFETYOFFICER.ToString()] != null)
+        //                {
+        //                    email.Add(this.userInFI[UserInFI.SAFETYOFFICER.ToString()].email);
+        //                    if (this.userInFI[UserInFI.SAFETYOFFICER.ToString()].employee_delegate != null)
+        //                    {
+        //                        UserEntity @delegate = new UserEntity(this.userInFI[UserInFI.SAFETYOFFICER.ToString()].employee_delegate.Value, user.token, user);
+        //                        email.Add(@delegate.email);
+        //                    }
+        //                    subject = "Fire Impairment Clearance Permit Safety Officer Pre-Job Screening";
+        //                }
+        //                else
+        //                {
+        //                    email.Add(this.userInFI[UserInFI.REQUESTOR.ToString()].email);
+        //                    if (this.userInFI[UserInFI.REQUESTOR.ToString()].employee_delegate != null)
+        //                    {
+        //                        UserEntity @delegate = new UserEntity(this.userInFI[UserInFI.REQUESTOR.ToString()].employee_delegate.Value, user.token, user);
+        //                        email.Add(@delegate.email);
+        //                    }
+        //                    subject = "Fire Impairment Clearance Permit Safety Officer hasn't been Chosen";
+        //                    message = "Fire Impairement Clearance Permit can not be continued because Safety Officer hasn't been chosen yet. Please inform Facility Owner to choose Safety Officer Immediately.";
+        //                    email.Clear(); // for testing purpose, remove if not testing anymore
+        //                    sendEmail.Send(email, message, subject);
+        //                    email.Add(this.userInFI[UserInFI.FACILITYOWNER.ToString()].email);
+        //                    if (this.userInFI[UserInFI.FACILITYOWNER.ToString()].employee_delegate != null)
+        //                    {
+        //                        UserEntity @delegate = new UserEntity(this.userInFI[UserInFI.FACILITYOWNER.ToString()].employee_delegate.Value, user.token, user);
+        //                        email.Add(@delegate.email);
+        //                    }
+        //                    subject = "[URGENT] Fire Impairment Clearance Permit Safety Officer hasn't been Chosen";
+        //                    message = "Fire Impairement Clearance Permit can not be continued because Safety Officer hasn't been chosen yet. Please choose Safety Officer Immediately. Link: " + serverUrl + "Home?p=FI/edit/" + this.id;
+        //                }
+        //                break;
+        //            case 2:
+        //                fi.status = (int)FIStatus.SOSCREENING;
+        //                email.Add(this.userInFI[UserInFI.FACILITYOWNER.ToString()].email);
+        //                if (this.userInFI[UserInFI.FACILITYOWNER.ToString()].employee_delegate != null)
+        //                {
+        //                    UserEntity @delegate = new UserEntity(this.userInFI[UserInFI.FACILITYOWNER.ToString()].employee_delegate.Value, user.token, user);
+        //                    email.Add(@delegate.email);
+        //                }
+        //                subject = "Fire Impairment Clearance Permit Facility Owner Pre-Job Screening";
+        //                break;
+        //            case 3:
+        //                fi.status = (int)FIStatus.FOSCREENING;
+        //                email.Add(this.userInFI[UserInFI.REQUESTOR.ToString()].email);
+        //                if (this.userInFI[UserInFI.REQUESTOR.ToString()].employee_delegate != null)
+        //                {
+        //                    UserEntity @delegate = new UserEntity(this.userInFI[UserInFI.REQUESTOR.ToString()].employee_delegate.Value, user.token, user);
+        //                    email.Add(@delegate.email);
+        //                }
+        //                subject = "Fire Impairment Clearance Permit Pre-Job Screening Completed";
+        //                break;
+        //        }
 
 
-                this.db.Entry(fi).State = EntityState.Modified;
-                retVal = this.db.SaveChanges();
+        //        this.db.Entry(fi).State = EntityState.Modified;
+        //        retVal = this.db.SaveChanges();
 
-                message = serverUrl + "Home?p=FI/edit/" + this.id;
+        //        message = serverUrl + "Home?p=FI/edit/" + this.id;
 
-                /* for testing purpose */
-                email.Clear();
-                email.Add("septujamasoka@gmail.com");
-                sendEmail.Send(email, message, subject);
-            }
+        //        /* for testing purpose */
+        //        email.Clear();
+        //        email.Add("septujamasoka@gmail.com");
+        //        sendEmail.Send(email, message, subject);
+        //    }
 
-            return retVal;
-        }
+        //    return retVal;
+        //}
 
 
 
@@ -398,38 +762,38 @@ namespace PermitToWork.Models
             return 1;
         }
 
-        public int rejectPreScreening(int who /* 1 = spv, 2 = rad, 3 = fo */, string serverUrl, string comment)
-        {
-            int retVal = 0;
-            fire_impairment fi = this.db.fire_impairment.Find(this.id);
-            if (fi != null)
-            {
-                // sending email
-                List<string> email = new List<string>();
-                string title = "";
-                switch (who)
-                {
-                    case 1:
-                        title = "Fire Impairment Clearance Permit Rejected by Supervisor on Pre-Job Screening";
-                        break;
-                    case 2:
-                        title = "Fire Impairment Clearance Permit Rejected by Radiographer Level 2 on Pre-Job Screening";
-                        break;
-                    case 3:
-                        title = "Fire Impairment Clearance Permit Rejected by Facility Owner on Pre-Job Screening";
-                        break;
-                }
-                //email.add(this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].email);
-                email.Add("septujamasoka@gmail.com");
-                SendEmail sendEmail = new SendEmail();
-                string message = serverUrl + "Home?p=FI/edit/" + this.id;
-                sendEmail.Send(email, message, title);
+        //public int rejectPreScreening(int who /* 1 = spv, 2 = rad, 3 = fo */, string serverUrl, string comment)
+        //{
+        //    int retVal = 0;
+        //    fire_impairment fi = this.db.fire_impairment.Find(this.id);
+        //    if (fi != null)
+        //    {
+        //        // sending email
+        //        List<string> email = new List<string>();
+        //        string title = "";
+        //        switch (who)
+        //        {
+        //            case 1:
+        //                title = "Fire Impairment Clearance Permit Rejected by Supervisor on Pre-Job Screening";
+        //                break;
+        //            case 2:
+        //                title = "Fire Impairment Clearance Permit Rejected by Radiographer Level 2 on Pre-Job Screening";
+        //                break;
+        //            case 3:
+        //                title = "Fire Impairment Clearance Permit Rejected by Facility Owner on Pre-Job Screening";
+        //                break;
+        //        }
+        //        //email.add(this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()].email);
+        //        email.Add("septujamasoka@gmail.com");
+        //        SendEmail sendEmail = new SendEmail();
+        //        string message = serverUrl + "Home?p=FI/edit/" + this.id;
+        //        sendEmail.Send(email, message, title);
 
-                retVal = 1;
-            }
+        //        retVal = 1;
+        //    }
 
-            return retVal;
-        }
+        //    return retVal;
+        //}
 
         public string getHiraNo()
         {
@@ -450,266 +814,657 @@ namespace PermitToWork.Models
             }
         }
 
-        public ResponseModel approvePermit(UserEntity user, int type /* 1 = requestor / workers leader; 2 = fire watch; 3 = SO; 4 = FO; 5 = Dept. Head FO */, string serverUrl)
+        //public ResponseModel approvePermit(UserEntity user, int type /* 1 = requestor / workers leader; 2 = fire watch; 3 = SO; 4 = FO; 5 = Dept. Head FO */, string serverUrl)
+        //{
+        //    ResponseModel response = new ResponseModel();
+        //    fire_impairment fi = this.db.fire_impairment.Find(this.id);
+        //    int userId = 0;
+        //    List<string> email = new List<string>();
+        //    string message = "";
+        //    string subject = "";
+        //    UserEntity userFi = new UserEntity();
+        //    SendEmail sendEmail = new SendEmail();
+        //    if (fi != null)
+        //    {
+        //        fi.purpose = this.purpose;
+        //        fi.area_affected = this.area_affected;
+        //        switch (type)
+        //        {
+        //            case 1:
+        //                Int32.TryParse(fi.requestor, out userId);
+        //                userFi = new UserEntity(userId, user.token, user);
+        //                if (user.id == userFi.id)
+        //                {
+        //                    fi.acc_work_leader_signature = "a" + user.signature;
+        //                }
+        //                else if (user.id == userFi.employee_delegate)
+        //                {
+        //                    fi.acc_work_leader_signature = "d" + user.signature;
+        //                    fi.acc_work_leader_delegate = user.id.ToString();
+        //                }
+        //                else
+        //                {
+        //                    response.status = 401;
+        //                }
+
+        //                fi.status = (int)FIStatus.REQUESTORAPPROVE;
+
+        //                //email.Add(this.userInFI[UserInFI.FIREWATCH.ToString()].email);
+        //                //if (this.userInFI[UserInFI.FIREWATCH.ToString()].employee_delegate != null)
+        //                //{
+        //                //    UserEntity @delegate = new UserEntity(this.userInFI[UserInFI.FIREWATCH.ToString()].employee_delegate.Value, user.token, user);
+        //                //    email.Add(@delegate.email);
+        //                //}
+        //                subject = "Fire Impairment Clearance Permit Need Approval from Fire Watch";
+        //                response.message = "Fire Impairment Clearance Permit Approved. \nFire Watch (" + userFi.alpha_name + ") will be notified to approve this Fire Impairment Clearance Permit.";
+        //                break;
+        //            case 2:
+        //                Int32.TryParse(fi.fire_watch, out userId);
+        //                userFi = new UserEntity(userId, user.token, user);
+        //                if (user.id == userFi.id)
+        //                {
+        //                    fi.acc_fire_watch_signature = "a" + user.signature;
+        //                }
+        //                else if (user.id == userFi.employee_delegate)
+        //                {
+        //                    fi.acc_fire_watch_signature = "d" + user.signature;
+        //                    fi.acc_fire_wacth_delegate = user.id.ToString();
+        //                }
+        //                else
+        //                {
+        //                    response.status = 401;
+        //                }
+
+        //                fi.status = (int)FIStatus.FIREWATCHAPPROVE;
+
+        //                //email.Add(this.userInFI[UserInFI.SAFETYOFFICER.ToString()].email);
+        //                //if (this.userInFI[UserInFI.SAFETYOFFICER.ToString()].employee_delegate != null)
+        //                //{
+        //                //    UserEntity @delegate = new UserEntity(this.userInFI[UserInFI.SAFETYOFFICER.ToString()].employee_delegate.Value, user.token, user);
+        //                //    email.Add(@delegate.email);
+        //                //}
+        //                subject = "Fire Impairment Clearance Permit Need Approval from Safety Officer";
+        //                response.message = "Fire Impairment Clearance Permit Approved. \nSafety Officer (" + userFi.alpha_name + ") will be notified to approve this Fire Impairment Clearance Permit.";
+        //                break;
+        //            case 3:
+        //                Int32.TryParse(fi.acc_so, out userId);
+        //                userFi = new UserEntity(userId, user.token, user);
+        //                if (user.id == userFi.id)
+        //                {
+        //                    fi.acc_so_signature = "a" + user.signature;
+        //                }
+        //                else if (user.id == userFi.employee_delegate)
+        //                {
+        //                    fi.acc_so_signature = "d" + user.signature;
+        //                    fi.acc_so_delegate = user.id.ToString();
+        //                }
+        //                else
+        //                {
+        //                    response.status = 401;
+        //                }
+
+        //                fi.status = (int)FIStatus.SOAPPROVE;
+
+        //                //email.Add(this.userInFI[UserInFI.FACILITYOWNER.ToString()].email);
+        //                //if (this.userInFI[UserInFI.FACILITYOWNER.ToString()].employee_delegate != null)
+        //                //{
+        //                //    UserEntity @delegate = new UserEntity(this.userInFI[UserInFI.FACILITYOWNER.ToString()].employee_delegate.Value, user.token, user);
+        //                //    email.Add(@delegate.email);
+        //                //}
+        //                subject = "Fire Impairment Clearance Permit Need Approval from Facility Owner";
+        //                response.message = "Fire Impairment Clearance Permit Approved. \nFacility Owner (" + userFi.alpha_name + ") will be notified to approve this Fire Impairment Clearance Permit.";
+        //                break;
+        //            case 4:
+        //                Int32.TryParse(fi.acc_fo, out userId);
+        //                userFi = new UserEntity(userId, user.token, user);
+        //                if (user.id == userFi.id)
+        //                {
+        //                    fi.acc_fo_signature = "a" + user.signature;
+        //                }
+        //                else if (user.id == userFi.employee_delegate)
+        //                {
+        //                    fi.acc_fo_signature = "d" + user.signature;
+        //                    fi.acc_fo_delegate = user.id.ToString();
+        //                }
+        //                else
+        //                {
+        //                    response.status = 401;
+        //                }
+
+        //                fi.status = (int)FIStatus.FOAPPROVE;
+
+        //                //email.Add(this.userInFI[UserInFI.DEPTHEADFO.ToString()].email);
+        //                //if (this.userInFI[UserInFI.DEPTHEADFO.ToString()].employee_delegate != null)
+        //                //{
+        //                //    UserEntity @delegate = new UserEntity(this.userInFI[UserInFI.DEPTHEADFO.ToString()].employee_delegate.Value, user.token, user);
+        //                //    email.Add(@delegate.email);
+        //                //}
+        //                subject = "Fire Impairment Clearance Permit Need Approval from Dept. Head Facility Owner";
+        //                response.message = "Fire Impairment Clearance Permit Approved. \nDept. Head Facility Owner (" + userFi.alpha_name + ") will be notified to approve this Fire Impairment Clearance Permit.";
+        //                break;
+        //            case 5:
+        //                Int32.TryParse(fi.acc_dept_head, out userId);
+        //                userFi = new UserEntity(userId, user.token, user);
+        //                if (user.id == userFi.id)
+        //                {
+        //                    fi.acc_dept_head_signature = "a" + user.signature;
+        //                }
+        //                else if (user.id == userFi.employee_delegate)
+        //                {
+        //                    fi.acc_dept_head_signature = "d" + user.signature;
+        //                    fi.acc_dept_head_delegate = user.id.ToString();
+        //                }
+        //                else
+        //                {
+        //                    response.status = 401;
+        //                }
+
+        //                fi.status = (int)FIStatus.DEPTFOAPPROVE;
+
+        //                //email.Add(this.userInFI[UserInFI.REQUESTOR.ToString()].email);
+        //                //if (this.userInFI[UserInFI.REQUESTOR.ToString()].employee_delegate != null)
+        //                //{
+        //                //    UserEntity @delegate = new UserEntity(this.userInFI[UserInFI.REQUESTOR.ToString()].employee_delegate.Value, user.token, user);
+        //                //    email.Add(@delegate.email);
+        //                //}
+        //                subject = "Fire Impairment Clearance Permit Approval Complete";
+        //                response.message = "Fire Impairment Clearance Permit Approved.";
+
+        //                this.ptw = new PtwEntity(fi.id_ptw.Value, user);
+
+        //                this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString());
+        //                break;
+        //        }
+
+        //        if (response.status != 401)
+        //        {
+        //            this.db.Entry(fi).State = EntityState.Modified;
+        //            response.status = this.db.SaveChanges() == 1 ? 200 : 404;
+        //        }
+
+
+        //        message = serverUrl + "Home?p=FI/edit/" + this.id;
+
+        //        /* for testing purpose */
+        //        email.Clear();
+        //        email.Add("septujamasoka@gmail.com");
+        //        sendEmail.Send(email, message, subject);
+        //    }
+
+        //    response.id = this.id;
+
+        //    return response;
+        //}
+
+        //public ResponseModel rejectPermit(UserEntity user, int type /* 1 = requestor / workers leader; 2 = fire watch; 3 = SO; 4 = FO; 5 = Dept. Head FO */, string serverUrl, string comment)
+        //{
+        //    ResponseModel response = new ResponseModel();
+        //    fire_impairment fi = this.db.fire_impairment.Find(this.id);
+        //    int userId = 0;
+        //    List<string> email = new List<string>();
+        //    string message = "";
+        //    string subject = "";
+        //    UserEntity userFi = new UserEntity();
+        //    SendEmail sendEmail = new SendEmail();
+        //    if (fi != null)
+        //    {
+        //        switch (type)
+        //        {
+        //            case 2:
+        //                fi.acc_work_leader_signature = null;
+        //                fi.acc_work_leader_delegate = null;
+        //                //fi.status = (int)FIStatus.FOSCREENING;
+
+        //                Int32.TryParse(fi.requestor, out userId);
+        //                userFi = new UserEntity(userId, user.token, user);
+        //                email.Add(userFi.email);
+        //                subject = "Fire Impairment Clearance Permit Rejected from Fire Watch";
+        //                response.message = "Fire Impairment Clearance Permit is rejected. \nRequestor (" + userFi.alpha_name + ") will be notified to revised this Fire Impairment Clearance Permit.";
+        //                break;
+        //            case 3:
+        //                fi.acc_fire_watch_signature = null;
+        //                fi.acc_fire_wacth_delegate = null;
+        //                fi.status = (int)FIStatus.REQUESTORAPPROVE;
+
+        //                Int32.TryParse(fi.fire_watch, out userId);
+        //                userFi = new UserEntity(userId, user.token, user);
+        //                email.Add(userFi.email);
+        //                subject = "Fire Impairment Clearance Permit Rejected from Safety Officer";
+        //                response.message = "Fire Impairment Clearance Permit is rejected. \nFire Watch (" + userFi.alpha_name + ") will be notified to revised this Fire Impairment Clearance Permit.";
+        //                break;
+        //            case 4:
+        //                fi.acc_so_signature = null;
+        //                fi.acc_so_delegate = null;
+        //                fi.status = (int)FIStatus.FIREWATCHAPPROVE;
+
+        //                Int32.TryParse(fi.acc_so, out userId);
+        //                userFi = new UserEntity(userId, user.token, user);
+        //                email.Add(userFi.email);
+        //                subject = "Fire Impairment Clearance Permit Rejected from Facility Owner";
+        //                response.message = "Fire Impairment Clearance Permit is rejected. \nSafety Officer (" + userFi.alpha_name + ") will be notified to revised this Fire Impairment Clearance Permit.";
+        //                break;
+        //            case 5:
+        //                fi.acc_fo_signature = null;
+        //                fi.acc_fo_delegate = null;
+        //                fi.status = (int)FIStatus.SOAPPROVE;
+
+        //                Int32.TryParse(fi.acc_fo, out userId);
+        //                userFi = new UserEntity(userId, user.token, user);
+        //                email.Add(userFi.email);
+        //                subject = "Fire Impairment Clearance Permit Rejected from Dept. Head FO";
+        //                response.message = "Fire Impairment Clearance Permit is rejected. \nFacility Owner (" + userFi.alpha_name + ") will be notified to revised this Fire Impairment Clearance Permit.";
+        //                break;
+        //        }
+
+        //        if (response.status != 401)
+        //        {
+        //            this.db.Entry(fi).State = EntityState.Modified;
+        //            response.status = this.db.SaveChanges() == 1 ? 200 : 404;
+        //        }
+
+
+        //        message = serverUrl + "Home?p=FI/edit/" + this.id + "<br />" + comment;
+
+        //        /* for testing purpose */
+        //        email.RemoveAt(0);
+        //        email.Add("septujamasoka@gmail.com");
+        //        sendEmail.Send(email, message, subject);
+        //    }
+
+        //    response.id = this.id;
+
+        //    return response;
+        //}
+
+        /// <summary>
+        /// save as draft Fire Impairment Clearance Permit Cancellation
+        /// </summary>
+        /// <param name="who">1 if requestor, 2 if supervisor, 3 if fire watch, 4 if safety officer, 5 if facility owner, 6 if dept. head FO</param>
+        /// <returns>1 if success, 0 if fail</returns>
+        public int saveAsDraftCancel(int who)
         {
-            ResponseModel response = new ResponseModel();
+            int retVal = 0;
+            switch (who)
+            {
+                case 3 /* Supervisor */:
+                    retVal = SaveCancelScreening(1);
+                    break;
+                case 4 /* Safety Officer */:
+                    retVal = SaveCancelScreening(2);
+                    break;
+                case 5 /* Facility Owner */:
+                    retVal = SaveCancelScreening(3);
+                    break;
+                default:
+                    retVal = 1;
+                    break;
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        /// function for signing clearance permit
+        /// </summary>
+        /// <param name="who">1 if requestor, 2 if supervisor, 3 if fire watch, 4 if safety officer, 5 if facility owner, 6 if dept. head FO</param>
+        /// <returns>1 if success, 0 if fail, -1 if user doesn't exist</returns>
+        public int signClearanceCancel(int who, UserEntity user)
+        {
+            int retVal = 0, userId = 0;
             fire_impairment fi = this.db.fire_impairment.Find(this.id);
-            int userId = 0;
-            List<string> email = new List<string>();
-            string message = "";
-            string subject = "";
-            UserEntity userFi = new UserEntity();
-            SendEmail sendEmail = new SendEmail();
+            UserEntity userFi = null;
             if (fi != null)
             {
-                fi.purpose = this.purpose;
-                fi.area_affected = this.area_affected;
-                switch (type)
+                switch (who)
                 {
-                    case 1:
+                    case 1 /* Requestor */:
                         Int32.TryParse(fi.requestor, out userId);
                         userFi = new UserEntity(userId, user.token, user);
                         if (user.id == userFi.id)
                         {
-                            fi.acc_work_leader_signature = "a" + user.signature;
+                            fi.cancel_work_leader_signature = "a" + user.signature;
                         }
                         else if (user.id == userFi.employee_delegate)
                         {
-                            fi.acc_work_leader_signature = "d" + user.signature;
-                            fi.acc_work_leader_delegate = user.id.ToString();
-                        }
-                        else
-                        {
-                            response.status = 401;
+                            fi.cancel_work_leader_signature = "d" + user.signature;
+                            fi.cancel_work_leader_delegate = user.id.ToString();
                         }
 
-                        fi.status = (int)FIStatus.REQUESTORAPPROVE;
+                        fi.status = (int)FIStatus.CANREQUESTORAPPROVE;
 
-                        //email.Add(this.userInFI[UserInFI.FIREWATCH.ToString()].email);
-                        //if (this.userInFI[UserInFI.FIREWATCH.ToString()].employee_delegate != null)
-                        //{
-                        //    UserEntity @delegate = new UserEntity(this.userInFI[UserInFI.FIREWATCH.ToString()].employee_delegate.Value, user.token, user);
-                        //    email.Add(@delegate.email);
-                        //}
-                        subject = "Fire Impairment Clearance Permit Need Approval from Fire Watch";
-                        response.message = "Fire Impairment Clearance Permit Approved. \nFire Watch (" + userFi.alpha_name + ") will be notified to approve this Fire Impairment Clearance Permit.";
                         break;
-                    case 2:
+                    case 2 /* Fire Watch */:
                         Int32.TryParse(fi.fire_watch, out userId);
                         userFi = new UserEntity(userId, user.token, user);
                         if (user.id == userFi.id)
                         {
-                            fi.acc_fire_watch_signature = "a" + user.signature;
+                            fi.cancel_fire_watch_signature = "a" + user.signature;
                         }
                         else if (user.id == userFi.employee_delegate)
                         {
-                            fi.acc_fire_watch_signature = "d" + user.signature;
-                            fi.acc_fire_wacth_delegate = user.id.ToString();
-                        }
-                        else
-                        {
-                            response.status = 401;
+                            fi.cancel_fire_watch_signature = "d" + user.signature;
+                            fi.cancel_fire_watch_delegate = user.id.ToString();
                         }
 
-                        fi.status = (int)FIStatus.FIREWATCHAPPROVE;
-
-                        //email.Add(this.userInFI[UserInFI.SAFETYOFFICER.ToString()].email);
-                        //if (this.userInFI[UserInFI.SAFETYOFFICER.ToString()].employee_delegate != null)
-                        //{
-                        //    UserEntity @delegate = new UserEntity(this.userInFI[UserInFI.SAFETYOFFICER.ToString()].employee_delegate.Value, user.token, user);
-                        //    email.Add(@delegate.email);
-                        //}
-                        subject = "Fire Impairment Clearance Permit Need Approval from Safety Officer";
-                        response.message = "Fire Impairment Clearance Permit Approved. \nSafety Officer (" + userFi.alpha_name + ") will be notified to approve this Fire Impairment Clearance Permit.";
+                        fi.status = (int)FIStatus.CANFIREWATCHAPPROVE;
                         break;
-                    case 3:
+                    case 3 /* Supervisor */:
+                        fi.status = (int)FIStatus.CANSPVSCREENING;
+                        break;
+                    case 4 /* Safety Officer */:
                         Int32.TryParse(fi.acc_so, out userId);
                         userFi = new UserEntity(userId, user.token, user);
                         if (user.id == userFi.id)
                         {
-                            fi.acc_so_signature = "a" + user.signature;
+                            fi.cancel_so_signature = "a" + user.signature;
                         }
                         else if (user.id == userFi.employee_delegate)
                         {
-                            fi.acc_so_signature = "d" + user.signature;
-                            fi.acc_so_delegate = user.id.ToString();
-                        }
-                        else
-                        {
-                            response.status = 401;
+                            fi.cancel_so_signature = "d" + user.signature;
+                            fi.cancel_so_delegate = user.id.ToString();
                         }
 
-                        fi.status = (int)FIStatus.SOAPPROVE;
-
-                        //email.Add(this.userInFI[UserInFI.FACILITYOWNER.ToString()].email);
-                        //if (this.userInFI[UserInFI.FACILITYOWNER.ToString()].employee_delegate != null)
-                        //{
-                        //    UserEntity @delegate = new UserEntity(this.userInFI[UserInFI.FACILITYOWNER.ToString()].employee_delegate.Value, user.token, user);
-                        //    email.Add(@delegate.email);
-                        //}
-                        subject = "Fire Impairment Clearance Permit Need Approval from Facility Owner";
-                        response.message = "Fire Impairment Clearance Permit Approved. \nFacility Owner (" + userFi.alpha_name + ") will be notified to approve this Fire Impairment Clearance Permit.";
+                        fi.status = (int)FIStatus.CANSOAPPROVE;
                         break;
-                    case 4:
+                    case 5 /* Facility Owner */:
                         Int32.TryParse(fi.acc_fo, out userId);
                         userFi = new UserEntity(userId, user.token, user);
                         if (user.id == userFi.id)
                         {
-                            fi.acc_fo_signature = "a" + user.signature;
+                            fi.cancel_fo_signature = "a" + user.signature;
                         }
                         else if (user.id == userFi.employee_delegate)
                         {
-                            fi.acc_fo_signature = "d" + user.signature;
-                            fi.acc_fo_delegate = user.id.ToString();
-                        }
-                        else
-                        {
-                            response.status = 401;
+                            fi.cancel_fo_signature = "d" + user.signature;
+                            fi.cancel_fo_delegate = user.id.ToString();
                         }
 
-                        fi.status = (int)FIStatus.FOAPPROVE;
-
-                        //email.Add(this.userInFI[UserInFI.DEPTHEADFO.ToString()].email);
-                        //if (this.userInFI[UserInFI.DEPTHEADFO.ToString()].employee_delegate != null)
-                        //{
-                        //    UserEntity @delegate = new UserEntity(this.userInFI[UserInFI.DEPTHEADFO.ToString()].employee_delegate.Value, user.token, user);
-                        //    email.Add(@delegate.email);
-                        //}
-                        subject = "Fire Impairment Clearance Permit Need Approval from Dept. Head Facility Owner";
-                        response.message = "Fire Impairment Clearance Permit Approved. \nDept. Head Facility Owner (" + userFi.alpha_name + ") will be notified to approve this Fire Impairment Clearance Permit.";
+                        fi.status = (int)FIStatus.CANFOAPPROVE;
                         break;
-                    case 5:
+                    case 6 /* Dept. Head Facility Owner */:
                         Int32.TryParse(fi.acc_dept_head, out userId);
                         userFi = new UserEntity(userId, user.token, user);
                         if (user.id == userFi.id)
                         {
-                            fi.acc_dept_head_signature = "a" + user.signature;
+                            fi.cancel_dept_head_signature = "a" + user.signature;
                         }
                         else if (user.id == userFi.employee_delegate)
                         {
-                            fi.acc_dept_head_signature = "d" + user.signature;
-                            fi.acc_dept_head_delegate = user.id.ToString();
+                            fi.cancel_dept_head_signature = "d" + user.signature;
+                            fi.cancel_dept_head_delegate = user.id.ToString();
+                        }
+
+                        fi.status = (int)FIStatus.CANDEPTFOAPPROVE;
+
+                        this.ptw = new PtwEntity(fi.id_ptw.Value, user);
+                        this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.CLOSE, PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString());
+                        break;
+                }
+
+                this.db.Entry(fi).State = EntityState.Modified;
+                retVal = this.db.SaveChanges();
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="who"></param>
+        /// <returns></returns>
+        public int rejectClearanceCancel(int who)
+        {
+            int retVal = 0;
+            fire_impairment fi = this.db.fire_impairment.Find(this.id);
+            if (fi != null)
+            {
+                switch (who)
+                {
+                    case 1 /* Requestor */:
+
+                        fi.status = (int)FIStatus.CLOSING;
+
+                        break;
+                    case 2 /* Fire Watch */:
+                        fi.cancel_work_leader_signature = null;
+                        fi.cancel_work_leader_delegate = null;
+                        fi.status = (int)FIStatus.CLOSING;
+                        break;
+                    case 3 /* Supervisor */:
+                        fi.cancel_fire_watch_signature = null;
+                        fi.cancel_fire_watch_delegate = null;
+                        fi.status = (int)FIStatus.CANREQUESTORAPPROVE;
+                        break;
+                    case 4 /* Safety Officer */:
+                        fi.status = (int)FIStatus.CANFIREWATCHAPPROVE;
+                        break;
+                    case 5 /* Facility Owner */:
+                        fi.cancel_so_signature = null;
+                        fi.cancel_so_delegate = null;
+                        fi.status = (int)FIStatus.CANSPVSCREENING;
+                        break;
+                    case 6 /* Dept. Head Facility Owner */:
+                        fi.cancel_fo_signature = null;
+                        fi.cancel_fo_delegate = null;
+                        fi.status = (int)FIStatus.CANSOAPPROVE;
+                        break;
+                }
+
+                this.db.Entry(fi).State = EntityState.Modified;
+                retVal = this.db.SaveChanges();
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        /// sending email to user, need the object instatiate first to get user
+        /// </summary>
+        /// <param name="who"></param>
+        /// <param name="serverUrl"></param>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public int sendToUserCancel(int who, int stat, string serverUrl, UserEntity user, string comment = "")
+        {
+            int retVal = 0;
+            int? userId = null;
+            fire_impairment fi = this.db.fire_impairment.Find(this.id);
+            UserEntity userFi = null;
+            List<string> listEmail = new List<string>();
+            SendEmail sendEmail = new SendEmail();
+            string message = "";
+            string title = "";
+            if (fi != null)
+            {
+                listEmail.Add("septujamasoka@gmail.com");
+                switch (who)
+                {
+                    case 1 /* Requestor */:
+#if !DEBUG
+
+                        if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.REQUESTOR.ToString()))
+                        {
+                            listEmail.Add(this.userInFI[UserInFI.REQUESTOR.ToString()].email);
+                            if ((userId = this.userInFI[UserInFI.REQUESTOR.ToString()].employee_delegate) != null)
+                            {
+                                userFi = new UserEntity(userId.Value, user.token, user);
+                                listEmail.Add(userFi.email);
+                            }
+                        }
+
+#endif
+
+                        if (stat == 1)
+                        {
+                            title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Need Review and Approval";
+                            message = serverUrl + "Home?p=FI/edit/" + this.id;
+                        }
+                        else if (stat == 2)
+                        {
+                            message = serverUrl + "Home?p=FI/edit/" + this.id + "<br />Comment: " + comment;
+                            title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Rejected from Fire Watch";
+                        }
+
+                        retVal = 1;
+                        break;
+                    case 2 /* Fire Watch */:
+#if !DEBUG
+
+                        if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.FIREWATCH.ToString()))
+                        {
+                            listEmail.Add(this.userInFI[UserInFI.FIREWATCH.ToString()].email);
+                            if ((userId = this.userInFI[UserInFI.FIREWATCH.ToString()].employee_delegate) != null)
+                            {
+                                userFi = new UserEntity(userId.Value, user.token, user);
+                                listEmail.Add(userFi.email);
+                            }
+                        }
+
+#endif
+
+                        if (stat == 1)
+                        {
+                            title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Need Review and Approval";
+                            message = serverUrl + "Home?p=FI/edit/" + this.id;
+                        }
+                        else if (stat == 2)
+                        {
+                            message = serverUrl + "Home?p=FI/edit/" + this.id + "<br />Comment: " + comment;
+                            title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Rejected from Supervisor";
+                        }
+                        retVal = 1;
+                        break;
+                    case 3 /* Supervisor */:
+#if !DEBUG
+
+                        if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.SUPERVISOR.ToString()))
+                        {
+                            listEmail.Add(this.userInFI[UserInFI.SUPERVISOR.ToString()].email);
+                            if ((userId = this.userInFI[UserInFI.SUPERVISOR.ToString()].employee_delegate) != null)
+                            {
+                                userFi = new UserEntity(userId.Value, user.token, user);
+                                listEmail.Add(userFi.email);
+                            }
                         }
                         else
                         {
-                            response.status = 401;
+
                         }
 
-                        fi.status = (int)FIStatus.DEPTFOAPPROVE;
+#endif
 
-                        //email.Add(this.userInFI[UserInFI.REQUESTOR.ToString()].email);
-                        //if (this.userInFI[UserInFI.REQUESTOR.ToString()].employee_delegate != null)
-                        //{
-                        //    UserEntity @delegate = new UserEntity(this.userInFI[UserInFI.REQUESTOR.ToString()].employee_delegate.Value, user.token, user);
-                        //    email.Add(@delegate.email);
-                        //}
-                        subject = "Fire Impairment Clearance Permit Approval Complete";
-                        response.message = "Fire Impairment Clearance Permit Approved.";
+                        if (stat == 1)
+                        {
+                            title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Need Review and Approval";
+                            message = serverUrl + "Home?p=FI/edit/" + this.id;
+                        }
+                        else if (stat == 2)
+                        {
+                            message = serverUrl + "Home?p=FI/edit/" + this.id + "<br />Comment: " + comment;
+                            title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Rejected from Safety Officer";
+                        }
+                        retVal = 1;
+                        break;
+                    case 4 /* Safety Officer */:
+                        if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.SAFETYOFFICER.ToString()))
+                        {
+#if !DEBUG
+                            listEmail.Add(this.userInFI[UserInFI.SAFETYOFFICER.ToString()].email);
+                            if ((userId = this.userInFI[UserInFI.SAFETYOFFICER.ToString()].employee_delegate) != null)
+                            {
+                                userFi = new UserEntity(userId.Value, user.token, user);
+                                listEmail.Add(userFi.email);
+                            }
+#endif
+                        }
 
-                        this.ptw = new PtwEntity(fi.id_ptw.Value, user);
+                        if (stat == 1)
+                        {
+                            title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Need Review and Approval";
+                            message = serverUrl + "Home?p=FI/edit/" + this.id;
+                        }
+                        else if (stat == 2)
+                        {
+                            message = serverUrl + "Home?p=FI/edit/" + this.id + "<br />Comment: " + comment;
+                            title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Rejected from Facility Owner";
+                        }
+                        retVal = 1;
+                        break;
+                    case 5 /* Facility Owner */:
+#if !DEBUG
+                        if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.FACILITYOWNER.ToString()))
+                        {
+                            listEmail.Add(this.userInFI[UserInFI.FACILITYOWNER.ToString()].email);
+                            if ((userId = this.userInFI[UserInFI.FACILITYOWNER.ToString()].employee_delegate) != null)
+                            {
+                                userFi = new UserEntity(userId.Value, user.token, user);
+                                listEmail.Add(userFi.email);
+                            }
+                        }
+#endif
 
-                        this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString());
+                        if (stat == 1)
+                        {
+                            title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Need Review and Approval";
+                            message = serverUrl + "Home?p=FI/edit/" + this.id;
+                        }
+                        else if (stat == 2)
+                        {
+                            message = serverUrl + "Home?p=FI/edit/" + this.id + "<br />Comment: " + comment;
+                            title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Rejected from Dept. Head FO";
+                        }
+                        retVal = 1;
+                        break;
+                    case 6 /* Dept. Head Facility Owner */:
+#if !DEBUG
+                        if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.DEPTHEADFO.ToString()))
+                        {
+                            listEmail.Add(this.userInFI[UserInFI.DEPTHEADFO.ToString()].email);
+                            if ((userId = this.userInFI[UserInFI.DEPTHEADFO.ToString()].employee_delegate) != null)
+                            {
+                                userFi = new UserEntity(userId.Value, user.token, user);
+                                listEmail.Add(userFi.email);
+                            }
+                        }
+#endif
+
+                        if (stat == 1)
+                        {
+                            title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Need Review and Approval";
+                            message = serverUrl + "Home?p=FI/edit/" + this.id;
+                        }
+                        retVal = 1;
+                        break;
+                    case 7 /* Requestor */:
+#if !DEBUG
+
+                        if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.REQUESTOR.ToString()))
+                        {
+                            listEmail.Add(this.userInFI[UserInFI.REQUESTOR.ToString()].email);
+                            if ((userId = this.userInFI[UserInFI.REQUESTOR.ToString()].employee_delegate) != null)
+                            {
+                                userFi = new UserEntity(userId.Value, user.token, user);
+                                listEmail.Add(userFi.email);
+                            }
+                        }
+
+#endif
+
+                        if (stat == 1)
+                        {
+                            title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Approved";
+                            message = serverUrl + "Home?p=FI/edit/" + this.id;
+                        }
+
+                        retVal = 1;
                         break;
                 }
 
-                if (response.status != 401)
-                {
-                    this.db.Entry(fi).State = EntityState.Modified;
-                    response.status = this.db.SaveChanges() == 1 ? 200 : 404;
-                }
-
-
-                message = serverUrl + "Home?p=FI/edit/" + this.id;
-
-                /* for testing purpose */
-                email.Clear();
-                email.Add("septujamasoka@gmail.com");
-                sendEmail.Send(email, message, subject);
+                sendEmail.Send(listEmail, message, title);
             }
 
-            response.id = this.id;
-
-            return response;
-        }
-
-        public ResponseModel rejectPermit(UserEntity user, int type /* 1 = requestor / workers leader; 2 = fire watch; 3 = SO; 4 = FO; 5 = Dept. Head FO */, string serverUrl, string comment)
-        {
-            ResponseModel response = new ResponseModel();
-            fire_impairment fi = this.db.fire_impairment.Find(this.id);
-            int userId = 0;
-            List<string> email = new List<string>();
-            string message = "";
-            string subject = "";
-            UserEntity userFi = new UserEntity();
-            SendEmail sendEmail = new SendEmail();
-            if (fi != null)
-            {
-                switch (type)
-                {
-                    case 2:
-                        fi.acc_work_leader_signature = null;
-                        fi.acc_work_leader_delegate = null;
-                        fi.status = (int)FIStatus.FOSCREENING;
-
-                        Int32.TryParse(fi.requestor, out userId);
-                        userFi = new UserEntity(userId, user.token, user);
-                        email.Add(userFi.email);
-                        subject = "Fire Impairment Clearance Permit Rejected from Fire Watch";
-                        response.message = "Fire Impairment Clearance Permit is rejected. \nRequestor (" + userFi.alpha_name + ") will be notified to revised this Fire Impairment Clearance Permit.";
-                        break;
-                    case 3:
-                        fi.acc_fire_watch_signature = null;
-                        fi.acc_fire_wacth_delegate = null;
-                        fi.status = (int)FIStatus.REQUESTORAPPROVE;
-
-                        Int32.TryParse(fi.fire_watch, out userId);
-                        userFi = new UserEntity(userId, user.token, user);
-                        email.Add(userFi.email);
-                        subject = "Fire Impairment Clearance Permit Rejected from Safety Officer";
-                        response.message = "Fire Impairment Clearance Permit is rejected. \nFire Watch (" + userFi.alpha_name + ") will be notified to revised this Fire Impairment Clearance Permit.";
-                        break;
-                    case 4:
-                        fi.acc_so_signature = null;
-                        fi.acc_so_delegate = null;
-                        fi.status = (int)FIStatus.FIREWATCHAPPROVE;
-
-                        Int32.TryParse(fi.acc_so, out userId);
-                        userFi = new UserEntity(userId, user.token, user);
-                        email.Add(userFi.email);
-                        subject = "Fire Impairment Clearance Permit Rejected from Facility Owner";
-                        response.message = "Fire Impairment Clearance Permit is rejected. \nSafety Officer (" + userFi.alpha_name + ") will be notified to revised this Fire Impairment Clearance Permit.";
-                        break;
-                    case 5:
-                        fi.acc_fo_signature = null;
-                        fi.acc_fo_delegate = null;
-                        fi.status = (int)FIStatus.SOAPPROVE;
-
-                        Int32.TryParse(fi.acc_fo, out userId);
-                        userFi = new UserEntity(userId, user.token, user);
-                        email.Add(userFi.email);
-                        subject = "Fire Impairment Clearance Permit Rejected from Dept. Head FO";
-                        response.message = "Fire Impairment Clearance Permit is rejected. \nFacility Owner (" + userFi.alpha_name + ") will be notified to revised this Fire Impairment Clearance Permit.";
-                        break;
-                }
-
-                if (response.status != 401)
-                {
-                    this.db.Entry(fi).State = EntityState.Modified;
-                    response.status = this.db.SaveChanges() == 1 ? 200 : 404;
-                }
-
-
-                message = serverUrl + "Home?p=FI/edit/" + this.id + "<br />" + comment;
-
-                /* for testing purpose */
-                email.RemoveAt(0);
-                email.Add("septujamasoka@gmail.com");
-                sendEmail.Send(email, message, subject);
-            }
-
-            response.id = this.id;
-
-            return response;
+            return retVal;
         }
 
         public string cancelFIPermit(UserEntity user, string serverUrl)
@@ -739,14 +1494,9 @@ namespace PermitToWork.Models
             return "200";
         }
 
-        public int SaveCancelScreening(int type /* 1 = Spv, 2 = SO, 3 = FO */, UserEntity user, bool isComplete = false, string serverUrl = "")
+        public int SaveCancelScreening(int type /* 1 = Spv, 2 = SO, 3 = FO */)
         {
             int retVal = 0;
-            int userId = 0;
-            List<string> email = new List<string>();
-            string message = "";
-            string subject = "";
-            SendEmail sendEmail = new SendEmail();
             fire_impairment fi = this.db.fire_impairment.Find(this.id);
             if (fi != null)
             {
@@ -755,294 +1505,266 @@ namespace PermitToWork.Models
                 {
                     case 1:
                         fi.cancel_spv = this.cancel_spv;
-                        if (isComplete) fi.status = (int)FIStatus.CANSPVSCREENING;
-                        if (fi.acc_so != null)
-                        {
-                            Int32.TryParse(fi.acc_so, out userId);
-                            UserEntity so = new UserEntity(userId, user.token, user);
-                            email.Add(so.email);
-                            subject = "Fire Impairment Clearance Permit Safety Officer Cancellation Screening";
-                        }
                         break;
                     case 2:
                         fi.cancel_so = this.cancel_so;
-                        if (isComplete) fi.status = (int)FIStatus.CANSOSCREENING;
-                        Int32.TryParse(fi.acc_fo, out userId);
-                        UserEntity fo = new UserEntity(userId, user.token, user);
-                        email.Add(fo.email);
-                        subject = "Fire Impairment Clearance Permit Facility Owner Cancellation Screening";
                         break;
                     case 3:
                         fi.cancel_fo = this.cancel_fo;
-                        if (isComplete) fi.status = (int)FIStatus.CANFOSCREENING;
-                        Int32.TryParse(fi.requestor, out userId);
-                        UserEntity requestor = new UserEntity(userId, user.token, user);
-                        email.Add(requestor.email);
-                        subject = "Fire Impairment Clearance Permit Cancellation Screening Completed";
                         break;
                 }
 
 
                 this.db.Entry(fi).State = EntityState.Modified;
                 retVal = this.db.SaveChanges();
-
-                if (isComplete)
-                {
-                    message = serverUrl + "Home?p=FI/edit/" + this.id;
-
-                    /* for testing purpose */
-                    email.RemoveAt(0);
-                    email.Add("septujamasoka@gmail.com");
-                    sendEmail.Send(email, message, subject);
-                }
             }
 
             return retVal;
         }
 
-        public ResponseModel approvePermitCancel(UserEntity user, int type /* 1 = requestor / workers leader; 2 = fire watch; 3 = SO; 4 = FO; 5 = Dept. Head FO */, string serverUrl)
-        {
-            ResponseModel response = new ResponseModel();
-            fire_impairment fi = this.db.fire_impairment.Find(this.id);
-            int userId = 0;
-            List<string> email = new List<string>();
-            string message = "";
-            string subject = "";
-            UserEntity userFi = new UserEntity();
-            SendEmail sendEmail = new SendEmail();
-            if (fi != null)
-            {
-                switch (type)
-                {
-                    case 1:
-                        Int32.TryParse(fi.requestor, out userId);
-                        userFi = new UserEntity(userId, user.token, user);
-                        if (user.id == userFi.id)
-                        {
-                            fi.cancel_work_leader_signature = "a" + user.signature;
-                        }
-                        else if (user.id == userFi.employee_delegate)
-                        {
-                            fi.cancel_work_leader_signature = "d" + user.signature;
-                            fi.cancel_work_leader_delegate = user.id.ToString();
-                        }
-                        else
-                        {
-                            response.status = 401;
-                        }
+        //public ResponseModel approvePermitCancel(UserEntity user, int type /* 1 = requestor / workers leader; 2 = fire watch; 3 = SO; 4 = FO; 5 = Dept. Head FO */, string serverUrl)
+        //{
+        //    ResponseModel response = new ResponseModel();
+        //    fire_impairment fi = this.db.fire_impairment.Find(this.id);
+        //    int userId = 0;
+        //    List<string> email = new List<string>();
+        //    string message = "";
+        //    string subject = "";
+        //    UserEntity userFi = new UserEntity();
+        //    SendEmail sendEmail = new SendEmail();
+        //    if (fi != null)
+        //    {
+        //        switch (type)
+        //        {
+        //            case 1:
+        //                Int32.TryParse(fi.requestor, out userId);
+        //                userFi = new UserEntity(userId, user.token, user);
+        //                if (user.id == userFi.id)
+        //                {
+        //                    fi.cancel_work_leader_signature = "a" + user.signature;
+        //                }
+        //                else if (user.id == userFi.employee_delegate)
+        //                {
+        //                    fi.cancel_work_leader_signature = "d" + user.signature;
+        //                    fi.cancel_work_leader_delegate = user.id.ToString();
+        //                }
+        //                else
+        //                {
+        //                    response.status = 401;
+        //                }
 
-                        fi.status = (int)FIStatus.CANREQUESTORAPPROVE;
+        //                fi.status = (int)FIStatus.CANREQUESTORAPPROVE;
 
-                        Int32.TryParse(fi.fire_watch, out userId);
-                        userFi = new UserEntity(userId, user.token, user);
-                        email.Add(userFi.email);
-                        subject = "Fire Impairment Clearance Permit Need Cancellation from Fire Watch";
-                        response.message = "Fire Impairment Clearance Permit Approved. \nFire Watch (" + userFi.alpha_name + ") will be notified to cancel this Fire Impairment Clearance Permit.";
-                        break;
-                    case 2:
-                        Int32.TryParse(fi.fire_watch, out userId);
-                        userFi = new UserEntity(userId, user.token, user);
-                        if (user.id == userFi.id)
-                        {
-                            fi.cancel_fire_watch_signature = "a" + user.signature;
-                        }
-                        else if (user.id == userFi.employee_delegate)
-                        {
-                            fi.cancel_fire_watch_signature = "d" + user.signature;
-                            fi.cancel_fire_watch_delegate = user.id.ToString();
-                        }
-                        else
-                        {
-                            response.status = 401;
-                        }
+        //                Int32.TryParse(fi.fire_watch, out userId);
+        //                userFi = new UserEntity(userId, user.token, user);
+        //                email.Add(userFi.email);
+        //                subject = "Fire Impairment Clearance Permit Need Cancellation from Fire Watch";
+        //                response.message = "Fire Impairment Clearance Permit Approved. \nFire Watch (" + userFi.alpha_name + ") will be notified to cancel this Fire Impairment Clearance Permit.";
+        //                break;
+        //            case 2:
+        //                Int32.TryParse(fi.fire_watch, out userId);
+        //                userFi = new UserEntity(userId, user.token, user);
+        //                if (user.id == userFi.id)
+        //                {
+        //                    fi.cancel_fire_watch_signature = "a" + user.signature;
+        //                }
+        //                else if (user.id == userFi.employee_delegate)
+        //                {
+        //                    fi.cancel_fire_watch_signature = "d" + user.signature;
+        //                    fi.cancel_fire_watch_delegate = user.id.ToString();
+        //                }
+        //                else
+        //                {
+        //                    response.status = 401;
+        //                }
 
-                        fi.status = (int)FIStatus.CANFIREWATCHAPPROVE;
+        //                fi.status = (int)FIStatus.CANFIREWATCHAPPROVE;
 
-                        Int32.TryParse(fi.acc_so, out userId);
-                        userFi = new UserEntity(userId, user.token, user);
-                        email.Add(userFi.email);
-                        subject = "Fire Impairment Clearance Permit Need Cancellation from Safety Officer";
-                        response.message = "Fire Impairment Clearance Permit Approved. \nSafety Officer (" + userFi.alpha_name + ") will be notified to cancel this Fire Impairment Clearance Permit.";
-                        break;
-                    case 3:
-                        Int32.TryParse(fi.acc_so, out userId);
-                        userFi = new UserEntity(userId, user.token, user);
-                        if (user.id == userFi.id)
-                        {
-                            fi.cancel_so_signature = "a" + user.signature;
-                        }
-                        else if (user.id == userFi.employee_delegate)
-                        {
-                            fi.cancel_so_signature = "d" + user.signature;
-                            fi.cancel_so_delegate = user.id.ToString();
-                        }
-                        else
-                        {
-                            response.status = 401;
-                        }
+        //                Int32.TryParse(fi.acc_so, out userId);
+        //                userFi = new UserEntity(userId, user.token, user);
+        //                email.Add(userFi.email);
+        //                subject = "Fire Impairment Clearance Permit Need Cancellation from Safety Officer";
+        //                response.message = "Fire Impairment Clearance Permit Approved. \nSafety Officer (" + userFi.alpha_name + ") will be notified to cancel this Fire Impairment Clearance Permit.";
+        //                break;
+        //            case 3:
+        //                Int32.TryParse(fi.acc_so, out userId);
+        //                userFi = new UserEntity(userId, user.token, user);
+        //                if (user.id == userFi.id)
+        //                {
+        //                    fi.cancel_so_signature = "a" + user.signature;
+        //                }
+        //                else if (user.id == userFi.employee_delegate)
+        //                {
+        //                    fi.cancel_so_signature = "d" + user.signature;
+        //                    fi.cancel_so_delegate = user.id.ToString();
+        //                }
+        //                else
+        //                {
+        //                    response.status = 401;
+        //                }
 
-                        fi.status = (int)FIStatus.CANSOAPPROVE;
+        //                fi.status = (int)FIStatus.CANSOAPPROVE;
 
-                        Int32.TryParse(fi.acc_fo, out userId);
-                        userFi = new UserEntity(userId, user.token, user);
-                        email.Add(userFi.email);
-                        subject = "Fire Impairment Clearance Permit Need Cancellation from Facility Owner";
-                        response.message = "Fire Impairment Clearance Permit Approved. \nFacility Owner (" + userFi.alpha_name + ") will be notified to cancel this Fire Impairment Clearance Permit.";
-                        break;
-                    case 4:
-                        Int32.TryParse(fi.acc_fo, out userId);
-                        userFi = new UserEntity(userId, user.token, user);
-                        if (user.id == userFi.id)
-                        {
-                            fi.cancel_fo_signature = "a" + user.signature;
-                        }
-                        else if (user.id == userFi.employee_delegate)
-                        {
-                            fi.cancel_fo_signature = "d" + user.signature;
-                            fi.cancel_fo_delegate = user.id.ToString();
-                        }
-                        else
-                        {
-                            response.status = 401;
-                        }
+        //                Int32.TryParse(fi.acc_fo, out userId);
+        //                userFi = new UserEntity(userId, user.token, user);
+        //                email.Add(userFi.email);
+        //                subject = "Fire Impairment Clearance Permit Need Cancellation from Facility Owner";
+        //                response.message = "Fire Impairment Clearance Permit Approved. \nFacility Owner (" + userFi.alpha_name + ") will be notified to cancel this Fire Impairment Clearance Permit.";
+        //                break;
+        //            case 4:
+        //                Int32.TryParse(fi.acc_fo, out userId);
+        //                userFi = new UserEntity(userId, user.token, user);
+        //                if (user.id == userFi.id)
+        //                {
+        //                    fi.cancel_fo_signature = "a" + user.signature;
+        //                }
+        //                else if (user.id == userFi.employee_delegate)
+        //                {
+        //                    fi.cancel_fo_signature = "d" + user.signature;
+        //                    fi.cancel_fo_delegate = user.id.ToString();
+        //                }
+        //                else
+        //                {
+        //                    response.status = 401;
+        //                }
 
-                        fi.status = (int)FIStatus.CANFOAPPROVE;
+        //                fi.status = (int)FIStatus.CANFOAPPROVE;
 
-                        Int32.TryParse(fi.acc_dept_head, out userId);
-                        userFi = new UserEntity(userId, user.token, user);
-                        email.Add(userFi.email);
-                        subject = "Fire Impairment Clearance Permit Need Cancellation from Dept. Head Facility Owner";
-                        response.message = "Fire Impairment Clearance Permit Approved. \nDept. Head Facility Owner (" + userFi.alpha_name + ") will be notified to cancel this Fire Impairment Clearance Permit.";
-                        break;
-                    case 5:
-                        Int32.TryParse(fi.acc_dept_head, out userId);
-                        userFi = new UserEntity(userId, user.token, user);
-                        if (user.id == userFi.id)
-                        {
-                            fi.cancel_dept_head_signature = "a" + user.signature;
-                        }
-                        else if (user.id == userFi.employee_delegate)
-                        {
-                            fi.cancel_dept_head_signature = "d" + user.signature;
-                            fi.cancel_dept_head_delegate = user.id.ToString();
-                        }
-                        else
-                        {
-                            response.status = 401;
-                        }
+        //                Int32.TryParse(fi.acc_dept_head, out userId);
+        //                userFi = new UserEntity(userId, user.token, user);
+        //                email.Add(userFi.email);
+        //                subject = "Fire Impairment Clearance Permit Need Cancellation from Dept. Head Facility Owner";
+        //                response.message = "Fire Impairment Clearance Permit Approved. \nDept. Head Facility Owner (" + userFi.alpha_name + ") will be notified to cancel this Fire Impairment Clearance Permit.";
+        //                break;
+        //            case 5:
+        //                Int32.TryParse(fi.acc_dept_head, out userId);
+        //                userFi = new UserEntity(userId, user.token, user);
+        //                if (user.id == userFi.id)
+        //                {
+        //                    fi.cancel_dept_head_signature = "a" + user.signature;
+        //                }
+        //                else if (user.id == userFi.employee_delegate)
+        //                {
+        //                    fi.cancel_dept_head_signature = "d" + user.signature;
+        //                    fi.cancel_dept_head_delegate = user.id.ToString();
+        //                }
+        //                else
+        //                {
+        //                    response.status = 401;
+        //                }
 
-                        fi.status = (int)FIStatus.CANDEPTFOAPPROVE;
+        //                fi.status = (int)FIStatus.CANDEPTFOAPPROVE;
 
-                        Int32.TryParse(fi.requestor, out userId);
-                        userFi = new UserEntity(userId, user.token, user);
-                        email.Add(userFi.email);
-                        subject = "Fire Impairment Clearance Permit Cancellation Completed";
-                        response.message = "Fire Impairment Clearance Permit Approved.";
-                        this.ptw = new PtwEntity(fi.id_ptw.Value, user);
+        //                Int32.TryParse(fi.requestor, out userId);
+        //                userFi = new UserEntity(userId, user.token, user);
+        //                email.Add(userFi.email);
+        //                subject = "Fire Impairment Clearance Permit Cancellation Completed";
+        //                response.message = "Fire Impairment Clearance Permit Approved.";
+        //                this.ptw = new PtwEntity(fi.id_ptw.Value, user);
 
-                        this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.CLOSE, PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString());
-                        break;
-                }
+        //                this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.CLOSE, PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString());
+        //                break;
+        //        }
 
-                if (response.status != 401)
-                {
-                    this.db.Entry(fi).State = EntityState.Modified;
-                    response.status = this.db.SaveChanges() == 1 ? 200 : 404;
-                }
-
-
-                message = serverUrl + "Home?p=FI/edit/" + this.id;
-
-                /* for testing purpose */
-                email.RemoveAt(0);
-                email.Add("septujamasoka@gmail.com");
-                sendEmail.Send(email, message, subject);
-            }
-
-            response.id = this.id;
-
-            return response;
-        }
-
-        public ResponseModel rejectPermitCancel(UserEntity user, int type /* 1 = requestor / workers leader; 2 = fire watch; 3 = SO; 4 = FO; 5 = Dept. Head FO */, string serverUrl, string comment)
-        {
-            ResponseModel response = new ResponseModel();
-            fire_impairment fi = this.db.fire_impairment.Find(this.id);
-            int userId = 0;
-            List<string> email = new List<string>();
-            string message = "";
-            string subject = "";
-            UserEntity userFi = new UserEntity();
-            SendEmail sendEmail = new SendEmail();
-            if (fi != null)
-            {
-                switch (type)
-                {
-                    case 2:
-                        fi.cancel_work_leader_signature = null;
-                        fi.cancel_work_leader_delegate = null;
-                        fi.status = (int)FIStatus.FOSCREENING;
-
-                        Int32.TryParse(fi.requestor, out userId);
-                        userFi = new UserEntity(userId, user.token, user);
-                        email.Add(userFi.email);
-                        subject = "Fire Impairment Clearance Permit Cancellation Rejected from Fire Watch";
-                        response.message = "Fire Impairment Clearance Permit is rejected. \nRequestor (" + userFi.alpha_name + ") will be notified to revised this Fire Impairment Clearance Permit.";
-                        break;
-                    case 3:
-                        fi.acc_fire_watch_signature = null;
-                        fi.acc_fire_wacth_delegate = null;
-                        fi.status = (int)FIStatus.REQUESTORAPPROVE;
-
-                        Int32.TryParse(fi.fire_watch, out userId);
-                        userFi = new UserEntity(userId, user.token, user);
-                        email.Add(userFi.email);
-                        subject = "Fire Impairment Clearance Permit Rejected from Safety Officer";
-                        response.message = "Fire Impairment Clearance Permit is rejected. \nFire Watch (" + userFi.alpha_name + ") will be notified to revised this Fire Impairment Clearance Permit.";
-                        break;
-                    case 4:
-                        fi.acc_so_signature = null;
-                        fi.acc_so_delegate = null;
-                        fi.status = (int)FIStatus.FIREWATCHAPPROVE;
-
-                        Int32.TryParse(fi.acc_so, out userId);
-                        userFi = new UserEntity(userId, user.token, user);
-                        email.Add(userFi.email);
-                        subject = "Fire Impairment Clearance Permit Rejected from Facility Owner";
-                        response.message = "Fire Impairment Clearance Permit is rejected. \nSafety Officer (" + userFi.alpha_name + ") will be notified to revised this Fire Impairment Clearance Permit.";
-                        break;
-                    case 5:
-                        fi.acc_fo_signature = null;
-                        fi.acc_fo_delegate = null;
-                        fi.status = (int)FIStatus.SOAPPROVE;
-
-                        Int32.TryParse(fi.acc_fo, out userId);
-                        userFi = new UserEntity(userId, user.token, user);
-                        email.Add(userFi.email);
-                        subject = "Fire Impairment Clearance Permit Rejected from Dept. Head FO";
-                        response.message = "Fire Impairment Clearance Permit is rejected. \nFacility Owner (" + userFi.alpha_name + ") will be notified to revised this Fire Impairment Clearance Permit.";
-                        break;
-                }
-
-                if (response.status != 401)
-                {
-                    this.db.Entry(fi).State = EntityState.Modified;
-                    response.status = this.db.SaveChanges() == 1 ? 200 : 404;
-                }
+        //        if (response.status != 401)
+        //        {
+        //            this.db.Entry(fi).State = EntityState.Modified;
+        //            response.status = this.db.SaveChanges() == 1 ? 200 : 404;
+        //        }
 
 
-                message = serverUrl + "Home?p=FI/edit/" + this.id + "<br />" + comment;
+        //        message = serverUrl + "Home?p=FI/edit/" + this.id;
 
-                /* for testing purpose */
-                email.RemoveAt(0);
-                email.Add("septujamasoka@gmail.com");
-                sendEmail.Send(email, message, subject);
-            }
+        //        /* for testing purpose */
+        //        email.RemoveAt(0);
+        //        email.Add("septujamasoka@gmail.com");
+        //        sendEmail.Send(email, message, subject);
+        //    }
 
-            response.id = this.id;
+        //    response.id = this.id;
 
-            return response;
-        }
+        //    return response;
+        //}
+
+        //public ResponseModel rejectPermitCancel(UserEntity user, int type /* 1 = requestor / workers leader; 2 = fire watch; 3 = SO; 4 = FO; 5 = Dept. Head FO */, string serverUrl, string comment)
+        //{
+        //    ResponseModel response = new ResponseModel();
+        //    fire_impairment fi = this.db.fire_impairment.Find(this.id);
+        //    int userId = 0;
+        //    List<string> email = new List<string>();
+        //    string message = "";
+        //    string subject = "";
+        //    UserEntity userFi = new UserEntity();
+        //    SendEmail sendEmail = new SendEmail();
+        //    if (fi != null)
+        //    {
+        //        switch (type)
+        //        {
+        //            case 2:
+        //                fi.cancel_work_leader_signature = null;
+        //                fi.cancel_work_leader_delegate = null;
+        //                //fi.status = (int)FIStatus.FOSCREENING;
+
+        //                Int32.TryParse(fi.requestor, out userId);
+        //                userFi = new UserEntity(userId, user.token, user);
+        //                email.Add(userFi.email);
+        //                subject = "Fire Impairment Clearance Permit Cancellation Rejected from Fire Watch";
+        //                response.message = "Fire Impairment Clearance Permit is rejected. \nRequestor (" + userFi.alpha_name + ") will be notified to revised this Fire Impairment Clearance Permit.";
+        //                break;
+        //            case 3:
+        //                fi.acc_fire_watch_signature = null;
+        //                fi.acc_fire_wacth_delegate = null;
+        //                fi.status = (int)FIStatus.REQUESTORAPPROVE;
+
+        //                Int32.TryParse(fi.fire_watch, out userId);
+        //                userFi = new UserEntity(userId, user.token, user);
+        //                email.Add(userFi.email);
+        //                subject = "Fire Impairment Clearance Permit Rejected from Safety Officer";
+        //                response.message = "Fire Impairment Clearance Permit is rejected. \nFire Watch (" + userFi.alpha_name + ") will be notified to revised this Fire Impairment Clearance Permit.";
+        //                break;
+        //            case 4:
+        //                fi.acc_so_signature = null;
+        //                fi.acc_so_delegate = null;
+        //                fi.status = (int)FIStatus.FIREWATCHAPPROVE;
+
+        //                Int32.TryParse(fi.acc_so, out userId);
+        //                userFi = new UserEntity(userId, user.token, user);
+        //                email.Add(userFi.email);
+        //                subject = "Fire Impairment Clearance Permit Rejected from Facility Owner";
+        //                response.message = "Fire Impairment Clearance Permit is rejected. \nSafety Officer (" + userFi.alpha_name + ") will be notified to revised this Fire Impairment Clearance Permit.";
+        //                break;
+        //            case 5:
+        //                fi.acc_fo_signature = null;
+        //                fi.acc_fo_delegate = null;
+        //                fi.status = (int)FIStatus.SOAPPROVE;
+
+        //                Int32.TryParse(fi.acc_fo, out userId);
+        //                userFi = new UserEntity(userId, user.token, user);
+        //                email.Add(userFi.email);
+        //                subject = "Fire Impairment Clearance Permit Rejected from Dept. Head FO";
+        //                response.message = "Fire Impairment Clearance Permit is rejected. \nFacility Owner (" + userFi.alpha_name + ") will be notified to revised this Fire Impairment Clearance Permit.";
+        //                break;
+        //        }
+
+        //        if (response.status != 401)
+        //        {
+        //            this.db.Entry(fi).State = EntityState.Modified;
+        //            response.status = this.db.SaveChanges() == 1 ? 200 : 404;
+        //        }
+
+
+        //        message = serverUrl + "Home?p=FI/edit/" + this.id + "<br />" + comment;
+
+        //        /* for testing purpose */
+        //        email.RemoveAt(0);
+        //        email.Add("septujamasoka@gmail.com");
+        //        sendEmail.Send(email, message, subject);
+        //    }
+
+        //    response.id = this.id;
+
+        //    return response;
+        //}
 
         public string getStatus()
         {
@@ -1050,10 +1772,10 @@ namespace PermitToWork.Models
             switch (this.status)
             {
                 case (int)FIStatus.CREATE: retVal = "Fire Impairment Permit is still edited by Requestor"; break;
-                case (int)FIStatus.EDITANDSEND: retVal = "Waiting for Supervisor Pre-job Screening"; break;
-                case (int)FIStatus.SPVSCREENING: retVal = "Waiting for SO Pre-job Screening"; break;
-                case (int)FIStatus.SOSCREENING: retVal = "Waiting for FO Pre-job Screening"; break;
-                case (int)FIStatus.FOSCREENING: retVal = "Waiting for Approval by Requestor"; break;
+                //case (int)FIStatus.EDITANDSEND: retVal = "Waiting for Supervisor Pre-job Screening"; break;
+                //case (int)FIStatus.SPVSCREENING: retVal = "Waiting for SO Pre-job Screening"; break;
+                //case (int)FIStatus.SOSCREENING: retVal = "Waiting for FO Pre-job Screening"; break;
+                //case (int)FIStatus.FOSCREENING: retVal = "Waiting for Approval by Requestor"; break;
                 case (int)FIStatus.REQUESTORAPPROVE: retVal = "Waiting for Approval by Fire Watch"; break;
                 case (int)FIStatus.FIREWATCHAPPROVE: retVal = "Waiting for Approval by Safety Officer"; break;
                 case (int)FIStatus.SOAPPROVE: retVal = "Waiting for Approval by Facility Owner"; break;
@@ -1061,8 +1783,8 @@ namespace PermitToWork.Models
                 case (int)FIStatus.DEPTFOAPPROVE: retVal = "Completed. Hot Work Permit has been approved by Dept. Head Facility Owner"; break;
                 case (int)FIStatus.CLOSING: retVal = "Fire Impairment Permit cancelled by Requestor. Waiting for supervisor's cancellation screening"; break;
                 case (int)FIStatus.CANSPVSCREENING: retVal = "Waiting for SO's cancellation screening"; break;
-                case (int)FIStatus.CANSOSCREENING: retVal = "Waiting for FO's cancellation screening"; break;
-                case (int)FIStatus.CANFOSCREENING: retVal = "Waiting for Cancellation approval by Requestor"; break;
+                //case (int)FIStatus.CANSOSCREENING: retVal = "Waiting for FO's cancellation screening"; break;
+                //case (int)FIStatus.CANFOSCREENING: retVal = "Waiting for Cancellation approval by Requestor"; break;
                 case (int)FIStatus.CANREQUESTORAPPROVE: retVal = "Waiting for Cancellation approval by Fire Watch"; break;
                 case (int)FIStatus.CANFIREWATCHAPPROVE: retVal = "Waiting for Cancellation approval by Safety Officer"; break;
                 case (int)FIStatus.CANSOAPPROVE: retVal = "Waiting for Cancellation approval by Facility Owner"; break;
@@ -1233,7 +1955,7 @@ namespace PermitToWork.Models
             int requestorId = 0;
             Int32.TryParse(this.requestor, out requestorId);
             UserEntity requestor = new UserEntity(requestorId, user.token, user);
-            if ((user.id == requestor.id || user.id == requestor.employee_delegate) && this.status < (int)FIStatus.FOSCREENING)
+            if ((user.id == requestor.id || user.id == requestor.employee_delegate) && this.status == (int)FIStatus.CREATE)
             {
                 return true;
             }
@@ -1245,31 +1967,7 @@ namespace PermitToWork.Models
             int spvId = 0;
             Int32.TryParse(this.spv, out spvId);
             UserEntity spv = new UserEntity(spvId, user.token, user);
-            if ((user.id == spv.id || user.id == spv.employee_delegate) && this.status == (int)FIStatus.EDITANDSEND)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public bool isCanEditFormSO(UserEntity user)
-        {
-            int soId = 0;
-            Int32.TryParse(this.acc_so, out soId);
-            UserEntity so = new UserEntity(soId, user.token, user);
-            if ((user.id == so.id || user.id == so.employee_delegate) && this.status == (int)FIStatus.SPVSCREENING)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public bool isCanEditFormFO(UserEntity user)
-        {
-            int foId = 0;
-            Int32.TryParse(this.acc_fo, out foId);
-            UserEntity fo = new UserEntity(foId, user.token, user);
-            if ((user.id == fo.id || user.id == fo.employee_delegate) && this.status == (int)FIStatus.SOSCREENING)
+            if ((user.id == spv.id || user.id == spv.employee_delegate) && this.status == (int)FIStatus.FIREWATCHAPPROVE)
             {
                 return true;
             }
@@ -1282,18 +1980,6 @@ namespace PermitToWork.Models
             Int32.TryParse(this.acc_fo, out foId);
             UserEntity fo = new UserEntity(foId, user.token, user);
             if ((user.id == fo.id || user.id == fo.employee_delegate) && (this.acc_so == null || this.acc_dept_head == null))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public bool isCanEditApproveRequestor(UserEntity user)
-        {
-            int requestorId = 0;
-            Int32.TryParse(this.requestor, out requestorId);
-            UserEntity requestor = new UserEntity(requestorId, user.token, user);
-            if ((user.id == requestor.id || user.id == requestor.employee_delegate) && this.status == (int)FIStatus.FOSCREENING)
             {
                 return true;
             }
@@ -1317,7 +2003,7 @@ namespace PermitToWork.Models
             int sOId = 0;
             Int32.TryParse(this.acc_so, out sOId);
             UserEntity sO = new UserEntity(sOId, user.token, user);
-            if ((user.id == sO.id || user.id == sO.employee_delegate) && this.status == (int)FIStatus.FIREWATCHAPPROVE)
+            if ((user.id == sO.id || user.id == sO.employee_delegate) && this.status == (int)FIStatus.SPVSCREENING)
             {
                 return true;
             }
@@ -1365,43 +2051,43 @@ namespace PermitToWork.Models
             int spvId = 0;
             Int32.TryParse(this.spv, out spvId);
             UserEntity spv = new UserEntity(spvId, user.token, user);
-            if ((user.id == spv.id || user.id == spv.employee_delegate) && this.status == (int)FIStatus.CLOSING)
+            if ((user.id == spv.id || user.id == spv.employee_delegate) && this.status == (int)FIStatus.CANFIREWATCHAPPROVE)
             {
                 return true;
             }
             return false;
         }
 
-        public bool isCanEditFormSOCancel(UserEntity user)
-        {
-            int soId = 0;
-            Int32.TryParse(this.acc_so, out soId);
-            UserEntity so = new UserEntity(soId, user.token, user);
-            if ((user.id == so.id || user.id == so.employee_delegate) && this.status == (int)FIStatus.CANSPVSCREENING)
-            {
-                return true;
-            }
-            return false;
-        }
+        //public bool isCanEditFormSOCancel(UserEntity user)
+        //{
+        //    int soId = 0;
+        //    Int32.TryParse(this.acc_so, out soId);
+        //    UserEntity so = new UserEntity(soId, user.token, user);
+        //    if ((user.id == so.id || user.id == so.employee_delegate) && this.status == (int)FIStatus.CANSPVSCREENING)
+        //    {
+        //        return true;
+        //    }
+        //    return false;
+        //}
 
-        public bool isCanEditFormFOCancel(UserEntity user)
-        {
-            int foId = 0;
-            Int32.TryParse(this.acc_fo, out foId);
-            UserEntity fo = new UserEntity(foId, user.token, user);
-            if ((user.id == fo.id || user.id == fo.employee_delegate) && this.status == (int)FIStatus.CANSOSCREENING)
-            {
-                return true;
-            }
-            return false;
-        }
+        //public bool isCanEditFormFOCancel(UserEntity user)
+        //{
+        //    int foId = 0;
+        //    Int32.TryParse(this.acc_fo, out foId);
+        //    UserEntity fo = new UserEntity(foId, user.token, user);
+        //    //if ((user.id == fo.id || user.id == fo.employee_delegate) && this.status == (int)FIStatus.CANSOSCREENING)
+        //    //{
+        //    //    return true;
+        //    //}
+        //    return false;
+        //}
 
         public bool isCanEditApproveRequestorCancel(UserEntity user)
         {
             int requestorId = 0;
             Int32.TryParse(this.requestor, out requestorId);
             UserEntity requestor = new UserEntity(requestorId, user.token, user);
-            if ((user.id == requestor.id || user.id == requestor.employee_delegate) && this.status == (int)FIStatus.CANFOSCREENING)
+            if ((user.id == requestor.id || user.id == requestor.employee_delegate) && this.status == (int)FIStatus.CLOSING)
             {
                 return true;
             }
@@ -1425,7 +2111,7 @@ namespace PermitToWork.Models
             int sOId = 0;
             Int32.TryParse(this.acc_so, out sOId);
             UserEntity sO = new UserEntity(sOId, user.token, user);
-            if ((user.id == sO.id || user.id == sO.employee_delegate) && this.status == (int)FIStatus.CANFIREWATCHAPPROVE)
+            if ((user.id == sO.id || user.id == sO.employee_delegate) && this.status == (int)FIStatus.CANSPVSCREENING)
             {
                 return true;
             }

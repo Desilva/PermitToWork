@@ -152,6 +152,9 @@ namespace PermitToWork.WWUserService {
         private string positionField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int[] roleField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
         private string signatureField;
         
         [global::System.ComponentModel.BrowsableAttribute(false)]
@@ -321,6 +324,19 @@ namespace PermitToWork.WWUserService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
+        public int[] role {
+            get {
+                return this.roleField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.roleField, value) != true)) {
+                    this.roleField = value;
+                    this.RaisePropertyChanged("role");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
         public string signature {
             get {
                 return this.signatureField;
@@ -433,10 +449,10 @@ namespace PermitToWork.WWUserService {
         System.Threading.Tasks.Task<PermitToWork.WWUserService.ResponseModel> sendEmailAsync(string token, int idLogin, string[] email, string content, string subject);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/resendEmail", ReplyAction="http://tempuri.org/IUserService/resendEmailResponse")]
-        void resendEmail(string token);
+        string resendEmail(string token);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/resendEmail", ReplyAction="http://tempuri.org/IUserService/resendEmailResponse")]
-        System.Threading.Tasks.Task resendEmailAsync(string token);
+        System.Threading.Tasks.Task<string> resendEmailAsync(string token);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/getSuperintendent", ReplyAction="http://tempuri.org/IUserService/getSuperintendentResponse")]
         PermitToWork.WWUserService.ResponseModel getSuperintendent(string token, int idLogin, int idUser);
@@ -449,6 +465,18 @@ namespace PermitToWork.WWUserService {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/login", ReplyAction="http://tempuri.org/IUserService/loginResponse")]
         System.Threading.Tasks.Task<PermitToWork.WWUserService.ResponseModel> loginAsync(string username, string encodedPassword, System.Nullable<int> role);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/getSuperintendentByDepartment", ReplyAction="http://tempuri.org/IUserService/getSuperintendentByDepartmentResponse")]
+        PermitToWork.WWUserService.ResponseModel getSuperintendentByDepartment(string token, int idLogin, string department);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/getSuperintendentByDepartment", ReplyAction="http://tempuri.org/IUserService/getSuperintendentByDepartmentResponse")]
+        System.Threading.Tasks.Task<PermitToWork.WWUserService.ResponseModel> getSuperintendentByDepartmentAsync(string token, int idLogin, string department);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/getSupervisor", ReplyAction="http://tempuri.org/IUserService/getSupervisorResponse")]
+        PermitToWork.WWUserService.ResponseModel getSupervisor(string token, int idLogin, int idUser);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/getSupervisor", ReplyAction="http://tempuri.org/IUserService/getSupervisorResponse")]
+        System.Threading.Tasks.Task<PermitToWork.WWUserService.ResponseModel> getSupervisorAsync(string token, int idLogin, int idUser);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -510,11 +538,11 @@ namespace PermitToWork.WWUserService {
             return base.Channel.sendEmailAsync(token, idLogin, email, content, subject);
         }
         
-        public void resendEmail(string token) {
-            base.Channel.resendEmail(token);
+        public string resendEmail(string token) {
+            return base.Channel.resendEmail(token);
         }
         
-        public System.Threading.Tasks.Task resendEmailAsync(string token) {
+        public System.Threading.Tasks.Task<string> resendEmailAsync(string token) {
             return base.Channel.resendEmailAsync(token);
         }
         
@@ -532,6 +560,22 @@ namespace PermitToWork.WWUserService {
         
         public System.Threading.Tasks.Task<PermitToWork.WWUserService.ResponseModel> loginAsync(string username, string encodedPassword, System.Nullable<int> role) {
             return base.Channel.loginAsync(username, encodedPassword, role);
+        }
+        
+        public PermitToWork.WWUserService.ResponseModel getSuperintendentByDepartment(string token, int idLogin, string department) {
+            return base.Channel.getSuperintendentByDepartment(token, idLogin, department);
+        }
+        
+        public System.Threading.Tasks.Task<PermitToWork.WWUserService.ResponseModel> getSuperintendentByDepartmentAsync(string token, int idLogin, string department) {
+            return base.Channel.getSuperintendentByDepartmentAsync(token, idLogin, department);
+        }
+        
+        public PermitToWork.WWUserService.ResponseModel getSupervisor(string token, int idLogin, int idUser) {
+            return base.Channel.getSupervisor(token, idLogin, idUser);
+        }
+        
+        public System.Threading.Tasks.Task<PermitToWork.WWUserService.ResponseModel> getSupervisorAsync(string token, int idLogin, int idUser) {
+            return base.Channel.getSupervisorAsync(token, idLogin, idUser);
         }
     }
 }

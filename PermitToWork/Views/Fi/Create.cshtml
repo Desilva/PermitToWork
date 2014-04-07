@@ -47,199 +47,68 @@
                 area_affected: $('#area_affected').val(),
                 fire_watch: $('#fire_watch').val(),
             }
+            values.who = $(this).data('who');
+            values.screening_remark = $('#screening_remark').val();
+            values.screening_fo = $('#screening_fo_1').val() + "#" + $('#screening_fo_2').val() + "#" +
+                        $('#screening_fo_3').val() + "#" + $('#screening_fo_4').val() + "#" +
+                        $('#screening_fo_5').val() + "#" + $('#screening_fo_6').val();
+            values.screening_so = $('#screening_so_1').val() + "#" + $('#screening_so_2').val() + "#" +
+                        $('#screening_so_3').val() + "#" + $('#screening_so_4').val() + "#" +
+                        $('#screening_so_5').val() + "#" + $('#screening_so_6').val();
+            values.screening_spv = $('#screening_spv_1').val() + "#" + $('#screening_spv_2').val() + "#" +
+                        $('#screening_spv_3').val() + "#" + $('#screening_spv_4').val() + "#" +
+                        $('#screening_spv_5').val() + "#" + $('#screening_spv_6').val();
+
+            if (values.who == "2") {
+                if (values.screening_spv.indexOf("2") >= 0) {
+                    if (values.screening_remark.indexOf("Spv:") < 0) {
+                        alert('Screening contains one or more \'no\'. Please add Notes start with \'Spv:\'');
+                        $('#screening_remark_required').show();
+                        $('#screening_remark_required').html('Notes must be added. Start with \'Spv:\'');
+
+                        return;
+                    }
+                }
+            } else if (values.who == "3") {
+                if (values.screening_so.indexOf("2") >= 0) {
+                    console.log(values.pre_remark);
+                    if (values.screening_remark.indexOf("SO:") < 0) {
+                        alert('Screening contains one or more \'no\'. Please add Notes start with \'SO:\'');
+                        $('#screening_remark_required').show();
+                        $('#screening_remark_required').html('Notes must be added. Start with \'SO:\'');
+
+                        return;
+                    }
+                }
+            } else if (values.who == "4") {
+                if (values.screening_fo.indexOf("2") >= 0) {
+                    if (values.screening_remark.indexOf("FO:") < 0) {
+                        alert('Screening contains one or more \'no\'. Please add Notes start with \'FO:\'');
+                        $('#screening_remark_required').show();
+                        $('#screening_remark_required').html('Notes must be added. Start with \'FO:\'');
+
+                        return;
+                    }
+                }
+            }
 
             $('#loading_gif').show();
             $(this).attr('disabled', 'disabled');
             $('#save-as-draft').attr('disabled', 'disabled');
             $('#back').attr('disabled', 'disabled');
-            switch ('@Model.status') {
-                case '@((int)PermitToWork.Models.FIEntity.FIStatus.CREATE)':
-                    $.post('@Url.Action("SaveComplete","fi")', values, function (resp) {
-                        if (resp.status == "200") {
-                            alert("Fire Impairment Clearance Permit send to SPV for Pre-job screening.");
-                        } else if (resp.status == "404") {
-                            alert("Something is wrong when saving the data. Please try again.");
-                        }
-                        $('#loading_gif').hide();
-                        $(this).removeAttr('disabled');
-                        $('#save-as-draft').removeAttr('disabled');
-                        $('#back').removeAttr('disabled');
-                        $('#content').load('@Url.Action("Edit","FI")');
-                    });
-                    break;
-                case '@((int)PermitToWork.Models.FIEntity.FIStatus.SOSCREENING)':
-                    values.screening_fo = $('#screening_fo_1').val() + "#" + $('#screening_fo_2').val() + "#" +
-                        $('#screening_fo_3').val() + "#" + $('#screening_fo_4').val() + "#" +
-                        $('#screening_fo_5').val() + "#" + $('#screening_fo_6').val();
-                    values.screening_remark = $('#screening_remark').val();
-                    values.type = 3;
-                    if (values.screening_fo.indexOf(2) < 0 || values.screening_remark.indexOf("FO:") >= 0) {
-                        $.post('@Url.Action("SaveCompletePreScreening","fi")', values, function (resp) {
-                            if (resp.status == "200") {
-                                alert("Fire Impairment Clearance Permit send to requestor for approving.");
-                            } else if (resp.status == "404") {
-                                alert("Something is wrong when saving the data. Please try again.");
-                            }
-                            $('#loading_gif').hide();
-                            $(this).removeAttr('disabled');
-                            $('#save-as-draft').removeAttr('disabled');
-                            $('#back').removeAttr('disabled');
-                            $('#content').load('@Url.Action("Edit","FI")');
-                        });
-                    } else {
-                        $('#screening_remark_required').html('Remark must be added. Start with \'FO:\'');
-                        $('#screening_remark_required').show();
-                        alert('Screening contains one or more \'no\'. Please add Remark start with \'FO:\'');
-                        $('#loading_gif').hide();
-                        $(this).removeAttr('disabled');
-                        $('#save-as-draft').removeAttr('disabled');
-                        $('#back').removeAttr('disabled');
-                    }
-                    break;
-                case '@((int)PermitToWork.Models.FIEntity.FIStatus.SPVSCREENING)':
-                    values.screening_so = $('#screening_so_1').val() + "#" + $('#screening_so_2').val() + "#" +
-                        $('#screening_so_3').val() + "#" + $('#screening_so_4').val() + "#" +
-                        $('#screening_so_5').val() + "#" + $('#screening_so_6').val();
-                    values.screening_remark = $('#screening_remark').val();
-                    values.type = 2;
-                    if (values.screening_so.indexOf(2) < 0 || values.screening_remark.indexOf("SO:") >= 0) {
-                        $.post('@Url.Action("SaveCompletePreScreening","fi")', values, function (resp) {
-                            if (resp.status == "200") {
-                                alert("Fire Impairment Clearance Permit send to Facility Owner for pre-job screening.");
-                            } else if (resp.status == "404") {
-                                alert("Something is wrong when saving the data. Please try again.");
-                            }
-                            $('#loading_gif').hide();
-                            $(this).removeAttr('disabled');
-                            $('#save-as-draft').removeAttr('disabled');
-                            $('#back').removeAttr('disabled');
-                            $('#content').load('@Url.Action("Edit","FI")');
-                        });
-                    } else {
-                        $('#screening_remark_required').html('Remark must be added. Start with \'SO:\'');
-                        $('#screening_remark_required').show();
-                        alert('Screening contains one or more \'no\'. Please add Remark start with \'SO:\'');
-                        $('#loading_gif').hide();
-                        $(this).removeAttr('disabled');
-                        $('#save-as-draft').removeAttr('disabled');
-                        $('#back').removeAttr('disabled');
-                    }
-                    break;
-                case '@((int)PermitToWork.Models.FIEntity.FIStatus.EDITANDSEND)':
-                    values.screening_spv = $('#screening_spv_1').val() + "#" + $('#screening_spv_2').val() + "#" +
-                        $('#screening_spv_3').val() + "#" + $('#screening_spv_4').val() + "#" +
-                        $('#screening_spv_5').val() + "#" + $('#screening_spv_6').val();
-                    values.screening_remark = $('#screening_remark').val();
-                    values.type = 1;
-                    if (values.screening_spv.indexOf(2) < 0 || values.screening_remark.indexOf("Spv:") >= 0) {
-                        $.post('@Url.Action("SaveCompletePreScreening","fi")', values, function (resp) {
-                            if (resp.status == "200") {
-                                alert("Fire Impairment Clearance Permit send to Safety Officer for pre-job screening.");
-                            } else if (resp.status == "404") {
-                                alert("Something is wrong when saving the data. Please try again.");
-                            }
-                            $('#loading_gif').hide();
-                            $(this).removeAttr('disabled');
-                            $('#save-as-draft').removeAttr('disabled');
-                            $('#back').removeAttr('disabled');
-                            $('#content').load('@Url.Action("Edit","FI")');
-                        });
-                    } else {
-                        $('#screening_remark_required').html('Remark must be added. Start with \'Spv:\'');
-                        $('#screening_remark_required').show();
-                        alert('Screening contains one or more \'no\'. Please add Remark start with \'Spv:\'');
-                        $('#loading_gif').hide();
-                        $(this).removeAttr('disabled');
-                        $('#save-as-draft').removeAttr('disabled');
-                        $('#back').removeAttr('disabled');
-                    }
-                    break;
-                case '@((int)PermitToWork.Models.FIEntity.FIStatus.CANSOSCREENING)':
-                    values.cancel_fo = $('#can_screening_fo_1').val() + "#" + $('#can_screening_fo_2').val() + "#" +
-                        $('#can_screening_fo_3').val();
-                    values.cancel_remark = $('#cancel_remark').val();
-                    values.type = 3;
-                    if (values.cancel_fo.indexOf(2) < 0 || values.cancel_remark.indexOf("FO:") >= 0) {
-                        $.post('@Url.Action("SaveCompleteCancelScreening","fi")', values, function (resp) {
-                            if (resp.status == "200") {
-                                alert("Fire Impairment Clearance Permit saved.");
-                            } else if (resp.status == "404") {
-                                alert("Something is wrong when saving the data. Please try again.");
-                            }
-                            $('#loading_gif').hide();
-                            $(this).removeAttr('disabled');
-                            $('#save-complete').removeAttr('disabled');
-                            $('#back').removeAttr('disabled');
-                            $('#content').load('@Url.Action("Edit","FI")');
-                        });
-                    } else {
-                        $('#cancel_remark_required').html('Remark must be added. Start with \'FO:\'');
-                        $('#cancel_remark_required').show();
-                        alert('Screening contains one or more \'no\'. Please add Remark start with \'FO:\'');
-                        $('#loading_gif').hide();
-                        $(this).removeAttr('disabled');
-                        $('#save-as-draft').removeAttr('disabled');
-                        $('#back').removeAttr('disabled');
-                    }
-                    break;
-                case '@((int)PermitToWork.Models.FIEntity.FIStatus.CANSPVSCREENING)':
-                    values.cancel_so = $('#can_screening_so_1').val() + "#" + $('#can_screening_so_2').val() + "#" +
-                        $('#can_screening_so_3').val();
-                    values.cancel_remark = $('#cancel_remark').val();
-                    values.type = 2;
-                    if (values.cancel_so.indexOf(2) < 0 || values.cancel_remark.indexOf("SO:") >= 0) {
-                        $.post('@Url.Action("SaveCompleteCancelScreening","fi")', values, function (resp) {
-                            if (resp.status == "200") {
-                                alert("Fire Impairment Clearance Permit saved.");
-                            } else if (resp.status == "404") {
-                                alert("Something is wrong when saving the data. Please try again.");
-                            }
-                            $('#loading_gif').hide();
-                            $(this).removeAttr('disabled');
-                            $('#save-complete').removeAttr('disabled');
-                            $('#back').removeAttr('disabled');
-                            $('#content').load('@Url.Action("Edit","FI")');
-                        });
-                    } else {
-                        $('#cancel_remark_required').html('Remark must be added. Start with \'SO:\'');
-                        $('#cancel_remark_required').show();
-                        alert('Screening contains one or more \'no\'. Please add Remark start with \'SO:\'');
-                        $('#loading_gif').hide();
-                        $(this).removeAttr('disabled');
-                        $('#save-as-draft').removeAttr('disabled');
-                        $('#back').removeAttr('disabled');
-                    }
-                    break;
-                case '@((int)PermitToWork.Models.FIEntity.FIStatus.CLOSING)':
-                    values.cancel_spv = $('#can_screening_spv_1').val() + "#" + $('#can_screening_spv_2').val() + "#" +
-                        $('#can_screening_spv_3').val();
-                    values.cancel_remark = $('#cancel_remark').val();
-                    values.type = 1;
-                    if (values.cancel_spv.indexOf(2) < 0 || values.cancel_remark.indexOf("Spv:") >= 0) {
-                        $.post('@Url.Action("SaveCompleteCancelScreening","fi")', values, function (resp) {
-                            if (resp.status == "200") {
-                                alert("Fire Impairment Clearance Permit saved.");
-                            } else if (resp.status == "404") {
-                                alert("Something is wrong when saving the data. Please try again.");
-                            }
-                            $('#loading_gif').hide();
-                            $(this).removeAttr('disabled');
-                            $('#save-complete').removeAttr('disabled');
-                            $('#back').removeAttr('disabled');
-                            $('#content').load('@Url.Action("Edit","FI")');
-                        });
-                    } else {
-                        $('#cancel_remark_required').html('Remark must be added. Start with \'Spv:\'');
-                        $('#cancel_remark_required').show();
-                        alert('Screening contains one or more \'no\'. Please add Remark start with \'Spv:\'');
-                        $('#loading_gif').hide();
-                        $(this).removeAttr('disabled');
-                        $('#save-as-draft').removeAttr('disabled');
-                        $('#back').removeAttr('disabled');
-                    }
-                    break;
-            };
             
+            $.post('@Url.Action("SaveComplete","fi")', values, function (resp) {
+                if (resp.status == "200") {
+                    alert("Fire Impairment Clearance Permit is saved and approved.");
+                } else if (resp.status == "404") {
+                    alert("Something is wrong when saving the data. Please try again.");
+                }
+                $('#loading_gif').hide();
+                $(this).removeAttr('disabled');
+                $('#save-as-draft').removeAttr('disabled');
+                $('#back').removeAttr('disabled');
+                $('#content').load('@Url.Action("Edit","FI")');
+            });
         });
 
         $('#save-as-draft').click(function () {
@@ -249,137 +118,35 @@
                 area_affected: $('#area_affected').val(),
                 fire_watch: $('#fire_watch').val(),
             }
+            values.who = $(this).data('who');
+            values.screening_remark = $('#screening_remark').val();
+            values.screening_fo = $('#screening_fo_1').val() + "#" + $('#screening_fo_2').val() + "#" +
+                        $('#screening_fo_3').val() + "#" + $('#screening_fo_4').val() + "#" +
+                        $('#screening_fo_5').val() + "#" + $('#screening_fo_6').val();
+            values.screening_so = $('#screening_so_1').val() + "#" + $('#screening_so_2').val() + "#" +
+                        $('#screening_so_3').val() + "#" + $('#screening_so_4').val() + "#" +
+                        $('#screening_so_5').val() + "#" + $('#screening_so_6').val();
+            values.screening_spv = $('#screening_spv_1').val() + "#" + $('#screening_spv_2').val() + "#" +
+                        $('#screening_spv_3').val() + "#" + $('#screening_spv_4').val() + "#" +
+                        $('#screening_spv_5').val() + "#" + $('#screening_spv_6').val();
+
             $('#loading_gif').show();
             $(this).attr('disabled', 'disabled');
             $('#save-complete').attr('disabled', 'disabled');
             $('#back').attr('disabled', 'disabled');
-            switch ('@Model.status') {
-                case '@((int)PermitToWork.Models.FIEntity.FIStatus.CREATE)':
-                    $.post('@Url.Action("SaveAsDraft","fi")', values, function (resp) {
-                        if (resp.status == "200") {
-                            alert("Fire Impairment Clearance Permit saved.");
-                        } else if (resp.status == "404") {
-                            alert("Something is wrong when saving the data. Please try again.");
-                        }
-                        $('#loading_gif').hide();
-                        $(this).removeAttr('disabled');
-                        $('#save-complete').removeAttr('disabled');
-                        $('#back').removeAttr('disabled');
-                        $('#content').load('@Url.Action("Edit","FI")');
-                    });
-                    break;
-                case '@((int)PermitToWork.Models.FIEntity.FIStatus.SOSCREENING)':
-                    values.screening_fo = $('#screening_fo_1').val() + "#" + $('#screening_fo_2').val() + "#" +
-                        $('#screening_fo_3').val() + "#" + $('#screening_fo_4').val() + "#" +
-                        $('#screening_fo_5').val() + "#" + $('#screening_fo_6').val();
-                    values.screening_remark = $('#screening_remark').val();
-                    values.type = 3;
-                    $.post('@Url.Action("SaveAsDraftPreScreening","fi")', values, function (resp) {
-                        if (resp.status == "200") {
-                            alert("Fire Impairment Clearance Permit saved.");
-                        } else if (resp.status == "404") {
-                            alert("Something is wrong when saving the data. Please try again.");
-                        }
-                        $('#loading_gif').hide();
-                        $(this).removeAttr('disabled');
-                        $('#save-complete').removeAttr('disabled');
-                        $('#back').removeAttr('disabled');
-                        $('#content').load('@Url.Action("Edit","FI")');
-                    });
-                    break;
-                case '@((int)PermitToWork.Models.FIEntity.FIStatus.SPVSCREENING)':
-                    values.screening_so = $('#screening_so_1').val() + "#" + $('#screening_so_2').val() + "#" +
-                        $('#screening_so_3').val() + "#" + $('#screening_so_4').val() + "#" +
-                        $('#screening_so_5').val() + "#" + $('#screening_so_6').val();
-                    values.screening_remark = $('#screening_remark').val();
-                    values.type = 2;
-                    $.post('@Url.Action("SaveAsDraftPreScreening","fi")', values, function (resp) {
-                        if (resp.status == "200") {
-                            alert("Fire Impairment Clearance Permit saved.");
-                        } else if (resp.status == "404") {
-                            alert("Something is wrong when saving the data. Please try again.");
-                        }
-                        $('#loading_gif').hide();
-                        $(this).removeAttr('disabled');
-                        $('#save-complete').removeAttr('disabled');
-                        $('#back').removeAttr('disabled');
-                        $('#content').load('@Url.Action("Edit","FI")');
-                    });
-                    break;
-                case '@((int)PermitToWork.Models.FIEntity.FIStatus.EDITANDSEND)':
-                    values.screening_spv = $('#screening_spv_1').val() + "#" + $('#screening_spv_2').val() + "#" +
-                        $('#screening_spv_3').val() + "#" + $('#screening_spv_4').val() + "#" +
-                        $('#screening_spv_5').val() + "#" + $('#screening_spv_6').val();
-                    values.screening_remark = $('#screening_remark').val();
-                    values.type = 1;
-                    $.post('@Url.Action("SaveAsDraftPreScreening","fi")', values, function (resp) {
-                        if (resp.status == "200") {
-                            alert("Fire Impairment Clearance Permit saved.");
-                        } else if (resp.status == "404") {
-                            alert("Something is wrong when saving the data. Please try again.");
-                        }
-                        $('#loading_gif').hide();
-                        $(this).removeAttr('disabled');
-                        $('#save-complete').removeAttr('disabled');
-                        $('#back').removeAttr('disabled');
-                        $('#content').load('@Url.Action("Edit","FI")');
-                    });
-                    break;
-                case '@((int)PermitToWork.Models.FIEntity.FIStatus.CANSOSCREENING)':
-                    values.cancel_fo = $('#can_screening_fo_1').val() + "#" + $('#can_screening_fo_2').val() + "#" +
-                        $('#can_screening_fo_3').val();
-                    values.cancel_remark = $('#scancel_remark').val();
-                    values.type = 3;
-                    $.post('@Url.Action("SaveAsDraftCancelScreening","fi")', values, function (resp) {
-                        if (resp.status == "200") {
-                            alert("Fire Impairment Clearance Permit saved.");
-                        } else if (resp.status == "404") {
-                            alert("Something is wrong when saving the data. Please try again.");
-                        }
-                        $('#loading_gif').hide();
-                        $(this).removeAttr('disabled');
-                        $('#save-complete').removeAttr('disabled');
-                        $('#back').removeAttr('disabled');
-                        $('#content').load('@Url.Action("Edit","FI")');
-                    });
-                    break;
-                case '@((int)PermitToWork.Models.FIEntity.FIStatus.CANSPVSCREENING)':
-                    values.cancel_so = $('#can_screening_so_1').val() + "#" + $('#can_screening_so_2').val() + "#" +
-                        $('#can_screening_so_3').val();
-                    values.cancel_remark = $('#scancel_remark').val();
-                    values.type = 2;
-                    $.post('@Url.Action("SaveAsDraftCancelScreening","fi")', values, function (resp) {
-                        if (resp.status == "200") {
-                            alert("Fire Impairment Clearance Permit saved.");
-                        } else if (resp.status == "404") {
-                            alert("Something is wrong when saving the data. Please try again.");
-                        }
-                        $('#loading_gif').hide();
-                        $(this).removeAttr('disabled');
-                        $('#save-complete').removeAttr('disabled');
-                        $('#back').removeAttr('disabled');
-                        $('#content').load('@Url.Action("Edit","FI")');
-                    });
-                    break;
-                case '@((int)PermitToWork.Models.FIEntity.FIStatus.CLOSING)':
-                    values.cancel_spv = $('#can_screening_spv_1').val() + "#" + $('#can_screening_spv_2').val() + "#" +
-                        $('#can_screening_spv_3').val();
-                    values.cancel_remark = $('#scancel_remark').val();
-                    values.type = 1;
-                    $.post('@Url.Action("SaveAsDraftCancelScreening","fi")', values, function (resp) {
-                        if (resp.status == "200") {
-                            alert("Fire Impairment Clearance Permit saved.");
-                        } else if (resp.status == "404") {
-                            alert("Something is wrong when saving the data. Please try again.");
-                        }
-                        $('#loading_gif').hide();
-                        $(this).removeAttr('disabled');
-                        $('#save-complete').removeAttr('disabled');
-                        $('#back').removeAttr('disabled');
-                        $('#content').load('@Url.Action("Edit","FI")');
-                    });
-                    break;
-            };
+            
+            $.post('@Url.Action("SaveAsDraft","fi")', values, function (resp) {
+                if (resp.status == "200") {
+                    alert("Fire Impairment Clearance Permit saved.");
+                } else if (resp.status == "404") {
+                    alert("Something is wrong when saving the data. Please try again.");
+                }
+                $('#loading_gif').hide();
+                $(this).removeAttr('disabled');
+                $('#save-complete').removeAttr('disabled');
+                $('#back').removeAttr('disabled');
+                $('#content').load('@Url.Action("Edit","FI")');
+            });
         });
 
         $('#save-assign').click(function () {
@@ -405,33 +172,77 @@
         });
 
         $('#reject').click(function () {
-            switch ('@Model.status') {
-                case '@((int)PermitToWork.Models.FIEntity.FIStatus.SOSCREENING)':
-                    $('#type_reject').val(6);
-                    $('#who').val(3);
-                    break;
-                case '@((int)PermitToWork.Models.FIEntity.FIStatus.SPVSCREENING)':
-                    $('#type_reject').val(6);
-                    $('#who').val(2);
-                    break;
-                case '@((int)PermitToWork.Models.FIEntity.FIStatus.EDITANDSEND)':
-                    $('#type_reject').val(6);
-                    $('#who').val(1);
-                    break;
-                case '@((int)PermitToWork.Models.FIEntity.FIStatus.CANSOSCREENING)':
-                    $('#type_reject').val(7);
-                    $('#who').val(3);
-                    break;
-                case '@((int)PermitToWork.Models.FIEntity.FIStatus.CANSPVSCREENING)':
-                    $('#type_reject').val(7);
-                    $('#who').val(2);
-                    break;
-                case '@((int)PermitToWork.Models.FIEntity.FIStatus.CLOSING)':
-                    $('#type_reject').val(7);
-                    $('#who').val(1);
-                    break;
-            };
+            $('#type_reject').val(1);
+            $('#who').val($(this).data('who'));
+            $('#rejection').modal('show');
+        });
 
+        $('#save-as-draft-cancel').click(function () {
+            var values = {
+                id: '@Model.id',
+            }
+            values.who = $(this).data('who');
+            values.cancel_remark = $('#cancel_remark').val();
+            values.cancel_fo = $('#can_screening_fo_1').val() + "#" + $('#can_screening_fo_2').val() + "#" +
+                        $('#can_screening_fo_3').val();
+            values.cancel_so = $('#can_screening_so_1').val() + "#" + $('#can_screening_so_2').val() + "#" +
+                        $('#can_screening_so_3').val();
+            values.cancel_spv = $('#can_screening_spv_1').val() + "#" + $('#can_screening_spv_2').val() + "#" +
+                        $('#can_screening_spv_3').val();
+
+            $('#loading_gif').show();
+            $(this).attr('disabled', 'disabled');
+            $('#save-complete').attr('disabled', 'disabled');
+            $('#back').attr('disabled', 'disabled');
+
+            $.post('@Url.Action("SaveAsDraftCancel","fi")', values, function (resp) {
+                if (resp.status == "200") {
+                    alert("Fire Impairment Clearance Permit Cancellation saved.");
+                } else if (resp.status == "404") {
+                    alert("Something is wrong when saving the data. Please try again.");
+                }
+                $('#loading_gif').hide();
+                $(this).removeAttr('disabled');
+                $('#save-complete').removeAttr('disabled');
+                $('#back').removeAttr('disabled');
+                $('#content').load('@Url.Action("Edit","FI")');
+            });
+        });
+
+        $('#save-complete-cancel').click(function () {
+            var values = {
+                id: '@Model.id',
+            }
+            values.who = $(this).data('who');
+            values.cancel_remark = $('#cancel_remark').val();
+            values.cancel_fo = $('#can_screening_fo_1').val() + "#" + $('#can_screening_fo_2').val() + "#" +
+                        $('#can_screening_fo_3').val();
+            values.cancel_so = $('#can_screening_so_1').val() + "#" + $('#can_screening_so_2').val() + "#" +
+                        $('#can_screening_so_3').val();
+            values.cancel_spv = $('#can_screening_spv_1').val() + "#" + $('#can_screening_spv_2').val() + "#" +
+                        $('#can_screening_spv_3').val();
+            $('#loading_gif').show();
+            $(this).attr('disabled', 'disabled');
+            $('#save-as-draft').attr('disabled', 'disabled');
+            $('#back').attr('disabled', 'disabled');
+
+            $.post('@Url.Action("SaveCompleteCancel","fi")', values, function (resp) {
+                if (resp.status == "200") {
+                    alert("Fire Impairment Clearance Permit Cancellation is saved and approved.");
+                } else if (resp.status == "404") {
+                    alert("Something is wrong when saving the data. Please try again.");
+                }
+                $('#loading_gif').hide();
+                $(this).removeAttr('disabled');
+                $('#save-as-draft').removeAttr('disabled');
+                $('#back').removeAttr('disabled');
+                $('#content').load('@Url.Action("Edit","FI")');
+            });
+        });
+
+        $('#reject-cancel').click(function () {
+            $('#type_reject').val(2);
+            $('#who').val($(this).data('who'));
             $('#rejection').modal('show');
         });
 
@@ -473,13 +284,24 @@
                 id: '@Model.id',
                 type: $('#type_reject').val(),
                 comment: $('#comment').val(),
+                who : $('#who').val()
             };
             $('#reject_button').attr('disabled', 'disabled');
             $('#loading_reject').show();
-            if (values.type != "6" && values.type != "7") {
+            if (values.type == "1") {
+                values.screening_remark = $('#screening_remark').val();
+                values.screening_fo = $('#screening_fo_1').val() + "#" + $('#screening_fo_2').val() + "#" +
+                            $('#screening_fo_3').val() + "#" + $('#screening_fo_4').val() + "#" +
+                            $('#screening_fo_5').val() + "#" + $('#screening_fo_6').val();
+                values.screening_so = $('#screening_so_1').val() + "#" + $('#screening_so_2').val() + "#" +
+                            $('#screening_so_3').val() + "#" + $('#screening_so_4').val() + "#" +
+                            $('#screening_so_5').val() + "#" + $('#screening_so_6').val();
+                values.screening_spv = $('#screening_spv_1').val() + "#" + $('#screening_spv_2').val() + "#" +
+                            $('#screening_spv_3').val() + "#" + $('#screening_spv_4').val() + "#" +
+                            $('#screening_spv_5').val() + "#" + $('#screening_spv_6').val();
                 $.post('@Url.Action("RejectFIPermit","fi")', values, function (resp) {
                     if (resp.status == "200") {
-                        alert(resp.message);
+                        alert("Fire Impairment Clearance Permit is rejected.");
                     } else if (resp.status == "404") {
                         alert("Something is wrong when saving the data. Please try again.");
                     } else if (resp.status == "401") {
@@ -490,45 +312,27 @@
                     $('#loading_reject').hide();
                     $('#content').load('@Url.Action("Edit","FI")');
                 });
-            } else {
-                values.who = $('#who').val();
-                if (values.type == "6") {
-                    values.screening_remark = $('#screening_remark').val();
-                    switch (values.who) {
-                        case '3':
-                            values.screening_fo = $('#screening_fo_1').val() + "#" + $('#screening_fo_2').val() + "#" +
-                                $('#screening_fo_3').val() + "#" + $('#screening_fo_4').val() + "#" +
-                                $('#screening_fo_5').val() + "#" + $('#screening_fo_6').val();
-                            values.who = 3;
-                            break;
-                        case '2':
-                            values.screening_so = $('#screening_so_1').val() + "#" + $('#screening_so_2').val() + "#" +
-                                $('#screening_so_3').val() + "#" + $('#screening_so_4').val() + "#" +
-                                $('#screening_so_5').val() + "#" + $('#screening_so_6').val();
-                            values.who = 2;
-                            break;
-                        case '1':
-                            values.screening_spv = $('#screening_spv_1').val() + "#" + $('#screening_spv_2').val() + "#" +
-                                $('#screening_spv_3').val() + "#" + $('#screening_spv_4').val() + "#" +
-                                $('#screening_spv_5').val() + "#" + $('#screening_spv_6').val();
-                            values.who = 1;
-                        break;
+            } else if (values.type == "2") {
+                values.cancel_remark = $('#cancel_remark').val();
+                values.cancel_fo = $('#can_screening_fo_1').val() + "#" + $('#can_screening_fo_2').val() + "#" +
+                            $('#can_screening_fo_3').val();
+                values.cancel_so = $('#can_screening_so_1').val() + "#" + $('#can_screening_so_2').val() + "#" +
+                            $('#can_screening_so_3').val();
+                values.cancel_spv = $('#can_screening_spv_1').val() + "#" + $('#can_screening_spv_2').val() + "#" +
+                            $('#can_screening_spv_3').val();
+                $.post('@Url.Action("RejectFIPermitCancel","fi")', values, function (resp) {
+                    if (resp.status == "200") {
+                        alert("Fire Impairment Clearance Permit Cancellation is rejected.");
+                    } else if (resp.status == "404") {
+                        alert("Something is wrong when saving the data. Please try again.");
+                    } else if (resp.status == "401") {
+                        alert("You're not user that should reject this Clearance Permit.");
                     }
-
-                    $.post('@Url.Action("RejectPreScreening","fi")', values, function (resp) {
-                        if (resp.status == "200") {
-                            alert("Comment has been sent to requestor.");
-                        } else if (resp.status == "404") {
-                            alert("Something is wrong when saving the data. Please try again.");
-                        } else if (resp.status == "401") {
-                            alert("You're not user that should reject this Clearance Permit.");
-                        }
-                        $('#rejection').modal('hide');
-                        $('#reject_button').removeAttr('disabled');
-                        $('#loading_reject').hide();
-                        $('#content').load('@Url.Action("Edit","FI")');
-                    });
-                }
+                    $('#rejection').modal('hide');
+                    $('#reject_button').removeAttr('disabled');
+                    $('#loading_reject').hide();
+                    $('#content').load('@Url.Action("Edit","FI")');
+                });
             }
         });
 
@@ -667,21 +471,21 @@
                 <td>1</td>
                 <td>Are workers to do this job competent?</td>
                 <td>
-                    <select id="screening_spv_1" @(isCanEdit[2] ? "" : "disabled")>
+                    <select id="screening_spv_1" @(isCanEdit[3] ? "" : "disabled")>
                         <option value="0" @(Model.screening_spv_arr[0] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_spv_arr[0] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_spv_arr[0] == "2" ? "selected" : "")>No</option>
                     </select>
                 </td>
                 <td>
-                    <select id="screening_so_1" @(isCanEdit[3] ? "" : "disabled")>
+                    <select id="screening_so_1" @(isCanEdit[4] ? "" : "disabled")>
                         <option value="0" @(Model.screening_so_arr[0] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_so_arr[0] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_so_arr[0] == "2" ? "selected" : "")>No</option>
                     </select>
                 </td>
                 <td>
-                    <select id="screening_fo_1" @(isCanEdit[4] ? "" : "disabled")>
+                    <select id="screening_fo_1" @(isCanEdit[5] ? "" : "disabled")>
                         <option value="0" @(Model.screening_fo_arr[0] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_fo_arr[0] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_fo_arr[0] == "2" ? "selected" : "")>No</option>
@@ -692,21 +496,21 @@
                 <td>2</td>
                 <td>Available communication with ERT?</td>
                 <td>
-                    <select id="screening_spv_2" @(isCanEdit[2] ? "" : "disabled")>
+                    <select id="screening_spv_2" @(isCanEdit[3] ? "" : "disabled")>
                         <option value="0" @(Model.screening_spv_arr[1] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_spv_arr[1] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_spv_arr[1] == "2" ? "selected" : "")>No</option>
                     </select>
                 </td>
                 <td>
-                    <select id="screening_so_2" @(isCanEdit[3] ? "" : "disabled")>
+                    <select id="screening_so_2" @(isCanEdit[4] ? "" : "disabled")>
                         <option value="0" @(Model.screening_so_arr[1] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_so_arr[1] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_so_arr[1] == "2" ? "selected" : "")>No</option>
                     </select>
                 </td>
                 <td>
-                    <select id="screening_fo_2" @(isCanEdit[4] ? "" : "disabled")>
+                    <select id="screening_fo_2" @(isCanEdit[5] ? "" : "disabled")>
                         <option value="0" @(Model.screening_fo_arr[1] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_fo_arr[1] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_fo_arr[1] == "2" ? "selected" : "")>No</option>
@@ -717,21 +521,21 @@
                 <td>3</td>
                 <td>Competent fire watch available?</td>
                 <td>
-                    <select id="screening_spv_3" @(isCanEdit[2] ? "" : "disabled")>
+                    <select id="screening_spv_3" @(isCanEdit[3] ? "" : "disabled")>
                         <option value="0" @(Model.screening_spv_arr[2] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_spv_arr[2] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_spv_arr[2] == "2" ? "selected" : "")>No</option>
                     </select>
                 </td>
                 <td>
-                    <select id="screening_so_3" @(isCanEdit[3] ? "" : "disabled")>
+                    <select id="screening_so_3" @(isCanEdit[4] ? "" : "disabled")>
                         <option value="0" @(Model.screening_so_arr[2] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_so_arr[2] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_so_arr[2] == "2" ? "selected" : "")>No</option>
                     </select>
                 </td>
                 <td>
-                    <select id="screening_fo_3" @(isCanEdit[4] ? "" : "disabled")>
+                    <select id="screening_fo_3" @(isCanEdit[5] ? "" : "disabled")>
                         <option value="0" @(Model.screening_fo_arr[2] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_fo_arr[2] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_fo_arr[2] == "2" ? "selected" : "")>No</option>
@@ -742,21 +546,21 @@
                 <td>4</td>
                 <td>Affected parties have been notified?</td>
                 <td>
-                    <select id="screening_spv_4" @(isCanEdit[2] ? "" : "disabled")>
+                    <select id="screening_spv_4" @(isCanEdit[3] ? "" : "disabled")>
                         <option value="0" @(Model.screening_spv_arr[3] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_spv_arr[3] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_spv_arr[3] == "2" ? "selected" : "")>No</option>
                     </select>
                 </td>
                 <td>
-                    <select id="screening_so_4" @(isCanEdit[3] ? "" : "disabled")>
+                    <select id="screening_so_4" @(isCanEdit[4] ? "" : "disabled")>
                         <option value="0" @(Model.screening_so_arr[3] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_so_arr[3] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_so_arr[3] == "2" ? "selected" : "")>No</option>
                     </select>
                 </td>
                 <td>
-                    <select id="screening_fo_4" @(isCanEdit[4] ? "" : "disabled")>
+                    <select id="screening_fo_4" @(isCanEdit[5] ? "" : "disabled")>
                         <option value="0" @(Model.screening_fo_arr[3] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_fo_arr[3] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_fo_arr[3] == "2" ? "selected" : "")>No</option>
@@ -767,21 +571,21 @@
                 <td>5</td>
                 <td>Adequate fire system back up during impairment?</td>
                 <td>
-                    <select id="screening_spv_5" @(isCanEdit[2] ? "" : "disabled")>
+                    <select id="screening_spv_5" @(isCanEdit[3] ? "" : "disabled")>
                         <option value="0" @(Model.screening_spv_arr[4] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_spv_arr[4] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_spv_arr[4] == "2" ? "selected" : "")>No</option>
                     </select>
                 </td>
                 <td>
-                    <select id="screening_so_5" @(isCanEdit[3] ? "" : "disabled")>
+                    <select id="screening_so_5" @(isCanEdit[4] ? "" : "disabled")>
                         <option value="0" @(Model.screening_so_arr[4] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_so_arr[4] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_so_arr[4] == "2" ? "selected" : "")>No</option>
                     </select>
                 </td>
                 <td>
-                    <select id="screening_fo_5" @(isCanEdit[4] ? "" : "disabled")>
+                    <select id="screening_fo_5" @(isCanEdit[5] ? "" : "disabled")>
                         <option value="0" @(Model.screening_fo_arr[4] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_fo_arr[4] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_fo_arr[4] == "2" ? "selected" : "")>No</option>
@@ -792,21 +596,21 @@
                 <td>6</td>
                 <td>The impairment work can be done safely?</td>
                 <td>
-                    <select id="screening_spv_6" @(isCanEdit[2] ? "" : "disabled")>
+                    <select id="screening_spv_6" @(isCanEdit[3] ? "" : "disabled")>
                         <option value="0" @(Model.screening_spv_arr[5] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_spv_arr[5] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_spv_arr[5] == "2" ? "selected" : "")>No</option>
                     </select>
                 </td>
                 <td>
-                    <select id="screening_so_6" @(isCanEdit[3] ? "" : "disabled")>
+                    <select id="screening_so_6" @(isCanEdit[4] ? "" : "disabled")>
                         <option value="0" @(Model.screening_so_arr[5] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_so_arr[5] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_so_arr[5] == "2" ? "selected" : "")>No</option>
                     </select>
                 </td>
                 <td>
-                    <select id="screening_fo_6" @(isCanEdit[4] ? "" : "disabled")>
+                    <select id="screening_fo_6" @(isCanEdit[5] ? "" : "disabled")>
                         <option value="0" @(Model.screening_fo_arr[5] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_fo_arr[5] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_fo_arr[5] == "2" ? "selected" : "")>No</option>
@@ -828,7 +632,7 @@
                         </li>
                     </ul>
                     <span id="screening_remark_required" style="display:none;color:red"></span>
-                    <textarea class="table-textarea" id="screening_remark" @(isCanEdit[2] || isCanEdit[3] || isCanEdit[4] ? "" : "disabled")>@Model.screening_remark</textarea>
+                    <textarea class="table-textarea" id="screening_remark" @(isCanEdit[3] || isCanEdit[4] || isCanEdit[5] ? "" : "disabled")>@Model.screening_remark</textarea>
                 </td>
             </tr>
         </tbody>
@@ -846,20 +650,13 @@
             </tr>
             <tr>
                 <td class="td-centre no-border">
-                    @if (isCanEdit[5] && Model.acc_work_leader_signature == null) {
-                    <button class="btn btn-mini btn-success approve" data-type="1">Save & Approve</button>
-                    }
-                    else if (Model.acc_work_leader_signature != null)
+                    @if (Model.acc_work_leader_signature != null)
                     {
                         <img id="img_approve_work_leader" width="50" height="50" @(Model.acc_work_leader_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.acc_work_leader_signature == null ? "" : Model.acc_work_leader_signature.Substring(1))"/><br />
                     }
                 </td>
                 <td class="td-centre no-border">
-                    @if (isCanEdit[6] && Model.acc_fire_watch_signature == null) {
-                    <button class="btn btn-mini btn-success approve" data-type="2">Save & Approve</button>
-                    <button class="btn btn-mini btn-danger reject" data-type="2">Reject</button>
-                    }
-                    else if (Model.acc_fire_watch_signature != null)
+                    @if (Model.acc_fire_watch_signature != null)
                     {
                         <img id="img_approve_fire_watch" width="50" height="50" @(Model.acc_fire_watch_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.acc_fire_watch_signature == null ? "" : Model.acc_fire_watch_signature.Substring(1))"/><br />
                     }
@@ -868,21 +665,13 @@
                     @if (isCanEdit[1] && Model.acc_so == null)
                     {
                         <text>@Html.DropDownList("acc_so", ViewBag.listSO as List<SelectListItem>, new { @class = "table-input-170" } as object)</text>
-                    } else if (isCanEdit[7] && Model.acc_so_signature == null) {
-                    <button class="btn btn-mini btn-success approve" data-type="3">Save & Approve</button>
-                    <button class="btn btn-mini btn-danger reject" data-type="3">Reject</button>
-                    }
-                    else if (Model.acc_so_signature != null)
+                    } else if (Model.acc_so_signature != null)
                     {
                     <img id="img_approve_so" width="50" height="50" @(Model.acc_so_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.acc_so_signature == null ? "" : Model.acc_so_signature.Substring(1))"/><br />
                     }
                 </td>
                 <td class="td-centre no-border">
-                    @if (isCanEdit[8] && Model.acc_fo_signature == null) {
-                    <button class="btn btn-mini btn-success approve" data-type="4">Save & Approve</button>
-                    <button class="btn btn-mini btn-danger reject" data-type="4">Reject</button>
-                    }
-                    else if (Model.acc_fo_signature != null)
+                    @if (Model.acc_fo_signature != null)
                     {
                     <img id="img_approve_fo" width="50" height="50" @(Model.acc_fo_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.acc_fo_signature == null ? "" : Model.acc_fo_signature.Substring(1))"/><br />
                     }
@@ -891,11 +680,6 @@
                     @if (isCanEdit[1] && Model.acc_dept_head == null)
                     {
                         <text>@Html.DropDownList("acc_dept_head", ViewBag.listDeptHead as List<SelectListItem>, new { @class = "table-input-170" } as object)</text>
-                    }
-                    else if (isCanEdit[9] && Model.acc_dept_head_signature == null)
-                    {
-                    <button class="btn btn-mini btn-success approve" data-type="5">Save & Approve</button>
-                    <button class="btn btn-mini btn-danger reject" data-type="5">Reject</button>
                     }
                     else if (Model.acc_dept_head_signature != null)
                     {
@@ -1065,9 +849,7 @@
         </tbody>
     </table>
     <h6>Remark : <small><i>(write any consent related fire impairment, start with 'Spv:' for Supervisor, start with 'SO:' for SO, and start with 'FO:' for FO)</i></small></h6>
-    <textarea class="table-textarea" id="cancel_remark" @(isCanEdit[10] || isCanEdit[11] || isCanEdit[12] ? "" : "disabled")>
-        @Model.cancel_remark
-    </textarea>
+    <textarea class="table-textarea" id="cancel_remark" @(isCanEdit[10] || isCanEdit[11] || isCanEdit[12] ? "" : "disabled")>@Model.cancel_remark</textarea>
     <br /><br />
 
     <table class="table">
@@ -1082,46 +864,31 @@
             </tr>
             <tr>
                 <td class="td-centre no-border">
-                    @if (isCanEdit[13] && Model.cancel_work_leader_signature == null) {
-                    <button class="btn btn-mini btn-success cancel-approve" data-type="1">Save & Approve</button>
-                    }
-                    else if (Model.cancel_work_leader_signature != null)
+                    @if (Model.cancel_work_leader_signature != null)
                     {
                         <img id="img_cancel_work_leader" width="50" height="50" @(Model.cancel_work_leader_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.cancel_work_leader_signature == null ? "" : Model.cancel_work_leader_signature.Substring(1))"/><br />
                     }
                 </td>
                 <td class="td-centre no-border">
-                    @if (isCanEdit[14] && Model.cancel_fire_watch_signature == null) {
-                    <button class="btn btn-mini btn-success cancel-approve" data-type="2">Save & Approve</button>
-                    }
-                    else if (Model.cancel_fire_watch_signature != null)
+                    @if (Model.cancel_fire_watch_signature != null)
                     {
                         <img id="img_cancel_fire_watch" width="50" height="50" @(Model.cancel_fire_watch_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.cancel_fire_watch_signature == null ? "" : Model.cancel_fire_watch_signature.Substring(1))"/><br />
                     }
                 </td>
                 <td class="td-centre no-border">
-                    @if (isCanEdit[15] && Model.cancel_so_signature == null) {
-                    <button class="btn btn-mini btn-success cancel-approve" data-type="3">Save & Approve</button>
-                    }
-                    else if (Model.cancel_so_signature != null)
+                    @if (Model.cancel_so_signature != null)
                     {
                         <img id="img_cancel_so" width="50" height="50" @(Model.cancel_so_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.cancel_so_signature == null ? "" : Model.cancel_so_signature.Substring(1))"/><br />
                     }
                 </td>
                 <td class="td-centre no-border">
-                    @if (isCanEdit[16] && Model.cancel_fo_signature == null) {
-                    <button class="btn btn-mini btn-success cancel-approve" data-type="4">Save & Approve</button>
-                    }
-                    else if (Model.cancel_fo_signature != null)
+                    @if (Model.cancel_fo_signature != null)
                     {
                         <img id="img_cancel_fo" width="50" height="50" @(Model.cancel_fo_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.cancel_fo_signature == null ? "" : Model.cancel_fo_signature.Substring(1))"/><br />
                     }
                 </td>
                 <td class="td-centre no-border">
-                    @if (isCanEdit[17] && Model.cancel_dept_head_signature == null) {
-                    <button class="btn btn-mini btn-success cancel-approve" data-type="5">Save & Approve</button>
-                    }
-                    else if (Model.cancel_dept_head_signature != null)
+                    @if (Model.cancel_dept_head_signature != null)
                     {
                         <img id="img_cancel_dept_head" width="50" height="50" @(Model.cancel_dept_head_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.cancel_dept_head_signature == null ? "" : Model.cancel_dept_head_signature.Substring(1))"/><br />
                     }
@@ -1196,12 +963,16 @@
 }
     <div class="row-fluid">
         <div class="span12">
-            @if (isCanEdit[0] || isCanEdit[2] || isCanEdit[3] || isCanEdit[4] || isCanEdit[10] || isCanEdit[11] || isCanEdit[12])
+            @if (isCanEdit[0] || isCanEdit[2] || isCanEdit[3] || isCanEdit[4] || isCanEdit[5] || isCanEdit[6])
             {
-            <input type="button" id="save-complete" class="btn btn-success" value="Save and Complete"/>
-            <input type="button" id="save-as-draft" class="btn btn-warning" value="Save as Draft"/>
-                if (isCanEdit[2] || isCanEdit[3] || isCanEdit[4] || isCanEdit[10] || isCanEdit[11] || isCanEdit[12]) {
-            <input type="button" id="reject" class="btn btn-danger" value="Comment to Requestor"/>
+            <input type="button" id="save-complete" class="btn btn-success" value="Save and Complete" data-who="@(isCanEdit[0] ? 1 : (isCanEdit[2] ? 2 : (isCanEdit[3] ? 3 : (isCanEdit[4] ? 4 : (isCanEdit[5] ? 5 : (isCanEdit[6] ? 6 : 0))))))"/>
+                if (isCanEdit[0] || isCanEdit[3] || isCanEdit[4] || isCanEdit[5])
+                {
+            <input type="button" id="save-as-draft" class="btn btn-default" value="Save as Draft" data-who="@(isCanEdit[0] ? 1 : (isCanEdit[3] ? 3 : (isCanEdit[4] ? 4 : (isCanEdit[5] ? 5 : 0))))"/>
+            }
+            if (isCanEdit[2] || isCanEdit[3] || isCanEdit[4] || isCanEdit[5] || isCanEdit[6])
+            {
+            <input type="button" id="reject" class="btn btn-danger" value="Reject" data-who="@(isCanEdit[0] ? 1 : (isCanEdit[2] ? 2 : (isCanEdit[3] ? 3 : (isCanEdit[4] ? 4 : (isCanEdit[5] ? 5 : (isCanEdit[6] ? 6 : 0))))))" />
             }
             }
 
@@ -1210,9 +981,22 @@
             <input type="button" id="save-assign" class="btn btn-success" value="Save"/>
             }
 
-            @if (Model.isCanEditCancel(requestor) && Model.status == (int)PermitToWork.Models.FIEntity.FIStatus.DEPTFOAPPROVE && (ViewBag.ptwStatus as int?).Value >= (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.ACCFO)
+            @if (isCanEdit[7] && Model.status == (int)PermitToWork.Models.FIEntity.FIStatus.DEPTFOAPPROVE && (ViewBag.ptwStatus as int?).Value >= (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.ACCFO)
             {
             <input type="button" id="cancel" class="btn btn-warning" value="Cancel Permit"/>
+            }
+
+            @if (isCanEdit[8] || isCanEdit[9] || isCanEdit[10] || isCanEdit[11] || isCanEdit[12] || isCanEdit[13])
+            {
+            <input type="button" id="save-complete-cancel" class="btn btn-success" value="Save and Complete" data-who="@(isCanEdit[8] ? 1 : (isCanEdit[9] ? 2 : (isCanEdit[10] ? 3 : (isCanEdit[11] ? 4 : (isCanEdit[12] ? 5 : (isCanEdit[13] ? 6 : 0))))))"/>
+                if (isCanEdit[10] || isCanEdit[11] || isCanEdit[12])
+                {
+            <input type="button" id="save-as-draft-cancel" class="btn btn-default" value="Save as Draft" data-who="@(isCanEdit[10] ? 3 : (isCanEdit[11] ? 4 : (isCanEdit[12] ? 5 : 0)))"/>
+            }
+            if (isCanEdit[9] || isCanEdit[10] || isCanEdit[11] || isCanEdit[12] || isCanEdit[13])
+            {
+            <input type="button" id="reject-cancel" class="btn btn-danger" value="Reject" data-who="@(isCanEdit[8] ? 1 : (isCanEdit[9] ? 2 : (isCanEdit[10] ? 3 : (isCanEdit[11] ? 4 : (isCanEdit[12] ? 5 : (isCanEdit[13] ? 6 : 0))))))" />
+            }
             }
             <input type="button" id="back" class="btn btn-primary" value="Back"/>
             <span id="loading_gif" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span>

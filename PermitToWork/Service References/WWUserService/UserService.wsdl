@@ -81,7 +81,9 @@
       </xs:element>
       <xs:element name="resendEmailResponse">
         <xs:complexType>
-          <xs:sequence />
+          <xs:sequence>
+            <xs:element minOccurs="0" name="resendEmailResult" nillable="true" type="xs:string" />
+          </xs:sequence>
         </xs:complexType>
       </xs:element>
       <xs:element name="getSuperintendent">
@@ -113,6 +115,38 @@
         <xs:complexType>
           <xs:sequence>
             <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/StarEnergyService.Helper" minOccurs="0" name="loginResult" nillable="true" type="q7:ResponseModel" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="getSuperintendentByDepartment">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="token" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="idLogin" type="xs:int" />
+            <xs:element minOccurs="0" name="department" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="getSuperintendentByDepartmentResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/StarEnergyService.Helper" minOccurs="0" name="getSuperintendentByDepartmentResult" nillable="true" type="q8:ResponseModel" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="getSupervisor">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="token" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="idLogin" type="xs:int" />
+            <xs:element minOccurs="0" name="idUser" type="xs:int" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="getSupervisorResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q9="http://schemas.datacontract.org/2004/07/StarEnergyService.Helper" minOccurs="0" name="getSupervisorResult" nillable="true" type="q9:ResponseModel" />
           </xs:sequence>
         </xs:complexType>
       </xs:element>
@@ -178,6 +212,7 @@
       <xs:element name="ListUserModel" nillable="true" type="tns:ListUserModel" />
     </xs:schema>
     <xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/StarEnergyService" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/StarEnergyService" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
       <xs:complexType name="UserModel">
         <xs:sequence>
           <xs:element minOccurs="0" name="alpha_name" nillable="true" type="xs:string" />
@@ -192,6 +227,7 @@
           <xs:element minOccurs="0" name="employee_no" nillable="true" type="xs:string" />
           <xs:element minOccurs="0" name="id" type="xs:int" />
           <xs:element minOccurs="0" name="position" nillable="true" type="xs:string" />
+          <xs:element xmlns:q1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="role" nillable="true" type="q1:ArrayOfint" />
           <xs:element minOccurs="0" name="signature" nillable="true" type="xs:string" />
         </xs:sequence>
       </xs:complexType>
@@ -204,6 +240,12 @@
       <xs:element name="ArrayOfUserModel" nillable="true" type="tns:ArrayOfUserModel" />
     </xs:schema>
     <xs:schema xmlns:tns="http://schemas.microsoft.com/2003/10/Serialization/Arrays" elementFormDefault="qualified" targetNamespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:complexType name="ArrayOfint">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="int" type="xs:int" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfint" nillable="true" type="tns:ArrayOfint" />
       <xs:complexType name="ArrayOfstring">
         <xs:sequence>
           <xs:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="xs:string" />
@@ -254,6 +296,18 @@
   <wsdl:message name="IUserService_login_OutputMessage">
     <wsdl:part name="parameters" element="tns:loginResponse" />
   </wsdl:message>
+  <wsdl:message name="IUserService_getSuperintendentByDepartment_InputMessage">
+    <wsdl:part name="parameters" element="tns:getSuperintendentByDepartment" />
+  </wsdl:message>
+  <wsdl:message name="IUserService_getSuperintendentByDepartment_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getSuperintendentByDepartmentResponse" />
+  </wsdl:message>
+  <wsdl:message name="IUserService_getSupervisor_InputMessage">
+    <wsdl:part name="parameters" element="tns:getSupervisor" />
+  </wsdl:message>
+  <wsdl:message name="IUserService_getSupervisor_OutputMessage">
+    <wsdl:part name="parameters" element="tns:getSupervisorResponse" />
+  </wsdl:message>
   <wsdl:portType name="IUserService">
     <wsdl:operation name="listUser">
       <wsdl:input wsaw:Action="http://tempuri.org/IUserService/listUser" message="tns:IUserService_listUser_InputMessage" />
@@ -282,6 +336,14 @@
     <wsdl:operation name="login">
       <wsdl:input wsaw:Action="http://tempuri.org/IUserService/login" message="tns:IUserService_login_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IUserService/loginResponse" message="tns:IUserService_login_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getSuperintendentByDepartment">
+      <wsdl:input wsaw:Action="http://tempuri.org/IUserService/getSuperintendentByDepartment" message="tns:IUserService_getSuperintendentByDepartment_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IUserService/getSuperintendentByDepartmentResponse" message="tns:IUserService_getSuperintendentByDepartment_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="getSupervisor">
+      <wsdl:input wsaw:Action="http://tempuri.org/IUserService/getSupervisor" message="tns:IUserService_getSupervisor_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IUserService/getSupervisorResponse" message="tns:IUserService_getSupervisor_OutputMessage" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="BasicHttpBinding_IUserService" type="tns:IUserService">
@@ -342,6 +404,24 @@
     </wsdl:operation>
     <wsdl:operation name="login">
       <soap:operation soapAction="http://tempuri.org/IUserService/login" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getSuperintendentByDepartment">
+      <soap:operation soapAction="http://tempuri.org/IUserService/getSuperintendentByDepartment" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getSupervisor">
+      <soap:operation soapAction="http://tempuri.org/IUserService/getSupervisor" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

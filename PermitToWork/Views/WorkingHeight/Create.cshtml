@@ -185,7 +185,8 @@
 
         $('#save-as-draft').click(function () {
             var values = getValues();
-
+            values.who = $(this).data('who');
+            values = getScreeningValue(values, values.who);
             $.post('@Url.Action("SaveAsDraft","WorkingHeight")', values, function (resp) {
                 if (resp.status == "200") {
                     alert('Save success.');
@@ -198,11 +199,13 @@
 
         $('#save-send').click(function () {
             var values = getValues();
+            values.who = $(this).data('who');
+            values = getScreeningValue(values, values.who);
             $('#loading_gif').show();
             $.post('@Url.Action("SaveAndSend","WorkingHeight")', values, function (resp) {
                 $('#loading_gif').hide();
                 if (resp.status == "200") {
-                    alert('Save success. You/erector may start pre-screening now.');
+                    alert('Working at Height Clearance Permit is saved and approved.');
                 } else if (resp.status == "201") {
                     alert('Save success. Inspector will be informed to approve.');
                 } else {
@@ -218,7 +221,7 @@
             $.post('@Url.Action("inspectorSign","WorkingHeight")', values, function (resp) {
                 $('#loading_gif').hide();
                 if (resp.status == "200") {
-                    alert('Save success. Requestor has been notified to do pre-job screening.');
+                    alert('Save success. Requestor has been notified to do pre-job screening and approving.');
                 } else {
                     alert('Something\'s wrong. Please try again.');
                 }
@@ -228,9 +231,9 @@
 
         $('#save-as-draft-2').click(function () {
             var values = getValues();
-            values = getScreeningValue(values, 1);
-            values.who = 1;
-            $.post('@Url.Action("SaveAsDraftPreScreening","WorkingHeight")', values, function (resp) {
+            values.who = $(this).data('who');
+            values = getCancelScreeningValue(values, values.who);
+            $.post('@Url.Action("SaveAsDraftCancel","WorkingHeight")', values, function (resp) {
                 if (resp.status == "200") {
                     alert('Save success.');
                 } else {
@@ -242,43 +245,15 @@
 
         $('#save-send-2').click(function () {
             var values = getValues();
-            values = getScreeningValue(values, 1);
-            values.who = 1;
+            values.who = $(this).data('who');
+            values = getCancelScreeningValue(values, values.who);
             $('#loading_gif').show();
-            $.post('@Url.Action("SaveAndSendPreScreening","WorkingHeight")', values, function (resp) {
+            $.post('@Url.Action("SaveAndSendCancel","WorkingHeight")', values, function (resp) {
                 $('#loading_gif').hide();
                 if (resp.status == "200") {
-                    alert('Save success. Facility Owner has been informed to do pre-job screening.');
-                } else {
-                    alert('Something\'s wrong. Please try again.');
-                }
-                $('#content').load('@Url.Action("Edit", "WorkingHeight")');
-            });
-        });
-
-        $('#save-as-draft-3').click(function () {
-            var values = getValues();
-            values = getScreeningValue(values, 2);
-            values.who = 2;
-            $.post('@Url.Action("SaveAsDraftPreScreening","WorkingHeight")', values, function (resp) {
-                if (resp.status == "200") {
-                    alert('Save success.');
-                } else {
-                    alert('Something\'s wrong. Please try again.');
-                }
-                $('#content').load('@Url.Action("Edit", "WorkingHeight")');
-            });
-        });
-
-        $('#save-send-3').click(function () {
-            var values = getValues();
-            values = getScreeningValue(values, 2);
-            values.who = 2;
-            $('#loading_gif').show();
-            $.post('@Url.Action("SaveAndSendPreScreening","WorkingHeight")', values, function (resp) {
-                $('#loading_gif').hide();
-                if (resp.status == "200") {
-                    alert('Save success. Requestor / Erector has been informed to sign clearence permit.');
+                    alert('Working at Height Clearance Permit Cancellation is saved and approved.');
+                } else if (resp.status == "201") {
+                    alert('Save success. Inspector will be informed to approve.');
                 } else {
                     alert('Something\'s wrong. Please try again.');
                 }
@@ -288,6 +263,7 @@
 
         $('#reject').click(function () {
             $('#type-reject').val(1);
+            $('#who').val($(this).data('who'));
             $('#rejection').modal('show');
         });
 
@@ -295,36 +271,23 @@
             var values = {
                 id: '@Model.id',
                 comment: $('#comment').val(),
+                who: $('#who').val()
             }
-
+            values = getScreeningValue(values, values.who);
             var type = $('#type-reject').val();
             var url = '';
             if (type == "1") {
-                url = '@Url.Action("rejectPreScreening","WorkingHeight")';
-                var values = getScreeningValue(values, 2);
+                url = '@Url.Action("rejectPermit","WorkingHeight")';
             } else if (type == "2") {
-                url = '@Url.Action("rejectCancelScreening","WorkingHeight")';
+                url = '@Url.Action("rejectPermitCancel","WorkingHeight")';
                 var values = getScreeningValue(values, 4);
             }
 
             $.post(url, values, function (resp) {
                 if (resp.status == "200") {
-                    alert('Comment has been sent to requestor for revising.');
+                    alert('Working at Height Clearance Permit is rejected.');
                 }
-                $('#content').load('@Url.Action("Edit", "WorkingHeight")');
-            });
-        });
-
-        $('.start-accept').click(function () {
-            var values = {
-                id: '@Model.id',
-                who: $(this).data('who'),
-            }
-
-            $.post('@Url.Action("SignStartPermit", "WorkingHeight")', values, function (resp) {
-                if (resp.status == "200") {
-                    alert(resp.message);
-                }
+                $('#rejection').modal('hide');
                 $('#content').load('@Url.Action("Edit", "WorkingHeight")');
             });
         });
@@ -343,56 +306,9 @@
             });
         });
 
-        $('#save-as-draft-4').click(function () {
-            var values = getValues();
-            var who = parseInt($('#save-send-4').data('who'));
-            values = getScreeningValue(values, who + 2);
-            values.who = who;
-            $.post('@Url.Action("SaveAsDraftCancelScreening","WorkingHeight")', values, function (resp) {
-                if (resp.status == "200") {
-                    alert('Save success.');
-                } else {
-                    alert('Something\'s wrong. Please try again.');
-                }
-                $('#content').load('@Url.Action("Edit", "WorkingHeight")');
-            });
-        });
-
-        $('#save-send-4').click(function () {
-            var values = getValues();
-            var who = parseInt($('#save-send-4').data('who'));
-            values = getScreeningValue(values, who + 2);
-            values.who = who;
-            $('#loading_gif').show();
-            $.post('@Url.Action("SaveAndSendCancelScreening","WorkingHeight")', values, function (resp) {
-                $('#loading_gif').hide();
-                if (resp.status == "200") {
-                    alert('Save success. Facility Owner has been informed to do cancellation screening.');
-                } else if (resp.status == "201") {
-                    alert('Save success. Facility Owner has been informed to sign cancellation.');
-                } else {
-                    alert('Something\'s wrong. Please try again.');
-                }
-                $('#content').load('@Url.Action("Edit", "WorkingHeight")');
-            });
-        });
-
-        $('.cancel-accept').click(function () {
-            var values = {
-                id: '@Model.id',
-                who: $(this).data('who'),
-            }
-
-            $.post('@Url.Action("SignCancelPermit", "WorkingHeight")', values, function (resp) {
-                if (resp.status == "200") {
-                    alert(resp.message);
-                }
-                $('#content').load('@Url.Action("Edit", "WorkingHeight")');
-            });
-        });
-
         $('#reject-2').click(function () {
             $('#type-reject').val(2);
+            $('#who').val($(this).data('who'));
             $('#rejection').modal('show');
         });
 
@@ -498,7 +414,7 @@
         }
 
         function getScreeningValue(values, id) {
-            if (id == 1) {
+            if (id == "3") {
                 var a = [];
                 var s = "";
                 $('.pre-screening-req').each(function () {
@@ -510,7 +426,7 @@
                     s += a[i] + "#";
                 }
                 values.pre_screening_req = s.length > 0 ? s.substring(0, s.length - 1) : "";
-            } else if (id == 2) {
+            } else if (id == "5") {
                 var a = [];
                 var s = "";
                 $('.pre-screening-fo').each(function () {
@@ -535,6 +451,36 @@
                 }
                 values.can_screening_req = s.length > 0 ? s.substring(0, s.length - 1) : "";
             } else if (id == 4) {
+                var a = [];
+                var s = "";
+                $('.can-screening-fo').each(function () {
+                    var id = $(this).data('id');
+                    a[id] = $(this).val();
+                });
+
+                for (var i = 0; i < 3; i++) {
+                    s += a[i] + "#";
+                }
+                values.can_screening_fo = s.length > 0 ? s.substring(0, s.length - 1) : "";
+            }
+
+            return values;
+        }
+
+        function getCancelScreeningValue(values, id) {
+            if (id == "2") {
+                var a = [];
+                var s = "";
+                $('.can-screening-req').each(function () {
+                    var id = $(this).data('id');
+                    a[id] = $(this).val();
+                });
+
+                for (var i = 0; i < 3; i++) {
+                    s += a[i] + "#";
+                }
+                values.can_screening_req = s.length > 0 ? s.substring(0, s.length - 1) : "";
+            } else if (id == "4") {
                 var a = [];
                 var s = "";
                 $('.can-screening-fo').each(function () {
@@ -602,7 +548,7 @@
                 </tr>
                 <tr>
                     <td>Requestor</td>
-                    <td>: <input class="table-input table-input-120" id="requestor" type="text" disabled value="@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.REQUESTOR.ToString()].alpha_name"></td>
+                    <td>: <input class="table-input table-input-120" id="requestor" type="text" disabled value="@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.REQUESTOR.ToString()].alpha_name"></td>
                     <td colspan="2">Total crew : @Html.DropDownList("total-crew", ViewBag.listTotalCrew as List<SelectListItem>, (isCanEdit[0] ? new { @class = "table-input-170" } as object : new { @class = "table-input-170", disabled = "disabled" } as object))</td>
                 </tr>
             </tbody>
@@ -760,9 +706,9 @@
                                                     <td>Has the equipment certified. </td>
                                                     <td>
                                                         <select class="radiography-select elevated-access" data-id="0" id="elevated-access-1" @(isCanEdit[0] ? "" : "disabled")>
-                                                            <option value="0" @(Model.ladder_access_arr[0] == "0" ? "selected" : "")>N/A</option>
-                                                            <option value="1" @(Model.ladder_access_arr[0] == "1" ? "selected" : "")>Yes</option>
-                                                            <option value="2" @(Model.ladder_access_arr[0] == "2" ? "selected" : "")>No</option>
+                                                            <option value="0" @(Model.elevated_access_arr[0] == "0" ? "selected" : "")>N/A</option>
+                                                            <option value="1" @(Model.elevated_access_arr[0] == "1" ? "selected" : "")>Yes</option>
+                                                            <option value="2" @(Model.elevated_access_arr[0] == "2" ? "selected" : "")>No</option>
                                                         </select>
                                                     </td>
                                                 </tr>
@@ -771,9 +717,9 @@
                                                     <td>Overhead hazard have been controlled? </td>
                                                     <td>
                                                         <select class="radiography-select elevated-access" data-id="1" id="elevated-access-2" @(isCanEdit[0] ? "" : "disabled")>
-                                                            <option value="0" @(Model.ladder_access_arr[1] == "0" ? "selected" : "")>N/A</option>
-                                                            <option value="1" @(Model.ladder_access_arr[1] == "1" ? "selected" : "")>Yes</option>
-                                                            <option value="2" @(Model.ladder_access_arr[1] == "2" ? "selected" : "")>No</option>
+                                                            <option value="0" @(Model.elevated_access_arr[1] == "0" ? "selected" : "")>N/A</option>
+                                                            <option value="1" @(Model.elevated_access_arr[1] == "1" ? "selected" : "")>Yes</option>
+                                                            <option value="2" @(Model.elevated_access_arr[1] == "2" ? "selected" : "")>No</option>
                                                         </select>
                                                     </td>
                                                 </tr>
@@ -782,9 +728,9 @@
                                                     <td>Anchor point for fall arrest suitable and accessible? </td>
                                                     <td>
                                                         <select class="radiography-select elevated-access" data-id="2" id="elevated-access-3" @(isCanEdit[0] ? "" : "disabled")>
-                                                            <option value="0" @(Model.ladder_access_arr[2] == "0" ? "selected" : "")>N/A</option>
-                                                            <option value="1" @(Model.ladder_access_arr[2] == "1" ? "selected" : "")>Yes</option>
-                                                            <option value="2" @(Model.ladder_access_arr[2] == "2" ? "selected" : "")>No</option>
+                                                            <option value="0" @(Model.elevated_access_arr[2] == "0" ? "selected" : "")>N/A</option>
+                                                            <option value="1" @(Model.elevated_access_arr[2] == "1" ? "selected" : "")>Yes</option>
+                                                            <option value="2" @(Model.elevated_access_arr[2] == "2" ? "selected" : "")>No</option>
                                                         </select>
                                                     </td>
                                                 </tr>
@@ -1133,7 +1079,7 @@
                         </select>
                     </td>
                     <td class="radio-title-form">
-                        <select class="radiography-select pre-screening-fo" data-id="0" id="pre-screening-fo-1" @(isCanEdit[3] ? "" : "disabled")>
+                        <select class="radiography-select pre-screening-fo" data-id="0" id="pre-screening-fo-1" @(isCanEdit[4] ? "" : "disabled")>
                             <option value="0" @(Model.screening_fo_arr[0] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.screening_fo_arr[0] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.screening_fo_arr[0] == "2" ? "selected" : "")>No</option>
@@ -1151,7 +1097,7 @@
                         </select>
                     </td>
                     <td class="radio-title-form">
-                        <select class="radiography-select pre-screening-fo" data-id="1" id="pre-screening-fo-2" @(isCanEdit[3] ? "" : "disabled")>
+                        <select class="radiography-select pre-screening-fo" data-id="1" id="pre-screening-fo-2" @(isCanEdit[4] ? "" : "disabled")>
                             <option value="0" @(Model.screening_fo_arr[1] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.screening_fo_arr[1] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.screening_fo_arr[1] == "2" ? "selected" : "")>No</option>
@@ -1169,7 +1115,7 @@
                         </select>
                     </td>
                     <td class="radio-title-form">
-                        <select class="radiography-select pre-screening-fo" data-id="2" id="pre-screening-fo-3" @(isCanEdit[3] ? "" : "disabled")>
+                        <select class="radiography-select pre-screening-fo" data-id="2" id="pre-screening-fo-3" @(isCanEdit[4] ? "" : "disabled")>
                             <option value="0" @(Model.screening_fo_arr[2] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.screening_fo_arr[2] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.screening_fo_arr[2] == "2" ? "selected" : "")>No</option>
@@ -1178,7 +1124,7 @@
                 </tr>
                 <tr>
                     <td colspan="4">Note <small><i>(write any consent related the working at height permit)</i></small>: <br />
-                        <textarea class="table-textarea" id="note" @(isCanEdit[2] || isCanEdit[3] ? "" : "disabled")></textarea>
+                        <textarea class="table-textarea" id="note" @(isCanEdit[2] || isCanEdit[4] ? "" : "disabled")></textarea>
                     </td>
                 </tr>
             </tbody>
@@ -1196,31 +1142,19 @@
             <tbody>
                 <tr>
                     <td class="td-centre">
-                        @if (isCanEdit[4])
-                        {
-                        <button class="btn btn-success btn-small start-accept" type="button" id="start-accept-requestor" data-who="1">Sign</button>
-                        }
-                        else if (Model.requestor_signature != null)
+                        @if (Model.requestor_signature != null)
                         {
                         <img id="img_approve_operator" width="50" height="50" @(Model.requestor_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.requestor_signature == null ? "" : Model.requestor_signature.Substring(1))"/><br />
                         }
                     </td>
                     <td class="td-centre">
-                        @if (isCanEdit[5])
-                        {
-                        <button class="btn btn-success btn-small start-accept" type="button" id="start-accept-supervisor" data-who="2">Sign</button>
-                        }
-                        else if (Model.supervisor_signature != null)
+                        @if (Model.supervisor_signature != null)
                         {
                         <img id="img_approve_supervisor" width="50" height="50" @(Model.supervisor_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.supervisor_signature == null ? "" : Model.supervisor_signature.Substring(1))"/><br />
                         }
                     </td>
                     <td class="td-centre">
-                        @if (isCanEdit[6])
-                        {
-                        <button class="btn btn-success btn-small start-accept" type="button" id="start-accept-fo" data-who="3">Sign</button>
-                        }
-                        else if (Model.facility_owner_signature != null)
+                        @if (Model.facility_owner_signature != null)
                         {
                         <img id="img_approve_fo" width="50" height="50" @(Model.facility_owner_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.facility_owner_signature == null ? "" : Model.facility_owner_signature.Substring(1))"/><br />
                         }
@@ -1229,12 +1163,14 @@
                 <tr>
                     <td class="td-centre">
                         <i><u>Requestor / Erector</u></i><br />
-                        @if ((Model.requestor_signature == null && isCanEdit[4]))
+                        @if ((Model.requestor_signature == null && isCanEdit[2]))
                         {
-                            if (Model.access == 4 && (Model.scaffolding == 1 || Model.scaffolding == 3) && requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.ERECTOR.ToString()].id) {
+                            if (Model.access == 4 && (Model.scaffolding == 1 || Model.scaffolding == 3)) {
+                                if (requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.ERECTOR.ToString()].id) {
                             <text>@requestor.alpha_name<br />a/n </text>
+                                }
                             }
-                            else if (requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.REQUESTOR.ToString()].id)
+                            else if (requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.REQUESTOR.ToString()].id)
                             {
                             <text>@requestor.alpha_name<br />a/n </text>
                             }
@@ -1242,41 +1178,41 @@
                         else if ((Model.requestor_signature != null && Model.requestor_signature.Substring(0, 1) == "d"))
                         {
                             
-                            <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.REQUESTORDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.REQUESTORDELEGATE.ToString()].alpha_name<br />a/n </text>
                         }
                         @if (Model.access == 4 && (Model.scaffolding == 1 || Model.scaffolding == 3))
                         {
-                            <text>@(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.ERECTOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.ERECTOR.ToString()].alpha_name : "")</text>
+                            <text>@(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.ERECTOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.ERECTOR.ToString()].alpha_name : "")</text>
                         }
                         else
                         {
-                            <text>@(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.REQUESTOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.REQUESTOR.ToString()].alpha_name : "")</text>
+                            <text>@(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.REQUESTOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.REQUESTOR.ToString()].alpha_name : "")</text>
                         }
                         
                     </td>
                     <td class="td-centre">
                         <i><u>Supervisor</u></i><br />
-                        @if ((Model.supervisor_signature == null && isCanEdit[5] && requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.SUPERVISOR.ToString()].id))
+                        @if ((Model.supervisor_signature == null && isCanEdit[3] && requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.SUPERVISOR.ToString()].id))
                         {
                             <text>@requestor.alpha_name<br />a/n </text>
                         }
                         else if ((Model.supervisor_signature != null && Model.supervisor_signature.Substring(0, 1) == "d"))
                         {
-                            <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.SUPERVISORDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.SUPERVISORDELEGATE.ToString()].alpha_name<br />a/n </text>
                         }
-                        @(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.SUPERVISOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.SUPERVISOR.ToString()].alpha_name : "")
+                        @(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.SUPERVISOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.SUPERVISOR.ToString()].alpha_name : "")
                     </td>
                     <td class="td-centre">
                         <i><u>Facility Owner</u></i><br />
-                        @if ((Model.facility_owner_signature == null && isCanEdit[6] && requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.FACILITYOWNER.ToString()].id))
+                        @if ((Model.facility_owner_signature == null && isCanEdit[4] && requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.FACILITYOWNER.ToString()].id))
                         {
                             <text>@requestor.alpha_name<br />a/n </text>
                         }
                         else if ((Model.facility_owner_signature != null && Model.facility_owner_signature.Substring(0, 1) == "d"))
                         {
-                            <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.FACILITYOWNERDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.FACILITYOWNERDELEGATE.ToString()].alpha_name<br />a/n </text>
                         }
-                        @(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.FACILITYOWNER.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.FACILITYOWNER.ToString()].alpha_name : "")
+                        @(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.FACILITYOWNER.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.FACILITYOWNER.ToString()].alpha_name : "")
                     </td>
                 </tr>
             </tbody>
@@ -1306,14 +1242,14 @@
                     <td>1</td>
                     <td>Working at height completed</td>
                     <td class="radio-title-form">
-                        <select class="radiography-select can-screening-req" data-id="0" id="can-screening-req-1" @(isCanEdit[8] ? "" : "disabled")>
+                        <select class="radiography-select can-screening-req" data-id="0" id="can-screening-req-1" @(isCanEdit[6] ? "" : "disabled")>
                             <option value="0" @(Model.can_screening_req_arr[0] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.can_screening_req_arr[0] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.can_screening_req_arr[0] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td class="radio-title-form">
-                        <select class="radiography-select can-screening-fo" data-id="0" id="can-screening-fo-1" @(isCanEdit[9] ? "" : "disabled")>
+                        <select class="radiography-select can-screening-fo" data-id="0" id="can-screening-fo-1" @(isCanEdit[8] ? "" : "disabled")>
                             <option value="0" @(Model.can_screening_fo_arr[0] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.can_screening_fo_arr[0] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.can_screening_fo_arr[0] == "2" ? "selected" : "")>No</option>
@@ -1324,14 +1260,14 @@
                     <td>2</td>
                     <td>Are the access to work location height has been disabled <i>(secured , dismantled, demobilized)</i></td>
                     <td class="radio-title-form">
-                        <select class="radiography-select can-screening-req" data-id="1" id="can-screening-req-2" @(isCanEdit[8] ? "" : "disabled")>
+                        <select class="radiography-select can-screening-req" data-id="1" id="can-screening-req-2" @(isCanEdit[6] ? "" : "disabled")>
                             <option value="0" @(Model.can_screening_req_arr[1] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.can_screening_req_arr[1] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.can_screening_req_arr[1] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td class="radio-title-form">
-                        <select class="radiography-select can-screening-fo" data-id="1" id="can-screening-fo-2" @(isCanEdit[9] ? "" : "disabled")>
+                        <select class="radiography-select can-screening-fo" data-id="1" id="can-screening-fo-2" @(isCanEdit[8] ? "" : "disabled")>
                             <option value="0" @(Model.can_screening_fo_arr[1] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.can_screening_fo_arr[1] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.can_screening_fo_arr[1] == "2" ? "selected" : "")>No</option>
@@ -1342,14 +1278,14 @@
                     <td>3</td>
                     <td>Specific for scaffolding :Are the scaffolding going to  be utilized by other <br /><small><i>If  NO put red tag, erector shall dismantle the scaffolding, If YES  Confirm Scaffolding inspector to check latest condition.</i></small></td>
                     <td class="radio-title-form">
-                        <select class="radiography-select can-screening-req" data-id="2" id="can-screening-req-3" @(isCanEdit[8] ? "" : "disabled")>
+                        <select class="radiography-select can-screening-req" data-id="2" id="can-screening-req-3" @(isCanEdit[6] ? "" : "disabled")>
                             <option value="0" @(Model.can_screening_req_arr[2] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.can_screening_req_arr[2] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.can_screening_req_arr[2] == "2" ? "selected" : "")>No</option>
                         </select>
                     </td>
                     <td class="radio-title-form">
-                        <select class="radiography-select can-screening-fo" data-id="2" id="can-screening-fo-3" @(isCanEdit[9] ? "" : "disabled")>
+                        <select class="radiography-select can-screening-fo" data-id="2" id="can-screening-fo-3" @(isCanEdit[8] ? "" : "disabled")>
                             <option value="0" @(Model.can_screening_fo_arr[2] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.can_screening_fo_arr[2] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.can_screening_fo_arr[2] == "2" ? "selected" : "")>No</option>
@@ -1364,31 +1300,19 @@
             <tbody>
                 <tr>
                     <td class="td-centre">
-                        @if (isCanEdit[10])
-                        {
-                        <button class="btn btn-success btn-small cancel-accept" type="button" id="cancel-accept-requestor" data-who="1">Sign</button>
-                        }
-                        else if (Model.can_requestor_signature != null)
+                        @if (Model.can_requestor_signature != null)
                         {
                         <img id="img_approve_operator_can" width="50" height="50" @(Model.can_requestor_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_requestor_signature == null ? "" : Model.can_requestor_signature.Substring(1))"/><br />
                         }
                     </td>
                     <td class="td-centre">
-                        @if (isCanEdit[11])
-                        {
-                        <button class="btn btn-success btn-small cancel-accept" type="button" id="cancel-accept-supervisor" data-who="2">Sign</button>
-                        }
-                        else if (Model.can_supervisor_signature != null)
+                        @if (Model.can_supervisor_signature != null)
                         {
                         <img id="img_approve_supervisor_can" width="50" height="50" @(Model.can_supervisor_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_supervisor_signature == null ? "" : Model.can_supervisor_signature.Substring(1))"/><br />
                         }
                     </td>
                     <td class="td-centre">
-                        @if (isCanEdit[12])
-                        {
-                        <button class="btn btn-success btn-small cancel-accept" type="button" id="cancel-accept-fo" data-who="3">Sign</button>
-                        }
-                        else if (Model.can_facility_owner_signature != null)
+                        @if (Model.can_facility_owner_signature != null)
                         {
                         <img id="img_approve_fo_can" width="50" height="50" @(Model.can_facility_owner_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_facility_owner_signature == null ? "" : Model.can_facility_owner_signature.Substring(1))"/><br />
                         }
@@ -1399,10 +1323,12 @@
                         <i><u>Requestor / Erector</u></i><br />
                         @if ((Model.can_requestor_signature == null && isCanEdit[10]))
                         {
-                            if (Model.access == 4 && (Model.scaffolding == 1 || Model.scaffolding == 3) && requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.ERECTOR.ToString()].id) {
+                            if (Model.access == 4 && (Model.scaffolding == 1 || Model.scaffolding == 3)) {
+                                if(requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.ERECTOR.ToString()].id) {
                             <text>@requestor.alpha_name<br />a/n </text>
+                                }
                             }
-                            else if (requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.REQUESTOR.ToString()].id)
+                            else if (requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.REQUESTOR.ToString()].id)
                             {
                             <text>@requestor.alpha_name<br />a/n </text>
                             }
@@ -1410,41 +1336,41 @@
                         else if ((Model.can_requestor_signature != null && Model.can_requestor_signature.Substring(0, 1) == "d"))
                         {
                             
-                            <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.CANREQUESTORDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.CANREQUESTORDELEGATE.ToString()].alpha_name<br />a/n </text>
                         }
                         @if (Model.access == 4 && (Model.scaffolding == 1 || Model.scaffolding == 3))
                         {
-                            <text>@(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.ERECTOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.ERECTOR.ToString()].alpha_name : "")</text>
+                            <text>@(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.ERECTOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.ERECTOR.ToString()].alpha_name : "")</text>
                         }
                         else
                         {
-                            <text>@(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.REQUESTOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.REQUESTOR.ToString()].alpha_name : "")</text>
+                            <text>@(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.REQUESTOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.REQUESTOR.ToString()].alpha_name : "")</text>
                         }
                         
                     </td>
                     <td class="td-centre">
                         <i><u>Supervisor</u></i><br />
-                        @if ((Model.can_supervisor_signature == null && isCanEdit[11] && requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.SUPERVISOR.ToString()].id))
+                        @if ((Model.can_supervisor_signature == null && isCanEdit[11] && requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.SUPERVISOR.ToString()].id))
                         {
                             <text>@requestor.alpha_name<br />a/n </text>
                         }
                         else if ((Model.can_supervisor_signature != null && Model.can_supervisor_signature.Substring(0, 1) == "d"))
                         {
-                            <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.CANSUPERVISORDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.CANSUPERVISORDELEGATE.ToString()].alpha_name<br />a/n </text>
                         }
-                        @(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.SUPERVISOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.SUPERVISOR.ToString()].alpha_name : "")
+                        @(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.SUPERVISOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.SUPERVISOR.ToString()].alpha_name : "")
                     </td>
                     <td class="td-centre">
                         <i><u>Facility Owner</u></i><br />
-                        @if ((Model.can_facility_owner_signature == null && isCanEdit[12] && requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.FACILITYOWNER.ToString()].id))
+                        @if ((Model.can_facility_owner_signature == null && isCanEdit[12] && requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.FACILITYOWNER.ToString()].id))
                         {
                             <text>@requestor.alpha_name<br />a/n </text>
                         }
                         else if ((Model.can_facility_owner_signature != null && Model.can_facility_owner_signature.Substring(0, 1) == "d"))
                         {
-                            <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.CANFACILITYOWNERDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.CANFACILITYOWNERDELEGATE.ToString()].alpha_name<br />a/n </text>
                         }
-                        @(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.FACILITYOWNER.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInRadiography.FACILITYOWNER.ToString()].alpha_name : "")
+                        @(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.FACILITYOWNER.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.FACILITYOWNER.ToString()].alpha_name : "")
                     </td>
                 </tr>
             </tbody>
@@ -1477,31 +1403,31 @@
     </div>
     <div class="row-fluid">
         <div class="span12">
-            @if (isCanEdit[2])
+            @if (isCanEdit[0] || isCanEdit[2] || isCanEdit[3] || isCanEdit[4])
             {
-            <button class="btn btn-success" id="save-send-2">Save and Complete</button>
-            <button class="btn btn-default" id="save-as-draft-2">Save as Draft</button>
+            <button class="btn btn-success" id="save-send" data-who="@(isCanEdit[0] ? 1 : (isCanEdit[2] ? 3 : (isCanEdit[3] ? 4 : (isCanEdit[4] ? 5 : 0))))">Save and Send Email</button>  
+            if (isCanEdit[0] || isCanEdit[2] || isCanEdit[4]) {
+            <button class="btn btn-default" id="save-as-draft" data-who="@(isCanEdit[0] ? 1 : (isCanEdit[2] ? 3 : (isCanEdit[3] ? 4 : (isCanEdit[4] ? 5 : 0))))">Save as Draft</button>
             }
-            else if (isCanEdit[0])
-            {
-            <button class="btn btn-success" id="save-send">Save and Send Email</button>  
-            <button class="btn btn-default" id="save-as-draft">Save as Draft</button>
+            if (isCanEdit[2] || isCanEdit[3] || isCanEdit[4]) {
+            <button class="btn btn-danger" id="reject" data-who="@(isCanEdit[0] ? 1 : (isCanEdit[2] ? 3 : (isCanEdit[3] ? 4 : (isCanEdit[4] ? 5 : 0))))">Reject to Requestor</button>
             }
-            @if (isCanEdit[3])
-            {
-            <button class="btn btn-success" id="save-send-3">Save and Complete</button>
-            <button class="btn btn-default" id="save-as-draft-3">Save as Draft</button>
-            <button class="btn btn-danger" id="reject">Reject to Requestor</button>
             }
-            @if (isCanEdit[7])
+            @if (isCanEdit[5])
             {
             <button class="btn btn-danger" id="closing">Cancel Radiography Clearance Permit</button>
             }
-            @if (isCanEdit[8] || isCanEdit[9])
+            @if (isCanEdit[6] || isCanEdit[7] || isCanEdit[8])
             {
-            <button class="btn btn-success" id="save-send-4" data-who="@(isCanEdit[8] ? "1" : (isCanEdit[9] ? "2" : ""))">Save and Complete</button>
-            <button class="btn btn-default" id="save-as-draft-4">Save as Draft</button>
-            <button class="btn btn-danger" id="reject-2">Reject to Requestor</button>
+            <button class="btn btn-success" id="save-send-2" data-who="@(isCanEdit[6] ? 2 : (isCanEdit[7] ? 3 : (isCanEdit[8] ? 4 : 0)))">Save and Send Email</button>  
+                if (isCanEdit[6] || isCanEdit[8])
+                {
+            <button class="btn btn-default" id="save-as-draft-2" data-who="@(isCanEdit[6] ? 2 : (isCanEdit[7] ? 3 : (isCanEdit[8] ? 4 : 0)))">Save as Draft</button>
+                }
+                if (isCanEdit[7] || isCanEdit[8])
+                {
+            <button class="btn btn-danger" id="reject-2" data-who="@(isCanEdit[6] ? 2 : (isCanEdit[7] ? 3 : (isCanEdit[8] ? 4 : 0)))">Reject to Requestor</button>
+                }
             }
             <button class="btn btn-primary" id="back">Back</button>
             <span id="loading_gif" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span>

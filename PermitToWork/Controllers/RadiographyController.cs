@@ -36,23 +36,20 @@ namespace PermitToWork.Controllers
 
             isCanEdit[0] = entity.isCanEditGeneralInformation(user);
             isCanEdit[1] = entity.isCanEditFOChoosingSO(user);
-            isCanEdit[2] = entity.isCanEditSpvScreening(user);
-            isCanEdit[3] = entity.isCanEditRadScreening(user);
-            isCanEdit[4] = entity.isCanEditFOScreening(user);
-            isCanEdit[5] = entity.isCanApproveOperator(user);
-            isCanEdit[6] = entity.isCanApproveRadiographer2(user);
-            isCanEdit[7] = entity.isCanApproveSpv(user);
-            isCanEdit[8] = entity.isCanApproveSO(user);
-            isCanEdit[9] = entity.isCanApproveFO(user);
-            isCanEdit[10] = entity.isCanCancel(user);
-            isCanEdit[11] = entity.isCanEditSpvCancelScreening(user);
-            isCanEdit[12] = entity.isCanEditRadCancelScreening(user);
-            isCanEdit[13] = entity.isCanEditFOCancelScreening(user);
-            isCanEdit[14] = entity.isCanApproveOperatorCancel(user);
-            isCanEdit[15] = entity.isCanApproveRadiographer2Cancel(user);
-            isCanEdit[16] = entity.isCanApproveSpvCancel(user);
-            isCanEdit[17] = entity.isCanApproveSOCancel(user);
-            isCanEdit[18] = entity.isCanApproveFOCancel(user);
+            isCanEdit[2] = entity.isCanApproveOperator(user);
+            isCanEdit[3] = entity.isCanApproveRadiographer2(user);
+            isCanEdit[4] = entity.isCanApproveSpv(user);
+            isCanEdit[5] = entity.isCanApproveSO(user);
+            isCanEdit[6] = entity.isCanApproveFO(user);
+            isCanEdit[7] = entity.isCanCancel(user);
+            //isCanEdit[11] = entity.isCanEditSpvCancelScreening(user);
+            //isCanEdit[12] = entity.isCanEditRadCancelScreening(user);
+            //isCanEdit[13] = entity.isCanEditFOCancelScreening(user);
+            isCanEdit[8] = entity.isCanApproveOperatorCancel(user);
+            isCanEdit[9] = entity.isCanApproveRadiographer2Cancel(user);
+            isCanEdit[10] = entity.isCanApproveSpvCancel(user);
+            isCanEdit[11] = entity.isCanApproveSOCancel(user);
+            isCanEdit[12] = entity.isCanApproveFOCancel(user);
             //isCanEdit[10] = entity.isCanEditFormSPVCancel(user);
             //isCanEdit[11] = entity.isCanEditFormSOCancel(user);
             //isCanEdit[12] = entity.isCanEditFormFOCancel(user);
@@ -153,22 +150,35 @@ namespace PermitToWork.Controllers
         }
 
         [HttpPost]
-        public JsonResult saveAsDraft(RadEntity rad)
+        public JsonResult saveAsDraft(RadEntity rad, int who)
         {
             UserEntity user = Session["user"] as UserEntity;
-            rad.edit();
-
-            return Json(true);
+            int retVal = 1;
+            retVal = retVal & rad.saveAsDraft(who);
+            return Json(new { status = retVal == 1 ? "200" : "404" });
         }
 
         [HttpPost]
-        public JsonResult saveAndSend(RadEntity rad)
+        public JsonResult saveAndSend(RadEntity rad, int who)
         {
             UserEntity user = Session["user"] as UserEntity;
-            rad.edit();
-
+            int retVal = 1;
+            retVal = retVal & rad.saveAsDraft(who);
             rad = new RadEntity(rad.id, user);
-            int retVal = rad.requestorSendScreeningSpv(fullUrl());
+            retVal = retVal & rad.signClearance(who, user);
+            retVal = retVal & rad.sendToUser(who + 1, 1, fullUrl(), user);
+            return Json(new { status = retVal > 0 ? "200" : (retVal == 0 ? "400" : "404") });
+        }
+
+        [HttpPost]
+        public JsonResult rejectPermit(RadEntity rad, int who, string comment)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            int retVal = 1;
+            retVal = retVal & rad.saveAsDraft(who);
+            rad = new RadEntity(rad.id, user);
+            retVal = retVal & rad.rejectClearance(who);
+            retVal = retVal & rad.sendToUser(who - 1, 2, fullUrl(), user, comment);
             return Json(new { status = retVal > 0 ? "200" : (retVal == 0 ? "400" : "404") });
         }
 
@@ -180,56 +190,90 @@ namespace PermitToWork.Controllers
             return Json(new { status = retVal > 0 ? "200" : (retVal == 0 ? "400" : "404") });
         }
 
-        [HttpPost]
-        public JsonResult saveAsDraftPreScreening(RadEntity rad, int who)
-        {
-            UserEntity user = Session["user"] as UserEntity;
-            rad.savePreScreening(who);
-            rad.assignSafetyOfficer(user, fullUrl());
-            return Json(true);
-        }
+        //[HttpPost]
+        //public JsonResult saveAsDraftPreScreening(RadEntity rad, int who)
+        //{
+        //    UserEntity user = Session["user"] as UserEntity;
+        //    rad.savePreScreening(who);
+        //    rad.assignSafetyOfficer(user, fullUrl());
+        //    return Json(true);
+        //}
 
-        [HttpPost]
-        public JsonResult saveCompletePreScreening(RadEntity rad, int who)
-        {
-            UserEntity user = Session["user"] as UserEntity;
-            rad.savePreScreening(who);
-            rad.assignSafetyOfficer(user, fullUrl());
-            rad = new RadEntity(rad.id, user);
-            rad.completePreScreening(who, user, fullUrl());
-            return Json(true);
-        }
+        //[HttpPost]
+        //public JsonResult saveCompletePreScreening(RadEntity rad, int who)
+        //{
+        //    UserEntity user = Session["user"] as UserEntity;
+        //    rad.savePreScreening(who);
+        //    rad.assignSafetyOfficer(user, fullUrl());
+        //    rad = new RadEntity(rad.id, user);
+        //    rad.completePreScreening(who, user, fullUrl());
+        //    return Json(true);
+        //}
 
-        [HttpPost]
-        public JsonResult rejectPreScreening(RadEntity rad, int who, string comment)
-        {
-            UserEntity user = Session["user"] as UserEntity;
-            rad.savePreScreening(who);
+        //[HttpPost]
+        //public JsonResult rejectPreScreening(RadEntity rad, int who, string comment)
+        //{
+        //    UserEntity user = Session["user"] as UserEntity;
+        //    rad.savePreScreening(who);
 
-            rad = new RadEntity(rad.id, user);
-            rad.rejectPreScreening(who, fullUrl(), comment);
-            return Json(true);
-        }
+        //    rad = new RadEntity(rad.id, user);
+        //    rad.rejectPreScreening(who, fullUrl(), comment);
+        //    return Json(true);
+        //}
 
-        [HttpPost]
-        public JsonResult signStartPermit(int id, int who)
-        {
-            UserEntity user = Session["user"] as UserEntity;
-            RadEntity rad = new RadEntity(id, user);
-            string message = "";
-            int retVal = rad.signPermitStart(user, who, fullUrl(), out message);
+        //[HttpPost]
+        //public JsonResult signStartPermit(int id, int who)
+        //{
+        //    UserEntity user = Session["user"] as UserEntity;
+        //    RadEntity rad = new RadEntity(id, user);
+        //    string message = "";
+        //    int retVal = rad.signPermitStart(user, who, fullUrl(), out message);
 
-            return Json(new { status = retVal == 0 ? "400" : "200", message = message});
-        }
+        //    return Json(new { status = retVal == 0 ? "400" : "200", message = message});
+        //}
 
         [HttpPost]
         public JsonResult cancelRadPermit(int id)
         {
             UserEntity user = Session["user"] as UserEntity;
             RadEntity rad = new RadEntity(id, user);
-            int retVal = rad.cancelPermit(user, fullUrl());
+            int retVal = rad.signClearanceCancel(1, user);
+            retVal = retVal & rad.sendToUserCancel(1, 1, fullUrl(), user);
 
             return Json(new { status = retVal == 0 ? "400" : "200" });
+        }
+
+        [HttpPost]
+        public JsonResult saveAsDraftCancel(RadEntity rad, int who)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            int retVal = 1;
+            retVal = retVal & rad.saveAsDraftCancel(who);
+            return Json(new { status = retVal == 1 ? "200" : "404" });
+        }
+
+        [HttpPost]
+        public JsonResult saveAndSendCancel(RadEntity rad, int who)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            int retVal = 1;
+            retVal = retVal & rad.saveAsDraftCancel(who);
+            rad = new RadEntity(rad.id, user);
+            retVal = retVal & rad.signClearanceCancel(who, user);
+            retVal = retVal & rad.sendToUserCancel(who + 1, 1, fullUrl(), user);
+            return Json(new { status = retVal > 0 ? "200" : (retVal == 0 ? "400" : "404") });
+        }
+
+        [HttpPost]
+        public JsonResult rejectPermitCancel(RadEntity rad, int who, string comment)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            int retVal = 1;
+            retVal = retVal & rad.saveAsDraftCancel(who);
+            rad = new RadEntity(rad.id, user);
+            retVal = retVal & rad.rejectClearanceCancel(who);
+            retVal = retVal & rad.sendToUserCancel(who - 1, 2, fullUrl(), user, comment);
+            return Json(new { status = retVal > 0 ? "200" : (retVal == 0 ? "400" : "404") });
         }
 
         [HttpPost]
@@ -241,26 +285,26 @@ namespace PermitToWork.Controllers
             return Json(true);
         }
 
-        [HttpPost]
-        public JsonResult saveCompleteCancelScreening(RadEntity rad, int who)
-        {
-            UserEntity user = Session["user"] as UserEntity;
-            rad.saveCancelScreening(who);
-            rad = new RadEntity(rad.id, user);
-            rad.completeCancelScreening(who, user, fullUrl());
-            return Json(true);
-        }
+        //[HttpPost]
+        //public JsonResult saveCompleteCancelScreening(RadEntity rad, int who)
+        //{
+        //    UserEntity user = Session["user"] as UserEntity;
+        //    rad.saveCancelScreening(who);
+        //    rad = new RadEntity(rad.id, user);
+        //    rad.completeCancelScreening(who, user, fullUrl());
+        //    return Json(true);
+        //}
 
-        [HttpPost]
-        public JsonResult rejectCancelScreening(RadEntity rad, int who, string comment)
-        {
-            UserEntity user = Session["user"] as UserEntity;
-            rad.saveCancelScreening(who);
+        //[HttpPost]
+        //public JsonResult rejectCancelScreening(RadEntity rad, int who, string comment)
+        //{
+        //    UserEntity user = Session["user"] as UserEntity;
+        //    rad.saveCancelScreening(who);
 
-            rad = new RadEntity(rad.id, user);
-            rad.rejectCancelScreening(who, fullUrl(), comment);
-            return Json(true);
-        }
+        //    rad = new RadEntity(rad.id, user);
+        //    rad.rejectCancelScreening(who, fullUrl(), comment);
+        //    return Json(true);
+        //}
 
         [HttpPost]
         public JsonResult signCancelPermit(int id, int who)

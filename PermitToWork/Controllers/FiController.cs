@@ -31,26 +31,22 @@ namespace PermitToWork.Controllers
             UserEntity user = Session["user"] as UserEntity;
             FIEntity entity = new FIEntity(id, user);
 
-            bool[] isCanEdit = new bool[18];
+            bool[] isCanEdit = new bool[14];
 
             isCanEdit[0] = entity.isCanEditFormRequestor(user);
             isCanEdit[1] = entity.isCanEditAssign(user);
-            isCanEdit[2] = entity.isCanEditFormSPV(user);
-            isCanEdit[3] = entity.isCanEditFormSO(user);
-            isCanEdit[4] = entity.isCanEditFormFO(user);
-            isCanEdit[5] = entity.isCanEditApproveRequestor(user);
-            isCanEdit[6] = entity.isCanEditApproveFireWatch(user);
-            isCanEdit[7] = entity.isCanEditApproveSO(user);
-            isCanEdit[8] = entity.isCanEditApproveFO(user);
-            isCanEdit[9] = entity.isCanEditApproveDeptHead(user);
+            isCanEdit[2] = entity.isCanEditApproveFireWatch(user);
+            isCanEdit[3] = entity.isCanEditFormSPV(user);
+            isCanEdit[4] = entity.isCanEditApproveSO(user);
+            isCanEdit[5] = entity.isCanEditApproveFO(user);
+            isCanEdit[6] = entity.isCanEditApproveDeptHead(user);
+            isCanEdit[7] = entity.isCanEditCancel(user);
+            isCanEdit[8] = entity.isCanEditApproveRequestorCancel(user);
+            isCanEdit[9] = entity.isCanEditApproveFireWatchCancel(user);
             isCanEdit[10] = entity.isCanEditFormSPVCancel(user);
-            isCanEdit[11] = entity.isCanEditFormSOCancel(user);
-            isCanEdit[12] = entity.isCanEditFormFOCancel(user);
-            isCanEdit[13] = entity.isCanEditApproveRequestorCancel(user);
-            isCanEdit[14] = entity.isCanEditApproveFireWatchCancel(user);
-            isCanEdit[15] = entity.isCanEditApproveSOCancel(user);
-            isCanEdit[16] = entity.isCanEditApproveFOCancel(user);
-            isCanEdit[17] = entity.isCanEditApproveDeptHeadCancel(user);
+            isCanEdit[11] = entity.isCanEditApproveSOCancel(user);
+            isCanEdit[12] = entity.isCanEditApproveFOCancel(user);
+            isCanEdit[13] = entity.isCanEditApproveDeptHeadCancel(user);
 
             ViewBag.isCanEdit = isCanEdit;
 
@@ -87,49 +83,64 @@ namespace PermitToWork.Controllers
         }
 
         [HttpPost]
-        public JsonResult SaveAsDraft(FIEntity fi)
+        public JsonResult SaveAsDraft(FIEntity fi, int who)
         {
             UserEntity user = Session["user"] as UserEntity;
-            int retVal = fi.edit();
+            int retVal = fi.saveAsDraft(who);
             return Json(new { status = retVal > 0 ? "200" : "404" });
         }
 
         [HttpPost]
-        public JsonResult SaveComplete(FIEntity fi)
+        public JsonResult SaveComplete(FIEntity fi, int who)
         {
             UserEntity user = Session["user"] as UserEntity;
-            int retVal = fi.edit();
-            fi.sendToSPV(fullUrl(), user);
-            return Json(new { status = retVal > 0 ? "200" : "404" });
-        }
-
-        [HttpPost]
-        public JsonResult SaveAsDraftPreScreening(FIEntity fi, int type)
-        {
-            UserEntity user = Session["user"] as UserEntity;
-            int retVal = fi.SavePreScreening(type);
-            return Json(new { status = retVal > 0 ? "200" : "404" });
-        }
-
-        [HttpPost]
-        public JsonResult SaveCompletePreScreening(FIEntity fi, int type)
-        {
-            UserEntity user = Session["user"] as UserEntity;
-            int retVal = fi.SavePreScreening(type);
+            int retVal = 1;
+            retVal = retVal & fi.saveAsDraft(who);
+            retVal = retVal & fi.signClearance(who, user);
             fi = new FIEntity(fi.id, user);
-            fi.completePreScreening(type, user, fullUrl());
+            retVal = retVal & fi.sendToUser(who + 1, 1, fullUrl(), user);
             return Json(new { status = retVal > 0 ? "200" : "404" });
         }
 
         [HttpPost]
-        public JsonResult RejectPreScreening(FIEntity fi, int who, string comment)
+        public JsonResult rejectFIPermit(FIEntity fi, string comment, int who)
         {
             UserEntity user = Session["user"] as UserEntity;
-            int retVal = fi.SavePreScreening(who);
+            int retVal = 1;
+            retVal = retVal & fi.saveAsDraft(who);
+            retVal = retVal & fi.rejectClearance(who);
             fi = new FIEntity(fi.id, user);
-            retVal = fi.rejectPreScreening(who, fullUrl(), comment);
+            retVal = retVal & fi.sendToUser(who - 1, 2, fullUrl(), user, comment);
             return Json(new { status = retVal > 0 ? "200" : "404" });
         }
+
+        //[HttpPost]
+        //public JsonResult SaveAsDraftPreScreening(FIEntity fi, int type)
+        //{
+        //    UserEntity user = Session["user"] as UserEntity;
+        //    int retVal = fi.SavePreScreening(type);
+        //    return Json(new { status = retVal > 0 ? "200" : "404" });
+        //}
+
+        //[HttpPost]
+        //public JsonResult SaveCompletePreScreening(FIEntity fi, int type)
+        //{
+        //    UserEntity user = Session["user"] as UserEntity;
+        //    int retVal = fi.SavePreScreening(type);
+        //    fi = new FIEntity(fi.id, user);
+        //    fi.completePreScreening(type, user, fullUrl());
+        //    return Json(new { status = retVal > 0 ? "200" : "404" });
+        //}
+
+        //[HttpPost]
+        //public JsonResult RejectPreScreening(FIEntity fi, int who, string comment)
+        //{
+        //    UserEntity user = Session["user"] as UserEntity;
+        //    int retVal = fi.SavePreScreening(who);
+        //    fi = new FIEntity(fi.id, user);
+        //    retVal = fi.rejectPreScreening(who, fullUrl(), comment);
+        //    return Json(new { status = retVal > 0 ? "200" : "404" });
+        //}
 
         [HttpPost]
         public JsonResult SaveAssignSO(FIEntity fi)
@@ -152,53 +163,80 @@ namespace PermitToWork.Controllers
             return Json(new { status = retVal > 0 ? "200" : "404" });
         }
 
-        [HttpPost]
-        public JsonResult ApproveFIPermit(FIEntity fi, int type)
-        {
-            UserEntity user = Session["user"] as UserEntity;
-            ResponseModel response = fi.approvePermit(user, type, fullUrl());
-            return Json(new { status = response.status, message = response.message });
-        }
-
-        [HttpPost]
-        public JsonResult rejectFIPermit(FIEntity fi, int type, string comment)
-        {
-            UserEntity user = Session["user"] as UserEntity;
-            ResponseModel response = fi.rejectPermit(user, type, fullUrl(), comment);
-            return Json(new { status = response.status, message = response.message });
-        }
+        //[HttpPost]
+        //public JsonResult ApproveFIPermit(FIEntity fi, int type)
+        //{
+        //    UserEntity user = Session["user"] as UserEntity;
+        //    ResponseModel response = fi.approvePermit(user, type, fullUrl());
+        //    return Json(new { status = response.status, message = response.message });
+        //}
 
         [HttpPost]
         public JsonResult CancelFIPermit(FIEntity fi)
         {
             UserEntity user = Session["user"] as UserEntity;
-            string retVal = fi.cancelFIPermit(user, fullUrl());
-            return Json(new { status = retVal, message = "Fire Impairment Permit Cancelled." });
+            int retVal = 1;
+            retVal = retVal & fi.signClearanceCancel(1, user);
+            fi = new FIEntity(fi.id, user);
+            retVal = retVal & fi.sendToUserCancel(2, 1, fullUrl(), user);
+            return Json(new { status = retVal > 0 ? "200" : "404", message = "Fire Impairment Permit Cancelled." });
         }
 
         [HttpPost]
-        public JsonResult SaveAsDraftCancelScreening(FIEntity fi, int type)
+        public JsonResult SaveAsDraftCancel(FIEntity fi, int who)
         {
             UserEntity user = Session["user"] as UserEntity;
-            int retVal = fi.SaveCancelScreening(type, user);
+            int retVal = fi.saveAsDraftCancel(who);
             return Json(new { status = retVal > 0 ? "200" : "404" });
         }
 
         [HttpPost]
-        public JsonResult SaveCompleteCancelScreening(FIEntity fi, int type)
+        public JsonResult SaveCompleteCancel(FIEntity fi, int who)
         {
             UserEntity user = Session["user"] as UserEntity;
-            int retVal = fi.SaveCancelScreening(type, user, true, fullUrl());
+            int retVal = 1;
+            retVal = retVal & fi.saveAsDraftCancel(who);
+            retVal = retVal & fi.signClearanceCancel(who, user);
+            fi = new FIEntity(fi.id, user);
+            retVal = retVal & fi.sendToUserCancel(who + 1, 1, fullUrl(), user);
             return Json(new { status = retVal > 0 ? "200" : "404" });
         }
 
         [HttpPost]
-        public JsonResult ApproveFIPermitCancel(FIEntity fi, int type)
+        public JsonResult rejectFIPermitCancel(FIEntity fi, string comment, int who)
         {
             UserEntity user = Session["user"] as UserEntity;
-            ResponseModel response = fi.approvePermitCancel(user, type, fullUrl());
-            return Json(new { status = response.status, message = response.message });
+            int retVal = 1;
+            retVal = retVal & fi.saveAsDraftCancel(who);
+            retVal = retVal & fi.rejectClearanceCancel(who);
+            fi = new FIEntity(fi.id, user);
+            retVal = retVal & fi.sendToUserCancel(who - 1, 2, fullUrl(), user, comment);
+            return Json(new { status = retVal > 0 ? "200" : "404" });
         }
+
+        //[HttpPost]
+        //public JsonResult SaveAsDraftCancelScreening(FIEntity fi, int type)
+        //{
+        //    UserEntity user = Session["user"] as UserEntity;
+        //    int retVal = fi.SaveCancelScreening(type, user);
+        //    return Json(new { status = retVal > 0 ? "200" : "404" });
+        //}
+
+        //[HttpPost]
+        //public JsonResult SaveCompleteCancelScreening(FIEntity fi, int type)
+        //{
+        //    UserEntity user = Session["user"] as UserEntity;
+        //    int retVal = fi.SaveCancelScreening(type, user, true, fullUrl());
+        //    return Json(new { status = retVal > 0 ? "200" : "404" });
+        //}
+
+        //[HttpPost]
+        //public JsonResult ApproveFIPermitCancel(FIEntity fi, int type)
+        //{
+        //    UserEntity user = Session["user"] as UserEntity;
+        //    ResponseModel response = fi.approvePermitCancel(user, type, fullUrl());
+        //    return Json(new { status = response.status, message = response.message });
+        //}
 
         #region utilities
 

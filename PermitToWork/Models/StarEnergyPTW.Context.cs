@@ -25,23 +25,33 @@ namespace PermitToWork.Models
             throw new UnintentionalCodeFirstException();
         }
     
-        public DbSet<hira_document> hira_document { get; set; }
-        public DbSet<permit_log> permit_log { get; set; }
-        public DbSet<mst_department> mst_department { get; set; }
-        public DbSet<mst_section> mst_section { get; set; }
-        public DbSet<mst_ptw_holder_no> mst_ptw_holder_no { get; set; }
-        public DbSet<mst_assessor> mst_assessor { get; set; }
-        public DbSet<mst_facility_owner> mst_facility_owner { get; set; }
-        public DbSet<hot_work> hot_work { get; set; }
-        public DbSet<permit_to_work> permit_to_work { get; set; }
-        public DbSet<mst_dept_head_fo> mst_dept_head_fo { get; set; }
-        public DbSet<mst_safety_officer> mst_safety_officer { get; set; }
+        public DbSet<confined_space> confined_space { get; set; }
+        public DbSet<excavation> excavations { get; set; }
         public DbSet<fire_impairment> fire_impairment { get; set; }
-        public DbSet<radiography> radiographies { get; set; }
-        public DbSet<mst_radiographer> mst_radiographer { get; set; }
-        public DbSet<mst_radiation_po> mst_radiation_po { get; set; }
+        public DbSet<hira_document> hira_document { get; set; }
+        public DbSet<hot_work> hot_work { get; set; }
+        public DbSet<loto_glarf> loto_glarf { get; set; }
+        public DbSet<loto_glarf_user> loto_glarf_user { get; set; }
+        public DbSet<loto_point> loto_point { get; set; }
+        public DbSet<mst_assessor> mst_assessor { get; set; }
+        public DbSet<mst_department> mst_department { get; set; }
+        public DbSet<mst_dept_head_fo> mst_dept_head_fo { get; set; }
+        public DbSet<mst_ei> mst_ei { get; set; }
         public DbSet<mst_erector> mst_erector { get; set; }
+        public DbSet<mst_facilities> mst_facilities { get; set; }
+        public DbSet<mst_facility_owner> mst_facility_owner { get; set; }
         public DbSet<mst_inspector> mst_inspector { get; set; }
+        public DbSet<mst_lock_box> mst_lock_box { get; set; }
+        public DbSet<mst_loto_point> mst_loto_point { get; set; }
+        public DbSet<mst_ptw_holder_no> mst_ptw_holder_no { get; set; }
+        public DbSet<mst_radiation_po> mst_radiation_po { get; set; }
+        public DbSet<mst_radiographer> mst_radiographer { get; set; }
+        public DbSet<mst_safety_officer> mst_safety_officer { get; set; }
+        public DbSet<mst_section> mst_section { get; set; }
+        public DbSet<permit_log> permit_log { get; set; }
+        public DbSet<permit_to_work> permit_to_work { get; set; }
+        public DbSet<radiography> radiographies { get; set; }
         public DbSet<working_height> working_height { get; set; }
+        public DbSet<loto_permit> loto_permit { get; set; }
     }
 }

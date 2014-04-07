@@ -145,7 +145,7 @@ function addHandlerMenu() {
     });
 
     $('.hira').click(function () {
-        $('#content').load('workingHeight/create');
+        $('#content').load('csep/create');
         setActiveMenu('submenu-ptw')
     });
 
@@ -155,17 +155,17 @@ function addHandlerMenu() {
     });
 
     $('.lotto1').click(function () {
-        $('#content').load('lotto/create');
+        $('#content').load('loto/create');
         setActiveMenu('submenu-ptw')
     });
 
     $('.lotto2').click(function () {
-        $('#content').load('lotto/create1');
+        $('#content').load('loto/create1');
         setActiveMenu('submenu-ptw')
     });
 
     $('.lotto3').click(function () {
-        $('#content').load('lotto/create2');
+        $('#content').load('loto/create2');
         setActiveMenu('submenu-ptw')
     });
 
