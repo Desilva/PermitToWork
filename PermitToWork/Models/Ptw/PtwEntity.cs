@@ -3,6 +3,7 @@ using PermitToWork.Models.Hira;
 using PermitToWork.Models.Hw;
 using PermitToWork.Models.Master;
 using PermitToWork.Models.Radiography;
+using PermitToWork.Models.SafetyBriefing;
 using PermitToWork.Models.User;
 using PermitToWork.Models.WorkingHeight;
 using PermitToWork.Utilities;
@@ -18,97 +19,27 @@ using System.Web;
 
 namespace PermitToWork.Models.Ptw
 {
-    public class PtwEntity
+    public class PtwEntity : permit_to_work
     {
-        public int id { get; set; }
-        public string ptw_no { get; set; }
-        public Nullable<System.DateTime> proposed_period_start { get; set; }
-        public Nullable<System.DateTime> proposed_period_end { get; set; }
-        public Nullable<int> dept_requestor { get; set; }
-        public Nullable<int> section { get; set; }
-        public string total_crew { get; set; }
-        public Nullable<int> requestor_ptw_holder_no { get; set; }
-        public string area { get; set; }
-        public string work_location { get; set; }
-        public string area_code { get; set; }
-        public string work_order_no { get; set; }
-        public string work_description { get; set; }
-        public string notes { get; set; }
-        public Nullable<byte> pre_job_1_spv { get; set; }
-        public Nullable<byte> pre_job_2_spv { get; set; }
-        public Nullable<byte> pre_job_3_spv { get; set; }
-        public Nullable<byte> pre_job_4_spv { get; set; }
-        public Nullable<byte> pre_job_5_spv { get; set; }
-        public Nullable<byte> pre_job_6_spv { get; set; }
-        public Nullable<byte> pre_job_7_spv { get; set; }
-        public Nullable<byte> pre_job_1_fo { get; set; }
-        public Nullable<byte> pre_job_2_fo { get; set; }
-        public Nullable<byte> pre_job_3_fo { get; set; }
-        public Nullable<byte> pre_job_4_fo { get; set; }
-        public Nullable<byte> pre_job_5_fo { get; set; }
-        public Nullable<byte> pre_job_6_fo { get; set; }
-        public Nullable<byte> pre_job_7_fo { get; set; }
-        public Nullable<byte> cancel_1_spv { get; set; }
-        public Nullable<byte> cancel_2_spv { get; set; }
-        public Nullable<byte> cancel_3_spv { get; set; }
-        public Nullable<byte> cancel_4_spv { get; set; }
-        public Nullable<byte> cancel_5_spv { get; set; }
-        public Nullable<byte> cancel_6_spv { get; set; }
-        public Nullable<byte> cancel_7_spv { get; set; }
-        public Nullable<byte> cancel_1_fo { get; set; }
-        public Nullable<byte> cancel_2_fo { get; set; }
-        public Nullable<byte> cancel_3_fo { get; set; }
-        public Nullable<byte> cancel_4_fo { get; set; }
-        public Nullable<byte> cancel_5_fo { get; set; }
-        public Nullable<byte> cancel_6_fo { get; set; }
-        public Nullable<byte> cancel_7_fo { get; set; }
-        public string pre_job_notes { get; set; }
-        public string cancel_notes { get; set; }
-        public Nullable<System.DateTime> validity_period_start { get; set; }
-        public Nullable<System.DateTime> validity_period_end { get; set; }
-        public Nullable<System.DateTime> cancellation_date { get; set; }
-        public Nullable<int> loto_need { get; set; }
-        public Nullable<int> loto_id { get; set; }
-        public Nullable<int> loto_status { get; set; }
-        public Nullable<int> csep_id { get; set; }
-        public Nullable<int> csep_status { get; set; }
-        public Nullable<int> hw_id { get; set; }
-        public Nullable<int> hw_status { get; set; }
-        public Nullable<int> fi_id { get; set; }
-        public Nullable<int> fi_status { get; set; }
-        public Nullable<int> ex_id { get; set; }
-        public Nullable<int> ex_status { get; set; }
-        public Nullable<int> wh_id { get; set; }
-        public Nullable<int> wh_status { get; set; }
-        public Nullable<int> rad_id { get; set; }
-        public Nullable<int> rad_status { get; set; }
-        public string acc_ptw_requestor { get; set; }
-        public string acc_ptw_requestor_approve { get; set; }
-        public string acc_supervisor { get; set; }
-        public string acc_supervisor_delegate { get; set; }
-        public string acc_supervisor_approve { get; set; }
-        public string acc_assessor { get; set; }
-        public string acc_assessor_delegate { get; set; }
-        public string acc_assessor_approve { get; set; }
-        public string acc_fo { get; set; }
-        public string acc_fo_delegate { get; set; }
-        public string acc_fo_approve { get; set; }
-        public string can_ptw_requestor { get; set; }
-        public string can_ptw_requestor_approve { get; set; }
-        public string can_supervisor { get; set; }
-        public string can_supervisor_delegate { get; set; }
-        public string can_supervisor_approve { get; set; }
-        public string can_assessor { get; set; }
-        public string can_assessor_delegate { get; set; }
-        public string can_assessor_approve { get; set; }
-        public string can_fo { get; set; }
-        public string can_fo_delegate { get; set; }
-        public string can_fo_approve { get; set; }
-        public Nullable<int> id_parent_ptw { get; set; }
-        public int? status { get; set; }
+        public override ICollection<confined_space> confined_space { get { return null; } set { } }
+        public override ICollection<excavation> excavations { get { return null; } set { } }
+        public override ICollection<fire_impairment> fire_impairment { get { return null; } set { } }
+        public override ICollection<hira_document> hira_document { get { return null; } set { } }
+        public override ICollection<hot_work> hot_work { get { return null; } set { } }
+        public override loto_glarf loto_glarf { get { return null; } set { } }
+        public override mst_department mst_department { get { return null; } set { } }
+        public override mst_ptw_holder_no mst_ptw_holder_no { get { return null; } set { } }
+        public override mst_section mst_section { get { return null; } set { } }
+        public override ICollection<permit_to_work> permit_to_work1 { get { return null; } set { } }
+        public override permit_to_work permit_to_work2 { get { return null; } set { } }
+        public override ICollection<radiography> radiographies { get { return null; } set { } }
+        public override ICollection<safety_briefing> safety_briefing { get { return null; } set { } }
+        public override ICollection<working_height> working_height { get { return null; } set { } }
+        public override ICollection<loto_permit> loto_permit { get { return null; } set { } }
+
 
         public byte is_extend { get; set; }
-        public List<HiraEntity> hira_document { get; set; }
+        // public List<HiraEntity> hira_document { get; set; }
         public bool has_extend { get; set; }
         public string extend_ptw_no { get; set; }
         public int hw_need { get; set; }
@@ -124,7 +55,13 @@ namespace PermitToWork.Models.Ptw
         public int csep_need { get; set; }
         public string csep_no { get; set; }
         public string loto_no { get; set; }
+        public string loto_statusText { get; set; }
         public bool has_clearance { get; set; }
+        public int? id_safety_briefing { get; set; }
+        public int? safety_briefing_status { get; set; }
+        public bool isNeedClose { get; set; }
+
+        public List<FIEntity> fireImpairments { get; set; }
 
         public MstDepartmentEntity department { get; set; }
         public MstSectionEntity section1 { get; set; }
@@ -135,11 +72,15 @@ namespace PermitToWork.Models.Ptw
         //public RadEntity rad { get; set; }
 
         public Dictionary<string, IClearancePermitEntity> cPermit { get; set; }
+        public List<LotoEntity> lotoPermit { get; set; }
         public string ptw_status { get; set; }
+
+        public Dictionary<string, UserEntity> userInFI { get; set; }
 
         public enum statusPtw
         {
             CREATE,
+            GUESTCOMPLETE,
             CLEARANCECOMPLETE,
             ACCSPV,
             CHOOSEASS,
@@ -170,6 +111,25 @@ namespace PermitToWork.Models.Ptw
             RADIOGRAPHY
         };
 
+        public enum UserInPTW
+        {
+            REQUESTOR,
+            SUPERVISOR,
+            ASSESSOR,
+            FACILITYOWNER,
+            DEPTHEADFO,
+            REQUESTORDELEGATE,
+            FIREWATCHDELEGATE,
+            SAFETYOFFICERDELEGATE,
+            FACILITYOWNERDELEGATE,
+            DEPTHEADFODELEGATE,
+            CANREQUESTORDELEGATE,
+            CANFIREWATCHDELEGATE,
+            CANSAFETYOFFICERDELEGATE,
+            CANFACILITYOWNERDELEGATE,
+            CANDEPTHEADFODELEGATE,
+        }
+
         private star_energy_ptwEntities db;
 
         public PtwEntity() {
@@ -189,96 +149,17 @@ namespace PermitToWork.Models.Ptw
                 this.db = db;
             }
             permit_to_work ptw = this.db.permit_to_work.Find(id);
-            this.id = ptw.id;
-            this.ptw_no = ptw.ptw_no;
-            this.proposed_period_start = ptw.proposed_period_start;
-            this.proposed_period_end = ptw.proposed_period_end;
-            this.dept_requestor = ptw.dept_requestor;
-            this.section = ptw.section;
-            this.total_crew = ptw.total_crew;
-            this.requestor_ptw_holder_no = ptw.requestor_ptw_holder_no;
-            this.area = ptw.area;
-            this.work_location = ptw.work_location;
-            this.area_code = ptw.area_code;
-            this.work_order_no = ptw.work_order_no;
-            this.work_description = ptw.work_description;
-            this.notes = ptw.notes;
-            this.pre_job_1_spv = ptw.pre_job_1_spv;
-            this.pre_job_2_spv = ptw.pre_job_2_spv;
-            this.pre_job_3_spv = ptw.pre_job_3_spv;
-            this.pre_job_4_spv = ptw.pre_job_4_spv;
-            this.pre_job_5_spv = ptw.pre_job_5_spv;
-            this.pre_job_6_spv = ptw.pre_job_6_spv;
-            this.pre_job_7_spv = ptw.pre_job_7_spv;
-            this.pre_job_1_fo = ptw.pre_job_1_fo;
-            this.pre_job_2_fo = ptw.pre_job_2_fo;
-            this.pre_job_3_fo = ptw.pre_job_3_fo;
-            this.pre_job_4_fo = ptw.pre_job_4_fo;
-            this.pre_job_5_fo = ptw.pre_job_5_fo;
-            this.pre_job_6_fo = ptw.pre_job_6_fo;
-            this.pre_job_7_fo = ptw.pre_job_7_fo;
-            this.cancel_1_spv = ptw.cancel_1_spv;
-            this.cancel_2_spv = ptw.cancel_2_spv;
-            this.cancel_3_spv = ptw.cancel_3_spv;
-            this.cancel_4_spv = ptw.cancel_4_spv;
-            this.cancel_5_spv = ptw.cancel_5_spv;
-            this.cancel_6_spv = ptw.cancel_6_spv;
-            this.cancel_7_spv = ptw.cancel_7_spv;
-            this.cancel_1_fo = ptw.cancel_1_fo;
-            this.cancel_2_fo = ptw.cancel_2_fo;
-            this.cancel_3_fo = ptw.cancel_3_fo;
-            this.cancel_4_fo = ptw.cancel_4_fo;
-            this.cancel_5_fo = ptw.cancel_5_fo;
-            this.cancel_6_fo = ptw.cancel_6_fo;
-            this.cancel_7_fo = ptw.cancel_7_fo;
-            this.pre_job_notes = ptw.pre_job_notes;
-            this.cancel_notes = ptw.cancel_notes;
-            this.validity_period_start = ptw.validity_period_start;
-            this.validity_period_end = ptw.validity_period_end;
-            this.cancellation_date = ptw.cancellation_date;
-            this.loto_need = ptw.loto_need;
-            this.loto_id = ptw.loto_id;
-            this.loto_status = ptw.loto_status;
-            this.csep_id = ptw.csep_id;
-            this.csep_status = ptw.csep_status;
-            this.hw_id = ptw.hw_id;
-            this.hw_status = ptw.hw_status;
-            this.fi_id = ptw.fi_id;
-            this.fi_status = ptw.fi_status;
-            this.ex_id = ptw.ex_id;
-            this.ex_status = ptw.ex_status;
-            this.wh_id = ptw.wh_id;
-            this.wh_status = ptw.wh_status;
-            this.rad_id = ptw.rad_id;
-            this.rad_status = ptw.rad_status;
-            this.acc_ptw_requestor = ptw.acc_ptw_requestor;
-            this.acc_ptw_requestor_approve = ptw.acc_ptw_requestor_approve;
-            this.acc_supervisor = ptw.acc_supervisor;
-            this.acc_supervisor_delegate = ptw.acc_supervisor_delegate;
-            this.acc_supervisor_approve = ptw.acc_supervisor_approve;
-            this.acc_assessor = ptw.acc_assessor;
-            this.acc_assessor_delegate = ptw.acc_assessor_delegate;
-            this.acc_assessor_approve = ptw.acc_assessor_approve;
-            this.acc_fo = ptw.acc_fo;
-            this.acc_fo_delegate = ptw.acc_fo_delegate;
-            this.acc_fo_approve = ptw.acc_fo_approve;
-            this.can_ptw_requestor = ptw.can_ptw_requestor;
-            this.can_ptw_requestor_approve = ptw.can_ptw_requestor_approve;
-            this.can_supervisor = ptw.can_supervisor;
-            this.can_supervisor_delegate = ptw.can_supervisor_delegate;
-            this.can_supervisor_approve = ptw.can_supervisor_approve;
-            this.can_assessor = ptw.can_assessor;
-            this.can_assessor_delegate = ptw.can_assessor_delegate;
-            this.can_assessor_approve = ptw.can_assessor_approve;
-            this.can_fo = ptw.can_fo;
-            this.can_fo_delegate = ptw.can_fo_delegate;
-            this.can_fo_approve = ptw.can_fo_approve;
-            this.id_parent_ptw = ptw.id_parent_ptw;
+            ModelUtilization.Clone(ptw, this);
             this.is_extend = (byte)(ptw.id_parent_ptw != null ? 1 : 0);
-            this.status = ptw.status;
             this.has_extend = ptw.permit_to_work1.Count > 0;
             this.extend_ptw_no = ptw.permit_to_work2 != null ? ptw.permit_to_work2.ptw_no : "";
-            this.ptw_holder_no = new MstPtwHolderNoEntity(ptw.mst_ptw_holder_no);
+            if (this.is_guest != 1)
+            {
+                if (ptw.mst_ptw_holder_no != null)
+                {
+                    this.ptw_holder_no = new MstPtwHolderNoEntity(ptw.mst_ptw_holder_no);
+                }
+            }
             this.section1 = new MstSectionEntity(ptw.mst_section);
             this.department = new MstDepartmentEntity(ptw.mst_department);
 
@@ -290,6 +171,15 @@ namespace PermitToWork.Models.Ptw
                 this.cPermit.Add(clearancePermit.HOTWORK.ToString(), hw);
                 this.hw_no = ptw.hot_work.ElementAt(0).hw_no;
                 this.has_clearance = true;
+            }
+
+            if (ptw.fire_impairment.Count > 0)
+            {
+                fireImpairments = new List<FIEntity>();
+                foreach (fire_impairment fi in ptw.fire_impairment)
+                {
+                    fireImpairments.Add(new FIEntity(fi,user));
+                }
             }
 
             if (this.fi_id != null)
@@ -338,16 +228,32 @@ namespace PermitToWork.Models.Ptw
                 this.has_clearance = true;
             }
 
-            if (this.loto_id != null)
+            if (this.loto_need != null && this.loto_need != 0)
             {
-                LotoGlarfEntity loto = new LotoGlarfEntity(this.loto_id.Value, user);
-                this.loto_no = ptw.loto_glarf.loto_no;
+                this.lotoPermit = new List<LotoEntity>();
+                foreach (loto_permit loto in ptw.loto_permit)
+                {
+                    this.lotoPermit.Add(new LotoEntity(loto.id, user));
+                }
+                this.loto_no = "";
+                this.loto_statusText = this.loto_status == 0 ? "LOTO Permit is being edited by Requestor" : (this.loto_status == 1 ? "LOTO Permit is Approved" : (this.loto_status == 2 ? "LOTO Permit is Cancelled" : ""));
                 this.has_clearance = true;
             }
 
-            this.ptw_status = getPtwStatus();
+            if (ptw.safety_briefing.Count > 0)
+            {
+                this.id_safety_briefing = ptw.safety_briefing.ElementAt(0).id;
+                this.safety_briefing_status = ptw.safety_briefing.ElementAt(0).status;
+            }
 
-            this.hira_document = new ListHira(this.id,this.db).listHira;
+            this.ptw_status = getPtwStatus();
+            if (this.acc_ptw_requestor != null || this.acc_supervisor != null)
+            {
+                var ptwRequestor = this.is_guest != 1 ? new UserEntity(Int32.Parse(this.acc_ptw_requestor), user.token, user) : new UserEntity(Int32.Parse(this.acc_supervisor), user.token, user);
+                this.isNeedClose = this.status == (int)statusPtw.ACCFO && this.validity_period_end != null && this.validity_period_end.Value.CompareTo(DateTime.Now) < 0 && this.is_extend != 1 && (ptwRequestor.id == user.id || ptwRequestor.employee_delegate == user.id) ? true : false;
+            }
+
+            // this.hira_document = new ListHira(this.id,this.db).listHira;
         }
 
         public int addPtw(int stat = 0)
@@ -373,6 +279,13 @@ namespace PermitToWork.Models.Ptw
                 can_ptw_requestor = can_ptw_requestor,
                 status = (int)statusPtw.CREATE,
                 loto_need = loto_need,
+                hira_docs = this.hira_docs,
+                is_guest = is_guest,
+                acc_supervisor = acc_supervisor,
+                acc_supervisor_delegate = acc_supervisor_delegate,
+                can_supervisor = can_supervisor,
+                can_supervisor_delegate = can_supervisor_delegate,
+                guest_holder_no = guest_holder_no
             };
 
             if (stat == 1)
@@ -402,6 +315,7 @@ namespace PermitToWork.Models.Ptw
         {
             permit_to_work ptw = db.permit_to_work.Find(id);
             ptw.id = id;
+            ptw.ptw_no = ptw_no;
             ptw.proposed_period_start = proposed_period_start;
             ptw.proposed_period_end = proposed_period_end;
             ptw.dept_requestor = dept_requestor;
@@ -448,6 +362,9 @@ namespace PermitToWork.Models.Ptw
             ptw.validity_period_start = validity_period_start;
             ptw.validity_period_end = validity_period_end;
             ptw.cancellation_date = cancellation_date;
+            ptw.hira_docs = hira_docs;
+            ptw.guest_holder_no = guest_holder_no;
+            ptw.acc_notes_fo_ass = acc_notes_fo_ass;
             //ptw.acc_ptw_requestor = acc_ptw_requestor;
             //ptw.acc_supervisor = acc_supervisor;
             //ptw.acc_supervisor_delegate = acc_supervisor_delegate;
@@ -463,6 +380,22 @@ namespace PermitToWork.Models.Ptw
             //ptw.can_fo = can_fo;
             //ptw.can_fo_delegate = can_fo_delegate;
             //ptw.id_parent_ptw = id_parent_ptw;
+
+            this.db.Entry(ptw).State = System.Data.EntityState.Modified;
+            return this.db.SaveChanges();
+        }
+
+        public int saveNotesAssFo(string notes, int pos)
+        {
+            permit_to_work ptw = db.permit_to_work.Find(id);
+            if (pos == 0)
+            {
+                ptw.acc_notes_ass_fo = notes;
+            }
+            else
+            {
+                ptw.can_notes_ass_fo = notes;
+            }
 
             this.db.Entry(ptw).State = System.Data.EntityState.Modified;
             return this.db.SaveChanges();
@@ -488,11 +421,21 @@ namespace PermitToWork.Models.Ptw
             this.acc_ptw_requestor = ptw.acc_ptw_requestor;
             this.acc_supervisor = ptw.acc_supervisor;
             this.acc_supervisor_delegate = ptw.acc_supervisor_delegate;
+            this.guest_holder_no = ptw.guest_holder_no;
+            this.is_guest = ptw.is_guest;
+            if (this.is_guest == 1)
+            {
+                this.acc_ptw_requestor_approve = ptw.acc_ptw_requestor_approve;
+            }
             //this.acc_assessor = ptw.acc_assessor;
             //this.acc_assessor_delegate = ptw.acc_assessor_delegate;
-            this.acc_fo = ptw.acc_fo;
-            this.acc_fo_delegate = ptw.acc_fo_delegate;
+            //this.acc_fo = ptw.acc_fo;
+            //this.acc_fo_delegate = ptw.acc_fo_delegate;
             this.can_ptw_requestor = ptw.can_ptw_requestor;
+            if (this.is_guest == 1)
+            {
+                this.can_ptw_requestor_approve = ptw.acc_ptw_requestor_approve;
+            }
             this.can_supervisor = ptw.can_supervisor;
             this.can_supervisor_delegate = ptw.can_supervisor_delegate;
             //this.can_assessor = ptw.can_assessor;
@@ -505,12 +448,11 @@ namespace PermitToWork.Models.Ptw
 
         public string cancelPtw(UserEntity user)
         {
-            if (user.id.ToString() == this.acc_ptw_requestor)
+            if ((this.is_guest != 1 && user.id.ToString() == this.acc_ptw_requestor) || user.id.ToString() == this.acc_supervisor)
             {
                 permit_to_work ptw = this.db.permit_to_work.Find(this.id);
                 this.id_parent_ptw = ptw.id_parent_ptw;
-                ptw.can_ptw_requestor_approve = "a" + user.signature;
-                ptw.status = (int)statusPtw.CANREQ;
+                ptw.status = (int)statusPtw.CANCEL;
                 ptw.cancellation_date = DateTime.Today;
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
@@ -519,6 +461,12 @@ namespace PermitToWork.Models.Ptw
                 {
                     PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value, user);
                     pt.cancelPtw(user);
+                }
+
+                if (this.id_safety_briefing != null)
+                {
+                    SafetyBriefingEntity sb = new SafetyBriefingEntity(this.id_safety_briefing.Value, user);
+                    sb.setCancel();
                 }
                 return "200";
             }
@@ -568,6 +516,15 @@ namespace PermitToWork.Models.Ptw
             permit_to_work ptw = this.db.permit_to_work.Find(this.id);
 
             ptw.status = status;
+            this.db.Entry(ptw).State = EntityState.Modified;
+            return this.db.SaveChanges();
+        }
+
+        public int setGuestHolderNo()
+        {
+            permit_to_work ptw = this.db.permit_to_work.Find(this.id);
+
+            ptw.guest_holder_no = guest_holder_no;
             this.db.Entry(ptw).State = EntityState.Modified;
             return this.db.SaveChanges();
         }
@@ -683,9 +640,24 @@ namespace PermitToWork.Models.Ptw
         {
             var retVal = false;
             string user_id = user.id.ToString();
-            if ((this.acc_fo == user_id || this.acc_fo_delegate == user_id))
+            int foid = 0;
+            Int32.TryParse(this.acc_fo, out foid);
+            List<MstDelegateFOEntity> delegates = new MstDelegateFOEntity().getListByFO(foid, user);
+            if (this.acc_fo == user_id)
             {
                 retVal = true;
+            }
+            else
+            {
+                var e = delegates.GetEnumerator();
+                while (e.MoveNext() && !retVal)
+                {
+                    MstDelegateFOEntity del = e.Current;
+                    if (del.user_delegate_id.ToString() == user_id)
+                    {
+                        retVal = true;
+                    }
+                }
             }
 
             return retVal;
@@ -719,27 +691,48 @@ namespace PermitToWork.Models.Ptw
         {
             var retVal = false;
             string user_id = user.id.ToString();
-            if ((this.can_fo == user_id || this.can_fo_delegate == user_id))
+            int foid = 0;
+            Int32.TryParse(this.can_fo, out foid);
+            List<MstDelegateFOEntity> delegates = new MstDelegateFOEntity().getListByFO(foid, user);
+            if (this.can_fo == user_id)
             {
                 retVal = true;
+            }
+            else
+            {
+                var e = delegates.GetEnumerator();
+                while (e.MoveNext() && !retVal)
+                {
+                    MstDelegateFOEntity del = e.Current;
+                    if (del.user_delegate_id.ToString() == user_id)
+                    {
+                        retVal = true;
+                    }
+                }
             }
 
             return retVal;
         }
 
-        public bool isCanEdit(UserEntity user)
+        public bool isCanEdit(UserEntity user, out bool isFo)
         {
             bool isCanEdit = false;
-            if (isRequestor(user) && this.status < (int)statusPtw.CLEARANCECOMPLETE) {
+            isFo = false;
+            if (isRequestor(user) && this.status < (int)statusPtw.GUESTCOMPLETE) {
                 isCanEdit = true;
             }
 
-            if (isAccSupervisor(user) && this.status == (int)statusPtw.CLEARANCECOMPLETE)
+            if (isAccSupervisor(user) && (this.status == (int)statusPtw.CLEARANCECOMPLETE || this.status == (int)statusPtw.GUESTCOMPLETE))
             {
                 isCanEdit = true;
             }
 
-            if (isAccFO(user) && this.status == (int)statusPtw.ACCSPV)
+            if (isAccFO(user))
+            {
+                isFo = true;
+            }
+
+            if (isFo && this.status == (int)statusPtw.ACCSPV)
             {
                 isCanEdit = true;
             }
@@ -749,7 +742,7 @@ namespace PermitToWork.Models.Ptw
                 isCanEdit = true;
             }
 
-            if (isAccFO(user) && this.status == (int)statusPtw.ACCASS)
+            if (isFo && this.status == (int)statusPtw.ACCASS)
             {
                 isCanEdit = true;
             }
@@ -821,6 +814,34 @@ namespace PermitToWork.Models.Ptw
             return this.db.SaveChanges();
         }
 
+        public int assignFOAcc(UserEntity fo)
+        {
+            this.acc_fo = fo.id.ToString();
+            this.acc_fo_delegate = fo.employee_delegate.ToString();
+
+            permit_to_work ptw = this.db.permit_to_work.Find(this.id);
+            ptw.acc_fo = this.acc_fo;
+            ptw.acc_fo_delegate = this.acc_fo_delegate;
+
+            this.db.Entry(ptw).State = EntityState.Modified;
+
+            return this.db.SaveChanges();
+        }
+
+        public int assignFOCan(UserEntity fo)
+        {
+            this.can_fo = fo.id.ToString();
+            this.can_fo_delegate = fo.employee_delegate.ToString();
+
+            permit_to_work ptw = this.db.permit_to_work.Find(this.id);
+            ptw.can_fo = this.can_fo;
+            ptw.can_fo_delegate = this.can_fo_delegate;
+
+            this.db.Entry(ptw).State = EntityState.Modified;
+
+            return this.db.SaveChanges();
+        }
+
         public bool isUserInPtw(UserEntity user)
         {
             return (isRequestor(user) || isAccSupervisor(user) || isAccAssessor(user) || isAccFO(user) ||
@@ -836,7 +857,7 @@ namespace PermitToWork.Models.Ptw
             var isComplete = true;
 
             // check if LOTO
-            if (this.loto_id != null && this.loto_status != (int)statusClearance.COMPLETE)
+            if (this.loto_need != null && this.loto_need != 0 && this.loto_status != (int)statusClearance.COMPLETE && this.status == (int)statusPtw.CLEARANCECOMPLETE)
             {
                 isComplete = false;
             }
@@ -885,7 +906,7 @@ namespace PermitToWork.Models.Ptw
             var isClose = true;
 
             // check if LOTO
-            if (this.loto_id != null && this.loto_status != (int)statusClearance.CLOSE)
+            if (this.loto_need != null && this.loto_need != 0 && this.loto_status != (int)statusClearance.CLOSE)
             {
                 isClose = false;
             }
@@ -1143,10 +1164,10 @@ namespace PermitToWork.Models.Ptw
 
                 return "200";
             }
-            else if (user.id.ToString() == this.acc_fo_delegate)
+            else
             {
                 //ptw.acc_fo = this.acc_fo;
-                //ptw.acc_fo_delegate = this.acc_fo_delegate;
+                ptw.acc_fo_delegate = this.acc_fo_delegate;
                 //ptw.can_fo = this.acc_fo;
                 //ptw.can_fo_delegate = this.acc_fo_delegate;
                 ptw.acc_fo_approve = "d" + user.signature;
@@ -1155,10 +1176,6 @@ namespace PermitToWork.Models.Ptw
                 this.db.SaveChanges();
 
                 return "201";
-            }
-            else
-            {
-                return "400";
             }
         }
 
@@ -1450,6 +1467,75 @@ namespace PermitToWork.Models.Ptw
 
         #region send email
 
+        public string sendEmailRequestNo(UserEntity userLogin)
+        {
+            ListUser listUser = new ListUser();
+            var users = listUser.GetAdminSHE(userLogin.token, userLogin.id);
+            List<string> s = new List<string>();
+            SendEmail sendEmail = new SendEmail();
+
+            permit_to_work ptw = this.db.permit_to_work.Find(this.id);
+            ptw.requested_no = 1;
+            db.Entry(ptw).State = EntityState.Modified;
+            db.SaveChanges();
+
+            foreach (UserEntity user in users)
+            {
+                s.Add(user.email);
+            }
+
+            UserEntity requestor = new UserEntity(Int32.Parse(this.acc_supervisor), userLogin.token, userLogin);
+            string message = requestor.alpha_name + " has requested to give PTW Holder No to " + this.acc_ptw_requestor + " for PTW No: " + this.ptw_no;
+            string subject = "Request PTW Holder No with PTW No " + this.ptw_no;
+
+            sendEmail.Send(s, message, subject);
+
+            return "200";
+        }
+
+        public string sendEmailRequestNoSet(UserEntity userLogin)
+        {
+            UserEntity requestor = new UserEntity(Int32.Parse(this.acc_supervisor), userLogin.token, userLogin);
+            List<string> s = new List<string>();
+            SendEmail sendEmail = new SendEmail();
+            s.Add(requestor.email);
+
+            string message = "Requestor's PTW Holder No has been set.";
+            string subject = "Request PTW Holder No with PTW No " + this.ptw_no + " Set";
+
+            sendEmail.Send(s, message, subject);
+
+            return "200";
+        }
+
+        public string sendEmailFO(List<MstFOEntity> listFO, string serverUrl)
+        {
+            string timestamp = DateTime.UtcNow.Ticks.ToString();
+            string salt = "susahbangetmencarisaltyangpalingbaikdanbenar";
+            string val = "emailfo";
+            SendEmail sendEmail = new SendEmail();
+            foreach (MstFOEntity fo in listFO)
+            {
+                List<string> s = new List<string>();
+
+                //s.Add("septu.jamasoka@gmail.com");
+                if (fo.user != null)
+                {
+                    s.Add(fo.user.email);
+                    string encodedValue = salt + fo.user.id + val + this.id;
+                    string encodedElement = Base64.Base64Encode(encodedValue);
+
+                    string seal = Base64.MD5Seal(timestamp + salt + val);
+
+                    string message = serverUrl + "Ptw/SetFacilityOwner?a=" + timestamp + "&b=" + seal + "&c=" + encodedElement;
+
+                    sendEmail.Send(s, message, "PTW Facility Owner");
+                }
+            }
+
+            return "200";
+        }
+
         public string sendEmailSpv(List<UserEntity> listSpv, string serverUrl)
         {
             string timestamp = DateTime.UtcNow.Ticks.ToString();
@@ -1460,8 +1546,8 @@ namespace PermitToWork.Models.Ptw
             {
                 List<string> s = new List<string>();
 
-                s.Add("septu.jamasoka@gmail.com");
-
+                //s.Add("septu.jamasoka@gmail.com");
+                s.Add(spv.email);
                 string encodedValue = salt + spv.id + val + this.id;
                 string encodedElement = Base64.Base64Encode(encodedValue);
 
@@ -1482,8 +1568,8 @@ namespace PermitToWork.Models.Ptw
             UserEntity requestor = new UserEntity(Int32.Parse(this.acc_ptw_requestor), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
-            //s.Add(requestor.email);
-            s.Add("septu.jamasoka@gmail.com");
+            s.Add(requestor.email);
+            //s.Add("septu.jamasoka@gmail.com");
 
             string message = "";
             string subject = "";
@@ -1504,25 +1590,26 @@ namespace PermitToWork.Models.Ptw
             return "200";
         }
 
-        public string sendEmailSupervisor(string serverUrl, string token, UserEntity user, int pos = 0, int stat = 0, string comment = null)
+        public string sendEmailSupervisor(string serverUrl, string token, UserEntity user, int pos = 1, int stat = 0, string comment = null)
         {
             int supervisor_id = 0;
 
-            if (pos == 1)
+            if (this.acc_supervisor != null)
                 supervisor_id = Int32.Parse(this.acc_supervisor);
-            else
-                supervisor_id = Int32.Parse(this.can_supervisor);
+            // else
+                // supervisor_id = Int32.Parse(this.can_supervisor);
             UserEntity supervisor = new UserEntity(supervisor_id, token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
-            //s.Add(requestor.email);
-            s.Add("septu.jamasoka@gmail.com");
+            if (supervisor.email != null)
+                s.Add(supervisor.email);
+            //s.Add("septu.jamasoka@gmail.com");
 
             if (supervisor.employee_delegate != null)
             {
                 UserEntity del = new UserEntity(supervisor.employee_delegate.Value, token, user);
-                //s.Add(del.email);
-                s.Add("septu.jamasoka@gmail.com");
+                s.Add(del.email);
+                //s.Add("septu.jamasoka@gmail.com");
             }
 
             string message = "";
@@ -1547,21 +1634,21 @@ namespace PermitToWork.Models.Ptw
         {
             int assessor_id = 0;
 
-            if (pos == 1)
+            if (pos == 0)
                 assessor_id = Int32.Parse(this.acc_assessor);
             else
                 assessor_id = Int32.Parse(this.can_assessor);
             UserEntity assessor = new UserEntity(assessor_id, token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
-            //s.Add(assessor.email);
-            s.Add("septu.jamasoka@gmail.com");
+            s.Add(assessor.email);
+            //s.Add("septu.jamasoka@gmail.com");
 
             if (assessor.employee_delegate != null)
             {
                 UserEntity del = new UserEntity(assessor.employee_delegate.Value, token, user);
-                //s.Add(del.email);
-                s.Add("septu.jamasoka@gmail.com");
+                s.Add(del.email);
+                //s.Add("septu.jamasoka@gmail.com");
             }
 
             string message = "";
@@ -1594,14 +1681,14 @@ namespace PermitToWork.Models.Ptw
             UserEntity facilityOwner = new UserEntity(fo_id, token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
-            //s.Add(facilityOwner.email);
-            s.Add("septu.jamasoka@gmail.com");
+            s.Add(facilityOwner.email);
+            //s.Add("septu.jamasoka@gmail.com");
 
             if (facilityOwner.employee_delegate != null)
             {
                 UserEntity del = new UserEntity(facilityOwner.employee_delegate.Value, token, user);
-                //s.Add(del.email);
-                s.Add("septu.jamasoka@gmail.com");
+                s.Add(del.email);
+                //s.Add("septu.jamasoka@gmail.com");
             }
 
             string message = "";
@@ -1626,11 +1713,20 @@ namespace PermitToWork.Models.Ptw
         {
             //if (extension == 0)
             //{
-            UserEntity requestor = new UserEntity(Int32.Parse(this.acc_ptw_requestor), token, user);
+
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
-            //s.Add(requestor.email);
-            s.Add("septu.jamasoka@gmail.com");
+            if (this.is_guest == 1)
+            {
+                UserEntity requestor = new UserEntity(Int32.Parse(this.acc_supervisor), token, user);
+                s.Add(requestor.email);
+            }
+            else
+            {
+                UserEntity requestor = new UserEntity(Int32.Parse(this.acc_ptw_requestor), token, user);
+                s.Add(requestor.email);
+            }
+            //s.Add("septu.jamasoka@gmail.com");
 
             string message = serverUrl + "Home?p=Hw/edit/" + this.id;
             string subject = "Permit to Work Requestor Approve";
@@ -1674,11 +1770,11 @@ namespace PermitToWork.Models.Ptw
         {
             //if (extension == 0)
             //{
-            UserEntity requestor = new UserEntity(Int32.Parse(this.acc_ptw_requestor), token, user);
+            UserEntity requestor = is_guest == 1 ? new UserEntity(Int32.Parse(this.acc_supervisor), token, user) : new UserEntity(Int32.Parse(this.acc_ptw_requestor), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
-            //s.Add(requestor.email);
-            s.Add("septu.jamasoka@gmail.com");
+            s.Add(requestor.email);
+            //s.Add("septu.jamasoka@gmail.com");
 
             string message = "All clearance permit has been approved, you may continue by approving this Permit to Work.<br />" + serverUrl + "Home?p=Ptw/edit/" + this.id;
             string subject = "All Clearance Permit Approved";
@@ -1704,27 +1800,29 @@ namespace PermitToWork.Models.Ptw
         {
             //if (extension == 0)
             //{
-            UserEntity requestor = new UserEntity(Int32.Parse(this.acc_ptw_requestor), token, user);
-            SendEmail sendEmail = new SendEmail();
-            List<string> s = new List<string>();
-            //s.Add(requestor.email);
-            s.Add("septu.jamasoka@gmail.com");
+            if (this.is_guest != 1) {
+                UserEntity requestor = new UserEntity(Int32.Parse(this.acc_ptw_requestor), token, user);
+                SendEmail sendEmail = new SendEmail();
+                List<string> s = new List<string>();
+                s.Add(requestor.email);
+                //s.Add("septu.jamasoka@gmail.com");
 
-            string message = "Permit to Work has been approved, you may start working using this permit.<br />" + serverUrl + "Home?p=Ptw/edit/" + this.id;
-            string subject = "Permit to Work Approved";
+                string message = "Permit to Work has been approved, you may start working using this permit.<br />" + serverUrl + "Home?p=Ptw/edit/" + this.id;
+                string subject = "Permit to Work Approved";
 
-            if (status == 1)
-            {
-                message = "Permit to Work has been approved, you may start working using this permit.<br />" + serverUrl + "Home?p=Ptw/edit/" + this.id;
-                subject = "Permit to Work Approved";
+                if (status == 1)
+                {
+                    message = "Permit to Work has been approved, you may start working using this permit.<br />" + serverUrl + "Home?p=Ptw/edit/" + this.id;
+                    subject = "Permit to Work Approved";
+                }
+                else if (status == 2)
+                {
+                    message = "Permit to Work has been cancelled. You cannot work using this permit again.<br />" + serverUrl + "Home?p=Ptw/edit/" + this.id;
+                    subject = "Permit to Work Cancelled";
+                }
+
+                sendEmail.Send(s, message, subject);
             }
-            else if (status == 2)
-            {
-                message = "Permit to Work has been cancelled. You cannot work using this permit again.<br />" + serverUrl + "Home?p=Ptw/edit/" + this.id;
-                subject = "Permit to Work Cancelled";
-            }
-
-            sendEmail.Send(s, message, subject);
             //}
 
             return "200";
@@ -1925,5 +2023,100 @@ namespace PermitToWork.Models.Ptw
         }
 
         #endregion
+
+        #region guest
+
+        public string guestAccApproval(UserEntity user)
+        {
+            // requestor approval
+            // return code - 200 {ok}
+            //               400 {not the user}
+            permit_to_work ptw = this.db.permit_to_work.Find(this.id);
+            ptw.acc_ptw_requestor_approve = "a" + this.acc_ptw_requestor_approve;
+            ptw.status = (int)statusPtw.GUESTCOMPLETE;
+            this.db.Entry(ptw).State = EntityState.Modified;
+            this.db.SaveChanges();
+
+            return "200";
+        }
+
+        public string guestCanApproval(UserEntity user)
+        {
+            // requestor approval
+            // return code - 200 {ok}
+            //               400 {not the user}
+            permit_to_work ptw = this.db.permit_to_work.Find(this.id);
+            ptw.can_ptw_requestor_approve = ptw.acc_ptw_requestor_approve;
+            ptw.status = (int)statusPtw.CANREQ;
+            this.db.Entry(ptw).State = EntityState.Modified;
+            this.db.SaveChanges();
+
+            return "200";
+        }
+
+        #endregion
+
+        internal void addLoto(LotoEntity loto)
+        {
+            permit_to_work ptw = this.db.permit_to_work.Find(this.id);
+            if (ptw != null)
+            {
+                loto_permit lot = this.db.loto_permit.Find(loto.id);
+                ptw.loto_permit.Add(lot);
+
+                this.db.Entry(ptw).State = EntityState.Modified;
+                this.db.SaveChanges();
+            }
+        }
+
+        internal void checkLotoCancellationComplete(UserEntity user)
+        {
+            bool complete = true;
+            foreach (LotoEntity loto in this.lotoPermit)
+            {
+                if (user.id == loto.listUserInLOTO[LotoEntity.userInLOTO.SUPERVISOR.ToString()].id || user.id == loto.listUserInLOTO[LotoEntity.userInLOTO.SUPERVISOR.ToString()].employee_delegate)
+                {
+                    if (loto.cancellation_supervisor_signature != null)
+                    {
+                        complete = complete && loto.status != (int)LotoEntity.LOTOStatus.CANCELSPV;
+                    }
+                    else
+                    {
+                        complete = complete && false;
+                    }
+                }
+                else if (user.id == loto.listUserInLOTO[LotoEntity.userInLOTO.CANCELLATIONFACILITYOWNER.ToString()].id || user.id == loto.listUserInLOTO[LotoEntity.userInLOTO.CANCELLATIONFACILITYOWNER.ToString()].employee_delegate)
+                {
+                    if (loto.cancellation_supervisor_signature != null)
+                    {
+                        complete = complete && loto.status != (int)LotoEntity.LOTOStatus.CANCELSPV;
+                    }
+                    else
+                    {
+                        complete = complete && false;
+                    }
+                }
+
+                foreach (LotoComingHolderEntity comingHolder in loto.lotoComingHolder)
+                {
+                    if (user.id == comingHolder.userEntity.id || user.id == comingHolder.userEntity.employee_delegate)
+                    {
+                        if (comingHolder.isCancel())
+                        {
+                            complete = complete && loto.status != (int)LotoEntity.LOTOStatus.CANCELSPV;
+                        }
+                        else
+                        {
+                            complete = complete && false;
+                        }
+                    }
+                }
+            }
+
+            if (complete)
+            {
+                setClerancePermitStatus((int)statusClearance.CLOSE, clearancePermit.LOCKOUTTAGOUT.ToString());
+            }
+        }
     }
 }

@@ -12,6 +12,11 @@ namespace PermitToWork.Controllers
 {
     public class MasterDepartmentController : Controller
     {
+        public ActionResult Index()
+        {
+            return PartialView();
+        }
+
         //
         // GET: /MasterDepartment/List
 
@@ -110,6 +115,34 @@ namespace PermitToWork.Controllers
                 Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 return Json(new { status = HttpStatusCode.InternalServerError, message = "Something's wrong" });
             }
+        }
+
+        [HttpPost]
+        public JsonResult Binding()
+        {
+            var result = new MstDepartmentEntity().getListMstDepartment();
+            return Json(result);
+        }
+
+        [HttpPost]
+        public JsonResult AddDepartment(MstDepartmentEntity a)
+        {
+            a.addDepartment();
+            return Json(true);
+        }
+
+        [HttpPost]
+        public JsonResult EditDepartment(MstDepartmentEntity a)
+        {
+            a.editDepartment();
+            return Json(true);
+        }
+
+        [HttpPost]
+        public JsonResult DeleteDepartment(MstDepartmentEntity a)
+        {
+            a.deleteDepartment();
+            return Json(true);
         }
 
     }

@@ -273,6 +273,14 @@
             values.who = $(this).data('who');
             values = getPreScreeningValues(values, values.who);
 
+            if (values.who == "1") {
+                if (values.radiographer_2 == null || values.radiographer_1 == null || values.radiation_protection_officer == null) {
+                    alert('Radiographer Level 2, Radiographer Level 1, and Radiation Protection Officer must be chosen.');
+
+                    return;
+                }
+            }
+
             if (values.who == "4") {
                 if (values.pre_screening_spv.indexOf("2") >= 0) {
                     if (values.pre_remark.indexOf("Spv:") < 0) {
@@ -553,7 +561,13 @@
         });*@
 
         $('#back').click(function () {
-            $('#content').load($('#history').val());
+            var history = $('#history').val();
+            history = history.toLowerCase();
+            if (history.indexOf('home') >= 0) {
+                window.location = history;
+            } else {
+                $('#content').load(history);
+            }
         });
 
         $('#radiographer-2').change(function () {
@@ -863,23 +877,23 @@
                     <td>Warning sign will be posted around relevant potential area of exposure <small>(attached copy sample of sign if there apply)</small></td>
                     <td>
                         <select class="radiography-select pre-screening-spv" data-id="0" id="pre-screening-spv-1" @(isCanEdit[4] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_spv_arr[0] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_spv_arr[0] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_spv_arr[0] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_spv_arr[0] == "0" || Model.screening_spv_arr[0] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-rad" data-id="0" id="pre-screening-rad-1" @(isCanEdit[3] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_rad_arr[0] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_rad_arr[0] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_rad_arr[0] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_rad_arr[0] == "0" || Model.screening_rad_arr[0] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-fo" data-id="0" id="pre-screening-fo-1" @(isCanEdit[6] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_fo_arr[0] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_fo_arr[0] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_fo_arr[0] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_fo_arr[0] == "0" || Model.screening_fo_arr[0] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
@@ -888,23 +902,23 @@
                     <td>Safety line will be provided at working area boundary</td>
                     <td>
                         <select class="radiography-select pre-screening-spv" data-id="1" id="pre-screening-spv-2" @(isCanEdit[4] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_spv_arr[1] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_spv_arr[1] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_spv_arr[1] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_spv_arr[1] == "0" || Model.screening_spv_arr[1] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-rad" data-id="1" id="pre-screening-rad-2" @(isCanEdit[3] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_rad_arr[1] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_rad_arr[1] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_rad_arr[1] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_rad_arr[1] == "0" || Model.screening_rad_arr[1] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-fo" data-id="1" id="pre-screening-fo-2" @(isCanEdit[6] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_fo_arr[1] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_fo_arr[1] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_fo_arr[1] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_fo_arr[1] == "0" || Model.screening_fo_arr[1] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
@@ -913,23 +927,23 @@
                     <td>Sufficient illumination <small>(if work on night)</small></td>
                     <td>
                         <select class="radiography-select pre-screening-spv" data-id="2" id="pre-screening-spv-3" @(isCanEdit[4] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_spv_arr[2] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_spv_arr[2] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_spv_arr[2] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_spv_arr[2] == "0" || Model.screening_spv_arr[2] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-rad" data-id="2" id="pre-screening-rad-3" @(isCanEdit[3] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_rad_arr[2] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_rad_arr[2] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_rad_arr[2] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_rad_arr[2] == "0" || Model.screening_rad_arr[2] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-fo" data-id="2" id="pre-screening-fo-3" @(isCanEdit[6] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_fo_arr[2] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_fo_arr[2] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_fo_arr[2] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_fo_arr[2] == "0" || Model.screening_fo_arr[2] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
@@ -938,23 +952,23 @@
                     <td>Is emergency procedure available? <small>(attached if any, emergency shall be approved by WW SHE Official)</small></td>
                     <td>
                         <select class="radiography-select pre-screening-spv" data-id="3" id="pre-screening-spv-4" @(isCanEdit[4] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_spv_arr[3] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_spv_arr[3] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_spv_arr[3] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_spv_arr[3] == "0" || Model.screening_spv_arr[3] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-rad" data-id="3" id="pre-screening-rad-4" @(isCanEdit[3] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_rad_arr[3] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_rad_arr[3] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_rad_arr[3] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_rad_arr[3] == "0" || Model.screening_rad_arr[3] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-fo" data-id="3" id="pre-screening-fo-4" @(isCanEdit[6] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_fo_arr[3] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_fo_arr[3] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_fo_arr[3] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_fo_arr[3] == "0" || Model.screening_fo_arr[3] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
@@ -963,23 +977,23 @@
                     <td>Other workers within potential area have been evacuated</td>
                     <td>
                         <select class="radiography-select pre-screening-spv" data-id="4" id="pre-screening-spv-5" @(isCanEdit[4] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_spv_arr[4] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_spv_arr[4] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_spv_arr[4] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_spv_arr[4] == "0" || Model.screening_spv_arr[4] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-rad" data-id="4" id="pre-screening-rad-5" @(isCanEdit[3] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_rad_arr[4] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_rad_arr[4] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_rad_arr[4] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_rad_arr[4] == "0" || Model.screening_rad_arr[4] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-fo" data-id="4" id="pre-screening-fo-5" @(isCanEdit[6] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_fo_arr[4] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_fo_arr[4] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_fo_arr[4] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_fo_arr[4] == "0" || Model.screening_fo_arr[4] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
@@ -988,23 +1002,23 @@
                     <td>Available radio communication with facility owner</td>
                     <td>
                         <select class="radiography-select pre-screening-spv" data-id="5" id="pre-screening-spv-6" @(isCanEdit[4] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_spv_arr[5] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_spv_arr[5] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_spv_arr[5] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_spv_arr[5] == "0" || Model.screening_spv_arr[5] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-rad" data-id="5" id="pre-screening-rad-6" @(isCanEdit[3] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_rad_arr[5] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_rad_arr[5] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_rad_arr[5] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_rad_arr[5] == "0" || Model.screening_rad_arr[5] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-fo" data-id="5" id="pre-screening-fo-6" @(isCanEdit[6] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_fo_arr[5] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_fo_arr[5] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_fo_arr[5] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_fo_arr[5] == "0" || Model.screening_fo_arr[5] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
@@ -1013,23 +1027,23 @@
                     <td>Available valid RT procedure <small>(copy must be attached)</small></td>
                     <td>
                         <select class="radiography-select pre-screening-spv" data-id="6" id="pre-screening-spv-7" @(isCanEdit[4] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_spv_arr[6] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_spv_arr[6] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_spv_arr[6] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_spv_arr[6] == "0" || Model.screening_spv_arr[6] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-rad" data-id="6" id="pre-screening-rad-7" @(isCanEdit[3] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_rad_arr[6] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_rad_arr[6] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_rad_arr[6] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_rad_arr[6] == "0" || Model.screening_rad_arr[6] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-fo" data-id="6" id="pre-screening-fo-7" @(isCanEdit[6] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_fo_arr[6] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_fo_arr[6] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_fo_arr[6] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_fo_arr[6] == "0" || Model.screening_fo_arr[6] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
@@ -1038,23 +1052,23 @@
                     <td>Available radiation survey meter with valid calibration record <small>(copy of certificate must be attached)</small></td>
                     <td>
                         <select class="radiography-select pre-screening-spv" data-id="7" id="pre-screening-spv-8" @(isCanEdit[4] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_spv_arr[7] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_spv_arr[7] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_spv_arr[7] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_spv_arr[7] == "0" || Model.screening_spv_arr[7] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-rad" data-id="7" id="pre-screening-rad-8" @(isCanEdit[3] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_rad_arr[7] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_rad_arr[7] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_rad_arr[7] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_rad_arr[7] == "0" || Model.screening_rad_arr[7] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-fo" data-id="7" id="pre-screening-fo-8" @(isCanEdit[6] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_fo_arr[7] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_fo_arr[7] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_fo_arr[7] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_fo_arr[7] == "0" || Model.screening_fo_arr[7] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
@@ -1063,23 +1077,23 @@
                     <td>Available "film badge exposure recorder" from Batan</td>
                     <td>
                         <select class="radiography-select pre-screening-spv" data-id="8" id="pre-screening-spv-9" @(isCanEdit[4] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_spv_arr[8] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_spv_arr[8] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_spv_arr[8] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_spv_arr[8] == "0" || Model.screening_spv_arr[8] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-rad" data-id="8" id="pre-screening-rad-9" @(isCanEdit[3] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_rad_arr[8] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_rad_arr[8] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_rad_arr[8] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_rad_arr[8] == "0" || Model.screening_rad_arr[8] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-fo" data-id="8" id="pre-screening-fo-9" @(isCanEdit[6] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_fo_arr[8] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_fo_arr[8] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_fo_arr[8] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_fo_arr[8] == "0" || Model.screening_fo_arr[8] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
@@ -1088,23 +1102,23 @@
                     <td>Available "Surat Ijin Pemanfaatan Tenaga Nuklir" from Bapeten <small>(copy must be attached)</small></td>
                     <td>
                         <select class="radiography-select pre-screening-spv" data-id="9" id="pre-screening-spv-10" @(isCanEdit[4] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_spv_arr[9] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_spv_arr[9] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_spv_arr[9] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_spv_arr[9] == "0" || Model.screening_spv_arr[9] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-rad" data-id="9" id="pre-screening-rad-10" @(isCanEdit[3] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_rad_arr[9] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_rad_arr[9] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_rad_arr[9] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_rad_arr[9] == "0" || Model.screening_rad_arr[9] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-fo" data-id="9" id="pre-screening-fo-10" @(isCanEdit[6] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_fo_arr[9] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_fo_arr[9] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_fo_arr[9] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_fo_arr[9] == "0" || Model.screening_fo_arr[9] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
@@ -1113,23 +1127,23 @@
                     <td>Available "Quality Control Certificate" of radiographic source from Batan <small>(copy must be attached)</small></td>
                     <td>
                         <select class="radiography-select pre-screening-spv" data-id="10" id="pre-screening-spv-11" @(isCanEdit[4] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_spv_arr[10] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_spv_arr[10] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_spv_arr[10] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_spv_arr[10] == "0" || Model.screening_spv_arr[10] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-rad" data-id="10" id="pre-screening-rad-11" @(isCanEdit[3] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_rad_arr[10] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_rad_arr[10] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_rad_arr[10] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_rad_arr[10] == "0" || Model.screening_rad_arr[10] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-fo" data-id="10" id="pre-screening-fo-11" @(isCanEdit[6] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_fo_arr[10] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_fo_arr[10] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_fo_arr[10] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_fo_arr[10] == "0" || Model.screening_fo_arr[10] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
@@ -1138,23 +1152,23 @@
                     <td>Available proper "protection container" from save storage & handling of radiographic source</td>
                     <td>
                         <select class="radiography-select pre-screening-spv" data-id="11" id="pre-screening-spv-12" @(isCanEdit[4] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_spv_arr[11] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_spv_arr[11] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_spv_arr[11] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_spv_arr[11] == "0" || Model.screening_spv_arr[11] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-rad" data-id="11" id="pre-screening-rad-12" @(isCanEdit[3] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_rad_arr[11] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_rad_arr[11] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_rad_arr[11] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_rad_arr[11] == "0" || Model.screening_rad_arr[11] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-fo" data-id="11" id="pre-screening-fo-12" @(isCanEdit[6] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_fo_arr[11] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_fo_arr[11] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_fo_arr[11] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_fo_arr[11] == "0" || Model.screening_fo_arr[11] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
@@ -1163,23 +1177,23 @@
                     <td>Available proper storage & handling of Hazardous (B3) waste of Fixer & Developer chemical, incl.: MSDS <small>(copy must be attached)</small></td>
                     <td>
                         <select class="radiography-select pre-screening-spv" data-id="12" id="pre-screening-spv-13" @(isCanEdit[4] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_spv_arr[12] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_spv_arr[12] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_spv_arr[12] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_spv_arr[12] == "0" || Model.screening_spv_arr[12] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-rad" data-id="12" id="pre-screening-rad-13" @(isCanEdit[3] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_rad_arr[12] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_rad_arr[12] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_rad_arr[12] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_rad_arr[12] == "0" || Model.screening_rad_arr[12] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-fo" data-id="12" id="pre-screening-fo-13" @(isCanEdit[6] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_fo_arr[12] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_fo_arr[12] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_fo_arr[12] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_fo_arr[12] == "0" || Model.screening_fo_arr[12] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
@@ -1188,23 +1202,23 @@
                     <td>Radiographic can be done safely</td>
                     <td>
                         <select class="radiography-select pre-screening-spv" data-id="13" id="pre-screening-spv-14" @(isCanEdit[4] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_spv_arr[13] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_spv_arr[13] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_spv_arr[13] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_spv_arr[13] == "0" || Model.screening_spv_arr[13] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-rad" data-id="13" id="pre-screening-rad-14" @(isCanEdit[3] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_rad_arr[13] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_rad_arr[13] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_rad_arr[13] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_rad_arr[13] == "0" || Model.screening_rad_arr[13] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select pre-screening-fo" data-id="13" id="pre-screening-fo-14" @(isCanEdit[6] ? "" : "disabled")>
-                          <option value="0" @(Model.screening_fo_arr[13] == "0" ? "selected" : "")>N/A</option>
                           <option value="1" @(Model.screening_fo_arr[13] == "1" ? "selected" : "")>Yes</option>
                           <option value="2" @(Model.screening_fo_arr[13] == "2" ? "selected" : "")>No</option>
+                          <option value="0" @(Model.screening_fo_arr[13] == "0" || Model.screening_fo_arr[13] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
@@ -1212,7 +1226,7 @@
                     <td colspan="5">
                         <h6>Remark : <small><i>(Write any controlling method shall be apply, start with 'Spv:' for Supervisor, start with 'Rad:' for Rad, and start with 'FO:' for FO)</i></small></h6>
                         <span id="pre_remark_required" style="display:none;color:red"></span>
-                        <textarea class="table-textarea" id="pre_remark" @(isCanEdit[4] || isCanEdit[3] || isCanEdit[6] ? "" : "disabled")>@Model.pre_remark</textarea>
+                        <textarea class="table-textarea" id="pre_remark" @(isCanEdit[4] || isCanEdit[3] || isCanEdit[6] ? "" : "disabled")>@(isCanEdit[4] ? Model.pre_remark + "\nSpv: " : (isCanEdit[3] ? Model.pre_remark + "\nRad: " : (isCanEdit[6] ? Model.pre_remark + "\nFO: " : Model.pre_remark)))</textarea>
                     </td>
                 </tr>
             </tbody>
@@ -1454,7 +1468,7 @@
                     <td colspan="5">
                         <h6>Remark : <small><i>(Write any controlling method shall be apply, start with 'Spv:' for Supervisor, start with 'Rad:' for Rad, and start with 'FO:' for FO)</i></small></h6>
                         <span id="can_remark_required" style="display:none;color:red"></span>
-                        <textarea class="table-textarea" id="can-remark" @(isCanEdit[9] || isCanEdit[12] || isCanEdit[10] ? "" : "disabled")>@Model.can_remark</textarea>
+                        <textarea class="table-textarea" id="can-remark" @(isCanEdit[9] || isCanEdit[12] || isCanEdit[10] ? "" : "disabled")>@(isCanEdit[9] ? Model.can_remark + "\nRad: " : (isCanEdit[10] ? Model.can_remark + "\nSpv: " : (isCanEdit[12] ? Model.can_remark + "\nFO: " : Model.can_remark)))</textarea>
                     </td>
                 </tr>
             </tbody>

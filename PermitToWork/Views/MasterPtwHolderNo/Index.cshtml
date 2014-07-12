@@ -1,0 +1,227 @@
+﻿@{
+    Layout = null;
+}
+<script>
+    $(document).ready(function () {
+        addHandlerMenu();
+    })
+</script>
+
+<div id="content-header">
+	<h1>PTW Holder No</h1>
+</div>
+<div id="breadcrumb">
+	<a href="#" title="Go to Home" class="tip-bottom home"><i class="icon-home"></i> Home</a>
+	<a href="#">Master Data</a>
+    <a href="#" class="current">PTW Holder No</a>
+</div>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12">
+            <div id="grid-holder" class="span12"></div>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span12">
+            <h5>Import PTW Holder No From Excel (.xls)</h5>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span12">
+            <form class="form-horizontal" style="border:0">
+                <div class="control-group">
+                    <label class="control-label" for="inputPassword">Import Excel</label>
+                    <div class="controls">
+                        <input type="file" id="files" name="files" />
+                    </div>
+                </div>
+                <div class="control-group" style="border:0">
+                    <div class="controls">
+                        <button class="btn btn-primary" id="add-new-file" type="button">Save</button>
+                        <span id="loading_add" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Saving.. Please Wait..</span>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/x-kendo-template" id="toolbar-template">
+    <div class="row-command">
+        <a class="k-button-icontext k-button k-grid-add" href="\#" title="Add New Holder"><span class="k-icon k-add"></span> Add New Holder</a>
+        <a class="k-button-icontext k-button" href="@Url.Action("GetTemplate","MasterPtwHolderNo")" title="Download Template"><span class="k-icon k-download"></span> Download Template</a>
+    </div>
+</script>
+<script>
+    $(document).ready(function () {
+        var crudServiceBaseUrl = "Home",
+            dataSourceIn = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding","MasterPtwHolderNo")',
+                        type: "POST"
+                    },
+                    create: {
+                        url: '@Url.Action("AddPtwHolder", "MasterPtwHolderNo")',
+                    type: "POST",
+                    complete: function (e) {
+                        $("#grid-holder").data("kendoGrid").dataSource.read();
+                    }
+                },
+                    update: {
+                        url: '@Url.Action("EditPtwHolder", "MasterPtwHolderNo")',
+                    type: "POST",
+                    complete: function (e) {
+                        $("#grid-holder").data("kendoGrid").dataSource.read();
+                    }
+                },
+                    destroy: {
+                        url: '@Url.Action("DeletePtwHolder", "MasterPtwHolderNo")',
+                    type: "POST",
+                    complete: function (e) {
+                        $("#grid-holder").data("kendoGrid").dataSource.read();
+                    }
+                },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            var result = {};
+
+                            for (var i = 0; i < options.models.length; i++) {
+                                var product = options.models[i];
+                                console.log(product);
+                                for (var member in product) {
+                                    if (member == "user" && operation !== "create") {
+                                        result["id_employee"] = product[member]["id"];
+                                    } else if (member == "user") {
+                                        result["id_employee"] = product[member];
+                                    } else if (member == "activated_date_until") {
+                                        var date = product[member];
+                                        result["activated_date_until"] = (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes();
+                                    } else {
+                                        if (product[member] == null) {
+                                            result[member] = "";
+                                        } else {
+                                            result[member] = product[member];
+                                        }
+                                    }
+                                }
+                            }
+
+                            return result;
+                        }
+                    }
+                },
+                batch: true,
+                pageSize: 30,
+                schema: {
+                    model: {
+                        id: "id",
+                        fields: {
+                            id: { type: "number", editable: false },
+                            user: {},
+                            ptw_holder_no: { type: "string" },
+                            activated_date_until: { type: "date" },
+                        }
+                    }
+                },
+                pageSize: 10
+            });
+
+        $("#grid-holder").kendoGrid({
+            dataSource: dataSourceIn,
+            pageable: true,
+            sortable: true,
+            filterable: true,
+            toolbar: kendo.template($('#toolbar-template').html()),
+            columns: [
+                { field: "user", title: "Employee", editor: userEditor, template: "#=getName(user)#", width: 250 },
+                { field: "ptw_holder_no", title: "PTW Holder No", width: 250 },
+                { field: "activated_date_until", title: "Activated Date, Until", format: "{0:dd MMM yyyy}" },
+                { command: ["edit", "delete"], width: 200 },
+                //{
+                //    command: [
+                //        {
+                //            name: "Edit",
+                //            click: editPtw
+                //        },
+                //        {
+                //            template: kendo.template($("#extend-template").html()),
+                //            name: "Extend",
+                //            click: extendPtw
+                //        },
+                //    ],
+                //    editable: {
+                //        destroy: false
+                //    },
+                //    width: 180
+                //}
+            ],
+            height: 400,
+            editable: "inline"
+        });
+
+        function userEditor(container, options) {
+            $('<input data-text-field="alpha_name" data-value-field="id" data-bind="value:' + options.field + '"/>')
+                .appendTo(container)
+                .kendoDropDownList({
+                    autoBind: true,
+                    dataSource: {
+                        transport: {
+                            dataType: "json",
+                            read: '@Url.Action("ListingEmployee", "Loto")'
+                        }
+                    },
+                    optionLabel: "--Select One--",
+                });
+        }
+
+        $('#add-new-file').click(function () {
+            $('#loading_add').show();
+            var $file = $('#files');
+            var formdata = new FormData();
+            var fileinput = $file[0];
+
+            if (fileinput.files == null || fileinput.files.length < 1) {
+                //make sure user selects a file             
+                //displayStatus(false, "Pilih sebuah berkas");
+                return;
+            } else if (fileinput.files[0].type != "application/pdf") {
+                //displayStatus(false, "Format berkas harus .xls");
+                //$file.val("");
+                //return;
+            }
+
+
+            //append data
+            formdata.append(fileinput.files[0].name, fileinput.files[0]);
+            formdata.append("actionSelector", 1);
+
+
+            var xhr = new XMLHttpRequest();
+            // xhr.upload.addEventListener('progress', progressHandlingFunctionRkap, false);
+            xhr.open('POST', "@Url.Action("ImportExcel", "MasterPtwHolderNo")");
+            xhr.send(formdata);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    if (xhr.responseText == "Fail") {
+                        //fail
+                        $file.val("");
+                        //displayStatus(false, "Failed to save.");
+                    } else {
+                        //success
+                        $('#loading_add').hide();
+                        $file.val("");
+                        $('#add-new').modal('hide');
+                        //displayStatus(true, "Save succees.");
+                    }
+                }
+            }
+        });
+    });
+
+    function getName(user) {
+        if (user != null) {
+            return user.alpha_name;
+        }
+        return "";
+    }
+</script>

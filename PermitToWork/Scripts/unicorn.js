@@ -139,6 +139,21 @@ function addHandlerMenu() {
         setActiveMenu('home');
     });
 
+    $('#scaffold-inspection').click(function () {
+        $('#content').load($(this).data('url'));
+        setActiveMenu('scaffold-inspection');
+    });
+
+    $('#loto-point').click(function () {
+        $('#content').load($(this).data('url'));
+        setActiveMenu('loto-point');
+    });
+
+    $('#delegate-fo').click(function () {
+        $('#content').load($(this).data('url'));
+        setActiveMenu('delegate-fo');
+    });
+
     $('.ptw').click(function () {
         $('#content').load('ptw/index');
         setActiveMenu('submenu-ptw')
@@ -193,6 +208,9 @@ function addHandlerMenu() {
 function setActiveMenu(id) {
     $('#submenu-ptw').removeClass('active');
     $('#home').removeClass('active');
+    $('#loto-point').removeClass('active');
+    $('#delegate-fo').removeClass('active');
+    $('#master-data').removeClass('active');
 
     $('#' + id).addClass('active');
 }
@@ -200,3 +218,11 @@ function setActiveMenu(id) {
 function changeContent(url) {
     $('#content').load(url);
 }
+
+$(document).ajaxComplete(function (event, xhr, settings) {
+    console.log(event);
+    console.log(xhr);
+    if (xhr.status == 302) {
+        window.location = xhr.responseText;
+    }
+});

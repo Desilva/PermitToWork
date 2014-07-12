@@ -1,30 +1,148 @@
-﻿@model PermitToWork.Models.ClearancePermit.LotoGlarfEntity
+﻿@model PermitToWork.Models.Ptw.PtwEntity
 @{
     bool? isCanCancel = ViewBag.isCanCancel as bool?;
+    bool? isCanAddLoto = ViewBag.isCanAddLoto as bool?;
+    bool? isAddNewLoto = ViewBag.isAddNewLoto as bool?;
 }
 <script type="text/javascript">
     $(document).ready(function () {
         addHandlerMenu();
 
-        $('#loto-form').click(function () {
+        $('.loto-form').click(function () {
+            $('#prev-history').val($('#history').val());
             $('#history').val('@Url.Action("Index","Loto", new { id = Model.id })');
-            changeContent('@Url.Action("Edit","Loto", new { id = Model.id_loto_permit })');
+            changeContent('@Url.Action("Edit","Loto")' + '/' + $(this).data('id') + '?id_loto=' + '@Model.id');
         });
 
-        $('#glarf-form').click(function () {
+        $('.glarf-form').click(function () {
+            $('#prev-history').val($('#history').val());
             $('#history').val('@Url.Action("Index","Loto", new { id = Model.id })');
-            changeContent('@Url.Action("Glarf","Loto", new { id = Model.id})');
+            changeContent('@Url.Action("Glarf","Loto")' + '/' + $(this).data('id'));
+        });
+
+        $('.loto-log').click(function () {
+            $('#prev-history').val($('#history').val());
+            $('#history').val('@Url.Action("Index","Loto", new { id = Model.id })');
+            changeContent('@Url.Action("Index","Log")' + '/Index/?id=' + $(this).data('id') + '&permitType=' + 1 + '&backPath=' + '@Url.Action("Index","Loto", new { id = Model.id })');
         });
 
         $('#cancel-loto').click(function () {
+            $('#prev-history').val($('#history').val());
             $('#history').val('@Url.Action("Index","Loto", new { id = Model.id })');
 
-            $.post('@Url.Action("CancelLotoGlarf","Loto")', { id: '@Model.id' }, function (resp) {
-                alert('LOTO Permit is cancelled. All related parties has been informed to sign GLARF Form and LOTO Permit Form.');
-                $('#content').load('@Url.Action("Index","Loto")');
+            $.post('@Url.Action("CancelLoto","Loto")', { id: $(this).data('id') }, function (resp) {
+                if (resp.status == "202") {
+                    alert('Loto cancellation has been requested. You may sign LOTO Cancellation.');
+                    $('#content').load('@Url.Action("Edit","Loto")/' + $(this).data('id') + '?id_loto=' + '@Model.id');
+                } else if (resp.status == "200") {
+                    alert('Loto cancellation has been requested. You must attach \'signed LOTO Glarf\' prior to cancellation, then sign LOTO Cancellation.');
+                    $('#content').load('@Url.Action("Glarf","Loto")/' + resp.id_glarf);
+                }
             });
         });
+
+        $('#new-loto').click(function () {
+            var values = {
+                id_ptw: '@Model.id',
+            };
+            $.post("@Url.Action("CreateNewLOTO","Loto")", values, function (resp) {
+                if (resp.status == "200") {
+                    $('#history').val('@Url.Action("Index","Loto", new { id = Model.id })');
+                    changeContent('@Url.Action("Edit","Loto")' + '/?id=' + resp.id + '&id_loto=' + '@Model.id');
+                }
+            });
+        });
+
+        $('#previous-loto').click(function () {
+            $('#loto-prev').modal('show');
+        });
+
+        $('#create-loto').click(function () {
+            var values = {
+                id: '@Model.id',
+                id_prev_loto: $('#selected-id').val(),
+            };
+            $.post("@Url.Action("FromPreviousLOTO","Loto")", values, function (resp) {
+                if (resp.status == "200") {
+                    $('#history').val('@Url.Action("Index","Loto", new { id = Model.id })');
+                    $('#loto-prev').modal('hide');
+                    changeContent('@Url.Action("Edit","Loto")' + '/?id=' + resp.id + '&id_loto=' + '@Model.id');
+                }
+            });
+        });
+
+        var dataSourceIn = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("BindingListLOTO", "Loto")',
+                    type: "POST"
+                },
+                parameterMap: function (options, operation) {
+                    if (operation !== "read" && options.models) {
+                        var result = {};
+
+                        return result;
+                    }
+                }
+            },
+            batch: true,
+            pageSize: 30,
+            schema: {
+                model: {
+                    id: "id",
+                    fields: {
+                        id: { type: "number", editable: false },
+                        loto_no: { type: "string" },
+                        work_location: { type: "string" },
+                        supervisorUser: {},
+                        work_description: { type: "string" },
+                    }
+                }
+            },
+            pageSize: 10
+        });
+
+        $("#loto-prev-grid").kendoGrid({
+            dataSource: dataSourceIn,
+            pageable: true,
+            sortable: true,
+            filterable: true,
+            selectable: "row",
+            columns: [
+                { field: "id", hidden: true },
+                { field: "loto_no", title: "LOTO No.", type: "string", width: 150 },
+                { field: "supervisorUser", title: "Supervisor", template: "#=getName(supervisorUser)#", type: "string" },
+                { field: "work_description", title: "Work Description", type: "string" },
+            ],
+            height: 300,
+            change: function (e) {
+                var selectedRows = this.select();
+                var selectedDataItems = [];
+                for (var i = 0; i < selectedRows.length; i++) {
+                    var dataItem = this.dataItem(selectedRows[i]);
+                    $('#selected-id').val(dataItem.id);
+                }
+                // selectedDataItems contains all selected data items
+            }
+        });
+
+        $('#back').click(function () {
+            var history = $('#history').val();
+            history = history.toLowerCase();
+            if (history.indexOf('home') >= 0) {
+                window.location = history;
+            } else {
+                $('#content').load(history);
+            }
+        });
     });
+
+    function getName(user) {
+        if (user != null) {
+            return user.alpha_name;
+        }
+        return "";
+    }
 </script>
 <div id="content-header">
 	<h1>Lock Out Tag Out Permit Form</h1>
@@ -43,10 +161,19 @@
             Star Energy Geothermal (Wayang Windu) Limited
         </div>
         <div class="span3 no">
-            <br /><i>No : @Model.loto_no</i>
         </div> 
     </div>
     <div class="row-fluid separator"></div>
+    <div class="row-fluid">
+        <div class="span12">
+            @if (isCanAddLoto == true) {
+                if(isAddNewLoto == true) {
+                <input type="button" class="btn btn-primary" value="Create New LOTO Form" id="new-loto" />
+                }
+            <input type="button" class="btn btn-warning" value="Follow Previous LOTO Form" id="previous-loto" />
+            }
+        </div>
+    </div>
     <div class="row-fluid">
         <div class="span12">
             <div class="widget-box">
@@ -57,16 +184,26 @@
 			        <h5>Related Document(s)</h5>
 		        </div>
 		        <div class="widget-content">
+                    @foreach(PermitToWork.Models.ClearancePermit.LotoEntity loto in Model.lotoPermit) {
                     <div class="row-fluid">
-                        <div class="span12">
-                            <input type="button" class="btn btn-primary" value="LOTO Permit Form" id="loto-form" />
-                            <input type="button" class="btn btn-primary" value="Group Lockout Application & Release Form" id="glarf-form" />
+                        <div class="span3">
+                            @loto.loto_no
+                        </div>
+                        <div class="span9">
+                            <input type="button" class="btn btn-success loto-form" value="LOTO Permit Form" id="loto-form-@loto.id" data-id="@loto.id" />
+                            <input type="button" class="btn btn-success glarf-form" value="GLARF" id="glarf-form-@loto.id" data-id="@loto.id_glarf" />
                             @if (isCanCancel == true)
                             {
-                                <input type="button" class="btn btn-warning" value="Cancel LOTO Permit" id="cancel-loto" />
+                                <input type="button" class="btn btn-warning" value="Cancel LOTO Permit" id="cancel-loto" data-id="@loto.id" />
                             }
+                            <br />
+                            <input type="button" class="btn btn-success loto-log" value="LOTO Log" id="log-log-@loto.id" data-id="@loto.id" />
+                            <a href="@Url.Action("Index", "Print", new { id = loto.id, type = 2, no = loto.loto_no})" class="btn btn-primary">Print LOTO Form</a>
+                            <a href="@Url.Action("Index", "Print", new { id = loto.id_glarf, type = 3, no = loto.loto_no})" class="btn btn-primary">Print GLARF</a>
                         </div>
+                        <div class="span12">&nbsp;</div>
                     </div>
+                    }
 		        </div>
             </div>
         </div>
@@ -76,4 +213,21 @@
             <input type="button" class="btn btn-default" value="Back" id="back" />
         </div>
     </div>
+</div>
+
+<!-- Modal -->
+<div id="loto-prev" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="loto" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="loto-prev-label">Available LOTO Permit</h3>
+  </div>
+  <div class="modal-body">
+    <p>Please select one LOTO</p>
+    <input type="hidden" id="selected-id" value="0" />
+    <div id="loto-prev-grid"></div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="create-loto">Create LOTO</button>
+  </div>
 </div>

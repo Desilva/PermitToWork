@@ -384,6 +384,16 @@
                 $('#content').load('@Url.Action("Edit","FI")');
             });
         });
+
+        $('#back').click(function () {
+            var history = $('#history').val();
+            history = history.toLowerCase();
+            if (history.indexOf('home') >= 0) {
+                window.location = history;
+            } else {
+                $('#content').load(history);
+            }
+        });
     })
 </script>
 
@@ -438,7 +448,7 @@
             <tr>
                 <td>3</td>
                 <td>Requestor</td>
-                <td><input type="text" class="table-input" value="@listUser.listUser.Where(p => p.id == Model.requestor.AsInt()).FirstOrDefault().alpha_name" disabled/></td>
+                <td><input type="text" class="table-input" value="@(Model.is_guest ? Model.requestor : listUser.listUser.Where(p => p.id == Model.requestor.AsInt()).FirstOrDefault().alpha_name)" disabled/></td>
                 <td>
                     Fire Watch : 
                     <select id="fire_watch" @(isCanEdit[0] ? "" : "disabled")>
@@ -456,7 +466,7 @@
         <thead>
             <tr>
                 <th class="title-form" colspan="4"><b>2. PRE-JOB SCREENING <small><i>(Fill with yes: if agree; No: if disagree or N/A: if not applicable with description statement)</i></small></b></th>
-                <th>Hira no : @Model.getHiraNo()</th>
+                <th>Hira no : @Model.hira_no</th>
             </tr>
         </thead>
         <tbody>
@@ -472,23 +482,23 @@
                 <td>Are workers to do this job competent?</td>
                 <td>
                     <select id="screening_spv_1" @(isCanEdit[3] ? "" : "disabled")>
-                        <option value="0" @(Model.screening_spv_arr[0] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_spv_arr[0] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_spv_arr[0] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.screening_spv_arr[0] == "0" || Model.screening_spv_arr[0] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
                 <td>
                     <select id="screening_so_1" @(isCanEdit[4] ? "" : "disabled")>
-                        <option value="0" @(Model.screening_so_arr[0] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_so_arr[0] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_so_arr[0] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.screening_so_arr[0] == "0" || Model.screening_so_arr[0] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
                 <td>
                     <select id="screening_fo_1" @(isCanEdit[5] ? "" : "disabled")>
-                        <option value="0" @(Model.screening_fo_arr[0] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_fo_arr[0] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_fo_arr[0] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.screening_fo_arr[0] == "0" || Model.screening_fo_arr[0] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
             </tr>
@@ -497,23 +507,23 @@
                 <td>Available communication with ERT?</td>
                 <td>
                     <select id="screening_spv_2" @(isCanEdit[3] ? "" : "disabled")>
-                        <option value="0" @(Model.screening_spv_arr[1] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_spv_arr[1] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_spv_arr[1] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.screening_spv_arr[1] == "0" || Model.screening_spv_arr[1] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
                 <td>
                     <select id="screening_so_2" @(isCanEdit[4] ? "" : "disabled")>
-                        <option value="0" @(Model.screening_so_arr[1] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_so_arr[1] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_so_arr[1] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.screening_so_arr[1] == "0" || Model.screening_so_arr[1] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
                 <td>
                     <select id="screening_fo_2" @(isCanEdit[5] ? "" : "disabled")>
-                        <option value="0" @(Model.screening_fo_arr[1] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_fo_arr[1] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_fo_arr[1] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.screening_fo_arr[1] == "0" || Model.screening_fo_arr[1] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
             </tr>
@@ -522,23 +532,23 @@
                 <td>Competent fire watch available?</td>
                 <td>
                     <select id="screening_spv_3" @(isCanEdit[3] ? "" : "disabled")>
-                        <option value="0" @(Model.screening_spv_arr[2] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_spv_arr[2] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_spv_arr[2] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.screening_spv_arr[2] == "0" || Model.screening_spv_arr[2] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
                 <td>
                     <select id="screening_so_3" @(isCanEdit[4] ? "" : "disabled")>
-                        <option value="0" @(Model.screening_so_arr[2] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_so_arr[2] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_so_arr[2] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.screening_so_arr[2] == "0" || Model.screening_so_arr[2] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
                 <td>
                     <select id="screening_fo_3" @(isCanEdit[5] ? "" : "disabled")>
-                        <option value="0" @(Model.screening_fo_arr[2] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_fo_arr[2] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_fo_arr[2] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.screening_fo_arr[2] == "0" || Model.screening_fo_arr[2] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
             </tr>
@@ -547,23 +557,23 @@
                 <td>Affected parties have been notified?</td>
                 <td>
                     <select id="screening_spv_4" @(isCanEdit[3] ? "" : "disabled")>
-                        <option value="0" @(Model.screening_spv_arr[3] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_spv_arr[3] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_spv_arr[3] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.screening_spv_arr[3] == "0" || Model.screening_spv_arr[3] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
                 <td>
                     <select id="screening_so_4" @(isCanEdit[4] ? "" : "disabled")>
-                        <option value="0" @(Model.screening_so_arr[3] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_so_arr[3] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_so_arr[3] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.screening_so_arr[3] == "0" || Model.screening_so_arr[3] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
                 <td>
                     <select id="screening_fo_4" @(isCanEdit[5] ? "" : "disabled")>
-                        <option value="0" @(Model.screening_fo_arr[3] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_fo_arr[3] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_fo_arr[3] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.screening_fo_arr[3] == "0" || Model.screening_fo_arr[3] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
             </tr>
@@ -572,23 +582,23 @@
                 <td>Adequate fire system back up during impairment?</td>
                 <td>
                     <select id="screening_spv_5" @(isCanEdit[3] ? "" : "disabled")>
-                        <option value="0" @(Model.screening_spv_arr[4] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_spv_arr[4] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_spv_arr[4] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.screening_spv_arr[4] == "0" || Model.screening_spv_arr[4] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
                 <td>
                     <select id="screening_so_5" @(isCanEdit[4] ? "" : "disabled")>
-                        <option value="0" @(Model.screening_so_arr[4] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_so_arr[4] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_so_arr[4] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.screening_so_arr[4] == "0" || Model.screening_so_arr[4] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
                 <td>
                     <select id="screening_fo_5" @(isCanEdit[5] ? "" : "disabled")>
-                        <option value="0" @(Model.screening_fo_arr[4] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_fo_arr[4] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_fo_arr[4] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.screening_fo_arr[4] == "0" || Model.screening_fo_arr[4] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
             </tr>
@@ -597,23 +607,23 @@
                 <td>The impairment work can be done safely?</td>
                 <td>
                     <select id="screening_spv_6" @(isCanEdit[3] ? "" : "disabled")>
-                        <option value="0" @(Model.screening_spv_arr[5] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_spv_arr[5] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_spv_arr[5] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.screening_spv_arr[5] == "0" || Model.screening_spv_arr[5] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
                 <td>
                     <select id="screening_so_6" @(isCanEdit[4] ? "" : "disabled")>
-                        <option value="0" @(Model.screening_so_arr[5] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_so_arr[5] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_so_arr[5] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.screening_so_arr[5] == "0" || Model.screening_so_arr[5] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
                 <td>
                     <select id="screening_fo_6" @(isCanEdit[5] ? "" : "disabled")>
-                        <option value="0" @(Model.screening_fo_arr[5] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.screening_fo_arr[5] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.screening_fo_arr[5] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.screening_fo_arr[5] == "0" || Model.screening_fo_arr[5] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
             </tr>
@@ -632,7 +642,7 @@
                         </li>
                     </ul>
                     <span id="screening_remark_required" style="display:none;color:red"></span>
-                    <textarea class="table-textarea" id="screening_remark" @(isCanEdit[3] || isCanEdit[4] || isCanEdit[5] ? "" : "disabled")>@Model.screening_remark</textarea>
+                    <textarea class="table-textarea" id="screening_remark" @(isCanEdit[3] || isCanEdit[4] || isCanEdit[5] ? "" : "disabled")>@(isCanEdit[3] ? Model.screening_remark + "\nSpv: " : (isCanEdit[4] ? Model.screening_remark + "\nSO: " : (isCanEdit[5] ? Model.screening_remark + "\nFO: " : Model.screening_remark)))</textarea>
                 </td>
             </tr>
         </tbody>
@@ -689,57 +699,84 @@
             </tr>
             <tr>
                 <td class="td-centre no-border">
-                    @if (Model.requestor != null)
+                    @if (Model.is_guest) {
+                    if (Model.requestor != null)
                     {
-                        if ((Model.acc_work_leader_signature == null && Model.acc_work_leader_delegate == requestor.id.ToString()) || (Model.acc_work_leader_signature != null && Model.acc_work_leader_signature.Substring(0, 1) == "d"))
+                        <span>@Model.requestor</span><br />
+                    }
+                    } else {
+                        if (Model.requestor != null)
+                    {
+                        if (Model.acc_work_leader_signature == null && isCanEdit[0] && Model.requestor != requestor.id.ToString())
+                        {
+                    <span>@listUser.listUser.Where(p => p.id == requestor.id).FirstOrDefault().alpha_name</span><br />
+                        }
+                        else if (Model.acc_work_leader_signature != null && Model.acc_work_leader_signature.Substring(0, 1) == "d")
                         {
                     <span>@listUser.listUser.Where(p => p.id == Model.acc_work_leader_delegate.AsInt()).FirstOrDefault().alpha_name</span><br />
                         }
-                    <span>@((Model.acc_work_leader_signature == null && Model.acc_work_leader_delegate == requestor.id.ToString()) || (Model.acc_work_leader_signature != null && Model.acc_work_leader_signature.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.requestor.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                    <span>@((Model.acc_work_leader_signature == null && isCanEdit[0] && Model.requestor != requestor.id.ToString()) || (Model.acc_work_leader_signature != null && Model.acc_work_leader_signature.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.requestor.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                    }
                     }
                     <u>Workers Leader</u>
                 </td>
                 <td class="td-centre no-border">
                     @if (Model.fire_watch != null)
                     {
-                        if ((Model.acc_fire_watch_signature == null && Model.acc_fire_wacth_delegate == requestor.id.ToString()) || (Model.acc_fire_watch_signature != null && Model.acc_fire_watch_signature.Substring(0, 1) == "d"))
+                        if (Model.acc_fire_watch_signature == null && isCanEdit[2] && Model.fire_watch != requestor.id.ToString())
+                        {
+                    <span>@listUser.listUser.Where(p => p.id == requestor.id).FirstOrDefault().alpha_name</span><br />
+                        }
+                        else if (Model.acc_fire_watch_signature != null && Model.acc_fire_watch_signature.Substring(0, 1) == "d")
                         {
                     <span>@listUser.listUser.Where(p => p.id == Model.acc_fire_wacth_delegate.AsInt()).FirstOrDefault().alpha_name</span><br />
                         }
-                    <span>@((Model.acc_fire_watch_signature == null && Model.acc_fire_wacth_delegate == requestor.id.ToString()) || (Model.acc_fire_watch_signature != null && Model.acc_fire_watch_signature.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.fire_watch.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                    <span>@((Model.acc_fire_watch_signature == null && isCanEdit[2] && Model.fire_watch != requestor.id.ToString()) || (Model.acc_fire_watch_signature != null && Model.acc_fire_watch_signature.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.fire_watch.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                     <u>Fire Watch</u>
                 </td>
                 <td class="td-centre no-border">
                     @if (Model.acc_so != null)
                     {
-                        if ((Model.acc_so_signature == null && Model.acc_so_delegate == requestor.id.ToString()) || (Model.acc_so_signature != null && Model.acc_so_signature.Substring(0, 1) == "d"))
+                        if (Model.acc_so_signature == null && isCanEdit[4] && Model.acc_so != requestor.id.ToString())
+                        {
+                    <span>@listUser.listUser.Where(p => p.id == requestor.id).FirstOrDefault().alpha_name</span><br />
+                        }
+                        else if (Model.acc_so_signature != null && Model.acc_so_signature.Substring(0, 1) == "d")
                         {
                     <span>@listUser.listUser.Where(p => p.id == Model.acc_so_delegate.AsInt()).FirstOrDefault().alpha_name</span><br />
                         }
-                    <span>@((Model.acc_so_signature == null && Model.acc_so_delegate == requestor.id.ToString()) || (Model.acc_so_signature != null && Model.acc_so_signature.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.acc_so.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                    <span>@((Model.acc_so_signature == null && isCanEdit[4] && Model.acc_so != requestor.id.ToString()) || (Model.acc_so_signature != null && Model.acc_so_signature.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.acc_so.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                     <u>ERT / Safety Officer</u>
                 </td>
                 <td class="td-centre no-border">
                     @if (Model.acc_fo != null)
                     {
-                        if ((Model.acc_fo_signature == null && Model.acc_fo_delegate == requestor.id.ToString()) || (Model.acc_fo_signature != null && Model.acc_fo_signature.Substring(0, 1) == "d"))
+                        if (Model.acc_fo_signature == null && Model.isFO(requestor) && requestor.id.ToString() != Model.acc_fo)
+                        {
+                    <span>@listUser.listUser.Where(p => p.id == requestor.id).FirstOrDefault().alpha_name</span><br />
+                        }
+                        else if (Model.acc_fo_signature != null && Model.acc_fo_signature.Substring(0, 1) == "d")
                         {
                     <span>@listUser.listUser.Where(p => p.id == Model.acc_fo_delegate.AsInt()).FirstOrDefault().alpha_name</span><br />
                         }
-                    <span>@((Model.acc_fo_signature == null && Model.acc_fo_delegate == requestor.id.ToString()) || (Model.acc_fo_signature != null && Model.acc_fo_signature.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.acc_fo.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                    <span>@((Model.acc_fo_signature == null && Model.isFO(requestor) && requestor.id.ToString() != Model.acc_fo) || (Model.acc_fo_signature != null && Model.acc_fo_signature.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.acc_fo.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                     <u>Facility Owner</u>
                 </td>
                 <td class="td-centre no-border">
                     @if (Model.acc_dept_head != null)
                     {
-                        if ((Model.acc_dept_head_signature == null && Model.acc_dept_head_delegate == requestor.id.ToString()) || (Model.acc_dept_head_signature != null && Model.acc_dept_head_signature.Substring(0, 1) == "d"))
+                        if (Model.acc_dept_head_signature == null && isCanEdit[6] && Model.acc_dept_head != requestor.id.ToString())
+                        {
+                    <span>@listUser.listUser.Where(p => p.id == requestor.id).FirstOrDefault().alpha_name</span><br />
+                        }
+                        else if (Model.acc_dept_head_signature != null && Model.acc_dept_head_signature.Substring(0, 1) == "d")
                         {
                     <span>@listUser.listUser.Where(p => p.id == Model.acc_dept_head_delegate.AsInt()).FirstOrDefault().alpha_name</span><br />
                         }
-                    <span>@((Model.acc_dept_head_signature == null && Model.acc_dept_head_delegate == requestor.id.ToString()) || (Model.acc_dept_head_signature != null && Model.acc_dept_head_signature.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.acc_dept_head.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                    <span>@((Model.acc_dept_head_signature == null && isCanEdit[6] && Model.acc_dept_head != requestor.id.ToString()) || (Model.acc_dept_head_signature != null && Model.acc_dept_head_signature.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.acc_dept_head.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                     <u>Dept. Head FO</u>
                 </td>
@@ -776,23 +813,23 @@
                 <td>Completed impairment work?</td>
                 <td>
                     <select id="can_screening_spv_1" @(isCanEdit[10] ? "" : "disabled")>
-                        <option value="0" @(Model.can_screening_spv_arr[0] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.can_screening_spv_arr[0] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.can_screening_spv_arr[0] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.can_screening_spv_arr[0] == "0" || Model.can_screening_spv_arr[0] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
                 <td>
                     <select id="can_screening_so_1" @(isCanEdit[11] ? "" : "disabled")>
-                        <option value="0" @(Model.can_screening_so_arr[0] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.can_screening_so_arr[0] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.can_screening_so_arr[0] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.can_screening_so_arr[0] == "0" || Model.can_screening_so_arr[0] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
                 <td>
                     <select id="can_screening_fo_1" @(isCanEdit[12] ? "" : "disabled")>
-                        <option value="0" @(Model.can_screening_fo_arr[0] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.can_screening_fo_arr[0] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.can_screening_fo_arr[0] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.can_screening_fo_arr[0] == "0" || Model.can_screening_fo_arr[0] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
             </tr>
@@ -801,23 +838,23 @@
                 <td>Affected area notified that impairment has been completed?</td>
                 <td>
                     <select id="can_screening_spv_2" @(isCanEdit[10] ? "" : "disabled")>
-                        <option value="0" @(Model.can_screening_spv_arr[1] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.can_screening_spv_arr[1] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.can_screening_spv_arr[1] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.can_screening_spv_arr[1] == "0" || Model.can_screening_spv_arr[1] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
                 <td>
                     <select id="can_screening_so_2" @(isCanEdit[11] ? "" : "disabled")>
-                        <option value="0" @(Model.can_screening_so_arr[1] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.can_screening_so_arr[1] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.can_screening_so_arr[1] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.can_screening_so_arr[1] == "0" || Model.can_screening_so_arr[1] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
                 <td>
                     <select id="can_screening_fo_2" @(isCanEdit[12] ? "" : "disabled")>
-                        <option value="0" @(Model.can_screening_fo_arr[1] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.can_screening_fo_arr[1] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.can_screening_fo_arr[1] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.can_screening_fo_arr[1] == "0" || Model.can_screening_fo_arr[1] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
             </tr>
@@ -826,30 +863,30 @@
                 <td>Fire system ready to normalize?</td>
                 <td>
                     <select id="can_screening_spv_3" @(isCanEdit[10] ? "" : "disabled")>
-                        <option value="0" @(Model.can_screening_spv_arr[2] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.can_screening_spv_arr[2] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.can_screening_spv_arr[2] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.can_screening_spv_arr[2] == "0" || Model.can_screening_spv_arr[2] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
                 <td>
                     <select id="can_screening_so_3" @(isCanEdit[11] ? "" : "disabled")>
-                        <option value="0" @(Model.can_screening_so_arr[2] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.can_screening_so_arr[2] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.can_screening_so_arr[2] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.can_screening_so_arr[2] == "0" || Model.can_screening_so_arr[2] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
                 <td>
                     <select id="can_screening_fo_3" @(isCanEdit[12] ? "" : "disabled")>
-                        <option value="0" @(Model.can_screening_fo_arr[2] == "0" ? "selected" : "")>N/A</option>
                         <option value="1" @(Model.can_screening_fo_arr[2] == "1" ? "selected" : "")>Yes</option>
                         <option value="2" @(Model.can_screening_fo_arr[2] == "2" ? "selected" : "")>No</option>
+                        <option value="0" @(Model.can_screening_fo_arr[2] == "0" || Model.can_screening_fo_arr[2] == "" ? "selected" : "")>N/A</option>
                     </select>
                 </td>
             </tr>
         </tbody>
     </table>
     <h6>Remark : <small><i>(write any consent related fire impairment, start with 'Spv:' for Supervisor, start with 'SO:' for SO, and start with 'FO:' for FO)</i></small></h6>
-    <textarea class="table-textarea" id="cancel_remark" @(isCanEdit[10] || isCanEdit[11] || isCanEdit[12] ? "" : "disabled")>@Model.cancel_remark</textarea>
+    <textarea class="table-textarea" id="cancel_remark" @(isCanEdit[10] || isCanEdit[11] || isCanEdit[12] ? "" : "disabled")>@(isCanEdit[10] ? Model.cancel_remark + "\nSpv: " : (isCanEdit[11] ? Model.cancel_remark + "\nSO: " : (isCanEdit[12] ? Model.cancel_remark + "\nFO: " : Model.cancel_remark)))</textarea>
     <br /><br />
 
     <table class="table">
@@ -898,55 +935,75 @@
                 <td class="td-centre no-border">
                     @if (Model.requestor != null)
                     {
-                        if ((Model.cancel_work_leader_signature == null && Model.cancel_work_leader_delegate == requestor.id.ToString()) || (Model.cancel_work_leader_signature != null && Model.cancel_work_leader_signature.Substring(0, 1) == "d"))
+                        if (Model.cancel_work_leader_signature == null && isCanEdit[8] == true && Model.requestor != requestor.id.ToString())
+                        {
+                    <span>@listUser.listUser.Where(p => p.id == requestor.id).FirstOrDefault().alpha_name</span><br />
+                        }
+                        else if (Model.cancel_work_leader_signature != null && Model.cancel_work_leader_signature.Substring(0, 1) == "d")
                         {
                     <span>@listUser.listUser.Where(p => p.id == Model.cancel_work_leader_delegate.AsInt()).FirstOrDefault().alpha_name</span><br />
                         }
-                    <span>@((Model.cancel_work_leader_signature == null && Model.cancel_work_leader_delegate == requestor.id.ToString()) || (Model.cancel_work_leader_signature != null && Model.cancel_work_leader_signature.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.requestor.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                    <span>@((Model.cancel_work_leader_signature == null && isCanEdit[8] == true && Model.requestor != requestor.id.ToString()) || (Model.cancel_work_leader_signature != null && Model.cancel_work_leader_signature.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.requestor.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                     <u>Workers Leader</u>
                 </td>
                 <td class="td-centre no-border">
                     @if (Model.fire_watch != null)
                     {
-                        if ((Model.cancel_fire_watch_signature == null && Model.cancel_fire_watch_delegate == requestor.id.ToString()) || (Model.cancel_fire_watch_signature != null && Model.cancel_fire_watch_signature.Substring(0, 1) == "d"))
+                        if (Model.cancel_fire_watch_signature == null && isCanEdit[9] == true && Model.fire_watch != requestor.id.ToString())
+                        {
+                    <span>@listUser.listUser.Where(p => p.id == requestor.id).FirstOrDefault().alpha_name</span><br />
+                        }
+                        else if (Model.cancel_fire_watch_signature != null && Model.cancel_fire_watch_signature.Substring(0, 1) == "d")
                         {
                     <span>@listUser.listUser.Where(p => p.id == Model.cancel_fire_watch_delegate.AsInt()).FirstOrDefault().alpha_name</span><br />
                         }
-                    <span>@((Model.cancel_fire_watch_signature == null && Model.cancel_fire_watch_delegate == requestor.id.ToString()) || (Model.cancel_fire_watch_signature != null && Model.cancel_fire_watch_signature.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.fire_watch.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                    <span>@((Model.cancel_fire_watch_signature == null && isCanEdit[9] == true && Model.fire_watch != requestor.id.ToString()) || (Model.cancel_fire_watch_signature != null && Model.cancel_fire_watch_signature.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.fire_watch.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                     <u>Fire Watch</u>
                 </td>
                 <td class="td-centre no-border">
                     @if (Model.acc_so != null)
                     {
-                        if ((Model.cancel_so_signature == null && Model.cancel_so_delegate == requestor.id.ToString()) || (Model.cancel_so_signature != null && Model.cancel_so_signature.Substring(0, 1) == "d"))
+                        if (Model.cancel_so_signature == null && isCanEdit[11] == true && Model.acc_so != requestor.id.ToString())
+                        {
+                    <span>@listUser.listUser.Where(p => p.id == requestor.id).FirstOrDefault().alpha_name</span><br />
+                        }
+                        else if (Model.cancel_so_signature != null && Model.cancel_so_signature.Substring(0, 1) == "d")
                         {
                     <span>@listUser.listUser.Where(p => p.id == Model.cancel_so_delegate.AsInt()).FirstOrDefault().alpha_name</span><br />
                         }
-                    <span>@((Model.cancel_so_signature == null && Model.cancel_so_delegate == requestor.id.ToString()) || (Model.cancel_so_signature != null && Model.cancel_so_signature.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.acc_so.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                    <span>@((Model.cancel_so_signature == null && isCanEdit[11] == true && Model.acc_so != requestor.id.ToString()) || (Model.cancel_so_signature != null && Model.cancel_so_signature.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.acc_so.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                     <u>ERT / Safety Officer</u>
                 </td>
                 <td class="td-centre no-border">
                     @if (Model.acc_fo != null)
                     {
-                        if ((Model.cancel_fo_signature == null && Model.cancel_fo_delegate == requestor.id.ToString()) || (Model.cancel_fo_signature != null && Model.cancel_fo_signature.Substring(0, 1) == "d"))
+                        if (Model.cancel_fo_signature == null && Model.isFO(requestor) && requestor.id.ToString() != Model.acc_fo)
+                        {
+                    <span>@listUser.listUser.Where(p => p.id == requestor.id).FirstOrDefault().alpha_name</span><br />
+                        }
+                        else if (Model.cancel_fo_signature != null && Model.cancel_fo_signature.Substring(0, 1) == "d")
                         {
                     <span>@listUser.listUser.Where(p => p.id == Model.cancel_fo_delegate.AsInt()).FirstOrDefault().alpha_name</span><br />
                         }
-                    <span>@((Model.cancel_fo_signature == null && Model.cancel_fo_delegate == requestor.id.ToString()) || (Model.cancel_fo_signature != null && Model.cancel_fo_signature.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.acc_fo.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                    <span>@((Model.cancel_fo_signature == null && Model.isFO(requestor) && requestor.id.ToString() != Model.acc_fo) || (Model.cancel_fo_signature != null && Model.cancel_fo_signature.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.acc_fo.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                     <u>Facility Owner</u>
                 </td>
                 <td class="td-centre no-border">
                     @if (Model.acc_dept_head != null)
                     {
-                        if ((Model.cancel_dept_head_signature == null && Model.cancel_dept_head_delegate == requestor.id.ToString()) || (Model.cancel_dept_head_signature != null && Model.cancel_dept_head_signature.Substring(0, 1) == "d"))
+                        if (Model.cancel_dept_head_signature == null && isCanEdit[13] == true && Model.acc_dept_head != requestor.id.ToString())
+                        {
+                    <span>@listUser.listUser.Where(p => p.id == requestor.id).FirstOrDefault().alpha_name</span><br />
+                        }
+                        else if (Model.cancel_dept_head_signature != null && Model.cancel_dept_head_signature.Substring(0, 1) == "d")
                         {
                     <span>@listUser.listUser.Where(p => p.id == Model.cancel_dept_head_delegate.AsInt()).FirstOrDefault().alpha_name</span><br />
                         }
-                    <span>@((Model.cancel_dept_head_signature == null && Model.cancel_dept_head_delegate == requestor.id.ToString()) || (Model.cancel_dept_head_signature != null && Model.cancel_dept_head_signature.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.acc_dept_head.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                    <span>@((Model.cancel_dept_head_signature == null && isCanEdit[13] == true && Model.acc_dept_head != requestor.id.ToString()) || (Model.cancel_dept_head_signature != null && Model.cancel_dept_head_signature.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.acc_dept_head.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                     <u>Dept. Head FO</u>
                 </td>

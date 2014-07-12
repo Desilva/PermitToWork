@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PermitToWork", "PermitToWor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectLog", "..\..\ProjectLog\ProjectLog\ProjectLog\ProjectLog.csproj", "{D929CE4F-8B73-450B-9ACB-9A9C659B49E1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rotativa", "Rotativa\Rotativa.csproj", "{D93FAA11-31F0-4629-B53C-AA8680283529}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{D929CE4F-8B73-450B-9ACB-9A9C659B49E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D929CE4F-8B73-450B-9ACB-9A9C659B49E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D929CE4F-8B73-450B-9ACB-9A9C659B49E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D93FAA11-31F0-4629-B53C-AA8680283529}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D93FAA11-31F0-4629-B53C-AA8680283529}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D93FAA11-31F0-4629-B53C-AA8680283529}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D93FAA11-31F0-4629-B53C-AA8680283529}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

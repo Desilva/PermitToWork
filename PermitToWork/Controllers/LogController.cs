@@ -13,7 +13,7 @@ namespace PermitToWork.Controllers
         //
         // GET: /Log/
 
-        public ActionResult Index(int id, int permitType, string backPath)
+        public ActionResult Log(int id, int permitType, string backPath)
         {
             UserEntity user = Session["user"] as UserEntity;
             ViewBag.backPath = backPath;

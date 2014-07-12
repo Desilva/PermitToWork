@@ -23,7 +23,9 @@ namespace PermitToWork.Models
             this.hot_work = new HashSet<hot_work>();
             this.permit_to_work1 = new HashSet<permit_to_work>();
             this.radiographies = new HashSet<radiography>();
+            this.safety_briefing = new HashSet<safety_briefing>();
             this.working_height = new HashSet<working_height>();
+            this.loto_permit = new HashSet<loto_permit>();
         }
     
         public int id { get; set; }
@@ -112,6 +114,13 @@ namespace PermitToWork.Models
         public string can_fo_approve { get; set; }
         public Nullable<int> id_parent_ptw { get; set; }
         public Nullable<int> status { get; set; }
+        public string hira_docs { get; set; }
+        public string acc_notes_fo_ass { get; set; }
+        public string acc_notes_ass_fo { get; set; }
+        public string can_notes_ass_fo { get; set; }
+        public Nullable<byte> is_guest { get; set; }
+        public string guest_holder_no { get; set; }
+        public Nullable<byte> requested_no { get; set; }
     
         public virtual ICollection<confined_space> confined_space { get; set; }
         public virtual ICollection<excavation> excavations { get; set; }
@@ -125,6 +134,8 @@ namespace PermitToWork.Models
         public virtual ICollection<permit_to_work> permit_to_work1 { get; set; }
         public virtual permit_to_work permit_to_work2 { get; set; }
         public virtual ICollection<radiography> radiographies { get; set; }
+        public virtual ICollection<safety_briefing> safety_briefing { get; set; }
         public virtual ICollection<working_height> working_height { get; set; }
+        public virtual ICollection<loto_permit> loto_permit { get; set; }
     }
 }

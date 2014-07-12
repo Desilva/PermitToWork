@@ -55,6 +55,8 @@ namespace PermitToWork.Models
         public Nullable<int> id_ptw { get; set; }
         public Nullable<int> status { get; set; }
         public string fi_no { get; set; }
+        public Nullable<byte> is_extend { get; set; }
+        public Nullable<System.DateTime> datetime { get; set; }
     
         public virtual permit_to_work permit_to_work { get; set; }
     }

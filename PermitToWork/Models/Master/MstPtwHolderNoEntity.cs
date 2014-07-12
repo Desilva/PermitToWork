@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PermitToWork.Models.User;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -14,12 +15,14 @@ namespace PermitToWork.Models.Master
         public Nullable<System.DateTime> activated_date_until { get; set; }
         private star_energy_ptwEntities db;
 
+        public UserEntity user { get; set; }
+
         public MstPtwHolderNoEntity()
         {
             this.db = new star_energy_ptwEntities();
         }
 
-        public MstPtwHolderNoEntity(int id)
+        public MstPtwHolderNoEntity(int id, UserEntity user)
         {
             this.db = new star_energy_ptwEntities();
             mst_ptw_holder_no holderNo = this.db.mst_ptw_holder_no.Find(id);
@@ -28,6 +31,7 @@ namespace PermitToWork.Models.Master
             this.id_employee = holderNo.id_employee;
             this.ptw_holder_no = holderNo.ptw_holder_no;
             this.activated_date_until = holderNo.activated_date_until;
+            this.user = new UserEntity(this.id_employee.Value, user.token, user);
         }
 
         public MstPtwHolderNoEntity(int user_id, int a)
@@ -73,6 +77,18 @@ namespace PermitToWork.Models.Master
                        };
 
             return list.ToList();
+        }
+
+        public List<MstPtwHolderNoEntity> getListMstPtwHolderNo(UserEntity user)
+        {
+            List<int> listId = this.db.mst_ptw_holder_no.Select(p => p.id).ToList();
+            var result = new List<MstPtwHolderNoEntity>();
+            foreach (int i in listId)
+            {
+                result.Add(new MstPtwHolderNoEntity(i, user));
+            }
+
+            return result;
         }
 
         public int addPtwHolderNo()

@@ -1,0 +1,100 @@
+﻿<div id="content-header">
+	<h1>Requested PTW Holder No</h1>
+</div>
+<div id="breadcrumb">
+	<a href="#" title="Go to Home" class="tip-bottom home"><i class="icon-home"></i> Home</a>
+	<a href="#">Master</a>
+	<a href="#" class="current">Requested PTW Holder No</a>
+</div>
+<div id="content-hazard">
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="widget-box">
+		            <div class="widget-title">
+			            <span class="icon">
+				            <i class="icon-align-justify"></i>									
+			            </span>
+			            <h5>Permit To Work List</h5>
+		            </div>
+		            <div class="widget-content nopadding">
+                        <div id="grid-ptw" class="span12"></div>
+		            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/x-kendo-template" id="extend-template">
+    <div class="row-command">
+        <a class="k-button k-button-icontext k-grid-edit" href="\#" title="Set Requestor's PTW Holder No"><span class="k-icon k-edit"></span>Set No</a>
+    </div>
+</script>
+<script>
+    $(document).ready(function () {
+        var crudServiceBaseUrl = "MasterRequestedPtwNo",
+            dataSourceIn = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("Binding","MasterRequestedPtwNo")',
+                        type: "POST",
+                        dataType: "json"
+                    },
+                    update: {
+                        url: '@Url.Action("SetValue","MasterRequestedPtwNo")',
+                        type: "POST",
+                        dataType: "json",
+                        complete: function (e) {
+                            $("#grid-ptw").data("kendoGrid").dataSource.read();
+                        }
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options) {
+                            return options;
+                        }
+                    }
+                },
+                pageSize: 30,
+                schema: {
+                    model: {
+                        id: "id",
+                        fields: {
+                            id: { type: "number", editable: false },
+                            ptw_no: { type: "string", nullable: "true", editable: false },
+                            work_description: { type: "string", nullable: "true", editable: false },
+                            acc_ptw_requestor: { type: "string", nullable: "true", editable: false },
+                            guest_holder_no: { type: "string", nullable: "true" },
+                        }
+                    }
+                },
+                pageSize: 10
+            });
+
+        $("#grid-ptw").kendoGrid({
+            dataSource: dataSourceIn,
+            pageable: true,
+            sortable: true,
+            filterable: true,
+            columns: [
+                { field: "id", hidden: true },
+                { field: "ptw_no", title: "PTW Number", type: "string", width: 200 },
+                { field: "work_description", title: "Work Description", type: "string" },
+                { field: "acc_ptw_requestor", title: "PTW Requestor", type: "string", width: 150 },
+                { field: "guest_holder_no", title: "Holder No", type: "string", width: 150 },
+                { title: "Command", template: kendo.template($("#extend-template").html()), width: 180 },
+            ],
+            editable: "inline",
+            edit: function (e) {
+                console.log(e.container.find('.row-command'));
+                e.container.find('.row-command').html('<a class="k-button k-button-icontext k-grid-update" href="#" title="Update"><span class="k-icon k-update"></span>Update</a><a class="k-button k-button-icontext k-grid-cancel" href="#" title="Cancel"><span class="k-icon k-cancel"></span>Cancel</a>');
+            },
+            height: 400
+        });
+
+        function getDataRowGrid(e) {
+            return $(e.target).closest("tr");
+        }
+
+
+    });
+</script>

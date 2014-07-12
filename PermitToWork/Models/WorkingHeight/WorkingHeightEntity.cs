@@ -32,6 +32,8 @@ namespace PermitToWork.Models.WorkingHeight
         public string[] can_screening_req_arr { get; set; }
         public string[] can_screening_fo_arr { get; set; }
 
+        public string[] mandatory_fall_prevention_arr { get; set; }
+
         public MstErectorEntity erectorUser { get; set; }
         public MstInspectorEntity inspectorUser { get; set; }
 
@@ -41,6 +43,8 @@ namespace PermitToWork.Models.WorkingHeight
 
         public int ids { get; set; }
         public string statusText { get; set; }
+
+        public bool is_guest { get; set; }
 
         // HIRA Document related
         // public List<HiraEntity> hira_document { get; set; }
@@ -118,6 +122,8 @@ namespace PermitToWork.Models.WorkingHeight
                 // this.ptw = new PtwEntity(fi.id_ptw.Value);
                 ModelUtilization.Clone(rad, this);
 
+                this.is_guest = rad.permit_to_work.is_guest == 1;
+
                 this.workbox_access_arr = this.workbox_access.Split('#');
                 this.ladder_access_arr = this.ladder_access.Split('#');
                 this.elevated_access_arr = this.elevated_access.Split('#');
@@ -128,6 +134,8 @@ namespace PermitToWork.Models.WorkingHeight
 
                 this.can_screening_req_arr = this.can_screening_req.Split('#');
                 this.can_screening_fo_arr = this.can_screening_fo.Split('#');
+
+                this.mandatory_fall_prevention_arr = this.mandatory_fall_prevention != null ? this.mandatory_fall_prevention.Split('#') : new string[0];
 
                 this.fall_prevention_assess_arr = this.fall_prevention_assess.Split('#');
 
@@ -150,7 +158,7 @@ namespace PermitToWork.Models.WorkingHeight
 
                 this.listDocumentUploaded.Add(DocumentUploaded.ATTACHMENT.ToString(), Files.Select(p => p.Name).ToList());
 
-                //this.rad_status = getStatus();
+                this.statusText = getStatus();
 
                 // generateUserInWorkingHeight(rad, user);
 
@@ -158,7 +166,45 @@ namespace PermitToWork.Models.WorkingHeight
             }
         }
 
-        public WorkingHeightEntity(int ptw_id, string requestor, string purpose, string acc_fo)
+        private string getStatus()
+        {
+            string retVal = "";
+            switch (this.status)
+            {
+                case (int)WHStatus.CREATE: retVal = "Working at Height Permit is still edited by Requestor"; break;
+                case (int)WHStatus.EDITANDSEND: 
+                    if (this.access == 4 && (this.scaffolding == 1 || this.scaffolding == 3))
+                    {
+                        retVal = "Waiting for Erector Screening and Approval";
+                    }
+                    else if (this.access == 4 && this.scaffolding == 2)
+                    {
+
+                        retVal = "Waiting for Inspector Approval and Signing";
+                    } else {
+
+                        retVal = "Waiting for Requestor Screening and Approval";
+                    }
+                    break;
+                case (int)WHStatus.INSPECTORSIGN:
+                    retVal = "Waiting for Requestor Screening and Approval";
+                    break;
+                //case (int)FIStatus.SPVSCREENING: retVal = "Waiting for SO Pre-job Screening"; break;
+                //case (int)FIStatus.SOSCREENING: retVal = "Waiting for FO Pre-job Screening"; break;
+                //case (int)FIStatus.FOSCREENING: retVal = "Waiting for Approval by Requestor"; break;
+                case (int)WHStatus.REQUESTORAPPROVE: retVal = "Waiting for Supervisor Approval"; break;
+                case (int)WHStatus.SPVAPPROVE: retVal = "Waiting for Facility Owner Screening and Approval"; break;
+                case (int)WHStatus.FOAPPROVE: retVal = "Completed. Working at Height Permit has been approved by Facility Owner"; break;
+                case (int)WHStatus.CLOSING: retVal = "Working at Height Permit is cancelled by Requestor. Waiting for Requestor / Erector Cancellation Screening and Approval"; break;
+                case (int)WHStatus.CANREQUESTORAPPROVE: retVal = "Waiting for Supervisor Cancellation Approval"; break;
+                case (int)WHStatus.CANSPVAPPROVE: retVal = "Waiting for Facility Owner Cancellation Screening and Approval"; break;
+                case (int)WHStatus.CANFOAPPROVE: retVal = "Cancelled. Working at Height Permit has been cancelled"; break;
+            };
+
+            return retVal;
+        }
+
+        public WorkingHeightEntity(int ptw_id, string requestor, string purpose, string acc_fo, string worok_location, DateTime from, DateTime to, string total_crew, string acc_supervisor)
             : this()
         {
             // TODO: Complete member initialization
@@ -166,6 +212,11 @@ namespace PermitToWork.Models.WorkingHeight
             this.id_ptw = ptw_id;
             this.requestor = requestor;
             this.facility_owner = acc_fo;
+            this.work_location = work_location;
+            this.from = from;
+            this.until = to;
+            this.total_crew = Int32.Parse(total_crew);
+            this.supervisor = acc_supervisor;
 
             this.pre_screening_fo = "##";
             this.pre_screening_req = "##";
@@ -341,15 +392,26 @@ namespace PermitToWork.Models.WorkingHeight
                         }
                         else
                         {
-                            userWH = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()];
-                            if (user.id == userWH.id)
+                            if (is_guest)
                             {
-                                wh.requestor_signature = "a" + user.signature;
+                                userWH = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()];
+                                if (user.id == userWH.id || user.id == userWH.employee_delegate)
+                                {
+                                    wh.requestor_signature = wh.permit_to_work.acc_ptw_requestor_approve;
+                                }
                             }
-                            else if (user.id == userWH.employee_delegate)
+                            else
                             {
-                                wh.requestor_signature = "d" + user.signature;
-                                wh.requestor_delegate = user.id.ToString();
+                                userWH = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()];
+                                if (user.id == userWH.id)
+                                {
+                                    wh.requestor_signature = "a" + user.signature;
+                                }
+                                else if (user.id == userWH.employee_delegate)
+                                {
+                                    wh.requestor_signature = "d" + user.signature;
+                                    wh.requestor_delegate = user.id.ToString();
+                                }
                             }
                         }
                         wh.requestor_signature_date = DateTime.Now;
@@ -375,7 +437,7 @@ namespace PermitToWork.Models.WorkingHeight
                         {
                             wh.facility_owner_signature = "a" + user.signature;
                         }
-                        else if (user.id == userWH.employee_delegate)
+                        else
                         {
                             wh.facility_owner_signature = "d" + user.signature;
                             wh.facility_owner_delegate = user.id.ToString();
@@ -502,13 +564,28 @@ namespace PermitToWork.Models.WorkingHeight
                             }
                             else
                             {
-                                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                                if (is_guest)
                                 {
-                                    listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
-                                    if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                    if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.SUPERVISOR.ToString()))
                                     {
-                                        userRad = new UserEntity(userId.Value, user.token, user);
-                                        listEmail.Add(userRad.email);
+                                        listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                        if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
+                                        {
+                                            userRad = new UserEntity(userId.Value, user.token, user);
+                                            listEmail.Add(userRad.email);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                                    {
+                                        listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                        if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                        {
+                                            userRad = new UserEntity(userId.Value, user.token, user);
+                                            listEmail.Add(userRad.email);
+                                        }
                                     }
                                 }
                             }
@@ -538,13 +615,28 @@ namespace PermitToWork.Models.WorkingHeight
                             }
                             else
                             {
-                                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                                if (is_guest)
                                 {
-                                    listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
-                                    if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                    if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.SUPERVISOR.ToString()))
                                     {
-                                        userRad = new UserEntity(userId.Value, user.token, user);
-                                        listEmail.Add(userRad.email);
+                                        listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                        if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
+                                        {
+                                            userRad = new UserEntity(userId.Value, user.token, user);
+                                            listEmail.Add(userRad.email);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                                    {
+                                        listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                        if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                        {
+                                            userRad = new UserEntity(userId.Value, user.token, user);
+                                            listEmail.Add(userRad.email);
+                                        }
                                     }
                                 }
                             }
@@ -578,14 +670,28 @@ namespace PermitToWork.Models.WorkingHeight
                         else if (stat == 2)
                         {
 #if !DEBUG
-
-                            if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                            if (is_guest)
                             {
-                                listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
-                                if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.SUPERVISOR.ToString()))
                                 {
-                                    userRad = new UserEntity(userId.Value, user.token, user);
-                                    listEmail.Add(userRad.email);
+                                    listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                    if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
+                                    {
+                                        userRad = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userRad.email);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                                {
+                                    listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                    if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                    {
+                                        userRad = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userRad.email);
+                                    }
                                 }
                             }
 
@@ -607,6 +713,11 @@ namespace PermitToWork.Models.WorkingHeight
                                 {
                                     userRad = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userRad.email);
+                                }
+                                List<UserEntity> listDel = this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].GetDelegateFO(user);
+                                foreach (UserEntity u in listDel)
+                                {
+                                    listEmail.Add(u.email);
                                 }
                             }
 #endif
@@ -630,13 +741,28 @@ namespace PermitToWork.Models.WorkingHeight
                             }
                             else
                             {
-                                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                                if (is_guest)
                                 {
-                                    listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
-                                    if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                    if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.SUPERVISOR.ToString()))
                                     {
-                                        userRad = new UserEntity(userId.Value, user.token, user);
-                                        listEmail.Add(userRad.email);
+                                        listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                        if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
+                                        {
+                                            userRad = new UserEntity(userId.Value, user.token, user);
+                                            listEmail.Add(userRad.email);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                                    {
+                                        listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                        if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                        {
+                                            userRad = new UserEntity(userId.Value, user.token, user);
+                                            listEmail.Add(userRad.email);
+                                        }
                                     }
                                 }
                             }
@@ -651,14 +777,28 @@ namespace PermitToWork.Models.WorkingHeight
                         if (stat == 1)
                         {
 #if !DEBUG
-
-                            if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                            if (is_guest)
                             {
-                                listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
-                                if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.SUPERVISOR.ToString()))
                                 {
-                                    userRad = new UserEntity(userId.Value, user.token, user);
-                                    listEmail.Add(userRad.email);
+                                    listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                    if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
+                                    {
+                                        userRad = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userRad.email);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                                {
+                                    listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                    if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                    {
+                                        userRad = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userRad.email);
+                                    }
                                 }
                             }
 
@@ -778,6 +918,8 @@ namespace PermitToWork.Models.WorkingHeight
                 {
                     wh.pre_screening_fo = this.pre_screening_fo;
                 }
+
+                wh.pre_screening_note = this.pre_screening_note;
 
                 this.db.Entry(wh).State = EntityState.Modified;
                 retVal = this.db.SaveChanges();
@@ -1014,9 +1156,11 @@ namespace PermitToWork.Models.WorkingHeight
 
                 this.db.Entry(rad).State = EntityState.Modified;
                 retVal = this.db.SaveChanges();
-
-                //email.add(this.userInRadiography[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+#if !DEBUG
+                email.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+#else
                 email.Add("septujamasoka@gmail.com");
+#endif
                 title = "Working At Height Clearance Permit Requestor / Erector Cancellation Screening";
                 string message = serverUrl + "Home?p=Radiography/edit/" + this.id;
                 sendEmail.Send(email, message, title);
@@ -1078,15 +1222,26 @@ namespace PermitToWork.Models.WorkingHeight
                         }
                         else
                         {
-                            userWH = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()];
-                            if (user.id == userWH.id)
+                            if (is_guest)
                             {
-                                wh.can_requestor_signature = "a" + user.signature;
+                                userWH = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()];
+                                if (user.id == userWH.id || user.id == userWH.employee_delegate)
+                                {
+                                    wh.can_requestor_signature = wh.permit_to_work.acc_ptw_requestor_approve;
+                                }
                             }
-                            else if (user.id == userWH.employee_delegate)
+                            else
                             {
-                                wh.can_requestor_signature = "d" + user.signature;
-                                wh.can_requestor_delegate = user.id.ToString();
+                                userWH = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()];
+                                if (user.id == userWH.id)
+                                {
+                                    wh.can_requestor_signature = "a" + user.signature;
+                                }
+                                else if (user.id == userWH.employee_delegate)
+                                {
+                                    wh.can_requestor_signature = "d" + user.signature;
+                                    wh.can_requestor_delegate = user.id.ToString();
+                                }
                             }
                         }
                         wh.can_requestor_signature_date = DateTime.Now;
@@ -1112,7 +1267,7 @@ namespace PermitToWork.Models.WorkingHeight
                         {
                             wh.can_facility_owner_signature = "a" + user.signature;
                         }
-                        else if (user.id == userWH.employee_delegate)
+                        else
                         {
                             wh.can_facility_owner_signature = "d" + user.signature;
                             wh.can_facility_owner_delegate = user.id.ToString();
@@ -1189,7 +1344,9 @@ namespace PermitToWork.Models.WorkingHeight
             string title = "";
             if (wh != null)
             {
+#if DEBUG
                 listEmail.Add("septujamasoka@gmail.com");
+#endif
                 switch (who)
                 {
                     case 1 /* Requestor */:
@@ -1211,13 +1368,28 @@ namespace PermitToWork.Models.WorkingHeight
                             }
                             else
                             {
-                                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                                if (is_guest)
                                 {
-                                    listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
-                                    if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                    if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.SUPERVISOR.ToString()))
                                     {
-                                        userRad = new UserEntity(userId.Value, user.token, user);
-                                        listEmail.Add(userRad.email);
+                                        listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                        if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
+                                        {
+                                            userRad = new UserEntity(userId.Value, user.token, user);
+                                            listEmail.Add(userRad.email);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                                    {
+                                        listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                        if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                        {
+                                            userRad = new UserEntity(userId.Value, user.token, user);
+                                            listEmail.Add(userRad.email);
+                                        }
                                     }
                                 }
                             }
@@ -1253,14 +1425,28 @@ namespace PermitToWork.Models.WorkingHeight
                         else if (stat == 2)
                         {
 #if !DEBUG
-
-                            if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                            if (is_guest)
                             {
-                                listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
-                                if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.SUPERVISOR.ToString()))
                                 {
-                                    userRad = new UserEntity(userId.Value, user.token, user);
-                                    listEmail.Add(userRad.email);
+                                    listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                    if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
+                                    {
+                                        userRad = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userRad.email);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                                {
+                                    listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                    if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                    {
+                                        userRad = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userRad.email);
+                                    }
                                 }
                             }
 
@@ -1282,6 +1468,11 @@ namespace PermitToWork.Models.WorkingHeight
                                 {
                                     userRad = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userRad.email);
+                                }
+                                List<UserEntity> listDel = this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].GetDelegateFO(user);
+                                foreach (UserEntity u in listDel)
+                                {
+                                    listEmail.Add(u.email);
                                 }
                             }
 #endif
@@ -1305,13 +1496,28 @@ namespace PermitToWork.Models.WorkingHeight
                             }
                             else
                             {
-                                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                                if (is_guest)
                                 {
-                                    listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
-                                    if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                    if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.SUPERVISOR.ToString()))
                                     {
-                                        userRad = new UserEntity(userId.Value, user.token, user);
-                                        listEmail.Add(userRad.email);
+                                        listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                        if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
+                                        {
+                                            userRad = new UserEntity(userId.Value, user.token, user);
+                                            listEmail.Add(userRad.email);
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                                    {
+                                        listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                        if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                        {
+                                            userRad = new UserEntity(userId.Value, user.token, user);
+                                            listEmail.Add(userRad.email);
+                                        }
                                     }
                                 }
                             }
@@ -1326,14 +1532,28 @@ namespace PermitToWork.Models.WorkingHeight
                         if (stat == 1)
                         {
 #if !DEBUG
-
-                            if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                            if (is_guest)
                             {
-                                listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
-                                if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.SUPERVISOR.ToString()))
                                 {
-                                    userRad = new UserEntity(userId.Value, user.token, user);
-                                    listEmail.Add(userRad.email);
+                                    listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                    if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
+                                    {
+                                        userRad = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userRad.email);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
+                                {
+                                    listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                    if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
+                                    {
+                                        userRad = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userRad.email);
+                                    }
                                 }
                             }
 
@@ -1549,7 +1769,7 @@ namespace PermitToWork.Models.WorkingHeight
                         {
                             wh.can_facility_owner_signature = "a" + user.signature;
                         }
-                        else if (user.id == this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].employee_delegate)
+                        else
                         {
                             wh.can_facility_owner_delegate = user.id.ToString();
                             wh.can_facility_owner_signature = "d" + user.signature;
@@ -1592,8 +1812,17 @@ namespace PermitToWork.Models.WorkingHeight
             ListUser listUser = new ListUser(user.token, user.id);
             int userId = 0;
 
-            Int32.TryParse(this.requestor, out userId);
-            this.userInWorkingHeight.Add(UserInWorkingHeight.REQUESTOR.ToString(), listUser.listUser.Find(p => p.id == userId));
+            if (is_guest)
+            {
+                UserEntity userGuest = new UserEntity();
+                userGuest.alpha_name = this.requestor;
+                this.userInWorkingHeight.Add(UserInWorkingHeight.REQUESTOR.ToString(), userGuest);
+            }
+            else
+            {
+                Int32.TryParse(this.requestor, out userId);
+                this.userInWorkingHeight.Add(UserInWorkingHeight.REQUESTOR.ToString(), listUser.listUser.Find(p => p.id == userId));
+            }
 
             userId = 0;
             if (this.inspectorUser != null)
@@ -1681,15 +1910,32 @@ namespace PermitToWork.Models.WorkingHeight
 
         public bool isCanEditFormRequestor(UserEntity user)
         {
-            if (this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()] != null)
+            if (this.ptw.is_guest == 1)
             {
-                if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.CREATE)
+                if (this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()] != null)
                 {
-                    return true;
+                    if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) && this.status == (int)WHStatus.CREATE && (this.access != 4 || (this.scaffolding != 1 && this.scaffolding != 3)))
+                    {
+                        return true;
+                    }
+                    //else if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) && (this.access != 4 || (this.scaffolding != 1 && this.scaffolding != 3)))
+                    //{
+                    //    return true;
+                    //}
                 }
-                else if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) && (this.access != 4 || (this.scaffolding != 1 && this.scaffolding != 3)))
+            }
+            else
+            {
+                if (this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()] != null)
                 {
-                    return true;
+                    if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.CREATE && (this.access != 4 || (this.scaffolding != 1 && this.scaffolding != 3)))
+                    {
+                        return true;
+                    }
+                    //else if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) && (this.access != 4 || (this.scaffolding != 1 && this.scaffolding != 3)))
+                    //{
+                    //    return true;
+                    //}
                 }
             }
 
@@ -1723,21 +1969,47 @@ namespace PermitToWork.Models.WorkingHeight
             }
             else if (this.access == 4 && this.scaffolding == 2)
             {
-                if (this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()] != null)
+                if (this.ptw.is_guest == 1)
                 {
-                    if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.INSPECTORSIGN)
+                    if (this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()] != null)
                     {
-                        return true;
+                        if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) && this.status == (int)WHStatus.INSPECTORSIGN)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                else
+                {
+                    if (this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()] != null)
+                    {
+                        if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.INSPECTORSIGN)
+                        {
+                            return true;
+                        }
                     }
                 }
             }
             else
             {
-                if (this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()] != null)
+                if (this.ptw.is_guest == 1)
                 {
-                    if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.EDITANDSEND)
+                    if (this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()] != null)
                     {
-                        return true;
+                        if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) && this.status == (int)WHStatus.EDITANDSEND)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                else
+                {
+                    if (this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()] != null)
+                    {
+                        if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.EDITANDSEND)
+                        {
+                            return true;
+                        }
                     }
                 }
             }
@@ -1797,7 +2069,12 @@ namespace PermitToWork.Models.WorkingHeight
         {
             if (this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()] != null)
             {
+                List<UserEntity> listDel = this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].GetDelegateFO(user);
                 if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].employee_delegate) && this.status == (int)WHStatus.SPVAPPROVE)
+                {
+                    return true;
+                }
+                else if (listDel.Exists(p => p.id == user.id) && this.status == (int)WHStatus.SPVAPPROVE)
                 {
                     return true;
                 }
@@ -1807,12 +2084,25 @@ namespace PermitToWork.Models.WorkingHeight
 
         public bool isCanCancel(UserEntity user)
         {
-            this.ptw = new PtwEntity(this.id_ptw.Value, user);
-            if (this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()] != null)
+            // this.ptw = new PtwEntity(this.id_ptw.Value, user);
+            if (this.ptw.is_guest == 1)
             {
-                if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) && this.status <= (int)WHStatus.FOAPPROVE && this.ptw.status == (int)PtwEntity.statusPtw.ACCFO)
+                if (this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()] != null)
                 {
-                    return true;
+                    if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) && this.status <= (int)WHStatus.FOAPPROVE && this.ptw.status == (int)PtwEntity.statusPtw.ACCFO)
+                    {
+                        return true;
+                    }
+                }
+            }
+            else
+            {
+                if (this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()] != null)
+                {
+                    if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) && this.status <= (int)WHStatus.FOAPPROVE && this.ptw.status == (int)PtwEntity.statusPtw.ACCFO)
+                    {
+                        return true;
+                    }
                 }
             }
 
@@ -1870,11 +2160,24 @@ namespace PermitToWork.Models.WorkingHeight
             }
             else
             {
-                if (this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()] != null)
+                if (this.ptw.is_guest == 1)
                 {
-                    if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.CLOSING)
+                    if (this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()] != null)
                     {
-                        return true;
+                        if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) && this.status == (int)WHStatus.CLOSING)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                else
+                {
+                    if (this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()] != null)
+                    {
+                        if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) && this.status == (int)WHStatus.CLOSING)
+                        {
+                            return true;
+                        }
                     }
                 }
             }
@@ -1897,7 +2200,12 @@ namespace PermitToWork.Models.WorkingHeight
         {
             if (this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()] != null)
             {
+                List<UserEntity> listDel = this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].GetDelegateFO(user);
                 if ((user.id == this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].id || user.id == this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].employee_delegate) && this.status == (int)WHStatus.CANSPVAPPROVE)
+                {
+                    return true;
+                }
+                else if (listDel.Exists(p => p.id == user.id) && this.status == (int)WHStatus.CANSPVAPPROVE)
                 {
                     return true;
                 }
@@ -1909,18 +2217,44 @@ namespace PermitToWork.Models.WorkingHeight
 
         internal bool isUserInWH(UserEntity user)
         {
-            foreach (UserEntity us in this.userInWorkingHeight.Values)
+            foreach (KeyValuePair<string, UserEntity> entry in userInWorkingHeight)
             {
-                if (us != null)
+                UserEntity us = entry.Value;
+                if (entry.Key == UserInWorkingHeight.FACILITYOWNER.ToString())
                 {
-                    if (us.id == user.id || us.employee_delegate == user.id)
+                    List<UserEntity> listDel = us.GetDelegateFO(user);
+                    if (listDel.Exists(p => p.id == user.id))
                     {
                         return true;
                     }
                 }
+                if (us != null && (user.id == us.id || user.id == us.employee_delegate))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        internal int saveInspector()
+        {
+            int retVal = 0;
+            working_height wh = this.db.working_height.Find(this.id);
+            if (wh != null)
+            {
+                wh.no_inspection = this.no_inspection;
+                wh.utilization_valid_date = this.utilization_valid_date;
+
+                this.db.Entry(wh).State = EntityState.Modified;
+                retVal = this.db.SaveChanges();
             }
 
-            return false;
+            return retVal;
+        }
+
+        public void getPtw(UserEntity user)
+        {
+            this.ptw = new PtwEntity(this.id_ptw.Value, user);
         }
     }
 }

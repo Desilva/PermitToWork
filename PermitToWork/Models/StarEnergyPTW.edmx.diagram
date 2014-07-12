@@ -4,50 +4,68 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="4fe3ff4ca7ec49498721a3fc5164e108" Name="Diagram1" ZoomLevel="35">
-        <EntityTypeShape EntityType="star_energy_ptwModel.confined_space" Width="1.5" PointX="7.4709606261323023" PointY="16.361933313478684" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.excavation" Width="1.5" PointX="5.8604569779059181" PointY="31.467548086991322" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.fire_impairment" Width="1.5" PointX="6.6564150036575347" PointY="23.569889377602326" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.hira_document" Width="1.5" PointX="10.731271337126973" PointY="10.046971936732051" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.hot_work" Width="1.5" PointX="0.59374051568738206" PointY="26.305088681310924" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.loto_glarf" Width="1.5" PointX="10.000506016426023" PointY="3.4921267346907996" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.loto_glarf_user" Width="1.5" PointX="9.7278352797626688" PointY="2.6122370374445976" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.loto_point" Width="1.5" PointX="5.9959912346657322" PointY="22.139618809399948" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.mst_assessor" Width="1.5" PointX="7.6330375930448238" PointY="25.916741323618563" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.mst_department" Width="1.5" PointX="6.5141002622033" PointY="6.2316776096037021" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.mst_dept_head_fo" Width="1.5" PointX="7.1218653279924133" PointY="31.859076052838507" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.mst_ei" Width="1.5" PointX="10.887274262908509" PointY="3.7440319078713804" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.mst_erector" Width="1.5" PointX="11.368469841484199" PointY="10.517051388750343" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.mst_facilities" Width="1.5" PointX="0.980621891552872" PointY="14.110806233301203" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.mst_facility_owner" Width="1.5" PointX="10.870309564690251" PointY="5.8610513684624115" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.mst_inspector" Width="1.5" PointX="5.8363179461268331" PointY="23.216322999082657" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.mst_lock_box" Width="1.5" PointX="2.5429793682615176" PointY="7.8234906531048427" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.mst_loto_point" Width="1.5" PointX="3.20351334251627" PointY="11.916123157328052" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.mst_ptw_holder_no" Width="1.5" PointX="9.0515962508747343" PointY="11.215777104355292" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.mst_radiation_po" Width="1.5" PointX="5.8945640148104" PointY="13.423866933874724" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.mst_radiographer" Width="1.5" PointX="7.5539631990501492" PointY="3.8368900287136856" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.mst_safety_officer" Width="1.5" PointX="1.9323544250486204" PointY="17.58235684855951" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.mst_section" Width="1.5" PointX="11.025477183528933" PointY="16.147433005341995" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.permit_log" Width="1.5" PointX="2.433917151034771" PointY="14.368163398638444" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.permit_to_work" Width="1.5" PointX="2.1348913303273225" PointY="24.060187589405192" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.radiography" Width="1.5" PointX="7.4665379316855862" PointY="3.5396203266175559" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.working_height" Width="1.5" PointX="3.2915611841210914" PointY="13.690884060082437" />
+      <Diagram DiagramId="4fe3ff4ca7ec49498721a3fc5164e108" Name="Diagram1" ZoomLevel="49">
+        <EntityTypeShape EntityType="star_energy_ptwModel.confined_space" Width="1.5" PointX="3.0732568516737113" PointY="31.47382590150173" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.excavation" Width="1.5" PointX="10.99118989659063" PointY="25.736168098513115" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.fire_impairment" Width="1.5" PointX="10.67208455068622" PointY="7.7296180612079883" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.hira_document" Width="1.5" PointX="0.23919887479357369" PointY="7.4229673330779038" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.hot_work" Width="1.5" PointX="9.4459653205452323" PointY="25.546478596304766" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.loto_glarf" Width="1.5" PointX="4.3785313835267585" PointY="22.237328137381621" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.loto_glarf_user" Width="1.5" PointX="9.59741118997215" PointY="17.373785429342551" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.loto_point" Width="1.5" PointX="6.3124750397691853" PointY="6.502385097789757" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_assessor" Width="1.5" PointX="9.7749703981797076" PointY="5.6520874675605857" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_department" Width="1.5" PointX="0.40279304441194658" PointY="9.3946161909935135" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_dept_head_fo" Width="1.5" PointX="9.2553276555870312" PointY="27.833039430823661" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_ei" Width="1.5" PointX="6.8181182159195277" PointY="22.113946865365815" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_erector" Width="1.5" PointX="8.9373443168296216" PointY="2.200245485734309" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_facilities" Width="1.5" PointX="4.6072908940758985" PointY="25.556717243770471" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_lock_box" Width="1.5" PointX="6.1325622155017046" PointY="8.228481251852811" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_loto_point" Width="1.5" PointX="11.789721557772587" PointY="23.451592322183583" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_ptw_holder_no" Width="1.5" PointX="11.150483026704976" PointY="7.2894593511193335" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_radiation_po" Width="1.5" PointX="4.7348668131674021" PointY="14.110519683971312" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_radiographer" Width="1.5" PointX="8.3431128116059643" PointY="2.4274401079991086" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_safety_officer" Width="1.5" PointX="5.1438549948594785" PointY="28.840688763577813" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_section" Width="1.5" PointX="3.5282009465285578" PointY="8.8292853277312986" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.permit_log" Width="1.5" PointX="10.88603056170327" PointY="4.0442577321288447" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.radiography" Width="1.5" PointX="11.87609263876271" PointY="22.80680466760267" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_loto_glarf_user_loto_glarf" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.loto_suspension_holder" Width="1.5" PointX="5.6397040903753153" PointY="7.7298691606753831" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.working_height" Width="1.5" PointX="1.0816161637574511" PointY="1.6254257865368509" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.safety_briefing_user" Width="1.5" PointX="4.9950831928267529" PointY="8.5942022691453825" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.safety_briefing" Width="1.5" PointX="10.88144306227632" PointY="4.9761282228753565" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_safety_briefing_user_safety_briefing" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_inspector" Width="1.5" PointX="5.2783094892642968" PointY="0.60486561088118029" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_no_inspection" Width="1.5" PointX="9.24434380291232" PointY="13.92655663840778" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.scaffolding_inspection" Width="1.5" PointX="7.174293009179781" PointY="3.2346816525024744" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_mst_no_inspection_scaffolding_inspection" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_facility_owner" Width="1.5" PointX="9.1041540694908019" PointY="0.038339644688339738" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_area_code" Width="1.5" PointX="3.7203754725495237" PointY="11.105180432603312" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.loto_coming_holder" Width="1.5" PointX="11.021435150420961" PointY="25.488357451506126" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.permit_to_work" Width="1.5" PointX="9.3624632644292269" PointY="16.267339818304098" />
         <AssociationConnector Association="star_energy_ptwModel.FK_confined_space_permit_to_work" />
         <AssociationConnector Association="star_energy_ptwModel.FK_excavation_permit_to_work" />
         <AssociationConnector Association="star_energy_ptwModel.FK_fire_impairment_permit_to_work" />
         <AssociationConnector Association="star_energy_ptwModel.FK_hira_document_permit_to_work" />
         <AssociationConnector Association="star_energy_ptwModel.FK_hot_work_permit_to_work" />
-        <AssociationConnector Association="star_energy_ptwModel.FK_loto_glarf_user_loto_glarf" />
         <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_loto_permit" />
         <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_mst_department" />
         <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_mst_ptw_holder_no" />
         <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_mst_section" />
         <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_permit_to_work" />
         <AssociationConnector Association="star_energy_ptwModel.FK_radiography_permit_to_work" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_safety_briefing_permit_to_work" />
         <AssociationConnector Association="star_energy_ptwModel.FK_working_height_permit_to_work" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.loto_permit" Width="1.5" PointX="11.711966715618953" PointY="25.752966654371921" />
-        <AssociationConnector Association="star_energy_ptwModel.FK_loto_glarf_loto_permit" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.email_error" Width="1.5" PointX="4.6347063782786515" PointY="14.635260424872516" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_delegate_fo" Width="1.5" PointX="0.883050470092823" PointY="28.996555416377522" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_mst_delegate_fo_mst_facility_owner" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.loto_suspension" Width="1.5" PointX="1.5965414427204716" PointY="4.489267425839448" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_Table_1_loto_suspension" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.loto_permit" Width="1.5" PointX="8.2545606308870774" PointY="3.4826416389470181" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_loto_coming_holder_loto_permit" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_loto_permit_loto_glarf" />
         <AssociationConnector Association="star_energy_ptwModel.FK_loto_point_loto_permit" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_loto_suspension_loto_permit" />
+        <AssociationConnector Association="star_energy_ptwModel.loto_permit_to_work" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -30,7 +30,8 @@ namespace PermitToWork.Controllers
 
             UserEntity user = Session["user"] as UserEntity;
             ExcavationEntity entity = new ExcavationEntity(id, user);
-
+            entity.getPtw(user);
+            entity.getHiraNo();
             bool[] isCanEdit = new bool[15];
 
             isCanEdit[0] = entity.isCanEditFormRequestor(user);
@@ -119,7 +120,23 @@ namespace PermitToWork.Controllers
         public JsonResult SaveAsDraft(ExcavationEntity ex, int who)
         {
             UserEntity user = Session["user"] as UserEntity;
-            int retVal = ex.saveAsDraft(who);
+            int retVal = 1;
+            if (ex.safety_officer != null)
+            {
+                int a = ex.assignSO(fullUrl(), user);
+                retVal = retVal & a;
+            }
+
+            if (ex.facilities != null)
+            {
+                retVal &= ex.assignFAC(fullUrl(), user);
+            }
+
+            if (ex.ei != null)
+            {
+                retVal &= ex.assignEI(fullUrl(), user);
+            }
+            retVal = ex.saveAsDraft(who);
             return Json(new { status = retVal > 0 ? "200" : "404" });
         }
 
@@ -128,6 +145,21 @@ namespace PermitToWork.Controllers
         {
             UserEntity user = Session["user"] as UserEntity;
             int retVal = 1;
+            if (ex.safety_officer != null)
+            {
+                int a = ex.assignSO(fullUrl(), user);
+                retVal = retVal & a;
+            }
+
+            if (ex.facilities != null)
+            {
+                retVal &= ex.assignFAC(fullUrl(), user);
+            }
+
+            if (ex.ei != null)
+            {
+                retVal &= ex.assignEI(fullUrl(), user);
+            }
             retVal = retVal & ex.saveAsDraft(who);
             string approvalNote = ex.approval_note;
             ex = new ExcavationEntity(ex.id, user);

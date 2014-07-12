@@ -18,5 +18,6 @@ namespace PermitToWork.Models
         public Nullable<int> id_employee { get; set; }
         public string certificate_no { get; set; }
         public Nullable<System.DateTime> valid_date { get; set; }
+        public string code_name { get; set; }
     }
 }

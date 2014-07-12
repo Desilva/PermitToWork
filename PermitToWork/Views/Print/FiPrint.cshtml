@@ -1,0 +1,447 @@
+﻿@{
+    Layout = null;
+}
+@using PermitToWork.Models
+@model FIEntity
+@{
+    Layout = null;
+    var listUser = ViewBag.listUser as PermitToWork.Models.User.ListUser;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Print Fire Impairment</title>
+    <link rel="stylesheet" href="@Url.Content("~/Content/bootstrap.css")" />
+	<link rel="stylesheet" href="@Url.Content("~/Content/bootstrap-responsive.css")" />
+    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="container-fluid header-form">
+        <div class="row-fluid">
+            <div class="span3 logo">
+                <img src="../../Img/logo-clean.png" />
+            </div>
+            <div class="span6 title">
+                <b>FIRE SYSTEM IMPAIRMENT PERMIT</b><br />
+                Star Energy Geothermal (Wayang Windu) Limited
+            </div>
+
+            <div class="span3 no">
+                <br /><i>FI No : <span id="ptw_no">@Model.fi_no</span></i>
+            </div>
+        </div>
+        <div class="row-fluid separator">
+        </div>
+        <div class="row-fluid">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th class="title-form" colspan="4"><b>1.  GENERAL INFORMATION </b></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="td-centre"><strong>NO</strong></td>
+                        <td class="td-centre"><strong>DESCRIPTION</strong></td>
+                        <td class="td-centre" colspan="2"><strong>REMARK</strong></td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td><b>Purposed</b></td>
+                        <td colspan="2">@Model.purpose</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td><b>Area Affected</b></td>
+                        <td colspan="2">@Model.area_affected</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td><b>Requestor</b></td>
+                        <td>@(Model.userInFI[FIEntity.UserInFI.REQUESTOR.ToString()] != null ? Model.userInFI[FIEntity.UserInFI.REQUESTOR.ToString()].alpha_name : "")</td>
+                        <td>
+                            <b>Fire Watch :</b> @(Model.userInFI[FIEntity.UserInFI.FIREWATCH.ToString()] != null ? Model.userInFI[FIEntity.UserInFI.FIREWATCH.ToString()].alpha_name : "")
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th class="title-form" colspan="5"><b>2. PRE-JOB SCREENING <small><i>(Fill with yes: if agree; No: if disagree or N/A: if not applicable with description statement)</i></small></b></th>
+                        <th>Hira no : @Model.getHiraNo()</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="td-centre"><strong>NO</strong></td>
+                        <td class="td-centre"><strong>DESCRIPTION</strong></td>
+                        <td class="td-centre" style="width:5%"><strong>Spv</strong></td>
+                        <td class="td-centre" style="width:5%"><strong>SO</strong></td>
+                        <td class="td-centre" style="width:5%"><strong>FO</strong></td>
+                        <td style="width:40%"><strong>Remark</strong> <small><i>(write any consent related to fire impairment, attached other sheet if required)</i></small></td>
+                    </tr>
+                    <tr>
+                        <td class="td-centre">1</td>
+                        <td>Are workers to do this job competent?</td>
+                        <td class="td-centre">
+                            @(Model.screening_spv_arr[0] == "1" ? "Yes" : (Model.screening_spv_arr[0] == "2" ? "No" : (Model.screening_spv_arr[0] == "0" ? "N/A" : "")))
+                        </td>
+                        <td class="td-centre">
+                            @(Model.screening_so_arr[0] == "1" ? "Yes" : (Model.screening_so_arr[0] == "2" ? "No" : (Model.screening_so_arr[0] == "0" ? "N/A" : "")))
+                        </td>
+                        <td class="td-centre">
+                            @(Model.screening_fo_arr[0] == "1" ? "Yes" : (Model.screening_fo_arr[0] == "2" ? "No" : (Model.screening_fo_arr[0] == "0" ? "N/A" : "")))
+                        </td>
+                        <td rowspan="6">
+                            @Model.screening_remark
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td-centre">2</td>
+                        <td>Available communication with ERT?</td>
+                        <td class="td-centre">
+                            @(Model.screening_spv_arr[1] == "1" ? "Yes" : (Model.screening_spv_arr[1] == "2" ? "No" : (Model.screening_spv_arr[1] == "0" ? "N/A" : "")))
+                        </td>
+                        <td class="td-centre">
+                            @(Model.screening_so_arr[1] == "1" ? "Yes" : (Model.screening_so_arr[1] == "2" ? "No" : (Model.screening_so_arr[1] == "0" ? "N/A" : "")))
+                        </td>
+                        <td class="td-centre">
+                            @(Model.screening_fo_arr[1] == "1" ? "Yes" : (Model.screening_fo_arr[1] == "2" ? "No" : (Model.screening_fo_arr[1] == "0" ? "N/A" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td-centre">3</td>
+                        <td>Competent fire watch available?</td>
+                        <td class="td-centre">
+                            @(Model.screening_spv_arr[2] == "1" ? "Yes" : (Model.screening_spv_arr[2] == "2" ? "No" : (Model.screening_spv_arr[2] == "0" ? "N/A" : "")))
+                        </td>
+                        <td class="td-centre">
+                            @(Model.screening_so_arr[2] == "1" ? "Yes" : (Model.screening_so_arr[2] == "2" ? "No" : (Model.screening_so_arr[2] == "0" ? "N/A" : "")))
+                        </td>
+                        <td class="td-centre">
+                            @(Model.screening_fo_arr[2] == "1" ? "Yes" : (Model.screening_fo_arr[2] == "2" ? "No" : (Model.screening_fo_arr[2] == "0" ? "N/A" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td-centre">4</td>
+                        <td>Affected parties have been notified?</td>
+                        <td class="td-centre">
+                            @(Model.screening_spv_arr[3] == "1" ? "Yes" : (Model.screening_spv_arr[3] == "2" ? "No" : (Model.screening_spv_arr[3] == "0" ? "N/A" : "")))
+                        </td>
+                        <td class="td-centre">
+                            @(Model.screening_so_arr[3] == "1" ? "Yes" : (Model.screening_so_arr[3] == "2" ? "No" : (Model.screening_so_arr[3] == "0" ? "N/A" : "")))
+                        </td>
+                        <td class="td-centre">
+                            @(Model.screening_fo_arr[3] == "1" ? "Yes" : (Model.screening_fo_arr[3] == "2" ? "No" : (Model.screening_fo_arr[3] == "0" ? "N/A" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td-centre">5</td>
+                        <td>Adequate fire system back up during impairment?</td>
+                        <td class="td-centre">
+                            @(Model.screening_spv_arr[4] == "1" ? "Yes" : (Model.screening_spv_arr[4] == "2" ? "No" : (Model.screening_spv_arr[4] == "0" ? "N/A" : "")))
+                        </td>
+                        <td class="td-centre">
+                            @(Model.screening_so_arr[4] == "1" ? "Yes" : (Model.screening_so_arr[4] == "2" ? "No" : (Model.screening_so_arr[4] == "0" ? "N/A" : "")))
+                        </td>
+                        <td class="td-centre">
+                            @(Model.screening_fo_arr[4] == "1" ? "Yes" : (Model.screening_fo_arr[4] == "2" ? "No" : (Model.screening_fo_arr[4] == "0" ? "N/A" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td-centre">6</td>
+                        <td>The impairment work can be done safely?</td>
+                        <td class="td-centre">
+                            @(Model.screening_spv_arr[5] == "1" ? "Yes" : (Model.screening_spv_arr[5] == "2" ? "No" : (Model.screening_spv_arr[5] == "0" ? "N/A" : "")))
+                        </td>
+                        <td class="td-centre">
+                            @(Model.screening_so_arr[5] == "1" ? "Yes" : (Model.screening_so_arr[5] == "2" ? "No" : (Model.screening_so_arr[5] == "0" ? "N/A" : "")))
+                        </td>
+                        <td class="td-centre">
+                            @(Model.screening_fo_arr[5] == "1" ? "Yes" : (Model.screening_fo_arr[5] == "2" ? "No" : (Model.screening_fo_arr[5] == "0" ? "N/A" : "")))
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <td colspan="5" class="td-centre no-border"><strong><u>PERMIT APPROVAL</u></strong></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="td-centre no-border"><strong>REQUESTOR</strong></td>
+                        <td colspan="2" class="td-centre no-border"><strong>VERIFIED BY</strong></td>
+                        <td class="td-centre no-border"><strong>APPROVED BY</strong></td>
+                    </tr>
+                    <tr>
+                        <td class="td-centre no-border">
+                            @if (Model.acc_work_leader_signature != null)
+                            {
+                                <img id="img_approve_work_leader" width="50" height="50" @(Model.acc_work_leader_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.acc_work_leader_signature == null ? "" : Model.acc_work_leader_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre no-border">
+                            @if (Model.acc_fire_watch_signature != null)
+                            {
+                                <img id="img_approve_fire_watch" width="50" height="50" @(Model.acc_fire_watch_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.acc_fire_watch_signature == null ? "" : Model.acc_fire_watch_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre no-border">
+                            @if (Model.acc_so_signature != null)
+                            {
+                            <img id="img_approve_so" width="50" height="50" @(Model.acc_so_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.acc_so_signature == null ? "" : Model.acc_so_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre no-border">
+                            @if (Model.acc_fo_signature != null)
+                            {
+                            <img id="img_approve_fo" width="50" height="50" @(Model.acc_fo_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.acc_fo_signature == null ? "" : Model.acc_fo_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre no-border">
+                            @if (Model.acc_dept_head_signature != null)
+                            {
+                            <img id="img_approve_dept_head" width="50" height="50" @(Model.acc_dept_head_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.acc_dept_head_signature == null ? "" : Model.acc_dept_head_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td-centre no-border">
+                            @if (Model.requestor != null)
+                            {
+                                if ((Model.acc_work_leader_signature != null && Model.acc_work_leader_signature.Substring(0, 1) == "d"))
+                                {
+                            <span>@(Model.userInFI[FIEntity.UserInFI.REQUESTORDELEGATE.ToString()] != null ? Model.userInFI[FIEntity.UserInFI.REQUESTORDELEGATE.ToString()].alpha_name : "")</span><br />
+                                }
+                            <span>@((Model.acc_work_leader_signature != null && Model.acc_work_leader_signature.Substring(0, 1) == "d") ? "a/n" : "") @(Model.userInFI[FIEntity.UserInFI.REQUESTOR.ToString()] != null ? Model.userInFI[FIEntity.UserInFI.REQUESTOR.ToString()].alpha_name : "")</span><br />
+                            }
+                            <u>Workers Leader</u>
+                        </td>
+                        <td class="td-centre no-border">
+                            @if (Model.fire_watch != null)
+                            {
+                                if ((Model.acc_fire_watch_signature != null && Model.acc_fire_watch_signature.Substring(0, 1) == "d"))
+                                {
+                            <span>@(Model.userInFI[FIEntity.UserInFI.FIREWATCHDELEGATE.ToString()] != null ? Model.userInFI[FIEntity.UserInFI.FIREWATCHDELEGATE.ToString()].alpha_name : "")</span><br />
+                                }
+                            <span>@((Model.acc_fire_watch_signature != null && Model.acc_fire_watch_signature.Substring(0, 1) == "d") ? "a/n" : "") @(Model.userInFI[FIEntity.UserInFI.FIREWATCH.ToString()] != null ? Model.userInFI[FIEntity.UserInFI.FIREWATCH.ToString()].alpha_name : "")</span><br />
+                            }
+                            <u>Fire Watch</u>
+                        </td>
+                        <td class="td-centre no-border">
+                            @if (Model.acc_so != null)
+                            {
+                                if ((Model.acc_so_signature != null && Model.acc_so_signature.Substring(0, 1) == "d"))
+                                {
+                            <span>@(Model.userInFI[FIEntity.UserInFI.SAFETYOFFICERDELEGATE.ToString()] != null ? Model.userInFI[FIEntity.UserInFI.SAFETYOFFICERDELEGATE.ToString()].alpha_name : "")</span><br />
+                                }
+                            <span>@((Model.acc_so_signature != null && Model.acc_so_signature.Substring(0, 1) == "d") ? "a/n" : "") @(Model.userInFI[FIEntity.UserInFI.SAFETYOFFICER.ToString()] != null ? Model.userInFI[FIEntity.UserInFI.SAFETYOFFICER.ToString()].alpha_name : "")</span><br />
+                            }
+                            <u>ERT / Safety Officer</u>
+                        </td>
+                        <td class="td-centre no-border">
+                            @if (Model.acc_fo != null)
+                            {
+                                if ((Model.acc_fo_signature != null && Model.acc_fo_signature.Substring(0, 1) == "d"))
+                                {
+                            <span>@(Model.userInFI[FIEntity.UserInFI.FACILITYOWNERDELEGATE.ToString()] != null ? Model.userInFI[FIEntity.UserInFI.FACILITYOWNERDELEGATE.ToString()].alpha_name : "")</span><br />
+                                }
+                            <span>@((Model.acc_fo_signature != null && Model.acc_fo_signature.Substring(0, 1) == "d") ? "a/n" : "") @(Model.userInFI[FIEntity.UserInFI.FACILITYOWNER.ToString()] != null ? Model.userInFI[FIEntity.UserInFI.FACILITYOWNER.ToString()].alpha_name : "")</span><br />
+                            }
+                            <u>Facility Owner</u>
+                        </td>
+                        <td class="td-centre no-border">
+                            @if (Model.acc_dept_head != null)
+                            {
+                                if ((Model.acc_dept_head_signature != null && Model.acc_dept_head_signature.Substring(0, 1) == "d"))
+                                {
+                            <span>@(Model.userInFI[FIEntity.UserInFI.DEPTHEADFODELEGATE.ToString()] != null ? Model.userInFI[FIEntity.UserInFI.DEPTHEADFODELEGATE.ToString()].alpha_name : "")</span><br />
+                                }
+                            <span>@((Model.acc_dept_head_signature != null && Model.acc_dept_head_signature.Substring(0, 1) == "d") ? "a/n" : "") @(Model.userInFI[FIEntity.UserInFI.DEPTHEADFO.ToString()] != null ? Model.userInFI[FIEntity.UserInFI.DEPTHEADFO.ToString()].alpha_name : "")</span><br />
+                            }
+                            <u>Dept. Head FO</u>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <h6>Note :</h6>
+            <ul>
+                <li>
+                    All parties agreed working condition have been secured from any possible hazard.
+                </li>
+                <li>
+                    Fire watch shall conduct patrol during fire system impairement until at least 30 minutes after completion the impairement.
+                </li>
+            </ul>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th class="title-form" colspan="5"><b>2. CANCELATION ASSESSMENT</b></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="td-centre"><strong>NO</strong></td>
+                        <td class="td-centre"><strong>DESCRIPTION</strong></td>
+                        <td class="td-centre" style="width:5%"><strong>Spv</strong></td>
+                        <td class="td-centre" style="width:5%"><strong>SO</strong></td>
+                        <td class="td-centre" style="width:5%"><strong>FO</strong></td>
+                        <td style="width:40%"><strong>Remark</strong> <small><i>(write any consent related fire impairment, attached other sheet if required)</i></small></td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>Completed impairment work?</td>
+                        <td>
+                            @(Model.can_screening_spv_arr[0] == "1" ? "Yes" : (Model.can_screening_spv_arr[0] == "2" ? "No" : (Model.can_screening_spv_arr[0] == "0" ? "N/A" : "")))
+                        </td>
+                        <td>
+                            @(Model.can_screening_so_arr[0] == "1" ? "Yes" : (Model.can_screening_so_arr[0] == "2" ? "No" : (Model.can_screening_so_arr[0] == "0" ? "N/A" : "")))
+                        </td>
+                        <td>
+                            @(Model.can_screening_fo_arr[0] == "1" ? "Yes" : (Model.can_screening_fo_arr[0] == "2" ? "No" : (Model.can_screening_fo_arr[0] == "0" ? "N/A" : "")))
+                        </td>
+                        <td rowspan="3">
+                            @Model.cancel_remark
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Affected area notified that impairment has been completed?</td>
+                        <td>
+                            @(Model.can_screening_spv_arr[1] == "1" ? "Yes" : (Model.can_screening_spv_arr[1] == "2" ? "No" : (Model.can_screening_spv_arr[1] == "0" ? "N/A" : "")))
+                        </td>
+                        <td>
+                            @(Model.can_screening_so_arr[1] == "1" ? "Yes" : (Model.can_screening_so_arr[1] == "2" ? "No" : (Model.can_screening_so_arr[1] == "0" ? "N/A" : "")))
+                        </td>
+                        <td>
+                            @(Model.can_screening_fo_arr[1] == "1" ? "Yes" : (Model.can_screening_fo_arr[1] == "2" ? "No" : (Model.can_screening_fo_arr[1] == "0" ? "N/A" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Fire system ready to normalize?</td>
+                        <td>
+                            @(Model.can_screening_spv_arr[2] == "1" ? "Yes" : (Model.can_screening_spv_arr[2] == "2" ? "No" : (Model.can_screening_spv_arr[2] == "0" ? "N/A" : "")))
+                        </td>
+                        <td>
+                            @(Model.can_screening_so_arr[2] == "1" ? "Yes" : (Model.can_screening_so_arr[2] == "2" ? "No" : (Model.can_screening_so_arr[2] == "0" ? "N/A" : "")))
+                        </td>
+                        <td>
+                            @(Model.can_screening_fo_arr[2] == "1" ? "Yes" : (Model.can_screening_fo_arr[2] == "2" ? "No" : (Model.can_screening_fo_arr[2] == "0" ? "N/A" : "")))
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <td colspan="6" class="td-centre no-border"><strong><u>CLOSED</u></strong></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="td-centre no-border"><strong>WORKERS</strong></td>
+                        <td colspan="2" class="td-centre no-border"><strong>CHECKED BY</strong></td>
+                        <td class="td-centre no-border"><strong>RECEIVED BY</strong></td>
+                    </tr>
+                    <tr>
+                        <td class="td-centre no-border">
+                            @if (Model.cancel_work_leader_signature != null)
+                            {
+                                <img id="img_cancel_work_leader" width="50" height="50" @(Model.cancel_work_leader_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.cancel_work_leader_signature == null ? "" : Model.cancel_work_leader_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre no-border">
+                            @if (Model.cancel_fire_watch_signature != null)
+                            {
+                                <img id="img_cancel_fire_watch" width="50" height="50" @(Model.cancel_fire_watch_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.cancel_fire_watch_signature == null ? "" : Model.cancel_fire_watch_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre no-border">
+                            @if (Model.cancel_so_signature != null)
+                            {
+                                <img id="img_cancel_so" width="50" height="50" @(Model.cancel_so_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.cancel_so_signature == null ? "" : Model.cancel_so_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre no-border">
+                            @if (Model.cancel_fo_signature != null)
+                            {
+                                <img id="img_cancel_fo" width="50" height="50" @(Model.cancel_fo_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.cancel_fo_signature == null ? "" : Model.cancel_fo_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre no-border">
+                            @if (Model.cancel_dept_head_signature != null)
+                            {
+                                <img id="img_cancel_dept_head" width="50" height="50" @(Model.cancel_dept_head_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.cancel_dept_head_signature == null ? "" : Model.cancel_dept_head_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td-centre no-border">
+                            @if (Model.requestor != null)
+                            {
+                                if ((Model.cancel_work_leader_signature != null && Model.cancel_work_leader_signature.Substring(0, 1) == "d"))
+                                {
+                            <span>@(Model.userInFI[FIEntity.UserInFI.CANREQUESTORDELEGATE.ToString()] != null ? Model.userInFI[FIEntity.UserInFI.CANREQUESTORDELEGATE.ToString()].alpha_name : "")</span><br />
+                                }
+                            <span>@((Model.cancel_work_leader_signature != null && Model.cancel_work_leader_signature.Substring(0, 1) == "d") ? "a/n" : "") @(Model.userInFI[FIEntity.UserInFI.REQUESTOR.ToString()] != null ? Model.userInFI[FIEntity.UserInFI.REQUESTOR.ToString()].alpha_name : "")</span><br />
+                            }
+                            <u>Workers Leader</u>
+                        </td>
+                        <td class="td-centre no-border">
+                            @if (Model.fire_watch != null)
+                            {
+                                if ((Model.cancel_fire_watch_signature != null && Model.cancel_fire_watch_signature.Substring(0, 1) == "d"))
+                                {
+                            <span>@(Model.userInFI[FIEntity.UserInFI.CANFIREWATCHDELEGATE.ToString()] != null ? Model.userInFI[FIEntity.UserInFI.CANFIREWATCHDELEGATE.ToString()].alpha_name : "")</span><br />
+                                }
+                            <span>@((Model.cancel_fire_watch_signature != null && Model.cancel_fire_watch_signature.Substring(0, 1) == "d") ? "a/n" : "") @(Model.userInFI[FIEntity.UserInFI.FIREWATCH.ToString()] != null ? Model.userInFI[FIEntity.UserInFI.FIREWATCH.ToString()].alpha_name : "")</span><br />
+                            }
+                            <u>Fire Watch</u>
+                        </td>
+                        <td class="td-centre no-border">
+                            @if (Model.acc_so != null)
+                            {
+                                if ((Model.cancel_so_signature != null && Model.cancel_so_signature.Substring(0, 1) == "d"))
+                                {
+                            <span>@(Model.userInFI[FIEntity.UserInFI.CANSAFETYOFFICERDELEGATE.ToString()] != null ? Model.userInFI[FIEntity.UserInFI.CANSAFETYOFFICERDELEGATE.ToString()].alpha_name : "")</span><br />
+                                }
+                            <span>@((Model.cancel_so_signature != null && Model.cancel_so_signature.Substring(0, 1) == "d") ? "a/n" : "") @(Model.userInFI[FIEntity.UserInFI.SAFETYOFFICER.ToString()] != null ? Model.userInFI[FIEntity.UserInFI.SAFETYOFFICER.ToString()].alpha_name : "")</span><br />
+                            }
+                            <u>ERT / Safety Officer</u>
+                        </td>
+                        <td class="td-centre no-border">
+                            @if (Model.acc_fo != null)
+                            {
+                                if ((Model.cancel_fo_signature != null && Model.cancel_fo_signature.Substring(0, 1) == "d"))
+                                {
+                            <span>@(Model.userInFI[FIEntity.UserInFI.CANFACILITYOWNERDELEGATE.ToString()] != null ? Model.userInFI[FIEntity.UserInFI.CANFACILITYOWNERDELEGATE.ToString()].alpha_name : "")</span><br />
+                                }
+                            <span>@((Model.cancel_fo_signature != null && Model.cancel_fo_signature.Substring(0, 1) == "d") ? "a/n" : "") @(Model.userInFI[FIEntity.UserInFI.FACILITYOWNER.ToString()] != null ? Model.userInFI[FIEntity.UserInFI.FACILITYOWNER.ToString()].alpha_name : "")</span><br />
+                            }
+                            <u>Facility Owner</u>
+                        </td>
+                        <td class="td-centre no-border">
+                            @if (Model.acc_dept_head != null)
+                            {
+                                if ((Model.cancel_dept_head_signature != null && Model.cancel_dept_head_signature.Substring(0, 1) == "d"))
+                                {
+                            <span>@(Model.userInFI[FIEntity.UserInFI.CANDEPTHEADFODELEGATE.ToString()] != null ? Model.userInFI[FIEntity.UserInFI.CANDEPTHEADFODELEGATE.ToString()].alpha_name : "")</span><br />
+                                }
+                            <span>@((Model.cancel_dept_head_signature != null && Model.cancel_dept_head_signature.Substring(0, 1) == "d") ? "a/n" : "") @(Model.userInFI[FIEntity.UserInFI.DEPTHEADFO.ToString()] != null ? Model.userInFI[FIEntity.UserInFI.DEPTHEADFO.ToString()].alpha_name : "")</span><br />
+                            }
+                            <u>Dept. Head FO</u>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <br />
+            <h6>Note :</h6>
+            <ul>
+                <li>
+                    Fire watch examined the location of the workplace has been safe from the possibility of fire hazard, worker leader has verifying work locations safe ready to hand over to facility owner.
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

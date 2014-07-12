@@ -31,7 +31,7 @@ namespace PermitToWork.Controllers
 
             UserEntity user = Session["user"] as UserEntity;
             RadEntity entity = new RadEntity(id, user);
-
+            entity.GetPtw(user);
             bool[] isCanEdit = new bool[19];
 
             isCanEdit[0] = entity.isCanEditGeneralInformation(user);

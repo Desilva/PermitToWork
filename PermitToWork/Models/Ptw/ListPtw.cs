@@ -15,10 +15,15 @@ namespace PermitToWork.Models.Ptw
         public List<PtwEntity> listPtw { get; set; }
         private star_energy_ptwEntities db;
 
+        public ListPtw()
+        {
+            this.db = new star_energy_ptwEntities();
+        }
+
         public ListPtw(UserEntity user)
         {
             this.db = new star_energy_ptwEntities();
-            var result = db.permit_to_work.OrderByDescending(p => p.ptw_no).Select(p => p.id).ToList();
+            var result = db.permit_to_work.ToList().OrderByDescending(p => p.ptw_no != null ? p.ptw_no.Split('-').ElementAt(1) : "").Select(p => p.id).ToList();
             this.listPtw = new List<PtwEntity>();
             foreach (int i in result)
             {
@@ -37,6 +42,8 @@ namespace PermitToWork.Models.Ptw
                 state = false;
                 if (ptw.isUserInPtw(user))
                 {
+                    listPtwUser.Add(ptw);
+                } else if (user.department == ptw.department.department) {
                     listPtwUser.Add(ptw);
                 }
                 else
@@ -77,18 +84,23 @@ namespace PermitToWork.Models.Ptw
                         state = true;
                     }
 
-                    if (!state && ptw.loto_id != null && new LotoGlarfEntity(ptw.loto_id.Value, user).isUserInLOTO(user))
+                    if (!state && ptw.loto_need != null && ptw.loto_need != 0)
                     {
-                        listPtwUser.Add(ptw);
-                        state = true;
-                    }
-                    else if (!state && ptw.loto_id != null)
-                    {
-                        if (listHWFO.Exists(p => p.id == user.id))
+                        foreach (LotoEntity loto in ptw.lotoPermit)
+                        {
+                            if (loto.isUserInLOTO(user))
+                            {
+                                listPtwUser.Add(ptw);
+                                state = true;
+                            }
+                        }
+
+                        if (!state && listHWFO.Exists(p => p.id == user.id))
                         {
                             listPtwUser.Add(ptw);
                             state = true;
                         }
+                        
                     }
 
                     //if (ptw.fi_id != null && ((FIEntity)ptw.cPermit[PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString()]).isUserInFI(user))
@@ -101,8 +113,28 @@ namespace PermitToWork.Models.Ptw
             return listPtwUser;
         }
 
-        public PtwEntity getLastPtw() {
-            return this.listPtw.FirstOrDefault();
+        public List<PtwEntity> ListPtwRequestedNo()
+        {
+            var list = this.db.permit_to_work.Where(p => p.requested_no == 1 && p.is_guest == 1);
+            List<PtwEntity> listPtw = new List<PtwEntity>();
+
+            foreach (permit_to_work ptw in list)
+            {
+                PtwEntity permit = new PtwEntity();
+                permit.id = ptw.id;
+                permit.ptw_no = ptw.ptw_no;
+                permit.work_description = ptw.work_description;
+                permit.acc_ptw_requestor = ptw.acc_ptw_requestor;
+                permit.acc_supervisor = ptw.acc_supervisor;
+                permit.guest_holder_no = ptw.guest_holder_no;
+                listPtw.Add(permit);
+            }
+
+            return listPtw;
+        }
+
+        public string getLastPtw() {
+            return db.permit_to_work.ToList().OrderByDescending(p => p.ptw_no != null ? p.ptw_no.Split('-').ElementAt(1) : "").Select(p => p.ptw_no).FirstOrDefault();
         }
     }
 }

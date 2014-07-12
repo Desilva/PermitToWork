@@ -1,0 +1,489 @@
+﻿@using PermitToWork.Models.ClearancePermit
+@model LotoEntity
+@{
+    Layout = null;
+    var listUser = ViewBag.listUser as List<PermitToWork.Models.User.UserEntity>;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Print LOTO Permit</title>
+    <link rel="stylesheet" href="@Url.Content("~/Content/bootstrap.css")" />
+	<link rel="stylesheet" href="@Url.Content("~/Content/bootstrap-responsive.css")" />
+    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="container-fluid header-form">
+        <div class="row-fluid">
+            <div class="span3 logo">
+                <img src="../../Img/logo-clean.png" />
+            </div>
+            <div class="span6 title">
+                <b>LOTO PERMIT FORM</b><br />
+                Star Energy Geothermal (Wayang Windu) Limited
+            </div>
+
+            <div class="span3 no">
+                <br /><i>LOTO No : <span id="ptw_no">@Model.loto_no</span></i>
+            </div>
+        </div>
+        <div class="row-fluid separator">
+        </div>
+        <div class="row-fluid">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th colspan="18">
+                            1. LOTO POINT APPLICATION SHEET
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="4"><b>Work Location:</b> @Model.work_location</td>
+                        <td colspan="14"><b>LOTO Requestor Supervisor:</b> @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.SUPERVISOR.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.SUPERVISOR.ToString()].alpha_name : "")</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="2" class="td-centre"><b>No</b></td>
+                        <td colspan="2" class="td-centre"><b>LOTO Point</b></td>
+                        <td rowspan="2" class="td-centre"><b>Drawing(s) Number</b></td>
+                        <td colspan="2" class="td-centre"><b>Isolated / LOTO Point Position*</b></td>
+                        <td colspan="2" class="td-centre"><b>Applied</b></td>
+                        <td colspan="7" class="td-centre"><b>Inspected & Verified <small><i>(Inspected by requestor official) No 1 for first LOTO requestor no 2 ~ 7 For oncoming LOTO Holder</i></small></b></td>
+                        <td colspan="2" class="td-centre"><b>Remove <small><i>(De-isolated)</i></small></b></td>
+                        <td rowspan="2" class="td-centre"><b>Remarks</b></td>
+                    </tr>
+                    <tr>
+                        <td class="td-centre">Eq. Tag ID / Line No.</td>
+                        <td class="td-centre">Description</td>
+                        <td class="td-centre">Proposed</td>
+                        <td class="td-centre">Agreed</td>
+                        <td class="td-centre">By (name)</td>
+                        <td class="td-centre">Date Time</td>
+                        <td class="td-centre">1<sup>st</sup></td>
+                        <td class="td-centre">2<sup>nd</sup></td>
+                        <td class="td-centre">3<sup>rd</sup></td>
+                        <td class="td-centre">4<sup>th</sup></td>
+                        <td class="td-centre">5<sup>th</sup></td>
+                        <td class="td-centre">6<sup>th</sup></td>
+                        <td class="td-centre">7<sup>th</sup></td>
+                        <td class="td-centre">By (name)</td>
+                        <td class="td-centre">Date Time</td>
+                    </tr>
+                    <tr>
+                        <td class="td-centre"><i>(a)</i></td>
+                        <td class="td-centre"><i>(b)</i></td>
+                        <td class="td-centre"><i>(c)</i></td>
+                        <td class="td-centre"><i>(d)</i></td>
+                        <td class="td-centre"><i>(e)</i></td>
+                        <td class="td-centre"><i>(f)</i></td>
+                        <td class="td-centre"><i>(g)</i></td>
+                        <td class="td-centre"><i>(h)</i></td>
+                        <td colspan="7" class="td-centre"><i>(i)</i></td>
+                        <td colspan="2" class="td-centre"><i>(j)</i></td>
+                        <td class="td-centre"><i>(k)</i></td>
+                    </tr>
+                    @{int i = 1; }
+                    @foreach(LotoPointEntity lotoPoint in Model.lotoPoint) {
+                    <tr>
+                        <td class="td-centre">@i</td>
+                        <td>@(lotoPoint.is_set_empty != 1 ? lotoPoint.tag_id : "--------------")</td>
+                        <td>@(lotoPoint.is_set_empty != 1 ? lotoPoint.description : "--------------")</td>
+                        <td>@(lotoPoint.is_set_empty != 1 ? lotoPoint.drawing_number : "--------------")</td>
+                        <td>@(lotoPoint.is_set_empty != 1 ? lotoPoint.loto_point_proposed : "--------------")</td>
+                        <td>@(lotoPoint.is_set_empty != 1 ? lotoPoint.loto_point_agreed : "--------------")</td>
+                        <td>@(lotoPoint.is_set_empty != 1 ? (lotoPoint.applied_by != null ? listUser.Find(p => p.id == lotoPoint.applied_by.AsInt()).alpha_name : "") : "--------------")</td>
+                        <td>@(lotoPoint.applied_by_time != null ? lotoPoint.applied_by_time.Value.ToString("dd MMM yyyy hh:mm tt") : (lotoPoint.is_set_empty != 1 ? "" : "--------------"))</td>
+                        <td>
+                            @if (lotoPoint.inspected_1 != null)
+                            {
+                            <img src="@lotoPoint.inspected_1" height="25" />
+                            }
+                        </td>
+                        <td>
+                            @if (lotoPoint.inspected_2 != null)
+                            {
+                            <img src="@lotoPoint.inspected_2" height="25" />
+                            }
+                        </td>
+                        <td>
+                            @if (lotoPoint.inspected_3 != null)
+                            {
+                            <img src="@lotoPoint.inspected_3" height="25" />
+                            }
+                        </td>
+                        <td>
+                            @if (lotoPoint.inspected_4 != null)
+                            {
+                            <img src="@lotoPoint.inspected_4" height="25" />
+                            }
+                        </td>
+                        <td>
+                            @if (lotoPoint.inspected_5 != null)
+                            {
+                            <img src="@lotoPoint.inspected_5" height="25" />
+                            }
+                        </td>
+                        <td>
+                            @if (lotoPoint.inspected_6 != null)
+                            {
+                            <img src="@lotoPoint.inspected_6" height="25" />
+                            }
+                        </td>
+                        <td>
+                            @if (lotoPoint.inspected_7 != null)
+                            {
+                            <img src="@lotoPoint.inspected_7" height="25" />
+                            }
+                        </td>
+                        <td>@(lotoPoint.is_set_empty != 1 ? (lotoPoint.removed_by != null ? listUser.Find(p => p.id == lotoPoint.removed_by.AsInt()).alpha_name : "") : "--------------")</td>
+                        <td>@(lotoPoint.removed_by_time != null ? lotoPoint.removed_by_time.Value.ToString("dd MMM yyyy hh:mm tt") : (lotoPoint.is_set_empty != 1 ? "" : "--------------"))</td>
+                        <td>@(lotoPoint.is_set_empty != 1 ? lotoPoint.remarks : "--------------")</td>
+                    </tr>
+                        i++;
+                    }
+                    <tr>
+                        <td colspan="18">
+                            GROUP LOCKOUT APPLICATION & RELEASE FORM (GLARF) Have been sign by all LOTO member <small><i>(Supervisor responsible to manage , Facility Owner Verify Prior approval)</i></small>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <b>Lock Box No:</b>
+                        </td>
+                        <td colspan="4">
+                            <b>Initial Qty of pad lock:</b> @Model.initial_pad_lock
+                        </td>
+                        <td colspan="6">
+                            <b>Qty of pad lock usage:</b> @Model.qty_pad_lock_usage
+                        </td>
+                        <td colspan="5">
+                            <b>Balance (remaining pad lock in the box):</b> @Model.balance
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="18">Note :  Column (b,c,d,e) must be filled by supervisor requestor; Column f : as agreement facility owner with requestor supervisor (use for main referent LOTO apply) ; column g,h,j  fill by facility owner; Column( i ) must be filled by requestor inspector</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row-fluid">
+            <div class="span4">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th colspan="5" class="title-form" style="text-align:left"><b>2. LOTO PERMIT APPROVAL <small><i>(LOTO point applied (energy isolation/ de-energized) on site has been verified and I confirm that LOTO point has meet requirement to control energy and I have locked the lock box)</i></small></b></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="2">Approval Date / Time: @(Model.approval_date != null ? Model.approval_date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
+                            <td colspan="3" class="text-center">Oncoming Permit Holder</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="@(Model.lotoComingHolder.Count > 6 ? Model.lotoComingHolder.Count + 1 : 7)" style="vertical-align:bottom;text-align:center">
+                                @if (Model.approval_supervisor_signature != null)
+                                {
+                                <img src="@Model.approval_supervisor_signature.Substring(1)" width="100" height="100" /><br />
+                                }
+                                @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.SUPERVISOR.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.SUPERVISOR.ToString()].alpha_name : "")<br />
+                                1<sup>st</sup> Supervisor
+                            </td>
+                            <td rowspan="@(Model.lotoComingHolder.Count > 6 ? Model.lotoComingHolder.Count + 1 : 7)" style="vertical-align:bottom;text-align:center">
+                                @if (Model.approval_fo_signature != null)
+                                {
+                                <img src="@Model.approval_fo_signature.Substring(1)" width="100" height="100" /><br />
+                                }
+                                @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.APPROVALFACILITYOWNER.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.APPROVALFACILITYOWNER.ToString()].alpha_name : "")<br />
+                                Facility Owner
+                            </td>
+                            <td>No</td>
+                            <td>Name + Sign</td>
+                            <td>Date / Time</td>
+                        </tr>
+
+                            @if (Model.lotoComingHolder.Count > 6)
+                            {
+                                foreach (PermitToWork.Models.ClearancePermit.LotoComingHolderEntity comingHolder in Model.lotoComingHolder)
+                                {
+                        <tr>
+                            <td class="text-center">@comingHolder.no_holder</td>
+                            <td class="text-center">
+                                @if (comingHolder.holder_sign_approval != null)
+                                {
+                                    <img width="25" height="25" src="@comingHolder.holder_sign_approval.Substring(1)" /><br />
+                                }
+                                @if (comingHolder.holder_sign_approval != null && comingHolder.holder_sign_approval.Substring(0, 1) == "d")
+                                {
+                                    @comingHolder.userApprovalDelegate.alpha_name;
+                                }
+                                @(comingHolder.holder_sign_approval != null && comingHolder.holder_sign_approval.Substring(0, 1) == "d" ? "a/n" : "") @comingHolder.userEntity.alpha_name
+                            </td>
+                            <td class="text-center">@(comingHolder.holder_date_approval != null ? comingHolder.holder_date_approval.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
+                        </tr>
+                                }
+                            }
+                            else
+                            {
+                                int count = 6 - Model.lotoComingHolder.Count;
+                                int prevNo = 1;
+                                foreach (PermitToWork.Models.ClearancePermit.LotoComingHolderEntity comingHolder in Model.lotoComingHolder)
+                                {
+                                    prevNo = comingHolder.no_holder.Value;
+                        <tr>
+                            <td class="text-center">@comingHolder.no_holder</td>
+                            <td class="text-center">
+                                @if (comingHolder.holder_sign_approval != null)
+                                {
+                                    <img width="25" height="25" src="@comingHolder.holder_sign_approval.Substring(1)" /><br />
+                                }
+                                @if (comingHolder.holder_sign_approval != null && comingHolder.holder_sign_approval.Substring(0, 1) == "d")
+                                {
+                                    @comingHolder.userApprovalDelegate.alpha_name;
+                                }
+                                @(comingHolder.holder_sign_approval != null && comingHolder.holder_sign_approval.Substring(0, 1) == "d" ? "a/n" : "") @comingHolder.userEntity.alpha_name
+                            </td>
+                            <td class="text-center">@(comingHolder.holder_date_approval != null ? comingHolder.holder_date_approval.Value.ToString("dd MMM yyyy hh:mm tt") : "")</td>
+                        </tr>
+                                }
+                                for (i = prevNo + 1; i <= 7; i++)
+                                {
+                        <tr>
+                            <td class="text-center">@i</td>
+                            <td class="text-center">
+                            </td>
+                            <td class="text-center"></td>
+                        </tr>
+                                }
+                            }
+                        <tr>
+                            <td colspan="5">
+                                Note:
+                                <textarea class="table-textarea">@Model.approval_notes</textarea>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="span4">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th colspan="5" class="title-form" style="text-align:left"><b>3. LOTO SUSPENSION <small><i>(I confirm that I have verified the changed of LOTO point and I have re-locked the lock box ; Requestor responsible to coordinate with any other LOTO Holder)</i></small></b></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="2">Suspended Requestor: @(Model.lotoSuspension.LastOrDefault() != null ? Model.lotoSuspension.LastOrDefault().requestorUser.alpha_name : "")</td>
+                            <td colspan="3" class="text-center">Oncoming Permit Holder</td>
+                        </tr>
+                        <tr>
+                                
+                        </tr>
+                        <tr>
+                            <td rowspan="7" style="vertical-align:bottom;text-align:center">
+                                @if (Model.lotoSuspension.LastOrDefault() != null && Model.lotoSuspension.LastOrDefault().requestor_signature != null)
+                                {
+                                <img src="@Model.lotoSuspension.LastOrDefault().requestor_signature" width="100" height="100" /><br />
+                                }
+                                @(Model.lotoSuspension.LastOrDefault() != null ? Model.lotoSuspension.LastOrDefault().requestorUser.alpha_name : "")<br />
+                                Requestor</td>
+                            <td rowspan="7" style="vertical-align:bottom;text-align:center">
+                                @if (Model.lotoSuspension.LastOrDefault() != null && Model.lotoSuspension.LastOrDefault().fo_signature != null)
+                                {
+                                <img src="@Model.lotoSuspension.LastOrDefault().fo_signature" width="100" height="100" /><br />
+                                }
+                                @if (Model.lotoSuspension.LastOrDefault() != null)
+                                {
+                                    PermitToWork.Models.ClearancePermit.LotoSuspensionEntity suspension = Model.lotoSuspension.LastOrDefault();
+                                    if (suspension.foUser != null)
+                                    {
+                                    <text>@suspension.foUser.alpha_name<br /></text>    
+                                    }
+                                }
+                                Facility Owner</td>
+                            <td>No</td>
+                            <td>Name + Sign</td>
+                            <td>Date / Time</td>
+                        </tr>
+                        @if (Model.lotoSuspension.LastOrDefault() != null)
+                        {
+                            PermitToWork.Models.ClearancePermit.LotoSuspensionEntity suspension = Model.lotoSuspension.LastOrDefault();
+                            if (suspension.suspensionHolder.Count > 6)
+                            {
+                                foreach (PermitToWork.Models.ClearancePermit.LotoSuspensionHolderEntity suspensionHolder in suspension.suspensionHolder)
+                                {
+                        <tr>
+                            <td class="text-center">@suspensionHolder.no_holder</td>
+                            <td class="text-center">
+                                @if (suspensionHolder.holder_sign_approval != null)
+                                {
+                                    <img width="25" height="25" src="@suspensionHolder.holder_sign_approval.Substring(1)" /><br />
+                                }
+                                @if (suspensionHolder.holder_sign_approval != null && suspensionHolder.holder_sign_approval.Substring(0, 1) == "d")
+                                {
+                                    @suspensionHolder.userApprovalDelegate.alpha_name;
+                                }
+                                @(suspensionHolder.holder_sign_approval != null && suspensionHolder.holder_sign_approval.Substring(0, 1) == "d" ? "a/n" : "") @suspensionHolder.userEntity.alpha_name
+                            </td>
+                            <td class="text-center">@(suspensionHolder.holder_date_approval != null ? suspensionHolder.holder_date_approval.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
+                        </tr>
+                                }
+                            }
+                            else
+                            {
+                                int count = 6 - Model.lotoComingHolder.Count;
+                                int prevNo = 1;
+                                foreach (PermitToWork.Models.ClearancePermit.LotoSuspensionHolderEntity suspensionHolder in suspension.suspensionHolder)
+                                {
+                                    prevNo = suspensionHolder.no_holder.Value;
+                        <tr>
+                            <td class="text-center">@suspensionHolder.no_holder</td>
+                            <td class="text-center">
+                                @if (suspensionHolder.holder_sign_approval != null)
+                                {
+                                    <img width="25" height="25" src="@suspensionHolder.holder_sign_approval.Substring(1)" /><br />
+                                }
+                                @if (suspensionHolder.holder_sign_approval != null && suspensionHolder.holder_sign_approval.Substring(0, 1) == "d")
+                                {
+                                    @suspensionHolder.userApprovalDelegate.alpha_name;
+                                }
+                                @(suspensionHolder.holder_sign_approval != null && suspensionHolder.holder_sign_approval.Substring(0, 1) == "d" ? "a/n" : "") @suspensionHolder.userEntity.alpha_name
+                            </td>
+                            <td class="text-center">@(suspensionHolder.holder_date_approval != null ? suspensionHolder.holder_date_approval.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
+                        </tr>
+                                }
+                                for (i = prevNo + 1; i <= 7; i++)
+                                {
+                        <tr>
+                            <td class="text-center">&nbsp;</td>
+                            <td class="text-center">
+                            </td>
+                            <td class="text-center"></td>
+                        </tr>
+                                }
+                            }
+                        } else {
+                            for (i = 2; i <= 7; i++)
+                            {
+                        <tr>
+                            <td class="text-center">&nbsp;</td>
+                            <td class="text-center">
+                            </td>
+                            <td class="text-center"></td>
+                        </tr>
+                            }
+                        }
+                        <tr>
+                            <td colspan="5">
+                                Note:
+                                @foreach (PermitToWork.Models.ClearancePermit.LotoSuspensionEntity suspension in Model.lotoSuspension)
+                                {
+                                    <h5>@suspension.suspend_no</h5>
+                                    <p>@suspension.notes</p>
+                                    <hr />
+                                }
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="span4">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th colspan="5" class="title-form" style="text-align:left"><b>4. LOTO CANCELATION <small><i>(Supervisor confirm LOTO permit return back to Facility OWNER / GlaFR have been sign by all my parties; Facility Owner allow to return back plant to normal condition)</i></small></b></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="2">Cancelation Date: @(Model.cancellation_fo_signature_date != null ? Model.cancellation_fo_signature_date.Value.ToString("dd MMM yyyy hh:mm tt") : "")</td>
+                            <td colspan="3" class="text-center">Oncoming Permit Holder</td>
+                        </tr>
+                        <tr>
+                            <td rowspan="@(Model.lotoComingHolder.Count > 6 ? Model.lotoComingHolder.Count + 1 : 7)" style="vertical-align:bottom;text-align:center">
+                                @if (Model.cancellation_supervisor_signature != null)
+                                {
+                                <img src="@Model.cancellation_supervisor_signature" width="100" height="100" /><br />
+                                }
+                                @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.SUPERVISOR.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.SUPERVISOR.ToString()].alpha_name : "")<br />
+                                Requestor's Supervisor</td>
+                            <td rowspan="@(Model.lotoComingHolder.Count > 6 ? Model.lotoComingHolder.Count + 1 : 7)" style="vertical-align:bottom;text-align:center">
+                                @if (Model.cancellation_fo_signature != null)
+                                {
+                                <img src="@Model.cancellation_fo_signature" width="100" height="100" /><br />
+                                }
+                                @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.CANCELLATIONFACILITYOWNER.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.CANCELLATIONFACILITYOWNER.ToString()].alpha_name : "")<br />
+                                Facility Owner</td>
+                            <td>No</td>
+                            <td>Name + Sign</td>
+                            <td>Date / Time</td>
+                        </tr>
+                        @if (Model.lotoComingHolder.Count > 6)
+                            {
+                                foreach (PermitToWork.Models.ClearancePermit.LotoComingHolderEntity comingHolder in Model.lotoComingHolder)
+                                {
+                        <tr>
+                            <td class="text-center">@comingHolder.no_holder</td>
+                            <td class="text-center">
+                                @if (comingHolder.holder_sign_cancellation != null)
+                                {
+                                    <img width="25" height="25" src="@comingHolder.holder_sign_cancellation.Substring(1)" /><br />
+                                }
+                                @if (comingHolder.holder_sign_cancellation != null && comingHolder.holder_sign_cancellation.Substring(0, 1) == "d")
+                                {
+                                    @comingHolder.userCancellationDelegate.alpha_name;
+                                }
+                                @(comingHolder.holder_sign_cancellation != null && comingHolder.holder_sign_cancellation.Substring(0, 1) == "d" ? "a/n" : "") @comingHolder.userEntity.alpha_name
+                            </td>
+                            <td class="text-center">@(comingHolder.holder_date_cancellation != null ? comingHolder.holder_date_cancellation.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
+                        </tr>
+                                }
+                            }
+                            else
+                            {
+                                int count = 6 - Model.lotoComingHolder.Count;
+                                int prevNo = 1;
+                                foreach (PermitToWork.Models.ClearancePermit.LotoComingHolderEntity comingHolder in Model.lotoComingHolder)
+                                {
+                                    prevNo = comingHolder.no_holder.Value;
+                        <tr>
+                            <td class="text-center">@comingHolder.no_holder</td>
+                            <td class="text-center">
+                                @if (comingHolder.holder_sign_cancellation != null)
+                                {
+                                    <img width="25" height="25" src="@comingHolder.holder_sign_cancellation.Substring(1)" /><br />
+                                }
+                                @if (comingHolder.holder_sign_cancellation != null && comingHolder.holder_sign_cancellation.Substring(0, 1) == "d")
+                                {
+                                    @comingHolder.userCancellationDelegate.alpha_name;
+                                }
+                                @(comingHolder.holder_sign_cancellation != null && comingHolder.holder_sign_cancellation.Substring(0, 1) == "d" ? "a/n" : "") @comingHolder.userEntity.alpha_name
+                            </td>
+                            <td class="text-center">@(comingHolder.holder_date_cancellation != null ? comingHolder.holder_date_cancellation.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
+                        </tr>
+                                }
+                                for (i = prevNo + 1; i <= 7; i++)
+                                {
+                        <tr>
+                            <td class="text-center">@i</td>
+                            <td class="text-center">
+                            </td>
+                            <td class="text-center"></td>
+                        </tr>
+                                }
+                            }
+                        
+                        <tr>
+                            <td colspan="5">
+                                Note:
+                                <textarea class="table-textarea">@Model.cancellation_notes</textarea>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

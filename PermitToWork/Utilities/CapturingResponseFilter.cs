@@ -22,6 +22,7 @@ namespace PermitToWork.Utilities
         public string comment { get; set; }
         public int extension { get; set; }
         public string assessor { get; set; }
+        public int? who { get; set; }
 
         public CapturingResponseFilter(Stream sink)
         {
@@ -89,7 +90,7 @@ namespace PermitToWork.Utilities
                 if (status == "200")
                 {
                     LogEntity log = new LogEntity();
-                    log.generateLog(user, id_permit, controllerName, actionName, comment, extension, assessor);
+                    log.generateLog(user, id_permit, controllerName, actionName, comment, extension, assessor, who);
                 }
             }
             //YOU CAN STORE YOUR DATA TO YOUR DATABASE HERE

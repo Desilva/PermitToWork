@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using PermitToWork.Utilities;
 
 namespace PermitToWork.Controllers
 {
@@ -30,7 +31,8 @@ namespace PermitToWork.Controllers
 
             UserEntity user = Session["user"] as UserEntity;
             FIEntity entity = new FIEntity(id, user);
-
+            entity.getPtw(user);
+            entity.getHiraNo();
             bool[] isCanEdit = new bool[14];
 
             isCanEdit[0] = entity.isCanEditFormRequestor(user);
@@ -96,9 +98,14 @@ namespace PermitToWork.Controllers
             UserEntity user = Session["user"] as UserEntity;
             int retVal = 1;
             retVal = retVal & fi.saveAsDraft(who);
-            retVal = retVal & fi.signClearance(who, user);
             fi = new FIEntity(fi.id, user);
+            retVal = retVal & fi.signClearance(who, user);
             retVal = retVal & fi.sendToUser(who + 1, 1, fullUrl(), user);
+
+            if (who == 1 && !fi.isExistFO())
+            {
+                sendEmailFO(fi);
+            }
             return Json(new { status = retVal > 0 ? "200" : "404" });
         }
 
@@ -108,8 +115,8 @@ namespace PermitToWork.Controllers
             UserEntity user = Session["user"] as UserEntity;
             int retVal = 1;
             retVal = retVal & fi.saveAsDraft(who);
-            retVal = retVal & fi.rejectClearance(who);
             fi = new FIEntity(fi.id, user);
+            retVal = retVal & fi.rejectClearance(who);
             retVal = retVal & fi.sendToUser(who - 1, 2, fullUrl(), user, comment);
             return Json(new { status = retVal > 0 ? "200" : "404" });
         }
@@ -176,8 +183,8 @@ namespace PermitToWork.Controllers
         {
             UserEntity user = Session["user"] as UserEntity;
             int retVal = 1;
-            retVal = retVal & fi.signClearanceCancel(1, user);
             fi = new FIEntity(fi.id, user);
+            retVal = retVal & fi.signClearanceCancel(1, user);
             retVal = retVal & fi.sendToUserCancel(2, 1, fullUrl(), user);
             return Json(new { status = retVal > 0 ? "200" : "404", message = "Fire Impairment Permit Cancelled." });
         }
@@ -196,8 +203,8 @@ namespace PermitToWork.Controllers
             UserEntity user = Session["user"] as UserEntity;
             int retVal = 1;
             retVal = retVal & fi.saveAsDraftCancel(who);
-            retVal = retVal & fi.signClearanceCancel(who, user);
             fi = new FIEntity(fi.id, user);
+            retVal = retVal & fi.signClearanceCancel(who, user);
             retVal = retVal & fi.sendToUserCancel(who + 1, 1, fullUrl(), user);
             return Json(new { status = retVal > 0 ? "200" : "404" });
         }
@@ -208,8 +215,8 @@ namespace PermitToWork.Controllers
             UserEntity user = Session["user"] as UserEntity;
             int retVal = 1;
             retVal = retVal & fi.saveAsDraftCancel(who);
-            retVal = retVal & fi.rejectClearanceCancel(who);
             fi = new FIEntity(fi.id, user);
+            retVal = retVal & fi.rejectClearanceCancel(who);
             retVal = retVal & fi.sendToUserCancel(who - 1, 2, fullUrl(), user, comment);
             return Json(new { status = retVal > 0 ? "200" : "404" });
         }
@@ -237,6 +244,78 @@ namespace PermitToWork.Controllers
         //    ResponseModel response = fi.approvePermitCancel(user, type, fullUrl());
         //    return Json(new { status = response.status, message = response.message });
         //}
+
+        #region set facility owner
+
+        private string sendEmailFO(FIEntity fi)
+        {
+            UserEntity userLogin = Session["user"] as UserEntity;
+            ListUser listUser = new ListUser(userLogin.token, userLogin.id);
+
+            List<UserEntity> listHWFO = listUser.GetHotWorkFO();
+
+            fi.sendEmailFO(listHWFO, fullUrl(), userLogin.token, userLogin);
+
+            return "200";
+        }
+
+        // url to set who is the supervisor
+        public ActionResult SetFacilityOwner(string a, string b, string c)
+        {
+            UserEntity userLogin = Session["user"] as UserEntity;
+            string salt = "susahbangetmencarisaltyangpalingbaikdanbenar";
+            string val = "emailfo";
+
+            string countSeal = Base64.MD5Seal(a + salt + val);
+
+            if (countSeal == b)
+            {
+                string decodeElement = Base64.Base64Decode(c);
+
+                if (decodeElement.Contains(salt) && decodeElement.Contains(val))
+                {
+                    decodeElement = decodeElement.Replace(salt, "#");
+                    decodeElement = decodeElement.Replace(val, "#");
+
+                    string[] s = decodeElement.Split('#');
+
+                    int user_id = Int32.Parse(s[1]);
+                    int ptw_id = Int32.Parse(s[2]);
+
+                    FIEntity fi = new FIEntity(ptw_id,userLogin);
+                    UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
+
+                    if (!fi.isExistFO())
+                    {
+                        fi.assignFO(user_id);
+                        PtwEntity ptw = new PtwEntity(fi.id_ptw.Value, user);
+                        if (ptw.acc_fo == null)
+                        {
+                            ptw.assignFO(user);
+                        }
+
+                        return RedirectToAction("Index", "Home", new { p = "FI/Edit/" + fi.id });
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home", new { e = "402" });
+                    }
+                    // Session["user"] = user;
+
+
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Home", new { e = "404" });
+                }
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home", new { e = "404" });
+            }
+        }
+
+        #endregion
 
         #region utilities
 

@@ -4,6 +4,7 @@ using PermitToWork.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Web;
 
@@ -11,7 +12,7 @@ namespace PermitToWork.Models.ClearancePermit
 {
     public class LotoGlarfEntity : loto_glarf
     {
-        public override loto_permit loto_permit { get { return null; } set { } }
+        public override ICollection<loto_permit> loto_permit { get { return null; } set { } }
         public override ICollection<loto_glarf_user> loto_glarf_user { get { return null; } set { } }
         public override ICollection<permit_to_work> permit_to_work { get { return null; } set { } }
 
@@ -23,6 +24,7 @@ namespace PermitToWork.Models.ClearancePermit
 
         public UserEntity requestorUser { get; set; }
         public UserEntity supervisorUser { get; set; }
+        public List<string> listDocumentUploaded { get; set; }
 
         private star_energy_ptwEntities db;
 
@@ -41,6 +43,7 @@ namespace PermitToWork.Models.ClearancePermit
             : base()
         {
             this.db = new star_energy_ptwEntities();
+            this.listDocumentUploaded = new List<string>();
         }
 
         public LotoGlarfEntity(int id, UserEntity user)
@@ -50,7 +53,6 @@ namespace PermitToWork.Models.ClearancePermit
             // this.ptw = new PtwEntity(fi.id_ptw.Value);
             ModelUtilization.Clone(glarf, this);
 
-            id_ptw = glarf.permit_to_work.ElementAt(0).id;
 
             listGlarfUser = new LotoGlarfUserEntity().listUserGlarf(this.id, user);
 
@@ -63,6 +65,13 @@ namespace PermitToWork.Models.ClearancePermit
             {
                 this.supervisorUser = new UserEntity(Int32.Parse(this.supervisor), user.token, user);
             }
+
+            string path = HttpContext.Current.Server.MapPath("~/Upload/Loto/Glarf/" + this.id);
+
+            DirectoryInfo d = new DirectoryInfo(path);//Assuming Test is your Folder
+            FileInfo[] Files = d.GetFiles(); //Getting Text files
+
+            this.listDocumentUploaded = Files.Select(p => p.Name).ToList();
         }
 
         public LotoGlarfEntity(string requestor, string supervisor) : this()
@@ -87,6 +96,12 @@ namespace PermitToWork.Models.ClearancePermit
             glarfSpv.create();
             glarfSpv = new LotoGlarfUserEntity(this.id, this.requestor, 0);
             glarfSpv.create();
+
+            string path = HttpContext.Current.Server.MapPath("~/Upload/Loto/Glarf/" + this.id);
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
 
             return retVal;
         }
@@ -216,6 +231,28 @@ namespace PermitToWork.Models.ClearancePermit
             return retVal;
         }
 
+        public int saveCancellation(UserEntity user)
+        {
+            int retVal = 0;
+            loto_glarf glarf = this.db.loto_glarf.Find(this.id);
+            if (glarf != null)
+            {
+                if (this.listDocumentUploaded.Count > 0)
+                {
+                    glarf.status = (int)GlarfStatus.CANCELLATIONSIGNCOMPLETE;
+
+                    this.db.Entry(glarf).State = EntityState.Modified;
+                    retVal = this.db.SaveChanges();
+                }
+                else
+                {
+                    return -1;
+                }
+            }
+
+            return retVal;
+        }
+
         public bool isUserInLOTO(UserEntity user)
         {
             bool isUser = false;
@@ -234,7 +271,7 @@ namespace PermitToWork.Models.ClearancePermit
 
         public bool isCanEditForm(UserEntity user)
         {
-            if (user.id.ToString() == this.requestor && this.status == (int)GlarfStatus.CREATE)
+            if ((user.id == this.supervisorUser.id || user.id == this.supervisorUser.employee_delegate) && this.status == (int)GlarfStatus.CREATE)
             {
                 return true;
             }
@@ -271,6 +308,15 @@ namespace PermitToWork.Models.ClearancePermit
         public bool isCanSignCancel(UserEntity user)
         {
             if (this.listGlarfUser.Exists(p => p.user == user.id.ToString()) && this.status == (int)GlarfStatus.CANCELLATIONSIGN)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public bool isCanUploadCancel(UserEntity user)
+        {
+            if ((user.id == this.supervisorUser.id || user.id == this.supervisorUser.employee_delegate) && this.status == (int)GlarfStatus.CANCELLATIONSIGN)
             {
                 return true;
             }

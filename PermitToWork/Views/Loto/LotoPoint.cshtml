@@ -1,0 +1,110 @@
+﻿@{
+    Layout = null;
+}
+<script>
+    $(document).ready(function () {
+        addHandlerMenu();
+    })
+</script>
+
+<div id="content-header">
+	<h1>LOTO Point Remove</h1>
+</div>
+<div id="breadcrumb">
+	<a href="#" title="Go to Home" class="tip-bottom home"><i class="icon-home"></i> Home</a>
+	<a href="#" class="current">LOTO Point Remove</a>
+</div>
+<div class="container-fluid">
+    <div class="row-fluid">
+        <div class="span12">
+            <div id="grid-remove-point" class="span12"></div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var crudServiceBaseUrl = "Home",
+            dataSourceIn = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: '@Url.Action("BindingPointRemove","Loto")',
+                        type: "POST"
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            var result = {};
+
+                            for (var i = 0; i < options.models.length; i++) {
+                                var product = options.models[i];
+                                console.log(product);
+                                for (var member in product) {
+                                    if (member == "user") {
+                                        result["inspector_id"] = product[member]["id"];
+                                    } else if (member == "valid_date") {
+                                        var date = product[member];
+                                        result["valid_date"] = (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes();
+                                    } else {
+                                        if (product[member] == null) {
+                                            result[member] = "";
+                                        } else {
+                                            result[member] = product[member];
+                                        }
+                                    }
+                                }
+                            }
+
+                            return result;
+                        }
+                    }
+                },
+                batch: true,
+                pageSize: 30,
+                schema: {
+                    model: {
+                        id: "id",
+                        fields: {
+                            id: { type: "number", editable: false },
+                            loto_no: { type: "string" },
+                            work_location: { type: "string" },
+                            supervisorUser: {},
+                            work_description: { type: "string" },
+                        }
+                    }
+                },
+                pageSize: 10
+            });
+
+        $("#grid-remove-point").kendoGrid({
+            dataSource: dataSourceIn,
+            pageable: true,
+            sortable: true,
+            filterable: true,
+            selectable: "row",
+            columns: [
+                { field: "id", hidden: true },
+                { field: "loto_no", title: "LOTO No.", type: "string", width: 150 },
+                { field: "supervisorUser", title: "Supervisor", template: "#=getName(supervisorUser)#", type: "string" },
+                { field: "work_description", title: "Work Description", type: "string" },
+            ],
+            height: 300,
+            change: function (e) {
+                var selectedRows = this.select();
+                var selectedDataItems = [];
+                for (var i = 0; i < selectedRows.length; i++) {
+                    var dataItem = this.dataItem(selectedRows[i]);
+                    $('#selected-id').val(dataItem.id);
+                    $('#history').val('@Url.Action("LotoPoint","Loto")');
+                    $('#content').load('@Url.Action("Edit","Loto")/' + dataItem.id);
+                }
+                // selectedDataItems contains all selected data items
+            }
+        });
+    });
+
+        function getName(user) {
+            if (user != null) {
+                return user.alpha_name;
+            }
+            return "";
+        }
+</script>

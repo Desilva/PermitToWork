@@ -59,11 +59,11 @@
                     <b>Briefed by,</b>
                     <br />
                     <div style="height:100px">
-                        @if (isCanEdit[2]) {
+                        @*@if (isCanEdit[2]) {
                             <input type="button" class="btn btn-small btn-success" value="Sign" id="sign-requestor" />    
                         } else if (Model.requestor_signature != null) {
                             <img src="@Model.requestor_signature" width="100" height="100" />   
-                        }
+                        }*@
                     </div>
                     @Model.requestorUser.alpha_name<br />
                     LOTO HOLDER
@@ -72,14 +72,34 @@
                     <b>Approved by,</b>
                     <br />
                     <div style="height:100px">
-                        @if (isCanEdit[3]) {
+                        @*@if (isCanEdit[3]) {
                             <input type="button" class="btn btn-small btn-success" value="Sign" id="sign-spv" />    
                         } else if (Model.supervisor_signature != null) {
                             <img src="@Model.supervisor_signature" width="100" height="100" />   
-                        }
+                        }*@
                     </div>
                     @(Model.supervisorUser != null ? Model.supervisorUser.alpha_name : "")<br />
                     SUPERVISOR / PROJECT MANAGER
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span12">
+                    Attachment(s)
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span12">
+                    <input name="files" id="file-attachment" type="file" class="radiography-file" />
+                    <ul id="existing-files-attachment" class="k-upload-files k-reset" style="display: none;">
+                        @foreach (string file in Model.listDocumentUploaded)
+                        {
+                        <li class="k-file" data-att-id="@(file)">
+                            <span class="k-icon k-success">uploaded</span>
+                            <span class="k-filename" title="@(file)"><a href="@Url.Content("~/Upload/Loto/Glarf/" + Model.id + "/" + file)" target="_blank">@file</a><span class="k-progress"><span class="k-state-selected k-progress-status" style="width: 100%;"></span></span></span>
+                            <button type="button" class="k-button k-button-icontext k-upload-action" @(isCanEdit[0] ? "" : "disabled")><span class="k-icon k-delete"></span>Remove</button>
+                        </li>
+                        }
+                    </ul>
                 </div>
             </div>
             <div class="row-fluid">
@@ -88,24 +108,64 @@
                     {
                         <input type="button" class="btn btn-success" value="Send for Signing" id="send" />
                     }
+                    @if (isCanEdit[1])
+                    {
+                        <input type="button" class="btn btn-danger" value="Save for Cancellation" id="cancellation" />
+                    }
+                    <input type="button" class="btn btn-primary" value="Back" id="back" />
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Modal -->
+<div id="user" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="Add" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="addLabel">User</h3>
+  </div>
+  <div class="modal-body">
+    <form class="form-horizontal">
+        <input type="hidden" id="glarf-user-id" value="0" />
+        <div class="control-group">
+            <label class="control-label" for="loto-point-agreed">User</label>
+            <div class="controls">
+                <ul class="inline">
+                    <li><label class="radio"><input name="seg-contractor" type="radio" value="1" id="extendPtw1" /> from Database</label>
+                    </li>
+                    <li><label class="radio"><input name="seg-contractor" type="radio" value="0" id="extendPtw0" /> Input Manual</label>
+                    </li>
+                </ul>
+            </div>
+            <div class="controls from-database" style="display:none">
+                <input id="user-from" data-text-field="alpha_name" data-value-field="id" />
+            </div>
+            <div class="controls input-manual" style="display:none">
+                <input type="text" id="user-manual">
+            </div>
+        </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="save-user">Save</button>
+  </div>
+</div>
+
 <script type="text/x-kendo-template" id="command-template">
     <div class="row-command">
     # if('@isCanEdit[0]' == 'True' && can_edit == 1) { #
-        <a class="k-button k-button-icontext k-grid-edit" href="\#" title="Edit"><span class="k-icon k-edit"></span>Edit</a>
+        <a class="k-button k-button-icontext k-grid-edit" href="\#" title="Edit" onclick="event.preventDefault();editUser(#= id #,'#= user #');"><span class="k-icon k-edit"></span>Edit</a>
         <a class="k-button k-button-icontext k-grid-delete" href="\#" title="Delete"><span class="k-icon k-delete"></span>Delete</a>
     # } #
-    # if ('@isCanEdit[1]' == 'True' && userEntity.id == parseInt('@requestor.id') && user_application_signature == null) { #
-        <a class="k-button k-button-icontext k-grid-agree" href="\#" title="Sign" onclick="event.preventDefault();signApplication(#= id #)"><span class="k-icon k-agree"></span>Sign</a>
-    #} #
-    # if ('@isCanEdit[4]' == 'True' && userEntity.id == parseInt('@requestor.id') && user_cancellation_signature == null) { #
-        <a class="k-button k-button-icontext k-grid-cancel" href="\#" title="Sign" onclick="event.preventDefault();signCancellation(#= id #)"><span class="k-icon k-cancel"></span>Sign</a>
-    #} #
+    </div>
+</script>
+<script type="text/x-kendo-template" id="toolbar-template">
+    <div class="row-command">
+    # if('@isCanEdit[0]' == 'True') { #
+        <a class="k-button k-button-icontext k-grid-add" href="\#" title="Add New User" onclick="event.preventDefault();addUser();"><span class="k-icon k-add"></span>Add New User</a>
+    # } #
     </div>
 </script>
 <script>
@@ -170,7 +230,8 @@
                     id: "id",
                     fields: {
                         id: { type: "number", editable: false },
-                        userEntity: { },
+                        userEntity: {},
+                        user: {type: "string" },
                         user_application_signature: { type: "string", editable: false, nullable: true },
                         user_application_signature_date: { type: "date",editable: false, format: "{0:MM/dd/yyyy hh:mm tt}", nullable: true },
                         user_cancellation_signature: { type: "string", editable: false, nullable: true },
@@ -187,14 +248,14 @@
             pageable: true,
             sortable: true,
             filterable: true,
-            toolbar: ["create"],
+            toolbar: kendo.template($("#toolbar-template").html()),
             columns: [
                 {
                     template: kendo.template($("#command-template").html()), title: "Command", width: "200px"
                 },
                 //{ command: ["edit","delete"], title: "Command", width: "200px" },
                 { field: "id", hidden: true },
-                { field: "userEntity", title: "Name", editor: userEditor, template: "#= getName(userEntity) #", width: 200 },
+                { field: "userEntity", title: "Name", editor: userEditor, template: "#= getName(userEntity, user) #", width: 200 },
                 { field: "user_application_signature", title: "Lockout Application Sign", type: "string", width: 75, template: "#=inspectedImage(user_application_signature)#" },
                 { field: "user_application_signature_date", title: "Lockout Application Sign Date / Time", type: "date", width: 75, format: "{0:MM/dd/yyyy hh:mm tt}" },
                 { field: "user_cancellation_signature", title: "Lockout Cancellation Sign", type: "string", width: 75, template: "#=inspectedImage(user_cancellation_signature)#" },
@@ -217,18 +278,30 @@
                 //    width: 180
                 //}
             ],
+            editable: true,
             height: 400,
-            editable: "inline",
-            edit: function (e) {
-                console.log(e.container.find('.row-command'));
-                e.container.find('.row-command').html('<a class="k-button k-button-icontext k-grid-update" href="#" title="Update"><span class="k-icon k-update"></span>Update</a><a class="k-button k-button-icontext k-grid-cancel" href="#" title="Cancel"><span class="k-icon k-cancel"></span>Cancel</a>');
-            }
+        });
+
+        $('#user-from')
+            .kendoDropDownList({
+                dataTextField: "alpha_name",
+                dataValueField: "id",
+                autoBind: true,
+                dataSource: {
+                    transport: {
+                        dataType: "json",
+                        read: '@Url.Action("ListingEmployee", "Loto")'
+                    }
+                },
+                optionLabel: "--Select One--",
         });
 
         function userEditor(container, options) {
             $('<input data-text-field="alpha_name" data-value-field="id" data-bind="value:' + options.field + '" />')
                 .appendTo(container)
                 .kendoDropDownList({
+                    dataTextField: "ProductName",
+                    dataValueField: "ProductID",
                     autoBind: true,
                     dataSource: {
                         transport: {
@@ -240,14 +313,58 @@
                 });
         }
 
+        $('#save-user').click(function () {
+            var val = $('input[name="seg-contractor"]:checked').val();
+            var user = "";
+            var id = $('#glarf-user-id').val();
+            if (val == 1) {
+                user = $('#user-from').val();
+            } else if (val == 0) {
+                user = $('#user-manual').val();
+            }
+
+            $.post('@Url.Action("SaveGlarfUser","Loto")', { user: user, id: id, glarf_id : '@Model.id' }, function (resp) {
+                $("#glarf-user-grid").data("kendoGrid").dataSource.read();
+                $('#user').modal('hide');
+            });
+        });
+
+        $('input[name="seg-contractor"]').click(function () {
+            var val = $(this).val();
+            if (val == 1) {
+                $('.input-manual').hide();
+                $('.from-database').show();
+            } else if (val == 0) {
+                $('.from-database').hide();
+                $('.input-manual').show();
+
+            }
+        });
+
+
         $('#send').click(function () {
             var values = {
                 id: '@Model.id',
             }
 
-            $.post('@Url.Action("SendToSigning","Loto")', values, function (resp) {
+            $.post('@Url.Action("SendToSigning", "Loto")', values, function (resp) {
                 alert('All members has been informed to sign GLARF.');
-                $('#content').load('@Url.Action("Glarf","Loto")');
+                $('#content').load('@Url.Action("Glarf", "Loto")');
+            });
+        });
+
+        $('#cancellation').click(function () {
+            var values = {
+                id: '@Model.id',
+            }
+
+            $.post('@Url.Action("CancellationGlarf", "Loto")', values, function (resp) {
+                if (resp.status == "403") {
+                    alert('GLARF that has been signed must be attached for cancellation.');
+                } else {
+                    alert('GLARF is saved. LOTO Permit may be cancelled.');
+                    $('#content').load('@Url.Action("Glarf", "Loto")');
+                }
             });
         });
 
@@ -256,9 +373,9 @@
                 id: '@Model.id',
             }
 
-            $.post('@Url.Action("SignRequestorGlarf","Loto")', values, function (resp) {
+            $.post('@Url.Action("SignRequestorGlarf", "Loto")', values, function (resp) {
                 alert('Supervisor has been informed to approve GLARF.');
-                $('#content').load('@Url.Action("Glarf","Loto")');
+                $('#content').load('@Url.Action("Glarf", "Loto")');
             });
         });
 
@@ -267,10 +384,83 @@
                 id: '@Model.id',
             }
 
-            $.post('@Url.Action("SignSupervisorGlarf","Loto")', values, function (resp) {
+            $.post('@Url.Action("SignSupervisorGlarf", "Loto")', values, function (resp) {
                 alert('GLARF is approved.');
-                $('#content').load('@Url.Action("Glarf","Loto")');
+                $('#content').load('@Url.Action("Glarf", "Loto")');
             });
+        });
+
+        $("#file-attachment").kendoUpload({
+            async: {
+                saveUrl: "@Url.Action("saveAttachment", "Loto")",
+                removeUrl: "@Url.Action("removeAttachment", "Loto")",
+                autoUpload: true,
+            },
+            upload: onUpload,
+            remove: onRemove,
+            success: onSuccessAttachment,
+        });
+
+        $fileList = $("#existing-files-attachment");
+
+        if ($fileList.length > 0) {
+            $("#file-attachment").parent().parent().parent('div.k-upload').append($fileList);
+            $files = $(".k-file");
+            _fn = function (item) {
+                var $item, fileId, filenames;
+                $item = $(item);
+                fileId = $item.data("att-id");
+                filenames = [
+                  {
+                      name: fileId
+                  }
+                ];
+                return $item.data("fileNames", filenames);
+            };
+            for (_i = 0, _len = $files.length; _i < _len; _i++) {
+                item = $files[_i];
+                _fn(item);
+            }
+            $fileList.show();
+        }
+
+        function onUpload(e) {
+            // Array with information about the uploaded files
+            var files = e.files;
+
+            // Check the extension of each file and abort the upload if it is not .jpg
+            $.each(files, function () {
+                if (this.extension != ".pdf") {
+                    alert("Only .pdf files can be uploaded.")
+                    e.preventDefault();
+                }
+            });
+            e.data = { id: '@Model.id' };
+        }
+
+        function onRemove(e) {
+            e.data = { id: '@Model.id' };
+        }
+
+        function onSuccessAttachment(e) {
+            var files = e.files;
+            // Check the extension of each file and abort the upload if it is not .jpg
+            $.each(files, function () {
+                $('.k-filename[title="' + this.name + '"]').html('<a href="@Url.Content("~/Upload/Loto/Glarf/" + Model.id)' + this.name + '">' + this.name + '</a>');
+            });
+        }
+
+        @if (!isCanEdit[1])
+        {
+        <text>
+        $('#file-attachment').data('kendoUpload').disable();
+        </text>
+        }
+
+        $('#back').click(function () {
+            var his = $('#history').val();
+            $('#history').val($('#prev-history').val());
+            $('#content').load(his);
         });
     });
 
@@ -293,7 +483,7 @@
             id: id,
         }
 
-        $.post('@Url.Action("SignApplication","Loto")', values, function (resp) {
+        $.post('@Url.Action("SignApplication", "Loto")', values, function (resp) {
             $("#glarf-user-grid").data("kendoGrid").dataSource.read();
         });
     }
@@ -306,5 +496,31 @@
         $.post('@Url.Action("SignCancellation","Loto")', values, function (resp) {
             $("#glarf-user-grid").data("kendoGrid").dataSource.read();
         });
+    }
+
+    function editUser(id, user) {
+        $('#glarf-user-id').val(id);
+        if (isNaN(parseInt(user))) {
+            $('input[name="seg-contractor"][value="0"]').attr('checked', 'checked');
+            $('input[name="seg-contractor"][value="0"]').trigger('click');
+            $('#user-manual').val(user);
+            $("#user-from").data("kendoDropDownList").select(0);
+        } else {
+            $('input[name="seg-contractor"][value="1"]').attr('checked', 'checked');
+            $('input[name="seg-contractor"][value="1"]').trigger('click');
+            $("#user-from").data("kendoDropDownList").value(user);
+            $('#user-manual').val('');
+        }
+        $('#user').modal('show');
+    }
+
+    function addUser() {
+        $('input[name="seg-contractor"]').removeAttr('checked');
+        $('#glarf-user-id').val(0);
+        $('.from-database').hide();
+        $('.input-manual').hide();
+        $("#user-from").data("kendoDropDownList").select(0);
+        $('#user-manual').val('');
+        $('#user').modal('show');
     }
 </script>

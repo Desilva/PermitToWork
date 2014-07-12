@@ -67,6 +67,7 @@ namespace PermitToWork.Models
         public Nullable<System.DateTime> can_facility_owner_signature_date { get; set; }
         public Nullable<int> status { get; set; }
         public string pre_screening_note { get; set; }
+        public string no_inspection { get; set; }
     
         public virtual permit_to_work permit_to_work { get; set; }
     }

@@ -52,6 +52,11 @@ namespace PermitToWork.Utilities
             {
                 comment = httpContext.Request.Params["comment"];
             }
+            int? who = null;
+            if (httpContext.Request.Params["who"] != null)
+            {
+                who = Int32.Parse(httpContext.Request.Params["who"]);
+            }
             var assessor = "";
             if (httpContext.Request.Params["acc_assessor"] != null)
             {
@@ -106,6 +111,7 @@ namespace PermitToWork.Utilities
                 filter.actionName = actionName;
                 filter.comment = comment;
                 filter.assessor = assessor;
+                filter.who = who;
                 //LogEntity log = new LogEntity();
 
                 //log.generateLog(user, id_permit, controllerName, actionName, comment, extension);

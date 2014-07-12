@@ -176,6 +176,7 @@ namespace PermitToWork.Models.Hw
         public Nullable<int> status { get; set; }
         public string random_pin { get; set; }
 
+        private PtwEntity ptw { get; set; }
         public List<HiraEntity> hira_document { get; set; }
         public string hira_no { get; set; }
 
@@ -183,6 +184,8 @@ namespace PermitToWork.Models.Hw
 
         public int ids { get; set; }
         public string statusText { get; set; }
+
+        public bool is_guest { get; set; }
 
         public enum statusHW
         {
@@ -240,12 +243,18 @@ namespace PermitToWork.Models.Hw
             this.db = new star_energy_ptwEntities();
         }
 
-        public HwEntity(int id_ptw, string work_leader, string purpose, string acc_spv = null, string acc_spv_del = null)
+        public HwEntity(int id_ptw, string work_leader, string purpose, string acc_spv = null, string acc_spv_del = null, string acc_fo = null)
         {
             this.db = new star_energy_ptwEntities();
             this.id_ptw = id_ptw;
             this.work_leader = work_leader;
             this.purpose = purpose;
+            this.acc_supervisor = acc_spv;
+            this.acc_supervisor_delegate = acc_spv_del;
+            this.can_supervisor = acc_spv;
+            this.can_supervisor_delegate = acc_spv_del;
+            this.acc_fo = acc_fo;
+            this.can_fo = acc_fo;
         }
 
         public HwEntity(string id)
@@ -421,7 +430,9 @@ namespace PermitToWork.Models.Hw
             this.status = hw.status;
             this.random_pin = hw.random_pin;
 
-            this.hw_status = getStatus();
+            this.is_guest = hw.permit_to_work.is_guest == 1;
+
+            this.statusText = getStatus();
 
             this.hira_document = new ListHira(this.id_ptw.Value,this.db).listHira;
         }
@@ -450,6 +461,8 @@ namespace PermitToWork.Models.Hw
                 random_pin = this.random_pin,
                 acc_supervisor = this.acc_supervisor,
                 acc_supervisor_delegate = this.acc_supervisor_delegate,
+                acc_fo = this.acc_fo,
+                can_fo = this.can_fo
             };
 
             db.hot_work.Add(hw);
@@ -523,7 +536,10 @@ namespace PermitToWork.Models.Hw
         {
             var retVal = false;
             string user_id = user.id.ToString();
-            if ((this.acc_supervisor == user_id || this.acc_supervisor_delegate == user_id))
+            int foId = 0;
+            Int32.TryParse(this.acc_supervisor, out foId);
+            UserEntity fo = new UserEntity(foId, user.token, user);
+            if ((this.acc_supervisor == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
             {
                 retVal = true;
             }
@@ -535,7 +551,10 @@ namespace PermitToWork.Models.Hw
         {
             var retVal = false;
             string user_id = user.id.ToString();
-            if ((this.acc_fire_watch == user_id || this.acc_fire_watch_delegate == user_id))
+            int foId = 0;
+            Int32.TryParse(this.acc_fire_watch, out foId);
+            UserEntity fo = new UserEntity(foId, user.token, user);
+            if ((this.acc_fire_watch == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
             {
                 retVal = true;
             }
@@ -546,12 +565,19 @@ namespace PermitToWork.Models.Hw
         public bool isAccFO(UserEntity user)
         {
             var retVal = false;
+            int foId = 0;
+            Int32.TryParse(this.acc_fo, out foId);
+            UserEntity fo = new UserEntity(foId, user.token, user);
             string user_id = user.id.ToString();
-            if ((this.acc_fo == user_id || this.acc_fo_delegate == user_id))
+            List<UserEntity> listDel = fo.GetDelegateFO(user);
+            if ((this.acc_fo == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
             {
                 retVal = true;
             }
-
+            else if (listDel.Exists(p => p.id == user.id))
+            {
+                return true;
+            }
             return retVal;
         }
 
@@ -571,7 +597,10 @@ namespace PermitToWork.Models.Hw
         {
             var retVal = false;
             string user_id = user.id.ToString();
-            if ((this.can_supervisor == user_id || this.can_supervisor_delegate == user_id))
+            int foId = 0;
+            Int32.TryParse(this.can_supervisor, out foId);
+            UserEntity fo = new UserEntity(foId, user.token, user);
+            if ((this.can_supervisor == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
             {
                 retVal = true;
             }
@@ -583,7 +612,10 @@ namespace PermitToWork.Models.Hw
         {
             var retVal = false;
             string user_id = user.id.ToString();
-            if ((this.can_fire_watch == user_id || this.can_fire_watch_delegate == user_id))
+            int foId = 0;
+            Int32.TryParse(this.can_fire_watch, out foId);
+            UserEntity fo = new UserEntity(foId, user.token, user);
+            if ((this.can_fire_watch == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
             {
                 retVal = true;
             }
@@ -594,10 +626,18 @@ namespace PermitToWork.Models.Hw
         public bool isCanFO(UserEntity user)
         {
             var retVal = false;
+            int foId = 0;
+            Int32.TryParse(this.can_fo, out foId);
+            UserEntity fo = new UserEntity(foId, user.token, user);
             string user_id = user.id.ToString();
-            if ((this.can_fo == user_id || this.can_fo_delegate == user_id))
+            List<UserEntity> listDel = fo.GetDelegateFO(user);
+            if ((this.can_fo == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
             {
                 retVal = true;
+            }
+            else if (listDel.Exists(p => p.id == user.id))
+            {
+                return true;
             }
 
             return retVal;
@@ -660,48 +700,100 @@ namespace PermitToWork.Models.Hw
         {
             var retVal = false;
             string user_id = user.id.ToString();
+            int foId = 0;
+            UserEntity fo = null;
+            List<UserEntity> listDel;
             switch (extension)
             {
                 case 1:
-                    if ((this.ext_fo_1 == user_id || this.ext_fo_delegate_1 == user_id))
+                    Int32.TryParse(this.ext_fo_1, out foId);
+                    fo = new UserEntity(foId, user.token, user);
+                    listDel = fo.GetDelegateFO(user);
+                    if ((this.ext_fo_1 == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
                     {
                         retVal = true;
+                    }
+                    else if (listDel.Exists(p => p.id == user.id))
+                    {
+                        return true;
                     }
                     break;
                 case 2:
-                    if ((this.ext_fo_2 == user_id || this.ext_fo_delegate_2 == user_id))
+                    Int32.TryParse(this.ext_fo_2, out foId);
+                    fo = new UserEntity(foId, user.token, user);
+                    listDel = fo.GetDelegateFO(user);
+                    if ((this.ext_fo_2 == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
                     {
                         retVal = true;
+                    }
+                    else if (listDel.Exists(p => p.id == user.id))
+                    {
+                        return true;
                     }
                     break;
                 case 3:
-                    if ((this.ext_fo_3 == user_id || this.ext_fo_delegate_3 == user_id))
+                    Int32.TryParse(this.ext_fo_3, out foId);
+                    fo = new UserEntity(foId, user.token, user);
+                    listDel = fo.GetDelegateFO(user);
+                    if ((this.ext_fo_3 == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
                     {
                         retVal = true;
+                    }
+                    else if (listDel.Exists(p => p.id == user.id))
+                    {
+                        return true;
                     }
                     break;
                 case 4:
-                    if ((this.ext_fo_4 == user_id || this.ext_fo_delegate_4 == user_id))
+                    Int32.TryParse(this.ext_fo_4, out foId);
+                    fo = new UserEntity(foId, user.token, user);
+                    listDel = fo.GetDelegateFO(user);
+                    if ((this.ext_fo_4 == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
                     {
                         retVal = true;
+                    }
+                    else if (listDel.Exists(p => p.id == user.id))
+                    {
+                        return true;
                     }
                     break;
                 case 5:
-                    if ((this.ext_fo_5 == user_id || this.ext_fo_delegate_5 == user_id))
+                    Int32.TryParse(this.ext_fo_5, out foId);
+                    fo = new UserEntity(foId, user.token, user);
+                    listDel = fo.GetDelegateFO(user);
+                    if ((this.ext_fo_5 == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
                     {
                         retVal = true;
+                    }
+                    else if (listDel.Exists(p => p.id == user.id))
+                    {
+                        return true;
                     }
                     break;
                 case 6:
-                    if ((this.ext_fo_6 == user_id || this.ext_fo_delegate_6 == user_id))
+                    Int32.TryParse(this.ext_fo_6, out foId);
+                    fo = new UserEntity(foId, user.token, user);
+                    listDel = fo.GetDelegateFO(user);
+                    if ((this.ext_fo_6 == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
                     {
                         retVal = true;
                     }
+                    else if (listDel.Exists(p => p.id == user.id))
+                    {
+                        return true;
+                    }
                     break;
                 case 7:
-                    if ((this.ext_fo_7 == user_id || this.ext_fo_delegate_7 == user_id))
+                    Int32.TryParse(this.ext_fo_7, out foId);
+                    fo = new UserEntity(foId, user.token, user);
+                    listDel = fo.GetDelegateFO(user);
+                    if ((this.ext_fo_7 == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
                     {
                         retVal = true;
+                    }
+                    else if (listDel.Exists(p => p.id == user.id))
+                    {
+                        return true;
                     }
                     break;
             }
@@ -712,9 +804,19 @@ namespace PermitToWork.Models.Hw
         public bool isCanEdit(UserEntity user)
         {
             bool isCanEdit = false;
-            if (isWorkLeader(user) && this.status < (int)statusHW.ACCWORKLEADER)
+            if (this.ptw.is_guest == 1)
             {
-                isCanEdit = true;
+                if (isAccSupervisor(user) && this.status < (int)statusHW.ACCWORKLEADER)
+                {
+                    isCanEdit = true;
+                }
+            }
+            else
+            {
+                if (isWorkLeader(user) && this.status < (int)statusHW.ACCWORKLEADER)
+                {
+                    isCanEdit = true;
+                }
             }
 
             if (isAccSupervisor(user) && (this.status == (int)statusHW.CREATE || this.status == (int)statusHW.ACCWORKLEADER))
@@ -748,54 +850,109 @@ namespace PermitToWork.Models.Hw
         public bool isCanEditExt(UserEntity user, int extension)
         {
             bool isCanEdit = false;
-            if (isWorkLeader(user))
+            if (this.ptw.is_guest == 1)
             {
-                switch (extension)
+                if (isAccSupervisor(user))
                 {
-                    case 1:
-                        if (this.status < (int)statusHW.EXTACCWORKLEADER1 && this.status >= (int)statusHW.EXTCREATE1)
-                        {
-                            isCanEdit = true;
-                        }
-                        break;
-                    case 2:
-                        if (this.status < (int)statusHW.EXTACCWORKLEADER2 && this.status >= (int)statusHW.EXTCREATE2)
-                        {
-                            isCanEdit = true;
-                        }
-                        break;
-                    case 3:
-                        if (this.status < (int)statusHW.EXTACCWORKLEADER3 && this.status >= (int)statusHW.EXTCREATE3)
-                        {
-                            isCanEdit = true;
-                        }
-                        break;
-                    case 4:
-                        if (this.status < (int)statusHW.EXTACCWORKLEADER4 && this.status >= (int)statusHW.EXTCREATE4)
-                        {
-                            isCanEdit = true;
-                        }
-                        break;
-                    case 5:
-                        if (this.status < (int)statusHW.EXTACCWORKLEADER5 && this.status >= (int)statusHW.EXTCREATE5)
-                        {
-                            isCanEdit = true;
-                        }
-                        break;
-                    case 6:
-                        if (this.status < (int)statusHW.EXTACCWORKLEADER6 && this.status >= (int)statusHW.EXTCREATE6)
-                        {
-                            isCanEdit = true;
-                        }
-                        break;
-                    case 7:
-                        if (this.status < (int)statusHW.EXTACCWORKLEADER7 && this.status >= (int)statusHW.EXTCREATE7)
-                        {
-                            isCanEdit = true;
-                        }
-                        break;
+                    switch (extension)
+                    {
+                        case 1:
+                            if (this.status < (int)statusHW.EXTACCWORKLEADER1 && this.status >= (int)statusHW.EXTCREATE1)
+                            {
+                                isCanEdit = true;
+                            }
+                            break;
+                        case 2:
+                            if (this.status < (int)statusHW.EXTACCWORKLEADER2 && this.status >= (int)statusHW.EXTCREATE2)
+                            {
+                                isCanEdit = true;
+                            }
+                            break;
+                        case 3:
+                            if (this.status < (int)statusHW.EXTACCWORKLEADER3 && this.status >= (int)statusHW.EXTCREATE3)
+                            {
+                                isCanEdit = true;
+                            }
+                            break;
+                        case 4:
+                            if (this.status < (int)statusHW.EXTACCWORKLEADER4 && this.status >= (int)statusHW.EXTCREATE4)
+                            {
+                                isCanEdit = true;
+                            }
+                            break;
+                        case 5:
+                            if (this.status < (int)statusHW.EXTACCWORKLEADER5 && this.status >= (int)statusHW.EXTCREATE5)
+                            {
+                                isCanEdit = true;
+                            }
+                            break;
+                        case 6:
+                            if (this.status < (int)statusHW.EXTACCWORKLEADER6 && this.status >= (int)statusHW.EXTCREATE6)
+                            {
+                                isCanEdit = true;
+                            }
+                            break;
+                        case 7:
+                            if (this.status < (int)statusHW.EXTACCWORKLEADER7 && this.status >= (int)statusHW.EXTCREATE7)
+                            {
+                                isCanEdit = true;
+                            }
+                            break;
+                    }
+
                 }
-                
+            }
+            else
+            {
+                if (isWorkLeader(user))
+                {
+                    switch (extension)
+                    {
+                        case 1:
+                            if (this.status < (int)statusHW.EXTACCWORKLEADER1 && this.status >= (int)statusHW.EXTCREATE1)
+                            {
+                                isCanEdit = true;
+                            }
+                            break;
+                        case 2:
+                            if (this.status < (int)statusHW.EXTACCWORKLEADER2 && this.status >= (int)statusHW.EXTCREATE2)
+                            {
+                                isCanEdit = true;
+                            }
+                            break;
+                        case 3:
+                            if (this.status < (int)statusHW.EXTACCWORKLEADER3 && this.status >= (int)statusHW.EXTCREATE3)
+                            {
+                                isCanEdit = true;
+                            }
+                            break;
+                        case 4:
+                            if (this.status < (int)statusHW.EXTACCWORKLEADER4 && this.status >= (int)statusHW.EXTCREATE4)
+                            {
+                                isCanEdit = true;
+                            }
+                            break;
+                        case 5:
+                            if (this.status < (int)statusHW.EXTACCWORKLEADER5 && this.status >= (int)statusHW.EXTCREATE5)
+                            {
+                                isCanEdit = true;
+                            }
+                            break;
+                        case 6:
+                            if (this.status < (int)statusHW.EXTACCWORKLEADER6 && this.status >= (int)statusHW.EXTCREATE6)
+                            {
+                                isCanEdit = true;
+                            }
+                            break;
+                        case 7:
+                            if (this.status < (int)statusHW.EXTACCWORKLEADER7 && this.status >= (int)statusHW.EXTCREATE7)
+                            {
+                                isCanEdit = true;
+                            }
+                            break;
+                    }
+
+                }
             }
 
             if (isExtFO(user,extension))
@@ -1332,7 +1489,7 @@ namespace PermitToWork.Models.Hw
 
         public string closeHw(UserEntity user)
         {
-            if (user.id.ToString() != this.work_leader)
+            if ((!is_guest ||user.id.ToString() != this.acc_supervisor) && user.id.ToString() != this.work_leader)
             {
                 return "400";
             }
@@ -1354,10 +1511,19 @@ namespace PermitToWork.Models.Hw
         public string getHiraNo()
         {
             this.hira_no = "";
-            foreach (HiraEntity hira in this.hira_document)
+            if (this.ptw.hira_docs != null)
             {
-                string fileName = hira.filename.Substring(0, hira.filename.Length - 4);
-                this.hira_no += ", " + fileName;
+                string[] s = this.ptw.hira_docs.Split(new string[] { "#@#" }, StringSplitOptions.None);
+                foreach (string ss in s)
+                {
+                    if (!String.IsNullOrEmpty(ss))
+                    {
+                        string name = ss.Split('/').Last();
+                        string fileName = name.Substring(0, name.Length - 4);
+                        fileName = HttpUtility.UrlDecode(fileName);
+                        this.hira_no += ", " + fileName;
+                    }
+                }
             }
 
             if (this.hira_no.Length == 0)
@@ -1366,7 +1532,8 @@ namespace PermitToWork.Models.Hw
             }
             else
             {
-                return this.hira_no.Substring(2);
+                this.hira_no = this.hira_no.Substring(2);
+                return this.hira_no;
             }
         }
 
@@ -1392,13 +1559,19 @@ namespace PermitToWork.Models.Hw
                 {
                     string timestamp = DateTime.UtcNow.Ticks.ToString();
                     List<string> s = new List<string>();
-                    //s.Add(fo.email);
-                    s.Add("septu.jamasoka@gmail.com"); // email FO
+#if (!DEBUG)
+                    s.Add(fo.email);
+#else
+            s.Add("septu.jamasoka@gmail.com");
+#endif
                     if (fo.employee_delegate != null)
                     {
                         UserEntity del = new UserEntity(fo.employee_delegate.Value, token, user);
-                        //s.Add(del.email);
-                        s.Add("septu.jamasoka@gmail.com"); // email Delegasi FO
+#if (!DEBUG)
+                        s.Add(del.email);
+#else
+                        s.Add("septu.jamasoka@gmail.com");
+#endif
                     }
 
                     string encodedValue = this.status + salt + fo.id + val + this.id;
@@ -1417,11 +1590,14 @@ namespace PermitToWork.Models.Hw
 
         public string sendEmailRandomPIN(string serverUrl, string token, UserEntity user)
         {
-            UserEntity requestor = new UserEntity(Int32.Parse(this.work_leader), token, user);
+            UserEntity requestor = is_guest ? new UserEntity(Int32.Parse(this.acc_supervisor), token, user) : new UserEntity(Int32.Parse(this.work_leader), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
-            //s.Add(requestor.email);
+#if (!DEBUG)
+            s.Add(requestor.email);
+#else
             s.Add("septu.jamasoka@gmail.com");
+#endif
 
             string message = this.random_pin;
             string subject = "PIN for Approving as Requestor";
@@ -1436,12 +1612,15 @@ namespace PermitToWork.Models.Hw
                 UserEntity gasTester = new UserEntity(Int32.Parse(this.acc_gas_tester), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
-                //s.Add(gasTester.email);
+#if (!DEBUG)
+                s.Add(gasTester.email);
+#else
                 s.Add("septu.jamasoka@gmail.com");
+#endif
 
                 string message = serverUrl + "Home?p=Hw/edit/" + this.id;
 
-                sendEmail.Send(s, message, "Hot Work Gas Tester");
+                sendEmail.Send(s, message, "Assigned as Hot Work (" + this.hw_no + ") Gas Tester");
             }
             else if (extension == 1)
             {
@@ -1449,84 +1628,105 @@ namespace PermitToWork.Models.Hw
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
 
-                //s.Add(gasTester.email);
+#if (!DEBUG)
+                s.Add(gasTester.email);
+#else
                 s.Add("septu.jamasoka@gmail.com");
+#endif
 
                 string message = serverUrl + "Home?p=Hw/edit/" + this.id;
 
-                sendEmail.Send(s, message, "hot work Gas Tester");
+                sendEmail.Send(s, message, "Assigned as Hot Work (" + this.hw_no + ") Gas Tester");
             }
             else if (extension == 2)
             {
                 UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_2), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
-                //s.Add(gasTester.email);
+#if (!DEBUG)
+                s.Add(gasTester.email);
+#else
                 s.Add("septu.jamasoka@gmail.com");
+#endif
 
                 string message = serverUrl + "Home?p=Hw/edit/" + this.id;
 
-                sendEmail.Send(s, message, "hot work Gas Tester");
+                sendEmail.Send(s, message, "Assigned as Hot Work (" + this.hw_no + ") Gas Tester");
             }
             else if (extension == 3)
             {
                 UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_3), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
-                //s.Add(gasTester.email);
+#if (!DEBUG)
+                s.Add(gasTester.email);
+#else
                 s.Add("septu.jamasoka@gmail.com");
+#endif
 
                 string message = serverUrl + "Home?p=Hw/edit/" + this.id;
 
-                sendEmail.Send(s, message, "hot work Gas Tester");
+                sendEmail.Send(s, message, "Assigned as Hot Work (" + this.hw_no + ") Gas Tester");
             }
             else if (extension == 4)
             {
                 UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_4), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
-                //s.Add(gasTester.email);
+#if (!DEBUG)
+                s.Add(gasTester.email);
+#else
                 s.Add("septu.jamasoka@gmail.com");
+#endif
 
                 string message = serverUrl + "Home?p=Hw/edit/" + this.id;
 
-                sendEmail.Send(s, message, "hot work Gas Tester");
+                sendEmail.Send(s, message, "Assigned as Hot Work (" + this.hw_no + ") Gas Tester");
             }
             else if (extension == 5)
             {
                 UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_5), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
-                //s.Add(gasTester.email);
+#if (!DEBUG)
+                s.Add(gasTester.email);
+#else
                 s.Add("septu.jamasoka@gmail.com");
+#endif
 
                 string message = serverUrl + "Home?p=Hw/edit/" + this.id;
 
-                sendEmail.Send(s, message, "hot work Gas Tester");
+                sendEmail.Send(s, message, "Assigned as Hot Work (" + this.hw_no + ") Gas Tester");
             }
             else if (extension == 6)
             {
                 UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_6), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
-                //s.Add(gasTester.email);
+#if (!DEBUG)
+                s.Add(gasTester.email);
+#else
                 s.Add("septu.jamasoka@gmail.com");
+#endif
 
                 string message = serverUrl + "Home?p=Hw/edit/" + this.id;
 
-                sendEmail.Send(s, message, "hot work Gas Tester");
+                sendEmail.Send(s, message, "Assigned as Hot Work (" + this.hw_no + ") Gas Tester");
             }
             else if (extension == 7)
             {
                 UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_7), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
-                //s.Add(gasTester.email);
+#if (!DEBUG)
+                s.Add(gasTester.email);
+#else
                 s.Add("septu.jamasoka@gmail.com");
+#endif
 
                 string message = serverUrl + "Home?p=Hw/edit/" + this.id;
 
-                sendEmail.Send(s, message, "hot work Gas Tester");
+                sendEmail.Send(s, message, "Assigned as Hot Work (" + this.hw_no + ") Gas Tester");
             }
 
             return "200";
@@ -1536,13 +1736,21 @@ namespace PermitToWork.Models.Hw
         {
             //if (extension == 0)
             //{
-            UserEntity requestor = new UserEntity(Int32.Parse(this.work_leader), token, user);
+
+            UserEntity requestor = is_guest ? new UserEntity(Int32.Parse(this.acc_supervisor), token, user) : new UserEntity(Int32.Parse(this.work_leader), token, user);
             UserEntity spv = new UserEntity(Int32.Parse(this.acc_supervisor), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
             //s.Add(requestor.email);
             //s.Add(spv.email);
+#if (!DEBUG)
+            if (!is_guest) {
+                s.Add(requestor.email);
+            }
+            s.Add(spv.email);
+#else
             s.Add("septu.jamasoka@gmail.com");
+#endif
 
             string message = "";
             string subject = "";
@@ -1568,14 +1776,20 @@ namespace PermitToWork.Models.Hw
             UserEntity supervisor = new UserEntity(Int32.Parse(this.acc_supervisor), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
-            //s.Add(requestor.email);
+#if (!DEBUG)
+            s.Add(supervisor.email);
+#else
             s.Add("septu.jamasoka@gmail.com");
+#endif
 
             if (supervisor.employee_delegate != null)
             {
                 UserEntity del = new UserEntity(supervisor.employee_delegate.Value, token, user);
-                //s.Add(del.email);
+#if (!DEBUG)
+                s.Add(del.email);
+#else
                 s.Add("septu.jamasoka@gmail.com");
+#endif
             }
 
             string message = "";
@@ -1601,14 +1815,20 @@ namespace PermitToWork.Models.Hw
             UserEntity fireWatch = new UserEntity(Int32.Parse(this.acc_fire_watch), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
+#if (!DEBUG)
             s.Add(fireWatch.email);
+#else
             s.Add("septu.jamasoka@gmail.com");
+#endif
 
             if (fireWatch.employee_delegate != null)
             {
                 UserEntity del = new UserEntity(fireWatch.employee_delegate.Value, token, user);
-                //s.Add(del.email);
+#if (!DEBUG)
+                s.Add(del.email);
+#else
                 s.Add("septu.jamasoka@gmail.com");
+#endif
             }
 
             string message = "";
@@ -1634,19 +1854,34 @@ namespace PermitToWork.Models.Hw
             UserEntity fOAcc = new UserEntity(Int32.Parse(this.acc_fo), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
-            //s.Add(fOAcc.email);
+#if (!DEBUG)
+            s.Add(fOAcc.email);
+#else
             s.Add("septu.jamasoka@gmail.com");
+#endif
 
             if (fOAcc.employee_delegate != null)
             {
                 UserEntity del = new UserEntity(fOAcc.employee_delegate.Value, token, user);
-                //s.Add(del.email);
+#if (!DEBUG)
+                s.Add(del.email);
+#else
                 s.Add("septu.jamasoka@gmail.com");
+#endif
+            }
+            List<UserEntity> listDel = fOAcc.GetDelegateFO(user);
+            foreach (UserEntity u in listDel)
+            {
+#if (!DEBUG)
+                s.Add(u.email);
+#else
+                s.Add("septu.jamasoka@gmail.com");
+#endif
             }
 
             string message = serverUrl + "Home?p=Hw/edit/" + this.id;
 
-            sendEmail.Send(s, message, "hot work Facility Owner Approve");
+            sendEmail.Send(s, message, "Hot Work Facility Owner Approve");
 
             return "200";
         }
@@ -1681,19 +1916,34 @@ namespace PermitToWork.Models.Hw
             UserEntity fOAcc = new UserEntity(fo_id, token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
-            //s.Add(fOAcc.email);
+#if (!DEBUG)
+            s.Add(fOAcc.email);
+#else
             s.Add("septu.jamasoka@gmail.com");
+#endif
 
             if (fOAcc.employee_delegate != null)
             {
                 UserEntity del = new UserEntity(fOAcc.employee_delegate.Value, token, user);
-                //s.Add(del.email);
+#if (!DEBUG)
+                s.Add(del.email);
+#else
                 s.Add("septu.jamasoka@gmail.com");
+#endif
+            }
+            List<UserEntity> listDel = fOAcc.GetDelegateFO(user);
+            foreach (UserEntity u in listDel)
+            {
+#if (!DEBUG)
+                s.Add(u.email);
+#else
+                s.Add("septu.jamasoka@gmail.com");
+#endif
             }
 
             string message = serverUrl + "Home?p=Hw/edit/" + this.id;
 
-            sendEmail.Send(s, message, "hot work Facility Owner Approve");
+            sendEmail.Send(s, message, "Hot Work Facility Owner Approve");
 
             return "200";
         }
@@ -1703,14 +1953,29 @@ namespace PermitToWork.Models.Hw
             UserEntity fOCan = new UserEntity(Int32.Parse(this.can_fo), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
-            //s.Add(fOAcc.email);
-            s.Add("fOCan.jamasoka@gmail.com");
+#if (!DEBUG)
+            s.Add(fOCan.email);
+#else
+            s.Add("septu.jamasoka@gmail.com");
+#endif
 
             if (fOCan.employee_delegate != null)
             {
                 UserEntity del = new UserEntity(fOCan.employee_delegate.Value, token, user);
-                //s.Add(del.email);
+#if (!DEBUG)
+                s.Add(del.email);
+#else
                 s.Add("septu.jamasoka@gmail.com");
+#endif
+            }
+            List<UserEntity> listDel = fOCan.GetDelegateFO(user);
+            foreach (UserEntity u in listDel)
+            {
+#if (!DEBUG)
+                s.Add(u.email);
+#else
+                s.Add("septu.jamasoka@gmail.com");
+#endif
             }
 
             string message = serverUrl + "Home?p=Hw/edit/" + this.id;
@@ -1724,48 +1989,52 @@ namespace PermitToWork.Models.Hw
 
         #region approve reject
 
-        public string gasTesterAcc(UserEntity user, int extension)
+        public string gasTesterAcc(UserEntity user, int extension, UserEntity userLogin)
         {
             // requestor approval
             // return code - 200 {ok}
             //               400 {not the user}
             hot_work hw = this.db.hot_work.Find(this.id);
-            if (extension == 0 && (user.id.ToString() == this.acc_gas_tester || user.id.ToString() == this.acc_fo))
+            int foId = 0;
+            Int32.TryParse(this.acc_fo, out foId);
+            UserEntity fo = new UserEntity(foId, userLogin.token, userLogin);
+            List<UserEntity> listDel = fo.GetDelegateFO(userLogin);
+            if (extension == 0 && (user.id.ToString() == this.acc_gas_tester || user.id.ToString() == this.acc_fo || listDel.Exists(p => p.id == user.id)))
             {
                 hw.acc_gas_tester_approve = "a" + user.signature;
                 hw.status = (int)statusHW.GASTESTER;
             }
-            else if (extension == 1 && user.id.ToString() == this.ext_gas_tester_1)
+            else if (extension == 1 && user.id.ToString() == this.ext_gas_tester_1 || user.id.ToString() == this.ext_fo_1 || listDel.Exists(p => p.id == user.id))
             {
                 hw.ext_gas_tester_approve_1 = "a" + user.signature;
                 hw.status = (int)statusHW.EXTGASTESTER1;
             }
-            else if (extension == 2 && user.id.ToString() == this.ext_gas_tester_2)
+            else if (extension == 2 && user.id.ToString() == this.ext_gas_tester_2 || user.id.ToString() == this.ext_fo_2 || listDel.Exists(p => p.id == user.id))
             {
                 hw.ext_gas_tester_approve_2 = "a" + user.signature;
                 hw.status = (int)statusHW.EXTGASTESTER2;
             }
-            else if (extension == 3 && user.id.ToString() == this.ext_gas_tester_3)
+            else if (extension == 3 && user.id.ToString() == this.ext_gas_tester_3 || user.id.ToString() == this.ext_fo_3 || listDel.Exists(p => p.id == user.id))
             {
                 hw.ext_gas_tester_approve_3 = "a" + user.signature;
                 hw.status = (int)statusHW.EXTGASTESTER3;
             }
-            else if (extension == 4 && user.id.ToString() == this.ext_gas_tester_4)
+            else if (extension == 4 && user.id.ToString() == this.ext_gas_tester_4 || user.id.ToString() == this.ext_fo_4 || listDel.Exists(p => p.id == user.id))
             {
                 hw.ext_gas_tester_approve_4 = "a" + user.signature;
                 hw.status = (int)statusHW.EXTGASTESTER4;
             }
-            else if (extension == 5 && user.id.ToString() == this.ext_gas_tester_5)
+            else if (extension == 5 && user.id.ToString() == this.ext_gas_tester_5 || user.id.ToString() == this.ext_fo_5 || listDel.Exists(p => p.id == user.id))
             {
                 hw.ext_gas_tester_approve_5 = "a" + user.signature;
                 hw.status = (int)statusHW.EXTGASTESTER5;
             }
-            else if (extension == 6 && user.id.ToString() == this.ext_gas_tester_6)
+            else if (extension == 6 && user.id.ToString() == this.ext_gas_tester_6 || user.id.ToString() == this.ext_fo_6 || listDel.Exists(p => p.id == user.id))
             {
                 hw.ext_gas_tester_approve_6 = "a" + user.signature;
                 hw.status = (int)statusHW.EXTGASTESTER6;
             }
-            else if (extension == 7 && user.id.ToString() == this.ext_gas_tester_7)
+            else if (extension == 7 && user.id.ToString() == this.ext_gas_tester_7 || user.id.ToString() == this.ext_fo_7 || listDel.Exists(p => p.id == user.id))
             {
                 hw.ext_gas_tester_approve_7 = "a" + user.signature;
                 hw.status = (int)statusHW.EXTGASTESTER7;
@@ -1791,12 +2060,23 @@ namespace PermitToWork.Models.Hw
                 hw.acc_work_leader_approve = "a" + user.signature;
                 hw.status = (int)statusHW.ACCWORKLEADER;
             }
-            else if (extension == 0 && random_pin != null && user.id.ToString() == this.acc_supervisor)
+            else if (is_guest && extension == 0 && user.id.ToString() == this.acc_supervisor)
+            {
+                hw.acc_work_leader_approve = hw.permit_to_work.acc_ptw_requestor_approve;
+                hw.status = (int)statusHW.ACCWORKLEADER;
+            } else if (extension == 0 && random_pin != null && user.id.ToString() == this.acc_supervisor)
             {
                 if (random_pin == this.random_pin)
                 {
-                    user = new UserEntity(Int32.Parse(this.work_leader), token, user);
-                    hw.acc_work_leader_approve = "a" + user.signature;
+                    if (is_guest)
+                    {
+                        hw.acc_work_leader_approve = hw.permit_to_work.acc_ptw_requestor_approve;
+                    }
+                    else
+                    {
+                        user = new UserEntity(Int32.Parse(this.work_leader), token, user);
+                        hw.acc_work_leader_approve = "a" + user.signature;
+                    }
                     hw.status = (int)statusHW.ACCWORKLEADER;
                 }
                 else
@@ -1804,40 +2084,96 @@ namespace PermitToWork.Models.Hw
                     return "402";
                 }
             }
-            else if (extension == 1 && user.id.ToString() == this.ext_work_leader_1)
+            else if (extension == 1)
             {
-                hw.ext_work_leader_approve_1 = "a" + user.signature;
-                hw.status = (int)statusHW.EXTACCWORKLEADER1;
+                if (user.id.ToString() == this.ext_work_leader_1)
+                {
+                    hw.ext_work_leader_approve_1 = "a" + user.signature;
+                    hw.status = (int)statusHW.EXTACCWORKLEADER1;
+                }
+                else if (is_guest)
+                {
+                    hw.ext_work_leader_approve_1 = hw.permit_to_work.acc_ptw_requestor_approve;
+                    hw.status = (int)statusHW.EXTACCWORKLEADER1;
+                }
             }
-            else if (extension == 2 && user.id.ToString() == this.ext_work_leader_2)
+            else if (extension == 2)
             {
-                hw.ext_work_leader_approve_2 = "a" + user.signature;
-                hw.status = (int)statusHW.EXTACCWORKLEADER2;
+                if (user.id.ToString() == this.ext_work_leader_2)
+                {
+                    hw.ext_work_leader_approve_2 = "a" + user.signature;
+                    hw.status = (int)statusHW.EXTACCWORKLEADER2;
+                }
+                else if (is_guest)
+                {
+                    hw.ext_work_leader_approve_2 = hw.permit_to_work.acc_ptw_requestor_approve;
+                    hw.status = (int)statusHW.EXTACCWORKLEADER2;
+                }
             }
-            else if (extension == 3 && user.id.ToString() == this.ext_work_leader_3)
+            else if (extension == 3)
             {
-                hw.ext_work_leader_approve_3 = "a" + user.signature;
-                hw.status = (int)statusHW.EXTACCWORKLEADER3;
+                if (user.id.ToString() == this.ext_work_leader_3)
+                {
+                    hw.ext_work_leader_approve_3 = "a" + user.signature;
+                    hw.status = (int)statusHW.EXTACCWORKLEADER3;
+                }
+                else if (is_guest)
+                {
+                    hw.ext_work_leader_approve_3 = hw.permit_to_work.acc_ptw_requestor_approve;
+                    hw.status = (int)statusHW.EXTACCWORKLEADER3;
+                }
             }
-            else if (extension == 4 && user.id.ToString() == this.ext_work_leader_4)
+            else if (extension == 4)
             {
-                hw.ext_work_leader_approve_4 = "a" + user.signature;
-                hw.status = (int)statusHW.EXTACCWORKLEADER4;
+                if (user.id.ToString() == this.ext_work_leader_4)
+                {
+                    hw.ext_work_leader_approve_4 = "a" + user.signature;
+                    hw.status = (int)statusHW.EXTACCWORKLEADER4;
+                }
+                else if (is_guest)
+                {
+                    hw.ext_work_leader_approve_4 = hw.permit_to_work.acc_ptw_requestor_approve;
+                    hw.status = (int)statusHW.EXTACCWORKLEADER4;
+                }
             }
-            else if (extension == 5 && user.id.ToString() == this.ext_work_leader_5)
+            else if (extension == 5)
             {
-                hw.ext_work_leader_approve_5 = "a" + user.signature;
-                hw.status = (int)statusHW.EXTACCWORKLEADER5;
+                if (user.id.ToString() == this.ext_work_leader_5)
+                {
+                    hw.ext_work_leader_approve_5 = "a" + user.signature;
+                    hw.status = (int)statusHW.EXTACCWORKLEADER5;
+                }
+                else if (is_guest)
+                {
+                    hw.ext_work_leader_approve_5 = hw.permit_to_work.acc_ptw_requestor_approve;
+                    hw.status = (int)statusHW.EXTACCWORKLEADER5;
+                }
             }
-            else if (extension == 6 && user.id.ToString() == this.ext_work_leader_6)
+            else if (extension == 6)
             {
-                hw.ext_work_leader_approve_6 = "a" + user.signature;
-                hw.status = (int)statusHW.EXTACCWORKLEADER6;
+                if (user.id.ToString() == this.ext_work_leader_6)
+                {
+                    hw.ext_work_leader_approve_6 = "a" + user.signature;
+                    hw.status = (int)statusHW.EXTACCWORKLEADER6;
+                }
+                else if (is_guest)
+                {
+                    hw.ext_work_leader_approve_6 = hw.permit_to_work.acc_ptw_requestor_approve;
+                    hw.status = (int)statusHW.EXTACCWORKLEADER6;
+                }
             }
-            else if (extension == 7 && user.id.ToString() == this.ext_work_leader_7)
+            else if (extension == 7)
             {
-                hw.ext_work_leader_approve_7 = "a" + user.signature;
-                hw.status = (int)statusHW.EXTACCWORKLEADER7;
+                if (user.id.ToString() == this.ext_work_leader_7)
+                {
+                    hw.ext_work_leader_approve_7 = "a" + user.signature;
+                    hw.status = (int)statusHW.EXTACCWORKLEADER7;
+                }
+                else if (is_guest)
+                {
+                    hw.ext_work_leader_approve_7 = hw.permit_to_work.acc_ptw_requestor_approve;
+                    hw.status = (int)statusHW.EXTACCWORKLEADER7;
+                }
             }
             else
             {
@@ -1863,6 +2199,9 @@ namespace PermitToWork.Models.Hw
             //    return "401";
             //}
 
+            int foId = 0;
+            Int32.TryParse(this.acc_supervisor, out foId);
+            UserEntity fo = new UserEntity(foId, user.token, user);
             if (user.id.ToString() == this.acc_supervisor)
             {
                 //ptw.acc_assessor = this.acc_assessor;
@@ -1876,13 +2215,14 @@ namespace PermitToWork.Models.Hw
 
                 return "200";
             }
-            else if (user.id.ToString() == this.acc_supervisor_delegate)
+            else if (user.id.ToString() == fo.employee_delegate.ToString())
             {
                 //ptw.acc_assessor = this.acc_assessor;
                 //ptw.acc_assessor_delegate = this.acc_assessor_delegate;
                 //ptw.can_assessor = this.can_assessor;
                 //ptw.can_assessor_delegate = this.can_assessor_delegate;
                 hw.acc_supervisor_approve = "d" + user.signature;
+                hw.acc_supervisor_delegate = user.id.ToString();
                 hw.status = (int)statusHW.ACCSPV;
                 this.db.Entry(hw).State = EntityState.Modified;
                 this.db.SaveChanges();
@@ -1901,7 +2241,10 @@ namespace PermitToWork.Models.Hw
             // return code - 200 {ok}
             //               400 {not the user}
 
-            if (user.id.ToString() == this.acc_supervisor || user.id.ToString() == this.acc_supervisor_delegate)
+            int foId = 0;
+            Int32.TryParse(this.acc_supervisor, out foId);
+            UserEntity fo = new UserEntity(foId, user.token, user);
+            if (user.id.ToString() == this.acc_supervisor || user.id.ToString() == fo.employee_delegate.ToString())
             {
                 hot_work hw = this.db.hot_work.Find(this.id);
                 hw.acc_work_leader_approve = null;
@@ -2000,18 +2343,15 @@ namespace PermitToWork.Models.Hw
                     
                     return "200";
                 }
-                else if (user.id.ToString() == this.acc_fo_delegate)
+                else
                 {
                     hw.acc_fo_approve = "d" + user.signature;
+                    hw.acc_fo_delegate = user.id.ToString();
                     hw.status = (int)statusHW.ACCFO;
                     this.db.Entry(hw).State = EntityState.Modified;
                     this.db.SaveChanges();
 
                     return "201";
-                }
-                else
-                {
-                    return "400";
                 }
             }
             else if (extension == 1)
@@ -2024,17 +2364,14 @@ namespace PermitToWork.Models.Hw
                     this.db.SaveChanges();
                     return "200";
                 }
-                else if (user.id.ToString() == this.ext_fo_delegate_1)
+                else
                 {
                     hw.ext_fo_approve_1 = "d" + user.signature;
+                    hw.ext_fo_delegate_1 = user.id.ToString();
                     hw.status = (int)statusHW.EXTACCFO1;
                     this.db.Entry(hw).State = EntityState.Modified;
                     this.db.SaveChanges();
                     return "209";
-                }
-                else
-                {
-                    return "400";
                 }
             }
             else if (extension == 2)
@@ -2047,17 +2384,14 @@ namespace PermitToWork.Models.Hw
                     this.db.SaveChanges();
                     return "200";
                 }
-                else if (user.id.ToString() == this.ext_fo_delegate_2)
+                else
                 {
                     hw.ext_fo_approve_2 = "d" + user.signature;
+                    hw.ext_fo_delegate_2 = user.id.ToString();
                     hw.status = (int)statusHW.EXTACCFO2;
                     this.db.Entry(hw).State = EntityState.Modified;
                     this.db.SaveChanges();
                     return "209";
-                }
-                else
-                {
-                    return "400";
                 }
             }
             else if (extension == 3)
@@ -2070,17 +2404,14 @@ namespace PermitToWork.Models.Hw
                     this.db.SaveChanges();
                     return "200";
                 }
-                else if (user.id.ToString() == this.ext_fo_delegate_3)
+                else
                 {
                     hw.ext_fo_approve_3 = "d" + user.signature;
+                    hw.ext_fo_delegate_3 = user.id.ToString();
                     hw.status = (int)statusHW.EXTACCFO3;
                     this.db.Entry(hw).State = EntityState.Modified;
                     this.db.SaveChanges();
                     return "209";
-                }
-                else
-                {
-                    return "400";
                 }
             }
             else if (extension == 4)
@@ -2093,17 +2424,14 @@ namespace PermitToWork.Models.Hw
                     this.db.SaveChanges();
                     return "200";
                 }
-                else if (user.id.ToString() == this.ext_fo_delegate_4)
+                else
                 {
                     hw.ext_fo_approve_4 = "d" + user.signature;
+                    hw.ext_fo_delegate_4 = user.id.ToString();
                     hw.status = (int)statusHW.EXTACCFO4;
                     this.db.Entry(hw).State = EntityState.Modified;
                     this.db.SaveChanges();
                     return "209";
-                }
-                else
-                {
-                    return "400";
                 }
             }
             else if (extension == 5)
@@ -2116,17 +2444,14 @@ namespace PermitToWork.Models.Hw
                     this.db.SaveChanges();
                     return "200";
                 }
-                else if (user.id.ToString() == this.ext_fo_delegate_5)
+                else
                 {
                     hw.ext_fo_approve_5 = "d" + user.signature;
+                    hw.ext_fo_delegate_5 = user.id.ToString();
                     hw.status = (int)statusHW.EXTACCFO5;
                     this.db.Entry(hw).State = EntityState.Modified;
                     this.db.SaveChanges();
                     return "209";
-                }
-                else
-                {
-                    return "400";
                 }
             }
             else if (extension == 6)
@@ -2139,17 +2464,14 @@ namespace PermitToWork.Models.Hw
                     this.db.SaveChanges();
                     return "200";
                 }
-                else if (user.id.ToString() == this.ext_fo_delegate_6)
+                else
                 {
                     hw.ext_fo_approve_6 = "d" + user.signature;
+                    hw.ext_fo_delegate_6 = user.id.ToString();
                     hw.status = (int)statusHW.EXTACCFO6;
                     this.db.Entry(hw).State = EntityState.Modified;
                     this.db.SaveChanges();
                     return "209";
-                }
-                else
-                {
-                    return "400";
                 }
             }
             else if (extension == 7)
@@ -2162,17 +2484,14 @@ namespace PermitToWork.Models.Hw
                     this.db.SaveChanges();
                     return "200";
                 }
-                else if (user.id.ToString() == this.ext_fo_delegate_7)
+                else
                 {
                     hw.ext_fo_approve_7 = "d" + user.signature;
+                    hw.ext_fo_delegate_7 = user.id.ToString();
                     hw.status = (int)statusHW.EXTACCFO7;
                     this.db.Entry(hw).State = EntityState.Modified;
                     this.db.SaveChanges();
                     return "209";
-                }
-                else
-                {
-                    return "400";
                 }
             }
             else
@@ -2188,139 +2507,83 @@ namespace PermitToWork.Models.Hw
             //               400 {not the user}
             if (extension == 0)
             {
-                if (user.id.ToString() == this.acc_fo || user.id.ToString() == this.acc_fo_delegate)
-                {
-                    hot_work hw = this.db.hot_work.Find(this.id);
-                    hw.acc_supervisor_approve = null;
-                    hw.status = (int)statusHW.ACCWORKLEADER;
-                    this.db.Entry(hw).State = EntityState.Modified;
-                    this.db.SaveChanges();
+                hot_work hw = this.db.hot_work.Find(this.id);
+                hw.acc_supervisor_approve = null;
+                hw.status = (int)statusHW.ACCWORKLEADER;
+                this.db.Entry(hw).State = EntityState.Modified;
+                this.db.SaveChanges();
 
-                    return "200";
-                }
-                else
-                {
-                    return "400";
-                }
+                return "200";
             }
             else if (extension == 1)
             {
-                if (user.id.ToString() == this.ext_fo_1 || user.id.ToString() == this.ext_fo_delegate_1)
-                {
-                    hot_work hw = this.db.hot_work.Find(this.id);
-                    hw.ext_work_leader_approve_1 = null;
-                    hw.status = (int)statusHW.EXTGASTESTER1;
-                    this.db.Entry(hw).State = EntityState.Modified;
-                    this.db.SaveChanges();
+                hot_work hw = this.db.hot_work.Find(this.id);
+                hw.ext_work_leader_approve_1 = null;
+                hw.status = (int)statusHW.EXTGASTESTER1;
+                this.db.Entry(hw).State = EntityState.Modified;
+                this.db.SaveChanges();
 
-                    return "200";
-                }
-                else
-                {
-                    return "400";
-                }
+                return "200";
             }
             else if (extension == 2)
             {
-                if (user.id.ToString() == this.ext_fo_2 || user.id.ToString() == this.ext_fo_delegate_2)
-                {
-                    hot_work hw = this.db.hot_work.Find(this.id);
-                    hw.ext_work_leader_approve_2 = null;
-                    hw.status = (int)statusHW.EXTGASTESTER2;
-                    this.db.Entry(hw).State = EntityState.Modified;
-                    this.db.SaveChanges();
+                hot_work hw = this.db.hot_work.Find(this.id);
+                hw.ext_work_leader_approve_2 = null;
+                hw.status = (int)statusHW.EXTGASTESTER2;
+                this.db.Entry(hw).State = EntityState.Modified;
+                this.db.SaveChanges();
 
-                    return "200";
-                }
-                else
-                {
-                    return "400";
-                }
+                return "200";
             }
             else if (extension == 3)
             {
-                if (user.id.ToString() == this.ext_fo_3 || user.id.ToString() == this.ext_fo_delegate_3)
-                {
-                    hot_work hw = this.db.hot_work.Find(this.id);
-                    hw.ext_work_leader_approve_3 = null;
-                    hw.status = (int)statusHW.EXTGASTESTER3;
-                    this.db.Entry(hw).State = EntityState.Modified;
-                    this.db.SaveChanges();
+                hot_work hw = this.db.hot_work.Find(this.id);
+                hw.ext_work_leader_approve_3 = null;
+                hw.status = (int)statusHW.EXTGASTESTER3;
+                this.db.Entry(hw).State = EntityState.Modified;
+                this.db.SaveChanges();
 
-                    return "200";
-                }
-                else
-                {
-                    return "400";
-                }
+                return "200";
             }
             else if (extension == 4)
             {
-                if (user.id.ToString() == this.ext_fo_4 || user.id.ToString() == this.ext_fo_delegate_4)
-                {
-                    hot_work hw = this.db.hot_work.Find(this.id);
-                    hw.ext_work_leader_approve_4 = null;
-                    hw.status = (int)statusHW.EXTGASTESTER4;
-                    this.db.Entry(hw).State = EntityState.Modified;
-                    this.db.SaveChanges();
+                hot_work hw = this.db.hot_work.Find(this.id);
+                hw.ext_work_leader_approve_4 = null;
+                hw.status = (int)statusHW.EXTGASTESTER4;
+                this.db.Entry(hw).State = EntityState.Modified;
+                this.db.SaveChanges();
 
-                    return "200";
-                }
-                else
-                {
-                    return "400";
-                }
+                return "200";
             }
             else if (extension == 5)
             {
-                if (user.id.ToString() == this.ext_fo_5 || user.id.ToString() == this.ext_fo_delegate_5)
-                {
-                    hot_work hw = this.db.hot_work.Find(this.id);
-                    hw.ext_work_leader_approve_5 = null;
-                    hw.status = (int)statusHW.EXTGASTESTER5;
-                    this.db.Entry(hw).State = EntityState.Modified;
-                    this.db.SaveChanges();
+                hot_work hw = this.db.hot_work.Find(this.id);
+                hw.ext_work_leader_approve_5 = null;
+                hw.status = (int)statusHW.EXTGASTESTER5;
+                this.db.Entry(hw).State = EntityState.Modified;
+                this.db.SaveChanges();
 
-                    return "200";
-                }
-                else
-                {
-                    return "400";
-                }
+                return "200";
             }
             else if (extension == 6)
             {
-                if (user.id.ToString() == this.ext_fo_6 || user.id.ToString() == this.ext_fo_delegate_6)
-                {
-                    hot_work hw = this.db.hot_work.Find(this.id);
-                    hw.ext_work_leader_approve_6 = null;
-                    hw.status = (int)statusHW.EXTGASTESTER6;
-                    this.db.Entry(hw).State = EntityState.Modified;
-                    this.db.SaveChanges();
+                hot_work hw = this.db.hot_work.Find(this.id);
+                hw.ext_work_leader_approve_6 = null;
+                hw.status = (int)statusHW.EXTGASTESTER6;
+                this.db.Entry(hw).State = EntityState.Modified;
+                this.db.SaveChanges();
 
-                    return "200";
-                }
-                else
-                {
-                    return "400";
-                }
+                return "200";
             }
             else if (extension == 7)
             {
-                if (user.id.ToString() == this.ext_fo_7 || user.id.ToString() == this.ext_fo_delegate_7)
-                {
-                    hot_work hw = this.db.hot_work.Find(this.id);
-                    hw.ext_work_leader_approve_7 = null;
-                    hw.status = (int)statusHW.EXTGASTESTER7;
-                    this.db.Entry(hw).State = EntityState.Modified;
-                    this.db.SaveChanges();
+                hot_work hw = this.db.hot_work.Find(this.id);
+                hw.ext_work_leader_approve_7 = null;
+                hw.status = (int)statusHW.EXTGASTESTER7;
+                this.db.Entry(hw).State = EntityState.Modified;
+                this.db.SaveChanges();
 
-                    return "200";
-                }
-                else
-                {
-                    return "400";
-                }
+                return "200";
             }
             else
             {
@@ -2334,7 +2597,11 @@ namespace PermitToWork.Models.Hw
             // return code - 200 {ok}
             //               400 {not the user}
             hot_work hw = this.db.hot_work.Find(this.id);
-            if (user.id.ToString() == this.work_leader)
+            if (is_guest && user.id.ToString() == this.acc_supervisor)
+            {
+                hw.can_work_leader_approve = hw.permit_to_work.acc_ptw_requestor_approve;
+                hw.status = (int)statusHW.CANWORKLEADER;
+            } else if (user.id.ToString() == this.work_leader)
             {
                 hw.can_work_leader_approve = "a" + user.signature;
                 hw.status = (int)statusHW.CANWORKLEADER;
@@ -2352,7 +2619,9 @@ namespace PermitToWork.Models.Hw
             //               400 {not the user}
 
             hot_work hw = this.db.hot_work.Find(this.id);
-
+            int foId = 0;
+            Int32.TryParse(this.can_supervisor, out foId);
+            UserEntity fo = new UserEntity(foId, user.token, user);
             if (user.id.ToString() == this.can_supervisor)
             {
                 //ptw.acc_assessor = this.acc_assessor;
@@ -2366,13 +2635,14 @@ namespace PermitToWork.Models.Hw
 
                 return "200";
             }
-            else if (user.id.ToString() == this.can_supervisor_delegate)
+            else if (user.id.ToString() == fo.employee_delegate.ToString())
             {
                 //ptw.acc_assessor = this.acc_assessor;
                 //ptw.acc_assessor_delegate = this.acc_assessor_delegate;
                 //ptw.can_assessor = this.can_assessor;
                 //ptw.can_assessor_delegate = this.can_assessor_delegate;
                 hw.can_supervisor_approve = "d" + user.signature;
+                hw.can_supervisor_delegate = user.id.ToString();
                 hw.status = (int)statusHW.CANSPV;
                 this.db.Entry(hw).State = EntityState.Modified;
                 this.db.SaveChanges();
@@ -2390,8 +2660,10 @@ namespace PermitToWork.Models.Hw
             // supervisor reject
             // return code - 200 {ok}
             //               400 {not the user}
-
-            if (user.id.ToString() == this.can_supervisor || user.id.ToString() == this.can_supervisor_delegate)
+            int foId = 0;
+            Int32.TryParse(this.can_supervisor, out foId);
+            UserEntity fo = new UserEntity(foId, user.token, user);
+            if (user.id.ToString() == this.can_supervisor || user.id.ToString() == fo.employee_delegate.ToString())
             {
                 hot_work hw = this.db.hot_work.Find(this.id);
                 hw.can_work_leader_approve = null;
@@ -2487,17 +2759,14 @@ namespace PermitToWork.Models.Hw
                 this.db.SaveChanges();
                 return "200";
             }
-            else if (user.id.ToString() == this.can_fo_delegate)
+            else
             {
                 hw.can_fo_approve = "d" + user.signature;
+                hw.can_fo_delegate = user.id.ToString();
                 hw.status = (int)statusHW.CANFO;
                 this.db.Entry(hw).State = EntityState.Modified;
                 this.db.SaveChanges();
                 return "201";
-            }
-            else
-            {
-                return "400";
             }
         }
 
@@ -2506,20 +2775,13 @@ namespace PermitToWork.Models.Hw
             // FO reject
             // return code - 200 {ok}
             //               400 {not the user}
-            if (user.id.ToString() == this.can_fo || user.id.ToString() == this.can_fo_delegate)
-            {
-                hot_work hw = this.db.hot_work.Find(this.id);
-                hw.can_supervisor_approve = null;
-                hw.status = (int)statusHW.CANWORKLEADER;
-                this.db.Entry(hw).State = EntityState.Modified;
-                this.db.SaveChanges();
+            hot_work hw = this.db.hot_work.Find(this.id);
+            hw.can_supervisor_approve = null;
+            hw.status = (int)statusHW.CANWORKLEADER;
+            this.db.Entry(hw).State = EntityState.Modified;
+            this.db.SaveChanges();
 
-                return "200";
-            }
-            else
-            {
-                return "400";
-            }
+            return "200";
         }
 
         #endregion
@@ -2658,5 +2920,11 @@ namespace PermitToWork.Models.Hw
         }
 
         #endregion
+
+        public void GetPtw(UserEntity user)
+        {
+            this.ptw = new PtwEntity(this.id_ptw.Value, user);
+            this.is_guest = this.ptw.is_guest == 1;
+        }
     }
 }

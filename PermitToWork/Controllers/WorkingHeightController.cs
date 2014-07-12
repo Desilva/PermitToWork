@@ -32,7 +32,7 @@ namespace PermitToWork.Controllers
 
             UserEntity user = Session["user"] as UserEntity;
             WorkingHeightEntity entity = new WorkingHeightEntity(id, user);
-
+            entity.getPtw(user);
             bool[] isCanEdit = new bool[13];
 
             isCanEdit[0] = entity.isCanEditFormRequestor(user);
@@ -100,6 +100,24 @@ namespace PermitToWork.Controllers
             }
             ViewBag.listTotalCrew = listTotalCrew;
 
+            var listNoInspection = new List<SelectListItem>();
+            var listNoInspections = new MstNoInspectionEntity().getListMstNoInspectionByUser(user);
+            listNoInspection.Add(new SelectListItem
+            {
+                Text = "",
+                Value = "0",
+            });
+            foreach (MstNoInspectionEntity rad in listNoInspections)
+            {
+                listNoInspection.Add(new SelectListItem
+                {
+                    Text = rad.no_inspection,
+                    Value = rad.id.ToString(),
+                    Selected = entity.no_inspection == rad.id.ToString() ? true : false
+                });
+            }
+            ViewBag.listNoInspection = listNoInspection;
+
             ViewBag.ptwStatus = new PtwEntity(entity.id_ptw.Value, user).status;
             return PartialView("create", entity);
         }
@@ -152,6 +170,7 @@ namespace PermitToWork.Controllers
         {
             UserEntity user = Session["user"] as UserEntity;
             int retVal = 1;
+            wh.saveInspector();
             wh = new WorkingHeightEntity(wh.id, user);
             retVal = retVal & wh.signClearance(2, user);
             retVal = retVal & wh.sendToUser(2, 1, fullUrl(), user);
@@ -372,5 +391,21 @@ namespace PermitToWork.Controllers
         }
 
         #endregion
+
+        [HttpPost]
+        public JsonResult InspectionNo(int id)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            MstNoInspectionEntity noInspection = new MstNoInspectionEntity(id, user);
+            return Json(noInspection.valid_date != null ? noInspection.valid_date.Value.ToString("MM/dd/yyyy") : "");
+        }
+
+        [HttpPost]
+        public JsonResult CheckAttachment(int id)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            WorkingHeightEntity wh = new WorkingHeightEntity(id, user);
+            return Json(new { status = wh.listDocumentUploaded[WorkingHeightEntity.DocumentUploaded.ATTACHMENT.ToString()].Count > 0 ? "200" : "404" });
+        }
     }
 }

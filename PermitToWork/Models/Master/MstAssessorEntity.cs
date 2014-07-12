@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PermitToWork.Models.User;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -11,6 +12,8 @@ namespace PermitToWork.Models.Master
         public int id { get; set; }
         public Nullable<int> id_employee { get; set; }
         public string assessor_code { get; set; }
+
+        public UserEntity user { get; set; }
         private star_energy_ptwEntities db;
 
         public MstAssessorEntity()
@@ -18,7 +21,7 @@ namespace PermitToWork.Models.Master
             this.db = new star_energy_ptwEntities();
         }
 
-        public MstAssessorEntity(int id)
+        public MstAssessorEntity(int id, UserEntity user)
         {
             this.db = new star_energy_ptwEntities();
             mst_assessor assessor = this.db.mst_assessor.Find(id);
@@ -26,15 +29,17 @@ namespace PermitToWork.Models.Master
             this.id = assessor.id;
             this.id_employee = assessor.id_employee;
             this.assessor_code = assessor.assessor_code;
+            this.user = new UserEntity(id_employee.Value, user.token, user);
         }
 
-        public MstAssessorEntity(mst_assessor assessor)
+        public MstAssessorEntity(mst_assessor assessor, UserEntity user)
         {
             this.db = new star_energy_ptwEntities();
 
             this.id = assessor.id;
             this.id_employee = assessor.id_employee;
             this.assessor_code = assessor.assessor_code;
+            this.user = new UserEntity(id_employee.Value, user.token, user);
         }
 
         public List<MstAssessorEntity> getListAssessor()
@@ -48,6 +53,18 @@ namespace PermitToWork.Models.Master
                        };
 
             return list.ToList();
+        }
+
+        public List<MstAssessorEntity> getListAssessor(UserEntity user)
+        {
+            List<int> listId = this.db.mst_assessor.Select(p => p.id).ToList();
+            var result = new List<MstAssessorEntity>();
+            foreach (int i in listId)
+            {
+                result.Add(new MstAssessorEntity(i, user));
+            }
+
+            return result;
         }
 
         public int addAssessor()

@@ -44,12 +44,12 @@
 </div>
 <script type="text/x-kendo-template" id="extend-template">
     <input type="button" class="btn btn-primary" value="Edit" onclick="editPtw(#= id #)"/>
-    #if (status == 5 && new Date() <= validity_period_end && !has_extend) {#
+    #if (status == 6 && new Date() <= validity_period_end && !has_extend) {#
     <input type="button" class="btn btn-warning" value="Extend" onclick="extendPtw(#= id #)"/>
 
     #}#
-    #if (status >= 5) {#
-    <a class="btn btn-success" href="Ptw/Print/#= id #" target="_blank">Print</a>
+    #if (status >= 6) {#
+    <a class="btn btn-success" href="@Url.Action("Index","Print")?id=#= id #&type=0&no=#= ptw_no #">Print</a>
     #}#
     <input type="button" class="btn btn-success" value="Log" onclick="logPtw(#= id #)"/>
     
@@ -61,20 +61,34 @@
         <br />
         All Clearance Permit Related:
         <ul>
-            #if(hw_id != null){#<li>Hot Work: <a href="\#" onclick="goToHotWork(#= cPermit['HOTWORK'].ids #)" class="btn btn-primary">#= hw_no #</a><br />Status : #= cPermit['HOTWORK'].statusText #</li>#}#
-            #if(fi_id != null){#<li>Fire Impairment: <a href="\#" onclick="goToFireImpairment(#= cPermit['FIREIMPAIRMENT'].ids #)" class="btn btn-primary">#= fi_no #</a><br />Status : #= cPermit['FIREIMPAIRMENT'].statusText #</li>#}#
-            #if(rad_id != null){#<li>Radiography: <a href="\#" onclick="goToRadiography(#= cPermit['RADIOGRAPHY'].ids #)" class="btn btn-primary">#= rad_no #</a><br />Status : #= cPermit['RADIOGRAPHY'].statusText #</li>#}#
+            #if(loto_id != null){#<li>LOTO: <a href="\#" onclick="event.preventDefault();goToLoto(#= id #)" class="btn btn-primary">Go To LOTO Permit</a><br />Status : #= loto_statusText #<br />Log : <a href="\#" onclick="event.preventDefault();goToLog(#= cPermit['LOTO'].ids #, 1)" class="btn btn-success">LOTO Log</a></li>#}#
+            #if(csep_id != null){#<li>Confined Space: <a href="\#" onclick="event.preventDefault();goToCsep(#= cPermit['CONFINEDSPACE'].ids #)" class="btn btn-primary">#= csep_no #</a><br />Status : #= cPermit['CONFINEDSPACE'].statusText #<br />Log / Print : <a href="\#" onclick="event.preventDefault();goToLog(#= cPermit['CONFINEDSPACE'].ids #, 2)" class="btn btn-success">CSEP Log</a> / <a class="btn btn-primary" href='@Url.Action("Index", "Print")?id=#= cPermit['CONFINEDSPACE'].ids #&type=4&no=#= csep_no #'>Print</a></li>#}#
+            #if(hw_id != null){#<li>Hot Work: <a href="\#" onclick="event.preventDefault();goToHotWork(#= cPermit['HOTWORK'].ids #)" class="btn btn-primary">#= hw_no #</a><br />Status : #= cPermit['HOTWORK'].statusText #<br />Log / Print : <a href="\#" onclick="event.preventDefault();goToLog(#= cPermit['HOTWORK'].ids #, 3)" class="btn btn-success">HW Log</a> / <a class="btn btn-primary" href='@Url.Action("Index", "Print")?id=#= cPermit['HOTWORK'].ids #&type=5&no=#= hw_no #'>Print</a></li>#}#
+            #if(fi_id != null){#<li>Fire Impairment: <a href="\#" onclick="event.preventDefault();goToFireImpairment(#= cPermit['FIREIMPAIRMENT'].ids #)" class="btn btn-primary">#= fi_no #</a><br />Status : #= cPermit['FIREIMPAIRMENT'].statusText #<br />Log / Print : <a href="\#" onclick="event.preventDefault();goToLog(#= cPermit['FIREIMPAIRMENT'].ids #, 4)" class="btn btn-success">FI Log</a> / <a class="btn btn-primary" href='@Url.Action("Index", "Print")?id=#= cPermit['FIREIMPAIRMENT'].ids #&type=7&no=#= fi_no #'>Print</a></li>#}#
+            #if(ex_id != null){#<li>Excavation: <a href="\#" onclick="event.preventDefault();goToExcavation(#= cPermit['EXCAVATION'].ids #)" class="btn btn-primary">#= ex_no #</a><br />Status : #= cPermit['EXCAVATION'].statusText #</li><br />Log / Print : <a href="\#" onclick="event.preventDefault();goToLog(#= cPermit['EXCAVATION'].ids #, 5)" class="btn btn-success">EX Log</a> / <a class="btn btn-primary" href='@Url.Action("Index", "Print")?id=#= cPermit['EXCAVATION'].ids #&type=6&no=#= ex_no #'>Print</a>#}#
+            #if(wh_id != null){#<li>Working at Height: <a href="\#" onclick="event.preventDefault();goToWorkingHeight(#= cPermit['WORKINGHEIGHT'].ids #)" class="btn btn-primary">#= wh_no #</a><br />Status : #= cPermit['WORKINGHEIGHT'].statusText #</li><br />Log / Print : <a href="\#" onclick="event.preventDefault();goToLog(#= cPermit['WORKINGHEIGHT'].ids #, 6)" class="btn btn-success">WH Log</a> / <a class="btn btn-primary" href='@Url.Action("Index", "Print")?id=#= cPermit['WORKINGHEIGHT'].ids #&type=8&no=#= wh_no #'>Print</a>#}#
+            #if(rad_id != null){#<li>Radiography: <a href="\#" onclick="event.preventDefault();goToRadiography(#= cPermit['RADIOGRAPHY'].ids #)" class="btn btn-primary">#= rad_no #</a><br />Status : #= cPermit['RADIOGRAPHY'].statusText #</li><br />Log / Print : <a href="\#" onclick="event.preventDefault();goToLog(#= cPermit['RADIOGRAPHY'].ids #, 7)" class="btn btn-success">Rad Log</a> / <a class="btn btn-primary" href='@Url.Action("Index", "Print")?id=#= cPermit['RADIOGRAPHY'].ids #&type=9&no=#= rad_no #'>Print</a>#}#
         </ul>
     </div>
 </script>
 <script>
+    var isNeedClose = "";
     $(document).ready(function () {
         var crudServiceBaseUrl = "Home",
             dataSourceIn = new kendo.data.DataSource({
                 transport: {
                     read: {
                         url: crudServiceBaseUrl + "/Binding",
-                        type: "POST"
+                        type: "POST",
+                        complete: function (e) {
+                            var resp = JSON.parse(e.responseText);
+                            console.log(resp);
+                            for (var i in resp) {
+                                if (resp[i].isNeedClose) {
+                                    isNeedClose += resp[i].ptw_no + ", ";
+                                }
+                            }
+                        }
                     },
                     parameterMap: function (options, operation) {
                         if (operation !== "read" && options.models) {
@@ -116,6 +130,7 @@
             dataBound: onDataBound,
             columns: [
                 { field: "ptw_no", title: "PTW Number", type: "string", width: 250 },
+                { field: "work_description", title: "Description", type: "string" },
                 { field: "ptw_status", title: "PTW Status", type: "string" },
                 { title: "Command", template: kendo.template($("#extend-template").html()), width: 180 },
                 //{
@@ -192,11 +207,16 @@
 
     function logPtw(id) {
         $('#history').val('@Url.Action("Index","Home")');
-        $('#content').load('Log/Index/' + id + '?permitType=' + 0 + '&backPath=' + 'Home/Index');
+        $('#content').load('@Url.Action("Log","Log")?id=' + id + '&permitType=' + 0 + '&backPath=' + '@Url.Action("Index","Home")');
     }
 
     function createPtw() {
-        $('#content').load('Ptw/Create');
+        if (isNeedClose == "") {
+            $('#content').load('@Url.Action("Create","Ptw")');
+        } else {
+            isNeedClose = isNeedClose.substr(0, isNeedClose.length - 2);
+            alert("You must close existing Permit. Existing Overdue Permit: " + isNeedClose);
+        }
     }
 
     function goToHotWork(id) {
@@ -212,6 +232,31 @@
     function goToRadiography(id) {
         $('#history').val('@Url.Action("Index","Home")');
         $('#content').load('@Url.Action("Edit","Radiography")/' + id);
+    }
+
+    function goToCsep(id) {
+        $('#history').val('@Url.Action("Index","Home")');
+        $('#content').load('@Url.Action("Edit","Csep")/' + id);
+    }
+
+    function goToExcavation(id) {
+        $('#history').val('@Url.Action("Index","Home")');
+        $('#content').load('@Url.Action("Edit","Excavation")/' + id);
+    }
+
+    function goToWorkingHeight(id) {
+        $('#history').val('@Url.Action("Index","Home")');
+        $('#content').load('@Url.Action("Edit","WorkingHeight")/' + id);
+    }
+
+    function goToLoto(id) {
+        $('#history').val('@Url.Action("Index","Home")');
+        $('#content').load('@Url.Action("Index","Loto")/' + id);
+    }
+
+    function goToLog(id, permitType) {
+        $('#history').val('@Url.Action("Index","Home")');
+        $('#content').load('@Url.Action("Log","Log")?id=' + id + '&permitType=' + permitType + '&backPath=' + '@Url.Action("Index","Home")');
     }
 </script>
 

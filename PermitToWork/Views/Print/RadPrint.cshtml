@@ -1,0 +1,633 @@
+﻿@using PermitToWork.Models.Radiography
+@model RadEntity
+@{
+    Layout = null;
+    var listUser = ViewBag.listUser as PermitToWork.Models.User.ListUser;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Print Radiography Permit</title>
+    <link rel="stylesheet" href="@Url.Content("~/Content/bootstrap.css")" />
+	<link rel="stylesheet" href="@Url.Content("~/Content/bootstrap-responsive.css")" />
+    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="container-fluid header-form">
+        <div class="row-fluid">
+            <div class="span3 logo">
+                <img src="../../Img/logo-clean.png" />
+            </div>
+            <div class="span6 title">
+                <b>RADIOGRAPHY PERMIT</b><br />
+                Star Energy Geothermal (Wayang Windu) Limited
+            </div>
+
+            <div class="span3 no">
+                <br /><i>Rad No : <span id="ptw_no">@Model.rg_no</span></i>
+            </div>
+        </div>
+        <div class="row-fluid separator">
+        </div>
+        <div class="row-fluid">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="title-form" colspan="4"><b>1.  GENERAL INFORMATION </b></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><b>No </b></td>
+                        <td><b>Description </b></td>
+                        <td colspan="2"><b>Remark </b></td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td><b>Purpose:</b></td>
+                        <td colspan="2">@Model.purpose</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td><b>Work location</b></td>
+                        <td colspan="2">@Model.work_location</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td><b>Radiographer Level 2 <small>(Ahli Radiographic)</small>:</b></td>
+                        <td>@(Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER2.ToString()] != null ? Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER2.ToString()].alpha_name : "")</td>
+                        <td><b>Licensed number:</b> @Model.radiographer_2_license_number
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td><b>Radiographer Level 1 <small>(Operator Radiographic)</small>:</b></td>
+                        <td>@(Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER1.ToString()] != null ? Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER1.ToString()].alpha_name : "")</td>
+                        <td><b>Licensed number:</b> @Model.radiographer_1_license_number
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td><b>Radiation Protection Officer:</b> </td>
+                        <td>@Model.radiationPO.user.alpha_name</td>
+                        <td><b>Licensed number:</b> @Model.radiation_protection_officer_license_number
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td><b>Potential Area Exposure:</b> </td>
+                        <td colspan="2">@Model.potential_area_affected<br /><small><i><b>(site plan drawings that have been marked shall be attached at bottom of page)</b></i></small></td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td><b>Total Crew Involve:</b> </td>
+                        <td colspan="2">@Model.total_crew</td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td><b>Supervisor <small><i>(project manager)</i></small>:</b> </td>
+                        <td colspan="2">@(Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SUPERVISOR.ToString()] != null ? Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SUPERVISOR.ToString()].alpha_name : "")</td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td><b>Type of radiographic source:</b> </td>
+                        <td colspan="2">
+                            <ul class="inline table-ul">
+                                <li>
+                                    @if (Model.radiographic_source == "1")
+                                    {
+                                        <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                                    }
+                                    else
+                                    {
+                                        <img src="@Url.Content("~/Img/box.png")" width="20"/>
+                                    }
+                                    X Ray</li>
+                                <li>
+                                    @if (Model.radiographic_source == "2")
+                                    {
+                                        <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                                    }
+                                    else
+                                    {
+                                        <img src="@Url.Content("~/Img/box.png")" width="20"/>
+                                    }
+                                    Gamma Ray</li>
+                                <li>
+                                    @if (Model.radiographic_source != "1" && Model.radiographic_source != "2" && Model.radiographic_source != null)
+                                    {
+                                        <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                                    }
+                                    else
+                                    {
+                                        <img src="@Url.Content("~/Img/box.png")" width="20"/>
+                                    }Others
+                                </li>
+                                <li>@(Model.radiographic_source != "1" && Model.radiographic_source != "2" ? Model.radiographic_source : "")</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td><b>Estimate time <small>(dd:mm:yyyy hh:mm)</small></b></td>
+                        <td><b>From :</b> @(Model.estimate_time_start != null ? Model.estimate_time_start.Value.ToString("dd MMM yyyy hh:mm tt") : "")</td>
+                        <td><b>Until :</b> @(Model.estimate_time_end != null ? Model.estimate_time_end.Value.ToString("dd MMM yyyy hh:mm tt") : "")</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row-fluid">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th class="title-form" colspan="6">
+                            <b>2. PRE-JOB SCREENING</b> <small><i>It must be completed by certified radiographer Level 2. If any of the below can't be satisfied the work will not be permitted. Project manager acknowledge at the ack column as agreement with hazard screening. 
+                                Fill : yes if agree, no if disagree, N/A if not applicable with statement on description column; Spv : Supervisor; Rad : Radiographic engineer / level-2; FO : facility owner</i></small>
+                        </th>
+                    
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>No</strong></td>
+                        <td><strong>Description</strong></td>
+                        <td><strong>SPV</strong></td>
+                        <td><strong>RAD</strong></td>
+                        <td><strong>FO</strong></td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>Warning sign will be posted around relevant potential area of exposure <small>(attached copy sample of sign if there apply)</small></td>
+                        <td>
+                            @(Model.screening_spv_arr[0] == "0" ? "N/A" : (Model.screening_spv_arr[0] == "1" ? "Yes" : (Model.screening_spv_arr[0] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_rad_arr[0] == "0" ? "N/A" : (Model.screening_rad_arr[0] == "1" ? "Yes" : (Model.screening_rad_arr[0] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_fo_arr[0] == "0" ? "N/A" : (Model.screening_fo_arr[0] == "1" ? "Yes" : (Model.screening_fo_arr[0] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Safety line will be provided at working area boundary</td>
+                        <td>
+                            @(Model.screening_spv_arr[1] == "0" ? "N/A" : (Model.screening_spv_arr[1] == "1" ? "Yes" : (Model.screening_spv_arr[1] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_rad_arr[1] == "0" ? "N/A" : (Model.screening_rad_arr[1] == "1" ? "Yes" : (Model.screening_rad_arr[1] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_fo_arr[1] == "0" ? "N/A" : (Model.screening_fo_arr[1] == "1" ? "Yes" : (Model.screening_fo_arr[1] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Sufficient illumination <small>(if work on night)</small></td>
+                        <td>
+                            @(Model.screening_spv_arr[2] == "0" ? "N/A" : (Model.screening_spv_arr[2] == "1" ? "Yes" : (Model.screening_spv_arr[2] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_rad_arr[2] == "0" ? "N/A" : (Model.screening_rad_arr[2] == "1" ? "Yes" : (Model.screening_rad_arr[2] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_fo_arr[2] == "0" ? "N/A" : (Model.screening_fo_arr[2] == "1" ? "Yes" : (Model.screening_fo_arr[2] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Is emergency procedure available? <small>(attached if any, emergency shall be approved by WW SHE Official)</small></td>
+                        <td>
+                            @(Model.screening_spv_arr[3] == "0" ? "N/A" : (Model.screening_spv_arr[3] == "1" ? "Yes" : (Model.screening_spv_arr[3] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_rad_arr[3] == "0" ? "N/A" : (Model.screening_rad_arr[3] == "1" ? "Yes" : (Model.screening_rad_arr[3] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_fo_arr[3] == "0" ? "N/A" : (Model.screening_fo_arr[3] == "1" ? "Yes" : (Model.screening_fo_arr[3] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Other workers within potential area have been evacuated</td>
+                        <td>
+                            @(Model.screening_spv_arr[4] == "0" ? "N/A" : (Model.screening_spv_arr[4] == "1" ? "Yes" : (Model.screening_spv_arr[4] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_rad_arr[4] == "0" ? "N/A" : (Model.screening_rad_arr[4] == "1" ? "Yes" : (Model.screening_rad_arr[4] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_fo_arr[4] == "0" ? "N/A" : (Model.screening_fo_arr[4] == "1" ? "Yes" : (Model.screening_fo_arr[4] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>Available radio communication with facility owner</td>
+                        <td>
+                            @(Model.screening_spv_arr[5] == "0" ? "N/A" : (Model.screening_spv_arr[5] == "1" ? "Yes" : (Model.screening_spv_arr[5] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_rad_arr[5] == "0" ? "N/A" : (Model.screening_rad_arr[5] == "1" ? "Yes" : (Model.screening_rad_arr[5] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_fo_arr[5] == "0" ? "N/A" : (Model.screening_fo_arr[5] == "1" ? "Yes" : (Model.screening_fo_arr[5] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>Available valid RT procedure <small>(copy must be attached)</small></td>
+                        <td>
+                            @(Model.screening_spv_arr[6] == "0" ? "N/A" : (Model.screening_spv_arr[6] == "1" ? "Yes" : (Model.screening_spv_arr[6] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_rad_arr[6] == "0" ? "N/A" : (Model.screening_rad_arr[6] == "1" ? "Yes" : (Model.screening_rad_arr[6] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_fo_arr[6] == "0" ? "N/A" : (Model.screening_fo_arr[6] == "1" ? "Yes" : (Model.screening_fo_arr[6] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>Available radiation survey meter with valid calibration record <small>(copy of certificate must be attached)</small></td>
+                        <td>
+                            @(Model.screening_spv_arr[7] == "0" ? "N/A" : (Model.screening_spv_arr[7] == "1" ? "Yes" : (Model.screening_spv_arr[7] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_rad_arr[7] == "0" ? "N/A" : (Model.screening_rad_arr[7] == "1" ? "Yes" : (Model.screening_rad_arr[7] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_fo_arr[7] == "0" ? "N/A" : (Model.screening_fo_arr[7] == "1" ? "Yes" : (Model.screening_fo_arr[7] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td>Available "film badge exposure recorder" from Batan</td>
+                        <td>
+                            @(Model.screening_spv_arr[8] == "0" ? "N/A" : (Model.screening_spv_arr[8] == "1" ? "Yes" : (Model.screening_spv_arr[8] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_rad_arr[8] == "0" ? "N/A" : (Model.screening_rad_arr[8] == "1" ? "Yes" : (Model.screening_rad_arr[8] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_fo_arr[8] == "0" ? "N/A" : (Model.screening_fo_arr[8] == "1" ? "Yes" : (Model.screening_fo_arr[8] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td>Available "Surat Ijin Pemanfaatan Tenaga Nuklir" from Bapeten <small>(copy must be attached)</small></td>
+                        <td>
+                            @(Model.screening_spv_arr[9] == "0" ? "N/A" : (Model.screening_spv_arr[9] == "1" ? "Yes" : (Model.screening_spv_arr[9] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_rad_arr[9] == "0" ? "N/A" : (Model.screening_rad_arr[9] == "1" ? "Yes" : (Model.screening_rad_arr[9] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_fo_arr[9] == "0" ? "N/A" : (Model.screening_fo_arr[9] == "1" ? "Yes" : (Model.screening_fo_arr[9] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>11</td>
+                        <td>Available "Quality Control Certificate" of radiographic source from Batan <small>(copy must be attached)</small></td>
+                        <td>
+                            @(Model.screening_spv_arr[10] == "0" ? "N/A" : (Model.screening_spv_arr[10] == "1" ? "Yes" : (Model.screening_spv_arr[10] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_rad_arr[10] == "0" ? "N/A" : (Model.screening_rad_arr[10] == "1" ? "Yes" : (Model.screening_rad_arr[10] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_fo_arr[10] == "0" ? "N/A" : (Model.screening_fo_arr[10] == "1" ? "Yes" : (Model.screening_fo_arr[10] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>12</td>
+                        <td>Available proper "protection container" from save storage & handling of radiographic source</td>
+                        <td>
+                            @(Model.screening_spv_arr[11] == "0" ? "N/A" : (Model.screening_spv_arr[11] == "1" ? "Yes" : (Model.screening_spv_arr[11] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_rad_arr[11] == "0" ? "N/A" : (Model.screening_rad_arr[11] == "1" ? "Yes" : (Model.screening_rad_arr[11] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_fo_arr[11] == "0" ? "N/A" : (Model.screening_fo_arr[11] == "1" ? "Yes" : (Model.screening_fo_arr[11] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>13</td>
+                        <td>Available proper storage & handling of Hazardous (B3) waste of Fixer & Developer chemical, incl.: MSDS <small>(copy must be attached)</small></td>
+                        <td>
+                            @(Model.screening_spv_arr[12] == "0" ? "N/A" : (Model.screening_spv_arr[12] == "1" ? "Yes" : (Model.screening_spv_arr[12] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_rad_arr[12] == "0" ? "N/A" : (Model.screening_rad_arr[12] == "1" ? "Yes" : (Model.screening_rad_arr[12] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_fo_arr[12] == "0" ? "N/A" : (Model.screening_fo_arr[12] == "1" ? "Yes" : (Model.screening_fo_arr[12] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>14</td>
+                        <td>Radiographic can be done safely</td>
+                        <td>
+                            @(Model.screening_spv_arr[13] == "0" ? "N/A" : (Model.screening_spv_arr[13] == "1" ? "Yes" : (Model.screening_spv_arr[13] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_rad_arr[13] == "0" ? "N/A" : (Model.screening_rad_arr[13] == "1" ? "Yes" : (Model.screening_rad_arr[13] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.screening_fo_arr[13] == "0" ? "N/A" : (Model.screening_fo_arr[13] == "1" ? "Yes" : (Model.screening_fo_arr[13] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="5">
+                            <h6>Remark : <small><i>(Write any controlling method shall be apply, start with 'Spv:' for Supervisor, start with 'Rad:' for Rad, and start with 'FO:' for FO)</i></small></h6>
+                            <textarea class="table-textarea">@Model.pre_remark</textarea>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row-fluid">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th colspan="5" class="title-form">
+                            <b>3. APPROVAL</b>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="2" class="td-centre">
+                            <strong>Radiographic</strong>
+                        </td>
+                        <td rowspan="2" class="td-centre">
+                            <strong>Supervisor</strong>
+                        </td>
+                        <td rowspan="2" class="td-centre">
+                            <strong>Safety Officer</strong>
+                        </td>
+                        <td rowspan="2" class="td-centre">
+                            <strong>Facility Owner</strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td-centre">
+                            <strong>Operator</strong>
+                        </td>
+                        <td class="td-centre">
+                            <strong>Level 2</strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td-centre">
+                            @if (Model.operator_signature != null)
+                            {
+                            <img id="img_approve_operator" width="50" height="50" @(Model.operator_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.operator_signature == null ? "" : Model.operator_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre">
+                            @if (Model.radiographer_2_signature != null)
+                            {
+                            <img id="img_approve_radiographer" width="50" height="50" @(Model.radiographer_2_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.radiographer_2_signature == null ? "" : Model.radiographer_2_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre">
+                            @if (Model.supervisor_signature != null)
+                            {
+                            <img id="img_approve_supervisor" width="50" height="50" @(Model.supervisor_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.supervisor_signature == null ? "" : Model.supervisor_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre">
+                            @if (Model.safety_officer_signature != null)
+                            {
+                            <img id="img_approve_safety_officer" width="50" height="50" @(Model.safety_officer_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.safety_officer_signature == null ? "" : Model.safety_officer_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre">
+                            @if (Model.facility_owner_signature != null)
+                            {
+                            <img id="img_approve_facility_owner" width="50" height="50" @(Model.facility_owner_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.facility_owner_signature == null ? "" : Model.facility_owner_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td-centre">
+                            @if ((Model.operator_signature != null && Model.operator_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER1DELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @if (Model.userInRadiography.Keys.ToList().Exists(p => p == PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER1.ToString())) {
+                            @(Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER1.ToString()] != null ? Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER1.ToString()].alpha_name : "")
+                            }
+                        </td>
+                        <td class="td-centre">
+                            @if ((Model.radiographer_2_signature != null && Model.radiographer_2_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER2DELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @if (Model.userInRadiography.Keys.ToList().Exists(p => p == PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER2.ToString())) {
+                            @(Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER2.ToString()] != null ? Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER2.ToString()].alpha_name : "")
+                            }
+                        </td>
+                        <td class="td-centre">
+                            @if ((Model.supervisor_signature != null && Model.supervisor_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SUPERVISORDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SUPERVISOR.ToString()] != null ? Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SUPERVISOR.ToString()].alpha_name : "")
+                        </td>
+                        <td class="td-centre">
+                            @if ((Model.safety_officer_signature != null && Model.safety_officer_signature.Substring(0, 1) == "d"))
+                            {
+                            <text>@Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SAFETYOFFICERDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SAFETYOFFICER.ToString()] != null ? Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SAFETYOFFICER.ToString()].alpha_name : "")
+                        </td>
+                        <td class="td-centre">
+                            @if ((Model.facility_owner_signature != null && Model.facility_owner_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.FACILITYOWNERDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.FACILITYOWNER.ToString()] != null ? Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.FACILITYOWNER.ToString()].alpha_name : "")
+                    
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row-fluid">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th class="title-form" colspan="6">
+                            <b>4. CANCELATION SCREENING</b> <small><i>It must be completed by certified radiographer Level 2. If any of the below can't be satisfied the work will not be permitted. Project manager acknowledge at the ack column as agreement with hazard screening. 
+                                Fill : yes if agree, no if disagree, N/A if not applicable with statement on description column; Spv : Supervisor; Rad : Radiographic engineer / level-2; FO : facility owner</i></small>
+                        </th>
+                    
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>No</strong></td>
+                        <td><strong>Description</strong></td>
+                        <td><strong>SPV</strong></td>
+                        <td><strong>RAD</strong></td>
+                        <td><strong>FO</strong></td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>Radiographic job have been completed <small>(Radiatioan survey by valid calibrated meter have been done)</small></td>
+                        <td>
+                            @(Model.can_screening_spv_arr[0] == "0" ? "N/A" : (Model.can_screening_spv_arr[0] == "1" ? "Yes" : (Model.can_screening_spv_arr[0] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.can_screening_rad_arr[0] == "0" ? "N/A" : (Model.can_screening_rad_arr[0] == "1" ? "Yes" : (Model.can_screening_rad_arr[0] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.can_screening_fo_arr[0] == "0" ? "N/A" : (Model.can_screening_fo_arr[0] == "1" ? "Yes" : (Model.can_screening_fo_arr[0] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Work location have been secure from any waste and residual of radio active material?</td>
+                        <td>
+                            @(Model.can_screening_spv_arr[1] == "0" ? "N/A" : (Model.can_screening_spv_arr[1] == "1" ? "Yes" : (Model.can_screening_spv_arr[1] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.can_screening_rad_arr[1] == "0" ? "N/A" : (Model.can_screening_rad_arr[1] == "1" ? "Yes" : (Model.can_screening_rad_arr[1] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.can_screening_fo_arr[1] == "0" ? "N/A" : (Model.can_screening_fo_arr[1] == "1" ? "Yes" : (Model.can_screening_fo_arr[1] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Radio active material manifest document has been completed</td>
+                        <td>
+                            @(Model.can_screening_spv_arr[2] == "0" ? "N/A" : (Model.can_screening_spv_arr[2] == "1" ? "Yes" : (Model.can_screening_spv_arr[2] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.can_screening_rad_arr[2] == "0" ? "N/A" : (Model.can_screening_rad_arr[2] == "1" ? "Yes" : (Model.can_screening_rad_arr[2] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.can_screening_fo_arr[2] == "0" ? "N/A" : (Model.can_screening_fo_arr[2] == "1" ? "Yes" : (Model.can_screening_fo_arr[2] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="5">
+                            <h6>Remark : <small><i>(Write any controlling method shall be apply, start with 'Spv:' for Supervisor, start with 'Rad:' for Rad, and start with 'FO:' for FO)</i></small></h6>
+                            <span id="can_remark_required" style="display:none;color:red"></span>
+                            <textarea class="table-textarea">@Model.can_remark</textarea>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row-fluid">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th colspan="5" class="title-form">
+                            <b>4. CLOSED</b> <small><i>Note: by sign this section Radiographic engineer have been declare that all radiation material have been secure in proper condition and work area have been clear from radiographic potential hazard, Radiographer Level 2 responsible to proper disposal any radiation material and documentation of usage radiation material.</i></small>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="2" class="td-centre">
+                            <strong>Radiographic</strong>
+                        </td>
+                        <td rowspan="2" class="td-centre">
+                            <strong>Supervisor</strong>
+                        </td>
+                        <td rowspan="2" class="td-centre">
+                            <strong>Safety Officer</strong>
+                        </td>
+                        <td rowspan="2" class="td-centre">
+                            <strong>Facility Owner</strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td-centre">
+                            <strong>Operator</strong>
+                        </td>
+                        <td class="td-centre">
+                            <strong>Level 2</strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td-centre">
+                            @if (Model.can_operator_signature != null)
+                            {
+                            <img id="img_approve_cancel_operator" width="50" height="50" @(Model.can_operator_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_operator_signature == null ? "" : Model.can_operator_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre">
+                            @if (Model.can_radiographer_2_signature != null)
+                            {
+                            <img id="img_approve_cancel_radiographer" width="50" height="50" @(Model.can_radiographer_2_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_radiographer_2_signature == null ? "" : Model.can_radiographer_2_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre">
+                            @if (Model.can_supervisor_signature != null)
+                            {
+                            <img id="img_approve_cancel_supervisor" width="50" height="50" @(Model.can_supervisor_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_supervisor_signature == null ? "" : Model.can_supervisor_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre">
+                            @if (Model.can_safety_officer_signature != null)
+                            {
+                            <img id="img_approve_cancel_so" width="50" height="50" @(Model.can_safety_officer_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_safety_officer_signature == null ? "" : Model.can_safety_officer_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre">
+                            @if (Model.can_fo_signature != null)
+                            {
+                            <img id="img_approve_cancel_fo" width="50" height="50" @(Model.can_fo_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_fo_signature == null ? "" : Model.can_fo_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td-centre">
+                            @if ((Model.can_operator_signature != null && Model.can_operator_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.CANRADIOGRAPHER1DELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER1.ToString()] != null ? Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER1.ToString()].alpha_name : "")
+                        </td>
+                        <td class="td-centre">
+                            @if ((Model.can_radiographer_2_signature != null && Model.can_radiographer_2_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.CANRADIOGRAPHER2DELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER2.ToString()] != null ? Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.RADIOGRAPHER2.ToString()].alpha_name : "")
+                        </td>
+                        <td class="td-centre">
+                            @if ((Model.can_supervisor_signature != null && Model.can_supervisor_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.CANSUPERVISORDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SUPERVISOR.ToString()] != null ? Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SUPERVISOR.ToString()].alpha_name : "")
+                        </td>
+                        <td class="td-centre">
+                            @if ((Model.can_safety_officer_signature != null && Model.can_safety_officer_signature.Substring(0, 1) == "d"))
+                            {
+                            <text>@Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.CANSAFETYOFFICERDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SAFETYOFFICER.ToString()] != null ? Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.SAFETYOFFICER.ToString()].alpha_name : "")
+                        </td>
+                        <td class="td-centre">
+                            @if ((Model.can_fo_signature != null && Model.can_fo_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.CANFACILITYOWNERDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.FACILITYOWNER.ToString()] != null ? Model.userInRadiography[PermitToWork.Models.Radiography.RadEntity.UserInRadiography.FACILITYOWNER.ToString()].alpha_name : "")
+                    
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

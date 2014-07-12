@@ -10,6 +10,7 @@ namespace PermitToWork.Models.User
         public List<UserEntity> listUser { get; set; }
         public star_energi_geoEntities db = new star_energi_geoEntities();
 
+        public ListUser() { }
         public ListUser(string token, int curLoginId)
         {
             WWUserService.UserServiceClient client = new WWUserService.UserServiceClient();
@@ -78,9 +79,32 @@ namespace PermitToWork.Models.User
             return listSpv;
         }
 
+        public List<UserEntity> GetAdminSHE(string token, int curLoginId)
+        {
+            WWUserService.UserServiceClient client = new WWUserService.UserServiceClient();
+            int count = 0;
+            List<UserEntity> listUser = new List<UserEntity>();
+            WWUserService.ResponseModel response = client.getListAdminSHE(token, curLoginId);
+
+            foreach (WWUserService.UserModel us in response.results.listUserModel)
+            {
+                listUser.Add(new UserEntity().clone(us));
+            }
+
+            client.Close();
+            this.listUser = listUser.OrderBy(p => p.alpha_name).ToList();
+            return this.listUser;
+        }
+
+        public List<UserEntity> GetListEmployeeInDepartment(string department)
+        {
+            List<UserEntity> listEmployeeInDepartment = listUser.Where(p => p.department == department).ToList();
+            return listEmployeeInDepartment;
+        }
+
         public List<UserEntity> GetHotWorkFO()
         {
-            UserEntity oprSpv = listUser.Where(p => p.position != null && p.position.ToLower() == "operation supervisor").FirstOrDefault();
+            UserEntity oprSpv = listUser.Where(p => p.position != null && p.position.Trim().ToLower() == "operation supervisor").FirstOrDefault();
             List<UserEntity> listHotWorkFO = new List<UserEntity>();
             if (oprSpv != null)
             {

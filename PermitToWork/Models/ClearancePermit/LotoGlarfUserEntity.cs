@@ -26,10 +26,15 @@ namespace PermitToWork.Models.ClearancePermit
             loto_glarf_user lotoGlarfUser = this.db.loto_glarf_user.Find(id);
             // this.ptw = new PtwEntity(fi.id_ptw.Value);
             ModelUtilization.Clone(lotoGlarfUser, this);
-
-            if (this.user != null)
+            int userId = 0;
+            if (this.user != null && Int32.TryParse(this.user, out userId))
             {
-                this.userEntity = new UserEntity(Int32.Parse(this.user), user.token, user);
+                this.userEntity = new UserEntity(userId, user.token, user);
+            }
+            else
+            {
+                this.userEntity = new UserEntity();
+                this.userEntity.alpha_name = this.user;
             }
         }
 

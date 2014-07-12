@@ -34,6 +34,8 @@ namespace PermitToWork.Controllers
         {
             UserEntity user = Session["user"] as UserEntity;
             CsepEntity entity = new CsepEntity(id, user);
+            entity.GetPtw(user);
+            entity.getHiraNo();
             ViewBag.isWorkLeader = entity.isWorkLeader(user);
             if (entity.status < (int)CsepEntity.CsepStatus.CANCEL)
             {
@@ -92,7 +94,7 @@ namespace PermitToWork.Controllers
             int ret = csep.edit();
             CsepEntity csep_new = new CsepEntity(csep.id, user);
 
-            if (csep_new.status == (int)CsepEntity.CsepStatus.CREATE && csep_new.isWorkLeader(user))
+            if (csep_new.status == (int)CsepEntity.CsepStatus.CREATE && (csep_new.isWorkLeader(user) || (csep_new.is_guest && csep_new.isAccSupervisor(user))))
             {
                 // change status to SPVSCREENING
                 csep_new.sendEmailRandomPIN(fullUrl(), user.token, user);
@@ -157,7 +159,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             CsepEntity csep = new CsepEntity(id, user);
             string retVal = csep.closeCsep(user);
-
+            sendEmailFO(csep);
             return Json(new { status = retVal, message = "There is error when saving data to database. Please check again your data." });
         }
 
@@ -250,7 +252,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             CsepEntity csep = new CsepEntity(id, userLogin);
-            string retVal = csep.gasTesterAcc(user, extension);
+            string retVal = csep.gasTesterAcc(user, extension, userLogin);
             csep.sendEmailRequestor(fullUrl(), userLogin.token, user, extension);
             return Json(new { status = retVal });
         }
@@ -447,6 +449,8 @@ namespace PermitToWork.Controllers
             CsepEntity csep = new CsepEntity(id, user);
             csep.setStatus(csep.status.Value + 1);
             csep.assignExtWorkLeader(csep.status.Value);
+            UserEntity fo = new UserEntity(Int32.Parse(csep.acc_fo), user.token, user);
+            csep.assignFO(fo, csep.status.Value);
             return Json(new { status = "200" });
         }
 
@@ -463,7 +467,7 @@ namespace PermitToWork.Controllers
                 csep_new.status == (int)CsepEntity.CsepStatus.EXTCREATE4 ||
                 csep_new.status == (int)CsepEntity.CsepStatus.EXTCREATE5 ||
                 csep_new.status == (int)CsepEntity.CsepStatus.EXTCREATE6 ||
-                csep_new.status == (int)CsepEntity.CsepStatus.EXTCREATE7) && csep_new.isWorkLeader(user))
+                csep_new.status == (int)CsepEntity.CsepStatus.EXTCREATE7) && (csep_new.isWorkLeader(user) || (csep_new.is_guest && csep_new.isAccSupervisor(user))))
             {
                 sendEmailFO(csep_new);
                 // send email to facility owner (5)

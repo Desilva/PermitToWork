@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Web;
+using PermitToWork.Models.Master;
 
 namespace PermitToWork.Models.User
 {
@@ -18,6 +19,8 @@ namespace PermitToWork.Models.User
         public string position { get; set; }
         public string email { get; set; }
         public int? employee_dept { get; set; }
+        public string department { get; set; }
+        public string employee_no { get; set; }
 
         public string token { get; set; }
 
@@ -66,6 +69,8 @@ namespace PermitToWork.Models.User
                 this.position = response.result.position;
                 this.email = response.result.email;
                 this.employee_dept = response.result.employee_dept;
+                this.department = response.result.department;
+                this.employee_no = response.result.employee_no;
                 // this.roles = response.result.;
             }
 
@@ -90,6 +95,8 @@ namespace PermitToWork.Models.User
                 this.position = response.result.position;
                 this.email = response.result.email;
                 this.employee_dept = response.result.employee_dept;
+                this.department = response.result.department;
+                this.employee_no = response.result.employee_no;
                 // this.roles = response.result.;
 
                 this.token = response.message;
@@ -102,6 +109,31 @@ namespace PermitToWork.Models.User
             client.Close();
         }
 
+        public UserEntity(int id, string token)
+        {
+            WWUserService.UserServiceClient client = new WWUserService.UserServiceClient();
+
+            WWUserService.ResponseModel response = client.getUser(token, id, id);
+
+            if (response.status)
+            {
+                this.id = response.result.id;
+                this.alpha_name = response.result.alpha_name;
+                this.employee_boss = response.result.employee_boss;
+                this.employee_delegate = response.result.employee_delegate;
+                this.signature = ConfigurationManager.AppSettings["fracas"] + response.result.signature;
+                this.position = response.result.position;
+                this.email = response.result.email;
+                this.employee_dept = response.result.employee_dept;
+                this.department = response.result.department;
+                this.employee_no = response.result.employee_no;
+                this.token = token;
+                // this.roles = response.result.;
+            }
+
+            client.Close();
+        }
+
         public UserEntity clone(WWUserService.UserModel cloningUser)
         {
             this.id = cloningUser.id;
@@ -109,12 +141,31 @@ namespace PermitToWork.Models.User
             this.signature = cloningUser.signature;
             this.position = cloningUser.position;
             this.email = cloningUser.email;
-            this.employee_delegate = cloningUser.delagate;
+            this.employee_delegate = cloningUser.employee_delegate;
             this.employee_boss = cloningUser.employee_boss;
+            this.department = cloningUser.department;
+            this.employee_no = cloningUser.employee_no;
             // this.approval_level = cloningUser.approval_level;
             // this.department = cloningUser.department;
 
             return this;
+        }
+
+        /// <summary>
+        /// Get List of Delegation User By FO
+        /// </summary>
+        /// <param name="user">FO</param>
+        /// <returns></returns>
+        public List<UserEntity> GetDelegateFO(UserEntity user)
+        {
+            List<UserEntity> result = new List<UserEntity>();
+            MstFOEntity fo = new MstFOEntity(this);
+            if (fo.id_employee != null)
+            {
+                List<MstDelegateFOEntity> listDelegate = new MstDelegateFOEntity().getListByFO(this.id, user);
+                result.AddRange(listDelegate.Select(p => p.user));
+            }
+            return result;
         }
     }
 }

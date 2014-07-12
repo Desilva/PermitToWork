@@ -31,6 +31,8 @@ namespace PermitToWork.Controllers
         {
             HwEntity entity = new HwEntity(id);
             UserEntity user = Session["user"] as UserEntity;
+            entity.GetPtw(user);
+            entity.getHiraNo();
             ViewBag.isWorkLeader = entity.isWorkLeader(user);
             if (entity.status < (int)HwEntity.statusHW.CANCEL)
             {
@@ -89,7 +91,7 @@ namespace PermitToWork.Controllers
             int ret = hw.edit();
             HwEntity hw_new = new HwEntity(hw.id);
 
-            if (hw_new.status == (int)HwEntity.statusHW.CREATE && hw_new.isWorkLeader(user))
+            if (hw_new.status == (int)HwEntity.statusHW.CREATE && (hw_new.isWorkLeader(user) || (hw_new.is_guest && hw_new.isAccSupervisor(user))))
             {
                 // change status to SPVSCREENING
                 hw_new.sendEmailRandomPIN(fullUrl(),user.token,user);
@@ -101,7 +103,7 @@ namespace PermitToWork.Controllers
             {
                 // change status to SPVSCREENING
                 hw_new.setStatus((int)HwEntity.statusHW.SPVSCREENING);
-                sendEmailFO(hw_new);
+                // sendEmailFO(hw_new);
                 // send email to facility owner (5)
             }
 
@@ -154,7 +156,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.closeHw(user);
-
+            // sendEmailFO(hw);
             return Json(new { status = retVal, message = "There is error when saving data to database. Please check again your data." });
         }
 
@@ -247,7 +249,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
-            string retVal = hw.gasTesterAcc(user, extension);
+            string retVal = hw.gasTesterAcc(user, extension, userLogin);
             hw.sendEmailRequestor(fullUrl(), userLogin.token, user, extension);
             return Json(new { status = retVal });
         }
@@ -388,7 +390,10 @@ namespace PermitToWork.Controllers
             HwEntity hw = new HwEntity(id);
             string retVal = hw.fireWatchCanApproval(user);
             if (hw.can_fo == null)
-                sendEmailFO(hw);
+            {
+                var a = "";
+                // sendEmailFO(hw);
+            }
             else
                 hw.sendEmailFOCan(fullUrl(), userLogin.token, userLogin);
             return Json(new { status = retVal });
@@ -440,9 +445,12 @@ namespace PermitToWork.Controllers
         [HttpPost]
         public JsonResult extendHw(int id, int user_id)
         {
+            UserEntity userLogin = Session["user"] as UserEntity;
             HwEntity hw = new HwEntity(id);
             hw.setStatus(hw.status.Value + 1);
             hw.assignExtWorkLeader(hw.status.Value);
+            UserEntity fo = new UserEntity(Int32.Parse(hw.acc_fo), userLogin.token, userLogin);
+            hw.assignFO(fo, hw.status.Value);
             return Json(new { status = "200" });
         }
 
@@ -459,9 +467,9 @@ namespace PermitToWork.Controllers
                 hw_new.status == (int)HwEntity.statusHW.EXTCREATE4 ||
                 hw_new.status == (int)HwEntity.statusHW.EXTCREATE5 ||
                 hw_new.status == (int)HwEntity.statusHW.EXTCREATE6 ||
-                hw_new.status == (int)HwEntity.statusHW.EXTCREATE7) && hw_new.isWorkLeader(user))
+                hw_new.status == (int)HwEntity.statusHW.EXTCREATE7) && (hw_new.isWorkLeader(user) || (hw_new.is_guest && hw_new.isAccSupervisor(user))))
             {
-                sendEmailFO(hw_new);
+                // sendEmailFO(hw_new);
                 // send email to facility owner (5)
             }
 

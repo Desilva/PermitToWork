@@ -47,6 +47,9 @@
 
         $('#save-as-draft').click(function () {
             var values = getValues();
+            //values.safety_officer = $('#safety-officer').val();
+            values.facilities = $('#facilities').val();
+            values.ei = $('#ei').val();
             values.who = $(this).data('who');
             values = getScreeningValues(values, values.who);
             $('#loading_gif').show();
@@ -72,7 +75,29 @@
 
         $('#save-send').click(function () {
             var values = getValues();
+            //values.safety_officer = $('#safety-officer').val();
+            values.facilities = $('#facilities').val();
+            values.ei = $('#ei').val();
             values.who = $(this).data('who');
+            if (values.who == "1") {
+                var all = true;
+                for (var a in values) {
+                    if (a != "approval_note") {
+                        if (values[a] == null || values[a] == "") {
+                            $('#' + a + '_valid').show();
+                            all = false;
+                        } else {
+                            $('#' + a + '_valid').hide();
+                        }
+                    }
+                }
+
+                if (!all) {
+                    alert('All values can not be empty.');
+                    return;
+                }
+            }
+
             values = getScreeningValues(values, values.who);
             console.log(values);
             if (values.who == "2") {
@@ -153,6 +178,16 @@
                 alert('Excavation Clearance Permit Cancellation is saved and approved.');
                 $('#content').load('@Url.Action("Edit", "Excavation")');
             });
+        });
+
+        $('#back').click(function () {
+            var history = $('#history').val();
+            history = history.toLowerCase();
+            if (history.indexOf('home') >= 0) {
+                window.location = history;
+            } else {
+                $('#content').load(history);
+            }
         });
 
         $('#reject-2').click(function () {
@@ -308,25 +343,25 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>Work Location </td>
+                    <td>Work Location <small id="work_location_valid" style="color:red;display:none"><br />Work Location can not be empty.</small></td>
                     <td>: <input class="table-input table-input-160" id="work-location" type="text" value="@Model.work_location" @(isCanEdit[0] ? "" : "disabled")></td>
                     <td><b>Supervisor <small>(project manager)</small> </b></td>
-                    <td>: <input class="table-input table-input-160" id="supervisor" type="text" value="@Model.supervisor" disabled></td>
+                    <td>: <input class="table-input table-input-160" id="supervisor" type="text" value="@(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SUPERVISOR.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SUPERVISOR.ToString()].alpha_name : "")" disabled></td>
                 </tr>
                 <tr>
                     <td>Worker Leaders </td>
-                    <td>: <input class="table-input table-input-160" id="worker-leader" type="text" value="@Model.requestor" @(isCanEdit[0] ? "" : "disabled")></td>
-                    <td>Total Crew </td>
+                    <td>: <input class="table-input table-input-160" id="worker-leader" type="text" value="@(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.REQUESTOR.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.REQUESTOR.ToString()].alpha_name : "")" @(isCanEdit[0] ? "" : "disabled")></td>
+                    <td>Total Crew  <small id="total_crew_valid" style="color:red;display:none"><br />Total Crew can not be empty.</small></td>
                     <td>: @Html.DropDownList("total-crew", ViewBag.listTotalCrew as List<SelectListItem>, (isCanEdit[0] ? new { @class = "table-input-170" } as object : new { @class = "table-input-170", disabled = "disabled" } as object))</td>
                 </tr>
                 <tr>
-                    <td>Purpose </td>
+                    <td>Purpose  <small id="purpose_valid" style="color:red;display:none"><br />Purpose can not be empty.</small></td>
                     <td colspan="3">: <input class="table-input table-input-600" id="purpose" type="text" value="@Model.purpose" @(isCanEdit[0] ? "" : "disabled")></td>
                 </tr>
                 <tr>
-                    <td>Estimate Date </td>
+                    <td>Estimate Date  <small id="estimate_start_date_valid" style="color:red;display:none"><br />Estimate Date can not be empty.</small></td>
                     <td>: <input class="table-input table-input-160" id="estimate-date-start" type="text" value="@(Model.estimate_start_date != null ? Model.estimate_start_date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")" @(isCanEdit[0] ? "" : "disabled")></td>
-                    <td>To </td>
+                    <td>To  <small id="estimate_end_date_valid" style="color:red;display:none"><br />Estimate Date To can not be empty.</small></td>
                     <td>: <input class="table-input table-input-160" id="estimate-date-end" type="text" value="@(Model.estimate_end_date != null ? Model.estimate_end_date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")" @(isCanEdit[0] ? "" : "disabled")></td>
                 </tr>
             </tbody>
@@ -338,7 +373,7 @@
             <thead>
                 <tr>
                     <th class="title-form" colspan="5"><b>2. PRE-JOB SCREENING <small><i>(Fill with yes: if agree; No: if disagree or N/A: if not applicable with description statement)</i></small></b></th>
-                    <th colspan="2">Hira no : </th>
+                    <th colspan="2">Hira no : @Model.hira_no</th>
                 </tr>
             </thead>
             <tbody>
@@ -347,38 +382,38 @@
                     <td colspan="2">DESCRIPTION</td>
                     <td>Spv</td>
                     <td>E&I</td>
-                    <td>FAC</td>
+                    <td>CIV</td>
                     <td>FO</td>
                 </tr>
                 <tr>
                     <td>1</td>
-                    <td colspan="2">Underground facilities (power cable, kontril, communication, pipe, etc)</td>
+                    <td colspan="2">Underground facilities (power cable, control cable, communication, pipe, etc)</td>
                     <td>
                         <select class="radiography-select screening-spv" data-id="1" id="screening_spv_1" @(isCanEdit[2] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_spv_arr[0] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_spv_arr[0] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_spv_arr[0] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_spv_arr[0] == "0" || Model.pre_screening_spv_arr[0] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-ei" data-id="1" id="screening_ei_1" @(isCanEdit[5] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_ei_arr[0] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_ei_arr[0] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_ei_arr[0] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_ei_arr[0] == "0" || Model.pre_screening_ei_arr[0] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-fac" data-id="1" id="screening_fac_1" @(isCanEdit[4] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_fac_arr[0] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_fac_arr[0] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_fac_arr[0] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_fac_arr[0] == "0" || Model.pre_screening_fac_arr[0] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-fo" data-id="1" id="screening_fo_1" @(isCanEdit[7] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_fo_arr[0] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_fo_arr[0] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_fo_arr[0] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_fo_arr[0] == "0" || Model.pre_screening_fo_arr[0] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
@@ -387,190 +422,190 @@
                     <td colspan="2">Need LOTO and/or bypass</td>
                     <td>
                         <select class="radiography-select screening-spv" data-id="2" id="screening_spv_2" @(isCanEdit[2] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_spv_arr[1] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_spv_arr[1] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_spv_arr[1] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_spv_arr[1] == "0" || Model.pre_screening_spv_arr[1] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-ei" data-id="2" id="screening_ei_2" @(isCanEdit[5] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_ei_arr[1] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_ei_arr[1] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_ei_arr[1] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_ei_arr[1] == "0" || Model.pre_screening_ei_arr[1] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-fac" data-id="2" id="screening_fac_2" @(isCanEdit[4] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_fac_arr[1] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_fac_arr[1] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_fac_arr[1] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_fac_arr[1] == "0" || Model.pre_screening_fac_arr[1] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-fo" data-id="2" id="screening_fo_2" @(isCanEdit[7] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_fo_arr[1] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_fo_arr[1] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_fo_arr[1] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_fo_arr[1] == "0" || Model.pre_screening_fo_arr[1] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
                 <tr>
                     <td>3</td>
-                    <td colspan="2">E&I and facilities official need to involve during work commences</td>
+                    <td colspan="2">E&I and facilities official need inspection</td>
                     <td>
                         <select class="radiography-select screening-spv" data-id="3" id="screening_spv_3" @(isCanEdit[2] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_spv_arr[2] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_spv_arr[2] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_spv_arr[2] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_spv_arr[2] == "0" || Model.pre_screening_spv_arr[2] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-ei" data-id="3" id="screening_ei_3" @(isCanEdit[5] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_ei_arr[2] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_ei_arr[2] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_ei_arr[2] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_ei_arr[2] == "0" || Model.pre_screening_ei_arr[2] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-fac" data-id="3" id="screening_fac_3" @(isCanEdit[4] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_fac_arr[2] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_fac_arr[2] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_fac_arr[2] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_fac_arr[2] == "0" || Model.pre_screening_fac_arr[2] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-fo" data-id="3" id="screening_fo_3" @(isCanEdit[7] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_fo_arr[2] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_fo_arr[2] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_fo_arr[2] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_fo_arr[2] == "0" || Model.pre_screening_fo_arr[2] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
                 <tr>
                     <td>4</td>
-                    <td colspan="2">E&I and facilities official need inspection</td>
+                    <td colspan="2">E&I and facilities official need to involve during work commences</td>
                     <td>
                         <select class="radiography-select screening-spv" data-id="4" id="screening_spv_4" @(isCanEdit[2] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_spv_arr[3] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_spv_arr[3] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_spv_arr[3] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_spv_arr[3] == "0" || Model.pre_screening_spv_arr[3] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-ei" data-id="4" id="screening_ei_4" @(isCanEdit[5] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_ei_arr[3] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_ei_arr[3] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_ei_arr[3] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_ei_arr[3] == "0" || Model.pre_screening_ei_arr[3] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-fac" data-id="4" id="screening_fac_4" @(isCanEdit[4] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_fac_arr[3] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_fac_arr[3] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_fac_arr[3] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_fac_arr[3] == "0" || Model.pre_screening_fac_arr[3] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-fo" data-id="4" id="screening_fo_4" @(isCanEdit[7] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_fo_arr[3] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_fo_arr[3] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_fo_arr[3] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_fo_arr[3] == "0" || Model.pre_screening_fo_arr[3] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
                 <tr>
                     <td>5</td>
-                    <td colspan="2">Manual Excavation need</td>
+                    <td colspan="2">Manual Excavation perform needed</td>
                     <td>
                         <select class="radiography-select screening-spv" data-id="5" id="screening_spv_5" @(isCanEdit[2] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_spv_arr[4] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_spv_arr[4] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_spv_arr[4] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_spv_arr[4] == "0" || Model.pre_screening_spv_arr[4] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-ei" data-id="5" id="screening_ei_5" @(isCanEdit[5] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_ei_arr[4] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_ei_arr[4] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_ei_arr[4] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_ei_arr[4] == "0" || Model.pre_screening_ei_arr[4] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-fac" data-id="5" id="screening_fac_5" @(isCanEdit[4] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_fac_arr[4] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_fac_arr[4] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_fac_arr[4] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_fac_arr[4] == "0" || Model.pre_screening_fac_arr[4] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-fo" data-id="5" id="screening_fo_5" @(isCanEdit[7] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_fo_arr[4] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_fo_arr[4] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_fo_arr[4] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_fo_arr[4] == "0" || Model.pre_screening_fo_arr[4] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
                 <tr>
                     <td>6</td>
-                    <td colspan="2">Air hazard may arise</td>
+                    <td colspan="2">May air hazard arise</td>
                     <td>
                         <select class="radiography-select screening-spv" data-id="6" id="screening_spv_6" @(isCanEdit[2] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_spv_arr[5] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_spv_arr[5] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_spv_arr[5] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_spv_arr[5] == "0" || Model.pre_screening_spv_arr[5] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-ei" data-id="6" id="screening_ei_6" @(isCanEdit[5] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_ei_arr[5] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_ei_arr[5] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_ei_arr[5] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_ei_arr[5] == "0" || Model.pre_screening_ei_arr[5] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-fac" data-id="6" id="screening_fac_6" @(isCanEdit[4] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_fac_arr[5] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_fac_arr[5] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_fac_arr[5] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_fac_arr[5] == "0" || Model.pre_screening_fac_arr[5] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-fo" data-id="6" id="screening_fo_6" @(isCanEdit[7] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_fo_arr[5] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_fo_arr[5] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_fo_arr[5] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_fo_arr[5] == "0" || Model.pre_screening_fo_arr[5] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
                 <tr>
                     <td>7</td>
-                    <td colspan="2">Excavation experts available</td>
+                    <td colspan="2">Are excavation experts available</td>
                     <td>
                         <select class="radiography-select screening-spv" data-id="7" id="screening_spv_7" @(isCanEdit[2] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_spv_arr[6] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_spv_arr[6] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_spv_arr[6] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_spv_arr[6] == "0" || Model.pre_screening_spv_arr[6] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-ei" data-id="7" id="screening_ei_7" @(isCanEdit[5] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_ei_arr[6] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_ei_arr[6] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_ei_arr[6] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_ei_arr[6] == "0" || Model.pre_screening_ei_arr[6] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-fac" data-id="7" id="screening_fac_7" @(isCanEdit[4] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_fac_arr[6] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_fac_arr[6] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_fac_arr[6] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_fac_arr[6] == "0" || Model.pre_screening_fac_arr[6] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-fo" data-id="7" id="screening_fo_7" @(isCanEdit[7] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_fo_arr[6] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_fo_arr[6] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_fo_arr[6] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_fo_arr[6] == "0" || Model.pre_screening_fo_arr[6] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
@@ -579,62 +614,62 @@
                     <td colspan="2">Backfilling need approval from SEG</td>
                     <td>
                         <select class="radiography-select screening-spv" data-id="8" id="screening_spv_8" @(isCanEdit[2] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_spv_arr[7] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_spv_arr[7] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_spv_arr[7] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_spv_arr[7] == "0" || Model.pre_screening_spv_arr[7] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-ei" data-id="8" id="screening_ei_8" @(isCanEdit[5] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_ei_arr[7] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_ei_arr[7] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_ei_arr[7] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_ei_arr[7] == "0" || Model.pre_screening_ei_arr[7] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-fac" data-id="8" id="screening_fac_8" @(isCanEdit[4] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_fac_arr[7] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_fac_arr[7] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_fac_arr[7] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_fac_arr[7] == "0" || Model.pre_screening_fac_arr[7] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-fo" data-id="8" id="screening_fo_8" @(isCanEdit[7] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_fo_arr[7] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_fo_arr[7] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_fo_arr[7] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_fo_arr[7] == "0" || Model.pre_screening_fo_arr[7] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
                 <tr>
                     <td>9</td>
-                    <td colspan="2">disposal site excavation need permit from enviroment official</td>
+                    <td colspan="2">Disposal site need permit from enviroment official</td>
                     <td>
                         <select class="radiography-select screening-spv" data-id="9" id="screening_spv_9" @(isCanEdit[2] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_spv_arr[8] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_spv_arr[8] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_spv_arr[8] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_spv_arr[8] == "0" || Model.pre_screening_spv_arr[8] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-ei" data-id="9" id="screening_ei_9" @(isCanEdit[5] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_ei_arr[8] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_ei_arr[8] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_ei_arr[8] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_ei_arr[8] == "0" || Model.pre_screening_ei_arr[8] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-fac" data-id="9" id="screening_fac_9" @(isCanEdit[4] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_fac_arr[8] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_fac_arr[8] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_fac_arr[8] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_fac_arr[8] == "0" || Model.pre_screening_fac_arr[8] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-fo" data-id="9" id="screening_fo_9" @(isCanEdit[7] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_fo_arr[8] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_fo_arr[8] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_fo_arr[8] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_fo_arr[8] == "0" || Model.pre_screening_fo_arr[8] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
@@ -643,30 +678,30 @@
                     <td colspan="2">Excavation completion need approval from SEG <small>(land leveling, compaction, backfilling)</small></td>
                     <td>
                         <select class="radiography-select screening-spv" data-id="10" id="screening_spv_10" @(isCanEdit[2] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_spv_arr[9] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_spv_arr[9] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_spv_arr[9] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_spv_arr[9] == "0" || Model.pre_screening_spv_arr[9] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-ei" data-id="10" id="screening_ei_10" @(isCanEdit[5] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_ei_arr[9] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_ei_arr[9] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_ei_arr[9] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_ei_arr[9] == "0" || Model.pre_screening_ei_arr[9] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-fac" data-id="10" id="screening_fac_10" @(isCanEdit[4] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_fac_arr[9] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_fac_arr[9] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_fac_arr[9] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_fac_arr[9] == "0" || Model.pre_screening_fac_arr[9] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-fo" data-id="10" id="screening_fo_10" @(isCanEdit[7] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_fo_arr[9] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_fo_arr[9] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_fo_arr[9] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_fo_arr[9] == "0" || Model.pre_screening_fo_arr[9] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
@@ -675,47 +710,47 @@
                     <td colspan="2" style="width:45%">Excavation can be done safely</td>
                     <td>
                         <select class="radiography-select screening-spv" data-id="11" id="screening_spv_11" @(isCanEdit[2] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_spv_arr[10] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_spv_arr[10] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_spv_arr[10] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_spv_arr[10] == "0" || Model.pre_screening_spv_arr[10] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-ei" data-id="11" id="screening_ei_11" @(isCanEdit[5] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_ei_arr[10] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_ei_arr[10] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_ei_arr[10] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_ei_arr[10] == "0" || Model.pre_screening_ei_arr[10] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-fac" data-id="11" id="screening_fac_11" @(isCanEdit[4] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_fac_arr[10] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_fac_arr[10] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_fac_arr[10] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_fac_arr[10] == "0" || Model.pre_screening_fac_arr[10] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                     <td>
                         <select class="radiography-select screening-fo" data-id="11" id="screening_fo_11" @(isCanEdit[7] ? "" : "disabled")>
-                            <option value="0" @(Model.pre_screening_fo_arr[10] == "0" ? "selected" : "")>N/A</option>
                             <option value="1" @(Model.pre_screening_fo_arr[10] == "1" ? "selected" : "")>Yes</option>
                             <option value="2" @(Model.pre_screening_fo_arr[10] == "2" ? "selected" : "")>No</option>
+                            <option value="0" @(Model.pre_screening_fo_arr[10] == "0" || Model.pre_screening_fo_arr[10] == "" ? "selected" : "")>N/A</option>
                         </select>
                     </td>
                 </tr>
                 <tr>
                     <td>12</td>
-                    <td style="width:20%">Excavation performed by</td>
+                    <td style="width:20%">Excavation performed by <small id="excavation_performed_valid" style="color:red;display:none"><br />Excavation Performed by can not be empty.</small></td>
                     <td colspan="5">
                         <ul class="inline table-ul">
                             <li><label class="radio"><input name="excavation-performed" type="radio" value="1" @(isCanEdit[0] ? "" : "disabled") @(Model.excavation_performed == "1" ? "checked" : "")/>Manual</label></li>
-                            <li> <label class="radio"><input name="excavation-performed" type="radio" value="2" @(isCanEdit[0] ? "" : "disabled") @(Model.excavation_performed == "2" ? "checked" : "")/>Mechanical</label></li>
+                            <li> <label class="radio"><input name="excavation-performed" type="radio" value="2" @(isCanEdit[0] ? "" : "disabled") @(Model.excavation_performed == "2" ? "checked" : "")/>Heavy Equipment</label></li>
                             <li> <label class="radio"><input name="excavation-performed" type="radio" value="3" @(isCanEdit[0] ? "" : "disabled") @(Model.excavation_performed == "3" ? "checked" : "")/>Combined</label></li>
                         </ul>
                     </td>
                 </tr>
                 <tr>
                     <td>13</td>
-                    <td>Excavation method</td>
+                    <td>Excavation method <small id="excavation_method_valid" style="color:red;display:none"><br />Excavation Method must be chosen.</small></td>
                     <td colspan="5">
                         <ul class="inline table-ul">
                             <li><label class="radio"><input name="excavation-method" type="radio" value="1" @(isCanEdit[0] ? "" : "disabled") @(Model.excavation_method == "1" ? "checked" : "")/>Sloping / Trenching</label></li>
@@ -727,7 +762,7 @@
                 </tr>
                 <tr>
                     <td>14</td>
-                    <td>Equipment</td>
+                    <td>Equipment <small id="equipment_valid" style="color:red;display:none"><br />Equipment must be chosen.</small></td>
                     <td colspan="5">
                         <ul class="inline table-ul">
                             <li><label class="radio"><input name="equipment" type="radio" value="1" @(isCanEdit[0] ? "" : "disabled") @(Model.equipment == "1" ? "checked" : "")/>Hand tools</label></li>
@@ -742,7 +777,7 @@
                 </tr>
                 <tr>
                     <td>15</td>
-                    <td>Estimated soil volume</td>
+                    <td>Estimated soil volume <small id="soil_volume_valid" style="color:red;display:none"><br />Estimate Soil Volume must be chosen.</small></td>
                     <td colspan="5">
                         <ul class="inline table-ul">
                             <li><input class="table-input table-input-170" id="soil-volume" type="text" @(isCanEdit[0] ? "" : "disabled") value="@Model.soil_volume"/>  m3</li>
@@ -751,12 +786,12 @@
                 </tr>
                 <tr>
                     <td>16</td>
-                    <td>Disposal Location</td>
+                    <td>Disposal Location <small id="disposal_location_valid" style="color:red;display:none"><br />Disposal Location can not be empty.</small></td>
                     <td colspan="5">
                         <ul class="inline table-ul">
                             <li><input class="table-input table-input-170" id="disposal-location" type="text" @(isCanEdit[0] ? "" : "disabled") value="@Model.disposal_location"/></li>
                             <li> <label class="radio"><input name="disposal-location" type="radio" value="1" @(isCanEdit[0] ? "" : "disabled") @(Model.disposal_type == "1" ? "checked" : "")/>Permanent</label></li>
-                            <li> <label class="radio"><input name="disposal-location" type="radio" value="2" @(isCanEdit[0] ? "" : "disabled") @(Model.disposal_type == "2" ? "checked" : "")/>temporary</label></li>
+                            <li> <label class="radio"><input name="disposal-location" type="radio" value="2" @(isCanEdit[0] ? "" : "disabled") @(Model.disposal_type == "2" ? "checked" : "")/>Temporary</label></li>
                         </ul>
                     </td>
                 </tr>
@@ -765,14 +800,11 @@
                         <h6>Note :</h6>
                         <ul>
                             <li>
-                                Write any consent related work execution below
-                            </li>
-                            <li>
-                                Start with 'Spv:' for Supervisor, start with 'E&I:' for E&I, start with 'FAC:' for FAC, and start with 'FO:' for FO
+                                Write any consent related to work execution below
                             </li>
                         </ul>
                         <span id="screening_remark_required" style="display:none;color:red"></span>
-                        <textarea class="table-textarea" id="screening_remark" @(isCanEdit[2] || isCanEdit[4] || isCanEdit[5] || isCanEdit[7] ? "" : "disabled")>@Model.screening_remark</textarea>
+                        <textarea class="table-textarea" id="screening_remark" @(isCanEdit[2] || isCanEdit[4] || isCanEdit[5] || isCanEdit[7] ? "" : "disabled")>@(isCanEdit[2] ? (Model.screening_remark + "Spv: ") : (isCanEdit[4] ? (Model.screening_remark + "\nCiv: ") : (isCanEdit[5] ? (Model.screening_remark + "\nE&I: ") : (isCanEdit[7] ? (Model.screening_remark + "\nFO: ") : (Model.screening_remark)))))</textarea>
                     </td>
                 </tr>
             </tbody>
@@ -782,14 +814,14 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th colspan="6" class="title-form">
+                    <th colspan="5" class="title-form">
                         <b>3. APPROVAL</b>
                     </th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td colspan="4" class="td-centre">
+                    <td colspan="3" class="td-centre">
                         <strong>Verified by</strong>
                     </td>
                     <td colspan="2" class="td-centre">
@@ -803,22 +835,22 @@
                         <img id="img_approve_supervisor" width="50" height="50" @(Model.supervisor_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.supervisor_signature == null ? "" : Model.supervisor_signature.Substring(1))"/><br />
                         }
                     </td>
-                    <td class="td-centre">
+                    @*<td class="td-centre">
                         @if (Model.safety_officer_signature != null)
                         {
                         <img id="img_approve_so" width="50" height="50" @(Model.safety_officer_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.safety_officer_signature == null ? "" : Model.safety_officer_signature.Substring(1))"/><br />
+                        }
+                    </td>*@
+                    <td class="td-centre">
+                        @if (Model.ei_signature != null)
+                        {
+                        <img id="img_approve_ei" width="50" height="50" @(Model.ei_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.ei_signature == null ? "" : Model.ei_signature.Substring(1))"/><br />
                         }
                     </td>
                     <td class="td-centre">
                         @if (Model.facilities_signature != null)
                         {
                         <img id="img_approve_fac" width="50" height="50" @(Model.facilities_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.facilities_signature == null ? "" : Model.facilities_signature.Substring(1))"/><br />
-                        }
-                    </td>
-                    <td class="td-centre">
-                        @if (Model.ei_signature != null)
-                        {
-                        <img id="img_approve_ei" width="50" height="50" @(Model.ei_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.ei_signature == null ? "" : Model.ei_signature.Substring(1))"/><br />
                         }
                     </td>
                     <td class="td-centre">
@@ -848,10 +880,10 @@
                         @(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SUPERVISOR.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SUPERVISOR.ToString()].alpha_name : "")
                         <br /><b>Supervisor</b>
                     </td>
-                    <td class="td-centre">
-                        @if (isCanEdit[1])
+                    @*<td class="td-centre">
+                        @if (isCanEdit[0])
                         {
-                            @(Html.DropDownList("safety-officer", ViewBag.listSO as List<SelectListItem>, (isCanEdit[1] ? new { @class = "table-input-170" } as object : new { @class = "table-input-170", disabled = "disabled" } as object)));
+                            @(Html.DropDownList("safety-officer", ViewBag.listSO as List<SelectListItem>, (isCanEdit[0] ? new { @class = "table-input-170" } as object : new { @class = "table-input-170", disabled = "disabled" } as object)));
                         }
                         else
                         {
@@ -866,30 +898,11 @@
                             @(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SAFETYOFFICER.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SAFETYOFFICER.ToString()].alpha_name : "")
                         }
                         <br /><b>SHE</b>
-                    </td>
+                    </td>*@
                     <td class="td-centre">
-                        @if (isCanEdit[1])
+                        @if (isCanEdit[0])
                         {
-                            @(Html.DropDownList("facilities", ViewBag.listFAC as List<SelectListItem>, (isCanEdit[1] ? new { @class = "table-input-170" } as object : new { @class = "table-input-170", disabled = "disabled" } as object)));
-                        }
-                        else
-                        {
-                            if ((Model.facilities_signature == null && isCanEdit[4] && Model.userInExcavation.Keys.ToList().Exists(p => p == PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIES.ToString()) && requestor.id != Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIES.ToString()].id))
-                            {
-                                <text>@requestor.alpha_name<br />a/n </text>
-                            }
-                            else if ((Model.facilities_signature != null && Model.facilities_signature.Substring(0, 1) == "d"))
-                            {
-                                <text>@Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIESDELEGATE.ToString()].alpha_name<br />a/n </text>
-                            }
-                            @(Model.userInExcavation.Keys.ToList().Exists(p => p == PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIES.ToString()) ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIES.ToString()].alpha_name : "")
-                        }
-                        <br /><b>Facilities</b>
-                    </td>
-                    <td class="td-centre">
-                        @if (isCanEdit[1])
-                        {
-                            @(Html.DropDownList("ei", ViewBag.listEI as List<SelectListItem>, (isCanEdit[1] ? new { @class = "table-input-170" } as object : new { @class = "table-input-170", disabled = "disabled" } as object)));
+                            @(Html.DropDownList("ei", ViewBag.listEI as List<SelectListItem>, (isCanEdit[0] ? new { @class = "table-input-170" } as object : new { @class = "table-input-170", disabled = "disabled" } as object)));
                         }
                         else
                         {
@@ -906,6 +919,25 @@
                         <br /><b>E&I</b>
                     </td>
                     <td class="td-centre">
+                        @if (isCanEdit[0])
+                        {
+                            @(Html.DropDownList("facilities", ViewBag.listFAC as List<SelectListItem>, (isCanEdit[0] ? new { @class = "table-input-170" } as object : new { @class = "table-input-170", disabled = "disabled" } as object)));
+                        }
+                        else
+                        {
+                            if ((Model.facilities_signature == null && isCanEdit[4] && Model.userInExcavation.Keys.ToList().Exists(p => p == PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIES.ToString()) && requestor.id != Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIES.ToString()].id))
+                            {
+                                <text>@requestor.alpha_name<br />a/n </text>
+                            }
+                            else if ((Model.facilities_signature != null && Model.facilities_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIESDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInExcavation.Keys.ToList().Exists(p => p == PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIES.ToString()) ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIES.ToString()].alpha_name : "")
+                        }
+                        <br /><b>Civil</b>
+                    </td>
+                    <td class="td-centre">
                         @if ((Model.requestor_signature == null && isCanEdit[6] && requestor.id != Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.REQUESTOR.ToString()].id))
                         {
                             <text>@requestor.alpha_name<br />a/n </text>
@@ -914,7 +946,7 @@
                         {
                             <text>@Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.REQUESTORDELEGATE.ToString()].alpha_name<br />a/n </text>
                         }
-                        @(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.REQUESTOR.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.REQUESTOR.ToString()].alpha_name : "")
+                        @(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.REQUESTOR.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.REQUESTOR.ToString()].alpha_name : (Model.is_guest ? Model.requestor : ""))
                         <br /><b>Requestor</b>
                     </td>
                     <td class="td-centre">
@@ -932,7 +964,7 @@
                 </tr>
                 <tr>
                     <td colspan="6">
-                        Note: <small>(Write any consest related excavation program i.e hazard precaution, special condition, excavation engineer assign, attach other sheet if necessary)</small>
+                        Note: <small>(Write any consent related excavation program i.e hazard precaution, special condition, excavation engineer assign, attach other sheet if necessary)</small>
                         <textarea class="table-textarea" id="approval-note" @(isCanEdit[2] || isCanEdit[3] || isCanEdit[4] || isCanEdit[5] || isCanEdit[6] || isCanEdit[7] ? "" : "disabled")>@Model.approval_note</textarea>
                     </td>
                 </tr>
@@ -945,7 +977,7 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th colspan="6" class="title-form">
+                    <th colspan="5" class="title-form">
                         <b>4. CANCELLATION</b>
                     </th>
                 </tr>
@@ -965,23 +997,23 @@
                         }
                     </td>
                     <td class="td-centre">
-                        @if (Model.can_facilities_signature != null)
-                        {
-                        <img id="img_approve_fac_can" width="50" height="50" @(Model.can_facilities_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_facilities_signature == null ? "" : Model.can_facilities_signature.Substring(1))"/><br />
-                        }
-                    </td>
-                    <td class="td-centre">
                         @if (Model.can_ei_signature != null)
                         {
                         <img id="img_approve_ei_can" width="50" height="50" @(Model.can_ei_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_ei_signature == null ? "" : Model.can_ei_signature.Substring(1))"/><br />
                         }
                     </td>
                     <td class="td-centre">
+                        @if (Model.can_facilities_signature != null)
+                        {
+                        <img id="img_approve_fac_can" width="50" height="50" @(Model.can_facilities_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_facilities_signature == null ? "" : Model.can_facilities_signature.Substring(1))"/><br />
+                        }
+                    </td>
+                    @*<td class="td-centre">
                         @if (Model.can_safety_officer_signature != null)
                         {
                         <img id="img_approve_she_can" width="50" height="50" @(Model.can_safety_officer_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_safety_officer_signature == null ? "" : Model.can_safety_officer_signature.Substring(1))"/><br />
                         }
-                    </td>
+                    </td>*@
                     <td class="td-centre">
                         @if (Model.can_facility_owner_signature != null)
                         {
@@ -1000,7 +1032,7 @@
                         {
                             <text>@Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.CANREQUESTORDELEGATE.ToString()].alpha_name<br />a/n </text>
                         }
-                        @(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.REQUESTOR.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.REQUESTOR.ToString()].alpha_name : "")
+                        @(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.REQUESTOR.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.REQUESTOR.ToString()].alpha_name : (Model.is_guest ? Model.requestor : ""))
                         <br /><b>Requestor</b>
                     </td>
                     <td class="td-centre">
@@ -1016,18 +1048,6 @@
                         <br /><b>Supervisor</b>
                     </td>
                     <td class="td-centre">
-                        @if ((Model.can_facilities_signature == null && isCanEdit[11] && requestor.id != Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIES.ToString()].id))
-                        {
-                            <text>@requestor.alpha_name<br />a/n </text>
-                        }
-                        else if ((Model.can_facilities_signature != null && Model.can_facilities_signature.Substring(0, 1) == "d"))
-                        {
-                            <text>@Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.CANFACILITIESDELEGATE.ToString()].alpha_name<br />a/n </text>
-                        }
-                        @(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIES.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIES.ToString()].alpha_name : "")
-                        <br /><b>Facilities</b>
-                    </td>
-                    <td class="td-centre">
                         @if ((Model.can_ei_signature == null && isCanEdit[12] && requestor.id != Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.EI.ToString()].id))
                         {
                             <text>@requestor.alpha_name<br />a/n </text>
@@ -1040,6 +1060,18 @@
                         <br /><b>E&I</b>
                     </td>
                     <td class="td-centre">
+                        @if ((Model.can_facilities_signature == null && isCanEdit[11] && requestor.id != Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIES.ToString()].id))
+                        {
+                            <text>@requestor.alpha_name<br />a/n </text>
+                        }
+                        else if ((Model.can_facilities_signature != null && Model.can_facilities_signature.Substring(0, 1) == "d"))
+                        {
+                            <text>@Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.CANFACILITIESDELEGATE.ToString()].alpha_name<br />a/n </text>
+                        }
+                        @(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIES.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIES.ToString()].alpha_name : "")
+                        <br /><b>Civil</b>
+                    </td>
+                    @*<td class="td-centre">
                         @if ((Model.can_safety_officer_signature == null && isCanEdit[13] && requestor.id != Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SAFETYOFFICER.ToString()].id))
                         {
                             <text>@requestor.alpha_name<br />a/n </text>
@@ -1050,7 +1082,7 @@
                         }
                         @(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SAFETYOFFICER.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SAFETYOFFICER.ToString()].alpha_name : "")
                         <br /><b>SHE</b>
-                    </td>
+                    </td>*@
                     <td class="td-centre">
                         @if ((Model.can_facility_owner_signature == null && isCanEdit[14] && requestor.id != Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITYOWNER.ToString()].id))
                         {
@@ -1066,7 +1098,7 @@
                 </tr>
                 <tr>
                     <td colspan="6">
-                        Note: <small>Write any related completion work excavation i.e. special condition, by pass existing facilities, etc</small>
+                        Note: <small>Write any related to completion work excavation i.e. special condition, by pass existing facilities, etc</small>
                         <textarea class="table-textarea" id="cancellation-note" @(isCanEdit[9] || isCanEdit[10] || isCanEdit[11] || isCanEdit[12] || isCanEdit[13] || isCanEdit[14] ? "" : "disabled")>@Model.cancellation_note</textarea>
                     </td>
                 </tr>
@@ -1088,10 +1120,6 @@
             if (isCanEdit[2] || isCanEdit[3] || isCanEdit[4] || isCanEdit[5] || isCanEdit[6] || isCanEdit[7]) {
             <button class="btn btn-danger" id="reject" data-who="@(isCanEdit[0] ? 1 : (isCanEdit[2] ? 2 : (isCanEdit[3] ? 3 : (isCanEdit[4] ? 4 : (isCanEdit[5] ? 5 : (isCanEdit[6] ? 6 : (isCanEdit[7] ? 7 : 0)))))))">Reject</button>
             }
-            }
-            @if (isCanEdit[1])
-            {
-            <button class="btn btn-success" id="save-assignment">Save Assignment</button> 
             }
             @if (isCanEdit[8])
             {

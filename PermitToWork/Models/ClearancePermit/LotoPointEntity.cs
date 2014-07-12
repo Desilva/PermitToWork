@@ -126,6 +126,21 @@ namespace PermitToWork.Models.ClearancePermit
             return retVal;
         }
 
+        public int removeLotoPoint()
+        {
+            int retVal = 0;
+            loto_point lotoPoint = this.db.loto_point.Find(this.id);
+            if (lotoPoint != null)
+            {
+                lotoPoint.removed_by = this.removed_by;
+                lotoPoint.removed_by_time = this.removed_by_time;
+
+                this.db.Entry(lotoPoint).State = EntityState.Modified;
+                retVal = this.db.SaveChanges();
+            }
+            return retVal;
+        }
+
         public int inspected(UserEntity user)
         {
             int retVal = 0;
@@ -133,39 +148,25 @@ namespace PermitToWork.Models.ClearancePermit
             this.lotoPermit = new LotoEntity(lotoPoint.id_loto.Value, user);
             if (lotoPoint != null)
             {
-                if (user.id == this.lotoPermit.listUserInLOTO[LotoEntity.userInLOTO.REQUESTOR.ToString()].id)
+                if (user.id == this.lotoPermit.listUserInLOTO[LotoEntity.userInLOTO.SUPERVISOR.ToString()].id)
                 {
                     lotoPoint.inspected_1 = user.signature;
                 }
 
-                if (this.lotoPermit.listUserInLOTO[LotoEntity.userInLOTO.ONCOMINGHOLDER2.ToString()] != null && user.id == this.lotoPermit.listUserInLOTO[LotoEntity.userInLOTO.ONCOMINGHOLDER2.ToString()].id)
+                foreach (LotoComingHolderEntity comingHolder in this.lotoPermit.lotoComingHolder)
                 {
-                    lotoPoint.inspected_2 = user.signature;
-                }
-
-                if (this.lotoPermit.listUserInLOTO[LotoEntity.userInLOTO.ONCOMINGHOLDER3.ToString()] != null && user.id == this.lotoPermit.listUserInLOTO[LotoEntity.userInLOTO.ONCOMINGHOLDER3.ToString()].id)
-                {
-                    lotoPoint.inspected_3 = user.signature;
-                }
-                
-                if (this.lotoPermit.listUserInLOTO[LotoEntity.userInLOTO.ONCOMINGHOLDER4.ToString()] != null && user.id == this.lotoPermit.listUserInLOTO[LotoEntity.userInLOTO.ONCOMINGHOLDER4.ToString()].id)
-                {
-                    lotoPoint.inspected_4 = user.signature;
-                }
-
-                if (this.lotoPermit.listUserInLOTO[LotoEntity.userInLOTO.ONCOMINGHOLDER5.ToString()] != null && user.id == this.lotoPermit.listUserInLOTO[LotoEntity.userInLOTO.ONCOMINGHOLDER5.ToString()].id)
-                {
-                    lotoPoint.inspected_5 = user.signature;
-                }
-
-                if (this.lotoPermit.listUserInLOTO[LotoEntity.userInLOTO.ONCOMINGHOLDER6.ToString()] != null && user.id == this.lotoPermit.listUserInLOTO[LotoEntity.userInLOTO.ONCOMINGHOLDER6.ToString()].id)
-                {
-                    lotoPoint.inspected_6 = user.signature;
-                }
-
-                if (this.lotoPermit.listUserInLOTO[LotoEntity.userInLOTO.ONCOMINGHOLDER7.ToString()] != null && user.id == this.lotoPermit.listUserInLOTO[LotoEntity.userInLOTO.ONCOMINGHOLDER7.ToString()].id)
-                {
-                    lotoPoint.inspected_7 = user.signature;
+                    if (user.id.ToString() == comingHolder.holder_spv)
+                    {
+                        switch (comingHolder.no_holder)
+                        {
+                            case 2: lotoPoint.inspected_2 = user.signature; break;
+                            case 3: lotoPoint.inspected_3 = user.signature; break;
+                            case 4: lotoPoint.inspected_4 = user.signature; break;
+                            case 5: lotoPoint.inspected_5 = user.signature; break;
+                            case 6: lotoPoint.inspected_6 = user.signature; break;
+                            case 7: lotoPoint.inspected_7 = user.signature; break;
+                        }
+                    }
                 }
 
                 this.db.Entry(lotoPoint).State = EntityState.Modified;
@@ -196,7 +197,29 @@ namespace PermitToWork.Models.ClearancePermit
                     lotoPoint.inspected_7 = null;
                 }
                 lotoPoint.loto_point_proposed = this.loto_point_proposed;
+                lotoPoint.is_edited = 1;
 
+                this.db.Entry(lotoPoint).State = EntityState.Modified;
+                retVal = this.db.SaveChanges();
+            }
+
+            return retVal;
+        }
+
+        public int requestRemoval()
+        {
+            int retVal = 0;
+            loto_point lotoPoint = this.db.loto_point.Find(this.id);
+            if (lotoPoint != null)
+            {
+                if (lotoPoint.is_removed != 1)
+                {
+                    lotoPoint.is_removed = 1;
+                }
+                else
+                {
+                    lotoPoint.is_removed = null;
+                }
                 this.db.Entry(lotoPoint).State = EntityState.Modified;
                 retVal = this.db.SaveChanges();
             }

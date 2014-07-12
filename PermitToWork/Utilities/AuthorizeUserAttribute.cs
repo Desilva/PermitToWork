@@ -27,13 +27,18 @@ namespace PermitToWork.Utilities
 
         protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)
         {
+            var url = filterContext.HttpContext.Request.Path;
+            if (url.Length == 1 || url.ToLower().Contains("home"))
+            {
+                url = "";
+            }
             filterContext.Result = new RedirectToRouteResult(
                         new RouteValueDictionary(
                             new
                             {
                                 controller = "Login",
                                 action = "Index",
-                                returnUrl = filterContext.HttpContext.Request.Url,
+                                returnUrl = url,
                                 e = filterContext.HttpContext.Request.Params["e"]
                             })
                         );

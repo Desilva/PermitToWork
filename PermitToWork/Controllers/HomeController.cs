@@ -1,6 +1,9 @@
-﻿using PermitToWork.Models.Ptw;
+﻿using PermitToWork.Models.Master;
+using PermitToWork.Models.Ptw;
 using PermitToWork.Models.User;
 using PermitToWork.Utilities;
+using Rotativa;
+using Rotativa.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +29,10 @@ namespace PermitToWork.Controllers
             {
                 ViewBag.p = p;
             }
+
+            UserEntity user = Session["user"] as UserEntity;
+
+            ViewBag.inspector = new MstInspectorEntity().getListInspector(user).Exists(d => d.user.id == user.id);
 
             if (e != null)
             {
@@ -57,6 +64,18 @@ namespace PermitToWork.Controllers
             ListPtw listPtw = new ListPtw(user);
             var result = listPtw.listPtwByUser(user);
             return Json(result);
+        }
+
+        public ActionResult TestExternalUrl()
+        {
+            // In some cases you might want to pull completely different URL that is not related to your application.
+            // You can do that by specifying full URL.
+
+            return new UrlAsPdf("http://www.github.com")
+            {
+                FileName = "TestExternalUrl.pdf",
+                PageMargins = new Margins(0, 0, 0, 0)
+            };
         }
     }
 }

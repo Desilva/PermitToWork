@@ -1,0 +1,10 @@
+E:\Informatics\Proyek\Rotativa-master\Rotativa-master\Rotativa\bin\Debug\Rotativa.dll
+E:\Informatics\Proyek\Rotativa-master\Rotativa-master\Rotativa\bin\Debug\Rotativa.pdb
+E:\Informatics\Proyek\Rotativa-master\Rotativa-master\Rotativa\obj\Debug\Rotativa.csprojResolveAssemblyReference.cache
+E:\Informatics\Proyek\Rotativa-master\Rotativa-master\Rotativa\obj\Debug\Rotativa.dll
+E:\Informatics\Proyek\Rotativa-master\Rotativa-master\Rotativa\obj\Debug\Rotativa.pdb
+E:\Informatics\Proyek\Star Energy\PermitToWork\Rotativa\bin\Debug\Rotativa.dll
+E:\Informatics\Proyek\Star Energy\PermitToWork\Rotativa\bin\Debug\Rotativa.pdb
+E:\Informatics\Proyek\Star Energy\PermitToWork\Rotativa\obj\Debug\Rotativa.csprojResolveAssemblyReference.cache
+E:\Informatics\Proyek\Star Energy\PermitToWork\Rotativa\obj\Debug\Rotativa.dll
+E:\Informatics\Proyek\Star Energy\PermitToWork\Rotativa\obj\Debug\Rotativa.pdb

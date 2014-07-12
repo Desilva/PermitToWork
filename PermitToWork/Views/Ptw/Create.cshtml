@@ -23,8 +23,17 @@
     List<PermitToWork.Models.Master.MstFOEntity> list_fo = ViewBag.listFO as List<PermitToWork.Models.Master.MstFOEntity>;
     List<PermitToWork.Models.Master.MstAssessorEntity> list_assessor = ViewBag.listAssessor as List<PermitToWork.Models.Master.MstAssessorEntity>;
 }
-
+<script id="checkbox-template" type="text/kendo-ui-template">
+            # if ('@Model.hira_docs'.indexOf(item.id.split('#')[1]) >= 0) { #
+                <input type='checkboxes' name='checkedItems' value='true' checked='true' /> 
+            # } else { #
+                <input type='checkboxes' name='checkedItems' value='true' /> 
+            # } #
+</script>
 <script>
+    var KBP = "@Model.ptw_no.Split('-')[0]";
+    var checkedNodes = '@Model.hira_docs'.split('#@@#');
+    // checkedNodes.push('Upload/Hira/SPE/SPE-SafetyHIRA-001 Brine Injection System R02-090713.pdf');
     $(document).ready(function () {
         addHandlerMenu();
 
@@ -85,49 +94,39 @@
         $("#files").kendoUpload({
             multiple: true,
             async: {
-                saveUrl: "Hira/Save",
+                saveUrl: "@Url.Action("save","Hira")",
                 removeUrl: "Hira/Remove",
                 autoUpload: true
             },
             upload: onUpload,
             success: onSuccess,
+            showFileList: false
         });
 
-        var $fileList, $files, item, _fn, _i, _len;
-
-        $fileList = $("#existing-files");
-
-        if ($fileList.length > 0) {
-            $(".k-upload").append($fileList);
-            $files = $(".k-file");
-            _fn = function (item) {
-                var $item, fileId, filenames;
-                $item = $(item);
-                fileId = $item.data("att-id");
-                filenames = [
-                  {
-                      name: fileId
-                  }
-                ];
-                return $item.data("fileNames", filenames);
-            };
-            for (_i = 0, _len = $files.length; _i < _len; _i++) {
-                item = $files[_i];
-                _fn(item);
-            }
-            $fileList.show();
-        }
+        $("#acc_images_uploader").kendoUpload({
+            multiple: false,
+            async: {
+                saveUrl: "@Url.Action("saveImage","Ptw")",
+                autoUpload: true
+            },
+            upload: onUploadImage,
+            success: onSuccessImage,
+            showFileList: false
+        });
 
         function startChangeValidity() {
             var startDate = startValidity.value();
-
-            if (startDate) {
+            var now = new Date();
+            now.setHours(0, 0, 0);
+            if (startDate >= now) {
                 startDate = new Date(startDate);
                 startDate.setDate(startDate.getDate());
                 endValidity.min(startDate);
                 endValidity.max(addDays(startDate, 7));
                 startDate.setHours(7);
                 endValidity.value(addDays(startDate, 7));
+            } else {
+                alert("Validity Date Start can not before today.");
             }
         }
 
@@ -166,12 +165,12 @@
         //checkbox
         $('#loto_id').click(function () {
             console.log($(this).attr('data-id'));
-            if ($(this).attr('data-id') == "") {
-                $('#loto-new').modal('show');
-            } else {
+            //if ($(this).attr('data-id') == "") {
+            //    $('#loto-new').modal('show');
+            //} else {
                 $('#history').val('@Url.Action("Edit","Ptw", new { id = Model.id })');
-                changeContent('Loto/index/' + $(this).attr('data-id'));
-            }
+                changeContent('@Url.Action("Index","Loto", new { id = Model.id })');
+            //}
             //changeContent('loto/create');
         })
         $('#csep_id').click(function () {
@@ -182,7 +181,7 @@
             $('#history').val('@Url.Action("Edit","Ptw", new { id = Model.id })');
             changeContent('hw/edit/' + $(this).attr('data-id'));
         })
-        $('#fi_id').click(function () {
+        $('.fi_id').click(function () {
             //changeContent('fi/create');
             $('#history').val('@Url.Action("Edit","Ptw", new { id = Model.id })');
             changeContent('fi/edit/' + $(this).attr('data-id'));
@@ -199,31 +198,48 @@
         $('#rad_id').click(function () {
             $('#history').val('@Url.Action("Edit","Ptw", new { id = Model.id })');
             changeContent('radiography/edit/' + $(this).attr('data-id'));
-        })
+        });
 
-        $('#requestor_acc').click(function () {
-            var values = {
-                id : '@Model.id',
-                user_id : '@requestor.id',
-            };
-            $('#requestor_acc').attr('disabled', 'disabled');
-            $('#loading_requestor_acc').show();
-            $.post("Ptw/requestorAcc", values, function (resp) {
-                if (resp.status == "200" || resp.status == "201") {
-                    save();
-                } else if (resp.status == "400") {
-                    $('#requestor_acc').removeAttr('disabled');
-                    $('#loading_requestor_acc').hide();
-                    alert("Failed to approve Permit To Work.");
-                } else if (resp.status == "404") {
-                    $('#requestor_acc').removeAttr('disabled');
-                    $('#loading_requestor_acc').hide();
-                    alert("Failed to approve Permit to Work. Are you trying something not your access?");
+        $('#dept_requestor').change(function () {
+            $.post('@Url.Action("GetSpvList", "Ptw")', { deptId : $(this).val(), ptwRequestor : '@(Model.acc_ptw_requestor != null ? (Model.is_guest != 1 ? Model.acc_ptw_requestor : "0") : "")' }, function (resp) {
+                $('#acc_supervisor').html('<option value="">Choose One</option>');
+                for (var i in resp) {
+                    $('#acc_supervisor').append('<option value="' + resp[i].id + '">' + resp[i].alpha_name + '</option>');
                 }
             });
         });
 
+        $('#requestor_acc').click(function () {
+            values = getValues();
+            if (validate(values)) {
+
+                var values = {
+                    id: '@Model.id',
+                    user_id: '@requestor.id',
+                };
+                $('#requestor_acc').attr('disabled', 'disabled');
+                $('#loading_requestor_acc').show();
+                $.post("@Url.Action("RequestorAcc","Ptw")", values, function (resp) {
+                    if (resp.status == "200" || resp.status == "201") {
+                        save();
+                    } else if (resp.status == "400") {
+                        $('#requestor_acc').removeAttr('disabled');
+                        $('#loading_requestor_acc').hide();
+                        alert("Failed to approve Permit To Work.");
+                    } else if (resp.status == "404") {
+                        $('#requestor_acc').removeAttr('disabled');
+                        $('#loading_requestor_acc').hide();
+                        alert("Failed to approve Permit to Work. Are you trying something not your access?");
+                    }
+                });
+            }
+        });
+
         $('#supervisor_acc').click(function () {
+            var values = getValues();
+            if (!validate(values)) {
+                return;
+            }
             var values = {
                 id: '@Model.id',
                 user_id: '@requestor.id',
@@ -249,9 +265,9 @@
                 //}
                 $('#supervisor_acc').attr('disabled', 'disabled');
                 $('#loading_supervisor_acc').show();
-                $.post("Ptw/supervisorAcc", values, function (resp) {
+                $.post("@Url.Action("SupervisorAcc","Ptw")", values, function (resp) {
                     if (resp.status == "200" || resp.status == "201") {
-                        save();
+                        save(true);
                     } else if (resp.status == "400") {
                         $('#supervisor_acc').removeAttr('disabled');
                         $('#loading_supervisor_acc').hide();
@@ -304,12 +320,12 @@
             var url = '';
             var comment = $('#comment').val();
             switch (type) {
-                case '1': url = 'Ptw/supervisorAccReject'; break;
-                case '2': url = 'Ptw/assessorAccReject'; break;
-                case '3': url = 'Ptw/fOAccReject'; break;
-                case '4': url = 'Ptw/supervisorCanReject'; break;
-                case '5': url = 'Ptw/assessorCanReject'; break;
-                case '6': url = 'Ptw/fOCanReject'; break;
+                case '1': url = '@Url.Action("SupervisorAccReject","Ptw")'; break;
+                case '2': url = '@Url.Action("AssessorAccReject","Ptw")'; break;
+                case '3': url = '@Url.Action("FOAccReject","Ptw")'; break;
+                case '4': url = '@Url.Action("SupervisorCanReject","Ptw")'; break;
+                case '5': url = '@Url.Action("AssessorCanReject","Ptw")'; break;
+                case '6': url = '@Url.Action("FOCanReject","Ptw")'; break;
             };
             var values = {
                 id: '@Model.id',
@@ -321,7 +337,7 @@
             $.post(url, values, function (resp) {
                 if (resp.status == "200") {
                     $('#rejection').modal('hide');
-                    save();
+                    save(true);
                 } else if (resp.status == "400") {
                     $('#rejection').modal('hide');
                     $('#reject_button').removeAttr('disabled');
@@ -353,11 +369,11 @@
                 };
                 $('#assessor_acc_rej').attr('disabled', 'disabled');
                 $('#loading_ass_acc_rej').show();
-                $.post("Ptw/assessorAcc", values, function (resp) {
+                $.post("@Url.Action("AssessorAcc","Ptw")", values, function (resp) {
                     if (resp.status == "200" || resp.status == "201") {
                         $('#comment_ass').val('');
                         $('#comment_assessor').modal('hide');
-                        save();
+                        save(true);
                     } else if (resp.status == "400") {
                         $('#assessor_acc_rej').removeAttr('disabled');
                         $('#loading_ass_acc_rej').hide();
@@ -376,11 +392,11 @@
                 };
                 $('#assessor_acc_rej').attr('disabled', 'disabled');
                 $('#loading_ass_acc_rej').show();
-                $.post("Ptw/assessorCan", values, function (resp) {
+                $.post("@Url.Action("AssessorCan","Ptw")", values, function (resp) {
                     if (resp.status == "200" || resp.status == "201") {
                         $('#comment_ass').val('');
                         $('#comment_assessor').modal('hide');
-                        save();
+                        save(true);
                     } else if (resp.status == "400") {
                         $('#assessor_acc_rej').removeAttr('disabled');
                         $('#loading_ass_acc_rej').hide();
@@ -413,9 +429,9 @@
             } else {
                 $('#fo_acc').attr('disabled', 'disabled');
                 $('#loading_fo_acc').show();
-                $.post("Ptw/fOAcc", values, function (resp) {
+                $.post("@Url.Action("FOAcc","Ptw")", values, function (resp) {
                     if (resp.status == "200" || resp.status == "201") {
-                        save();
+                        save(true);
                     } else if (resp.status == "400") {
                         $('#fo_acc').removeAttr('disabled');
                         $('#loading_fo_acc').hide();
@@ -436,9 +452,9 @@
             };
             $('#requestor_can').attr('disabled', 'disabled');
             $('#loading_requestor_can').show();
-            $.post("Ptw/requestorCan", values, function (resp) {
+            $.post("@Url.Action("RequestorCan","Ptw")", values, function (resp) {
                 if (resp.status == "200" || resp.status == "201") {
-                    save();
+                    save(true);
                 } else if (resp.status == "400") {
                     $('#requestor_can').removeAttr('disabled');
                     $('#loading_requestor_can').hide();
@@ -465,9 +481,9 @@
             } else {
                 $('#supervisor_can').attr('disabled', 'disabled');
                 $('#loading_supervisor_can').show();
-                $.post("Ptw/supervisorCan", values, function (resp) {
+                $.post("@Url.Action("SupervisorCan","Ptw")", values, function (resp) {
                     if (resp.status == "200" || resp.status == "201") {
-                        save();
+                        save(true);
                     } else if (resp.status == "400") {
                         $('#supervisor_can').removeAttr('disabled');
                         $('#loading_supervisor_can').hide();
@@ -504,9 +520,9 @@
             } else {
                 $('#fo_can').attr('disabled', 'disabled');
                 $('#loading_fo_can').show();
-                $.post("Ptw/fOCan", values, function (resp) {
+                $.post("@Url.Action("FOCan","Ptw")", values, function (resp) {
                     if (resp.status == "200" || resp.status == "201") {
-                        save();
+                        save(true);
                     } else if (resp.status == "400") {
                         $('#fo_can').removeAttr('disabled');
                         $('#loading_fo_can').hide();
@@ -522,13 +538,21 @@
 
         $('input[name = "area"]:checked').trigger('change');
 
-        $('#acc_fo').change(function () {
+        $('#fo_code').change(function () {
             var values = {
-                user_id : $(this).val(),
+                fo_code : $(this).val(),
             }
-            $.post("Ptw/GenerateNewNumber", values, function (resp) {
+            $.post("@Url.Action("GenerateNewNumber","Ptw")", values, function (resp) {
                 if (resp.status == "200") {
-                    $('#ptw_no').html(resp.ptw_number);
+                    KBP = resp.ptw_number.split('-')[0];
+                    console.log('@(Model.ptw_no != null)' == ' True');
+                    if ('@(Model.ptw_no != null)' === 'True') {
+                        var s = $('#ptw_no').html().split('-');
+                        s[0] = KBP;
+                        $('#ptw_no').html(s.join('-'));
+                    } else {
+                        $('#ptw_no').html(resp.ptw_number);
+                    }
                 }
             });
         });
@@ -560,6 +584,49 @@
                     $('#history').val('@Url.Action("Edit","Ptw", new { id = Model.id })');
                     changeContent('@Url.Action("Index","Loto")' + '/?id=' + resp.id);
                 }
+            });
+        });
+
+        $('#extend-fi').click(function () {
+            var values = {
+                id: '@Model.id',
+            };
+            $.post("@Url.Action("ExtendFIPermit","Ptw")", values, function (resp) {
+                if (resp.status == "200") {
+                    $('#history').val('@Url.Action("Edit","Ptw", new { id = Model.id })');
+                    changeContent('@Url.Action("Edit","FI")' + '/?id=' + resp.id);
+                } else if (resp.status == "404") {
+                    alert(resp.message);
+                }
+            });
+        });
+
+        $('#save').click(function () {
+            $('#loading_set').show();
+            save(true);
+        });
+
+        $('#request-no').click(function () {
+            values = {
+                id: '@Model.id',
+            }
+            $.post("@Url.Action("RequestGuestHolderNo","Ptw")", values, function (resp) {
+                alert('Request sent.');
+            });
+        });
+
+        $('#fo_save').click(function () {
+            $('#loading_fo_notes').show();
+            values = getValues();
+            values.id = '@Model.id';
+            $.post("@Url.Action("EditPtw","Ptw")", values, function (resp) {
+                $('#comment_fo').modal('hide');
+                $('#loading_fo_notes').hide();
+                if (resp.status == "200") {
+                    alert("Permit to Work save successful!");
+                    $('#content').load('@Url.Action("Edit","Ptw", new { id = Model.id })');
+                } else if (resp.status == "400")
+                    alert("Permit to Work failed to save\nMessage : " + resp.message);
             });
         });
 
@@ -614,6 +681,72 @@
                 // selectedDataItems contains all selected data items
             }
         });
+
+        var homogeneous = new kendo.data.HierarchicalDataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("BindingFile","Hira")',
+                    dataType: "json",
+                    type: "POST",
+                }
+            },
+            schema: {
+                model: {
+                    id: "fileId",
+                    hasChildren: "hasChildren",
+                }
+            }
+        });
+
+
+        if ($("#hira-docs").length > 0) {
+            $("#hira-docs").kendoTreeView({
+                dataSource: homogeneous,
+                dataTextField: "name",
+                checkboxes: {
+                    template: "# if (!item.hasChildren) { ## if (checkedNodes.indexOf(decodeURIComponent(item.id.split('\\#')[1])) >= 0) { #<input type='checkbox' name='checkedItems' value='true' checked='true' /> # } else { #<input type='checkbox' name='checkedItems' value='true' /> # } ## } #",
+                },
+            });
+
+            // show checked node IDs on datasource change
+            $("#hira-docs").data("kendoTreeView").dataSource.bind("change", function () {
+                var treeView = $("#hira-docs").data("kendoTreeView"),
+                    message;
+                checkedNodeIds(treeView.dataSource.view(), checkedNodes);
+
+                if (checkedNodes.length > 0) {
+                    message = "IDs of checked nodes: " + checkedNodes.join(",");
+                } else {
+                    message = "No nodes checked.";
+                }
+
+                console.log(message);
+            });
+        }
+
+        // function that gathers IDs of checked nodes
+        function checkedNodeIds(nodes, checkedNodes) {
+            for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].checked) {
+                    if (checkedNodes.indexOf(nodes[i].id.split('#')[1]) < 0) {
+                        checkedNodes.push(nodes[i].id.split('#')[1]);
+                    }
+                } else {
+                    var j = -1;
+                    if ((j = checkedNodes.indexOf(nodes[i].id.split('#')[1])) >= 0) {
+                        checkedNodes.splice(j , 1);
+                    }
+                }
+
+                if (nodes[i].hasChildren) {
+                    checkedNodeIds(nodes[i].children.view(), checkedNodes);
+                }
+            }
+        }
+
+        $('#add-new-hira').click(function () {
+            $('#add-hira').modal('show');
+        });
     })
 
     function onUpload(e) {
@@ -625,6 +758,12 @@
             if (this.extension != ".pdf") {
                 alert("Only .pdf files can be uploaded.")
                 e.preventDefault();
+            } else {
+                var splitName = this.name.split('-');
+                if (splitName.length != 5 || splitName[2].indexOf('HIRA') < 0) {
+                    alert("The format name of HIRA is must be <name of KBP>-<name of sub KBP>-HIRA-<sequence number> <Process/Activity> R<revision number>-<yymmdd (date of HIRA)>.pdf");
+                    e.preventDefault();
+                }
             }
         });
         e.data = { id_ptw: '@Model.id' };
@@ -632,14 +771,110 @@
 
     function onSuccess(e) {
         var files = e.files;
-        
+        console.log(e);
+        for (var i = 0; i < e.response.length; i++) {
+            checkedNodes.push(e.response[i]);
+        }
+        $('#hira-docs').data('kendoTreeView').dataSource.read();
+        //// Check the extension of each file and abort the upload if it is not .jpg
+        //$.each(files, function () {
+        //    $('.k-filename[title="' + this.name + '"]').html('<a href="/Upload/Hira/' + this.name + '">' + this.name + '</a>');
+        //});
+    }
+
+    function onUploadImage(e) {
+        // Array with information about the uploaded files
+        var files = e.files;
+
         // Check the extension of each file and abort the upload if it is not .jpg
         $.each(files, function () {
-            $('.k-filename[title="' + this.name + '"]').html('<a href="/Upload/Hira/' + this.name + '">' + this.name + '</a>');
+            //if (this.extension != ".pdf") {
+            //    alert("Only .pdf files can be uploaded.")
+            //    e.preventDefault();
+            //} else {
+            //    var splitName = this.name.split('-');
+            //    if (splitName.length != 5 || splitName[2].indexOf('HIRA') < 0) {
+            //        alert("The format name of HIRA is must be <name of KBP>-<name of sub KBP>-HIRA-<sequence number> <Process/Activity> R<revision number>-<yymmdd (date of HIRA)>.pdf");
+            //        e.preventDefault();
+            //    }
+            //}
         });
     }
 
-    function save() {
+    function onSuccessImage(e) {
+        var files = e.files;
+        $('#acc_images').val(e.response);
+        //// Check the extension of each file and abort the upload if it is not .jpg
+        //$.each(files, function () {
+        //    $('.k-filename[title="' + this.name + '"]').html('<a href="/Upload/Hira/' + this.name + '">' + this.name + '</a>');
+        //});
+    }
+
+    function save(isset) {
+        isset = isset || null;
+        values = getValues();
+        if (values.is_guest == 1 && isset == null && '@(Model.is_guest == null)' == 'True') {
+            $('#guest-name').modal('show');
+            return;
+        }
+
+        if (values.is_guest == 1) {
+            if (values.acc_supervisor == null || values.acc_supervisor == "") {
+                $('#acc_supervisor_required').show();
+                alert("Supervisor must be chosen.");
+                return;
+            } else {
+                $('#acc_supervisor_required').hide();
+            }
+        }
+
+        if ('@(Model.status == (int)PtwEntity.statusPtw.ACCSPV)' == 'True' && isset == null) {
+            $('#comment_fo').modal('show');
+            return;
+        }
+        if ('@isPosition' == 1) {
+            var hira = [];
+            $('.k-filename').each(function () {
+                hira.push($(this).attr('title'));
+            });
+            values.hiras = hira;
+            if (values.acc_supervisor == null || values.acc_supervisor == "") {
+                $('#acc_supervisor_required').show();
+                alert("Supervisor must be chosen.");
+                return;
+            } else {
+                $('#acc_supervisor_required').hide();
+            }
+            $('#save').attr('disabled', 'disabled');
+            $('#loading').css('display', 'inline-block');
+            $.post("@Url.Action("Add","Ptw")", $.param(values, true), function (resp) {
+                if (values.is_guest == 1) {
+                    $('#guest-name').modal('hide');
+                    $('#loading_set').hide();
+                }
+                if (resp.status == "200") {
+                    alert("Permit to Work save successful!");
+                    $('#content').load('@Url.Action("Edit","Ptw")/' + resp.id);
+                } else if (resp.status == "400") {
+                    $('#save').removeAttr('disabled');
+                    $('#loading').hide();
+                    alert("Permit to Work failed to save\nMessage : " + resp.message);
+                }
+            });
+        } else {
+            values.id = '@Model.id';
+            $.post("@Url.Action("EditPtw","Ptw")", values, function (resp) {
+                if (resp.status == "200") {
+                    alert("Permit to Work save successful!");
+                    $('#content').load('@Url.Action("Edit","Ptw", new { id = Model.id })');
+                } else if (resp.status == "400")
+                    alert("Permit to Work failed to save\nMessage : " + resp.message);
+            });
+        }
+    }
+
+    function getValues() {
+
         var area = "";
         var checkBoxes = $("input[name='area']");
         $.each(checkBoxes, function () {
@@ -650,8 +885,17 @@
         if (area == "0") {
             area = $('#area').val();
         }
+        var acc_requestor = '@requestor.id';
+        var acc_image = null;
+        var is_guest = '@Model.is_guest';
+        if ('@requestor.id' == '1') {
+            acc_requestor = $('#acc_requestor').val();
+            acc_image = $('#acc_images').val();
+            is_guest = 1;
+        }
 
         var values = {
+            ptw_no : $('#ptw_no').html(),
             proposed_period_start: $('#proposed_period_start').val(),
             proposed_period_end: $('#proposed_period_end').val(),
             dept_requestor: $('#dept_requestor').val(),
@@ -663,8 +907,8 @@
             work_order_no: $('#work_order_no').val(),
             work_description: $('#work_description').val(),
             area_code: $('#area_code').val(),
-            acc_ptw_requestor: '@requestor.id',
-            can_ptw_requestor: '@requestor.id',
+            acc_ptw_requestor: acc_requestor,
+            can_ptw_requestor: acc_requestor,
             pre_job_1_spv: $('#pre_job_1_spv').val(),
             pre_job_2_spv: $('#pre_job_2_spv').val(),
             pre_job_3_spv: $('#pre_job_3_spv').val(),
@@ -693,13 +937,15 @@
             cancel_5_fo: $('#cancel_5_fo').val(),
             cancel_6_fo: $('#cancel_6_fo').val(),
             cancel_7_fo: $('#cancel_7_fo').val(),
-            pre_job_notes : $('#pre_job_notes').val(),
-            cancel_notes : $('#cancel_notes').val(),
-            validity_period_start : $('#validity_period_start').val(),
-            validity_period_end : $('#validity_period_end').val(),
+            pre_job_notes: $('#pre_job_notes').val(),
+            cancel_notes: $('#cancel_notes').val(),
+            validity_period_start: $('#validity_period_start').val(),
+            validity_period_end: $('#validity_period_end').val(),
             cancellation_date: $('#cancellation_date').val(),
             acc_assessor: $('#acc_assessor').val(),
-            acc_fo: $('#acc_fo').val(),
+            // acc_fo: $('#acc_fo').val(),
+            fo_code: $('#fo_code').val(),
+            acc_supervisor: $('#acc_supervisor').val(),
             hw_need: $('#hw').is(':checked') ? 1 : 0,
             fi_need: $('#fi').is(':checked') ? 1 : 0,
             rad_need: $('#rad').is(':checked') ? 1 : 0,
@@ -707,44 +953,19 @@
             ex_need: $('#ex').is(':checked') ? 1 : 0,
             csep_need: $('#csep').is(':checked') ? 1 : 0,
             loto_need: $('#loto').is(':checked') ? 1 : 0,
+            hira_docs: checkedNodes.join('#@@#'),
+            guest_holder_no: $('#ptw_holder_no').val(),
+            is_guest: is_guest,
+            acc_ptw_requestor_approve: acc_image,
+            acc_notes_fo_ass: $('#comment_fo_notes').val(),
         };
 
-        if ('@isPosition' == 1) {
-            var hira = [];
-            $('.k-filename').each(function () {
-                hira.push($(this).attr('title'));
-            });
-            values.hiras = hira;
-            if (validate(values)) {
-                $('#save').attr('disabled', 'disabled');
-                $('#loading').css('display', 'inline-block');
-                $.post("/Ptw/Add", $.param(values, true), function (resp) {
-                    if (resp.status == "200") {
-                        alert("Permit to Work save successful!");
-                        $('#content').load('Ptw/Edit/' + resp.id);
-                    } else if (resp.status == "400") {
-                        $('#save').removeAttr('disabled');
-                        $('#loading').hide();
-                        alert("Permit to Work failed to save\nMessage : " + resp.message);
-                    }
-                });
-            }
-        } else {
-            values.id = '@Model.id';
-            if (validate(values)) {
-                $.post("/Ptw/EditPtw", values, function (resp) {
-                    if (resp.status == "200") {
-                        alert("Permit to Work save successful!");
-                        $('#content').load('Ptw/Edit/@Model.id');
-                    } else if (resp.status == "400")
-                        alert("Permit to Work failed to save\nMessage : " + resp.message);
-                });
-            }
-        }
+        return values;
     }
 
     function validate(values) {
         var isValid = true;
+        console.log(values);
         if (values.area == null || values.area == "") {
             $('#area_required').show();
             isValid = false;
@@ -752,25 +973,32 @@
             $('#area_required').hide();
         }
 
-        if (values.acc_fo == null || values.acc_fo == "") {
+        if (values.fo_code == null || values.fo_code == "") {
             $('#acc_fo_required').show();
             isValid = false;
         } else {
             $('#acc_fo_required').hide();
         }
 
-        if (values.requestor_ptw_holder_no == 0) {
+        if ((values.is_guest == null && values.requestor_ptw_holder_no == 0) || values.guest_holder_no == "") {
             $('#ptw_holder_no_required').show();
             isValid = false;
         } else {
             $('#ptw_holder_no_required').hide();
         }
 
-        if (values.acc_fo == 0) {
-            $('#acc_fo_required').show();
+        //if (values.acc_fo == 0) {
+        //    $('#acc_fo_required').show();
+        //    isValid = false;
+        //} else {
+        //    $('#acc_fo_required').hide();
+        //}
+
+        if (values.acc_supervisor == null || values.acc_supervisor == "") {
+            $('#acc_supervisor_required').show();
             isValid = false;
         } else {
-            $('#acc_fo_required').hide();
+            $('#acc_supervisor_required').hide();
         }
 
         if (values.work_location == null || values.work_location == "") {
@@ -796,13 +1024,18 @@
 
         if (isValid == false) {
             alert('All fields except Area Code and Clerance Permit cannot be blank.');
+        } else {
+            if ('@(Model.safety_briefing_status < (int)PermitToWork.Models.SafetyBriefing.SafetyBriefingEntity.SafetyBriefingStatus.PRINT)' == 'True') {
+                alert('Safety Briefing must be completed.');
+                isValid = false;
+            }
         }
 
         return isValid;
     }
 
     function back() {
-        window.location = '/Home';
+        window.location = '@Url.Action("Index","Home")';
         //$('#content').load('Home/Index');
     }
 
@@ -813,7 +1046,7 @@
             user_id: '@requestor.id',
         };
         if (r == true) {
-            $.post("/Ptw/CancelPtw", values, function (resp) {
+            $.post('@Url.Action("CancelPtw","Ptw")', values, function (resp) {
                 if (resp.status == "200") {
                     alert("Permit to Work has cancelled by Requestor.");
                     $('#content').load('Ptw/Edit/@Model.id');
@@ -821,6 +1054,38 @@
             });
         } else {
 
+        }
+    }
+
+    function goToSafetyBriefing(id) {
+        if ('@isPosition' == '1') {
+            values = getValues();
+            if (values.acc_supervisor == null || values.acc_supervisor == "") {
+                $('#acc_supervisor_required').show();
+                alert("Supervisor must be chosen.");
+                return;
+            } else {
+                $('#acc_supervisor_required').hide();
+            }
+            $('#save').attr('disabled', 'disabled');
+            $('#loading').css('display', 'inline-block');
+            $.post("@Url.Action("Add","Ptw")", $.param(values, true), function (resp) {
+                if (values.is_guest == 1) {
+                    $('#guest-name').modal('hide');
+                    $('#loading_set').hide();
+                }
+                if (resp.status == "200") {
+                    $('#history').val('@Url.Action("Edit","Ptw")/' + resp.id);
+                    $('#content').load('@Url.Action("Create", "SafetyBriefing")/' + resp.id_safety_briefing);
+                } else if (resp.status == "400") {
+                    $('#save').removeAttr('disabled');
+                    $('#loading').hide();
+                    alert("Permit to Work failed to save\nMessage : " + resp.message);
+                }
+            });
+        } else {
+            $('#history').val('@Url.Action("Edit","Ptw", new { id = Model.id })');
+            $('#content').load('@Url.Action("Create", "SafetyBriefing", new { id = Model.id_safety_briefing })');
         }
     }
 </script>
@@ -845,7 +1110,7 @@
         </div>
 
         <div class="span3 no">
-            No <button class="btn">SAFETY BRIEFING</button>
+            No <button class="btn btn-primary" onclick="goToSafetyBriefing('@Model.id_safety_briefing')">SAFETY BRIEFING</button>
             <br /><i>PTW No : <span id="ptw_no">@Model.ptw_no</span></i>
         </div>
     </div>
@@ -883,10 +1148,10 @@
                     <td>Dept. of Requestor : <br />@Html.DropDownList("dept_requestor",ViewBag.listDepartment as List<SelectListItem>, isCanEdit == true ? new { @class = "table-input-170" } as object :  new { @class = "table-input-170", disabled = "disabled" } as object)</td>
                     <td>Section : @Html.DropDownList("section",ViewBag.listSection as List<SelectListItem>, isCanEdit == true ? new { @class = "table-input-120" } as object :  new { @class = "table-input-120", disabled = "disabled" } as object)</td>
                     <td>Total number crew : @Html.DropDownList("total_crew",ViewBag.listTotalCrew as List<SelectListItem>, isCanEdit == true ? new { @class = "table-input-120" } as object :  new { @class = "table-input-120", disabled = "disabled" } as object)</td>
-                    <td>Requestor's PTW holder no. :<span id="ptw_holder_no_required" style="display:none;color:red"><br />You must have Holder Number or it still active.</span><br /> <input class="table-input table-input-170" id="ptw_holder_no" type="text" value="@Model.ptw_holder_no.ptw_holder_no" disabled /><input id="requestor_ptw_holder_no" type="hidden" value="@Model.requestor_ptw_holder_no" disabled /></td>
+                    <td>Requestor's PTW holder no. :<span id="ptw_holder_no_required" style="display:none;color:red"><br />You must have Holder Number or it still active.</span><br /> <input class="table-input table-input-170" id="ptw_holder_no" type="text" value="@(requestor.id == 1 || Model.is_guest == 1 ? Model.guest_holder_no : (Model.ptw_holder_no != null ? Model.ptw_holder_no.ptw_holder_no : ""))"  @(requestor.id == 1 ? "" : "disabled") />@if (isCanEdit == true && Model.status == (int)PtwEntity.statusPtw.GUESTCOMPLETE && Model.guest_holder_no == null) {<input type="button" class="btn btn-default" id="request-no" value="Request No" />}<input id="requestor_ptw_holder_no" type="hidden" value="@Model.requestor_ptw_holder_no" @(requestor.id == 1 ? "" : "disabled") /></td>
                 </tr>
                 <tr>
-                    <td colspan="3">
+                    <td colspan="2">
                         <ul class="inline table-ul">
                             <li>AREA : <span id="area_required" style="display:none;color:red"><br />Area must be chosen</span></li>
                             <li><label class="radio"><input name="area" type="radio" value="1" @(Model.area == "1" ? "checked" : "")  @(isCanEdit == true ? "" : "disabled") />Power Station</label></li>
@@ -896,21 +1161,30 @@
                         </ul>
                     </td>
                     <td>
-                        Facility Owner :
-                        <select id="acc_fo" @(isCanEdit == true ? "" : "disabled")  class="table-input-170">
+                        Supervisor :
+                        <select id="acc_supervisor" @(isCanEdit == true && (Model.status == (int)PtwEntity.statusPtw.CREATE || isPosition == 1) ? "" : "disabled")  class="table-input-170">
                             <option value="">Choose One</option>
-                            @foreach (PermitToWork.Models.User.UserEntity u in listUser.listUser)
+                            @foreach (PermitToWork.Models.User.UserEntity u in ViewBag.listSpv as List<PermitToWork.Models.User.UserEntity>)
                             {
-                                if (list_fo.Exists(p => p.id_employee == u.id)) {
-                                <option value="@u.id" @(Model.acc_fo == u.id.ToString() ? "selected" : "")>@u.alpha_name</option>
-                                }
+                                <option value="@u.id" @(Model.acc_supervisor == u.id.ToString() ? "selected" : "")>@u.alpha_name</option>
+                            }
+                        </select>
+                         <span id="acc_supervisor_required" style="display:none;color:red"><br />Supervisor must be chosen</span>
+                    </td>
+                    <td>
+                        Facility Owner :
+                        <select id="fo_code" @(isCanEdit == true ? "" : "disabled")  class="table-input-170">
+                            <option value="">Choose One</option>
+                            @foreach (PermitToWork.Models.Master.MstFOEntity u in list_fo)
+                            {
+                                <option value="@u.fo_code" @(Model.ptw_no != null && Model.ptw_no.Split('-')[0] == u.fo_code ? "selected" : "")>@u.fo_name</option>
                             }
                         </select>
                          <span id="acc_fo_required" style="display:none;color:red"><br />Facility Owner must be chosen</span>
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="3">Work Location : <input class="table-input table-input-170" id="work_location" type="text" value="@(Model.work_location != null ? Model.work_location : "")" @(isCanEdit == true ? "" : "disabled") /> , Area Code : <input class="table-input table-input-120" id="area_code" type="text" value="@(Model.area_code != null ? Model.area_code : "")" @(isCanEdit == true ? "" : "disabled") /> <span id="work_location_required" style="display:none;color:red"><br />Work Location cannot be blank</span></td>
+                    <td colspan="3">Work Location : <input class="table-input table-input-170" id="work_location" type="text" value="@(Model.work_location != null ? Model.work_location : "")" @(isCanEdit == true ? "" : "disabled") /> , Area Code : @Html.DropDownList("area_code",ViewBag.listAreaCode as List<SelectListItem>, isCanEdit == true ? new { @class = "table-input-120" } as object :  new { @class = "table-input-120", disabled = "disabled" } as object) <span id="work_location_required" style="display:none;color:red"><br />Work Location cannot be blank</span></td>
                     <td>Work Order No: <input class="table-input table-input-170" id="work_order_no" type="text" value="@(Model.work_order_no != null ? Model.work_order_no : "")" @(isCanEdit == true ? "" : "disabled") /> <span id="work_order_no_required" style="display:none;color:red"><br />Work Order Number cannot be blank</span></td>
                 </tr>
                 <tr>
@@ -983,9 +1257,25 @@
                 <tr>
                     <td class="td-centre"><input id="fi" type="checkbox" @(isCanEdit == true ? "" : "disabled") @(Model.fi_id != null ? "checked" : "")/></td>
                     <td class="small">Fire Impairment (FI)</td>
-                    <td class="small">@if (Model.fi_id != null)
+                    <td class="small">
+                        @{
+                            bool isCanExtend = false;
+                            if (Model.fireImpairments != null) {
+                                var a = Model.fireImpairments.Select(p => p.status).Min();
+                                if (a == (int)PermitToWork.Models.FIEntity.FIStatus.CANDEPTFOAPPROVE) {
+                                    isCanExtend = true;
+                                }
+                            }
+                        }
+                        @if (Model.fireImpairments != null)
                         {
-                            <button class="btn btn-small" id="fi_id" data-id="@Model.fi_id">@Model.fi_no&nbsp;</button>
+                            @*if (isCanExtend)
+                            {
+                                <button class="btn btn-small btn-warning" id="extend-fi">Extend FI</button><br />
+                            }*@
+                            foreach (PermitToWork.Models.FIEntity fi in Model.fireImpairments) {
+                                <button class="btn btn-small fi_id" id="fi_id" data-id="@fi.id">@fi.fi_no&nbsp;</button><br />
+                            }
                         }
                     </td>
                     <td class="small">@Html.Raw(Model.clearancePermitStatus(PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString()))</td>
@@ -995,10 +1285,13 @@
                 <tr>
                     <td class="td-centre"><input id="ex" type="checkbox" @(isCanEdit == true ? "" : "disabled") @(Model.ex_id != null ? "checked" : "") /></td>
                     <td class="small">Excavation (Ex)</td>
-                    <td class="small">@if (Model.ex_id != null)
+                    <td class="small">
+                        
+                        @if (Model.ex_id != null)
                         {
                             <button class="btn btn-small" id="ex_id" data-id="@Model.ex_id">@Model.ex_no&nbsp;</button>
-                        }</td>
+                        }
+                    </td>
                     <td class="small">@Html.Raw(Model.clearancePermitStatus(PtwEntity.clearancePermit.EXCAVATION.ToString()))</td>
                     <td class="small">Excavation clearance from facility + E&I officer</td>
                     <td class="small">Ex form(106a) : general info, clearance from facility + E&I officer</td>
@@ -1030,18 +1323,25 @@
                     <td class="small">Rad form (108a) : general info, initial assesment (spv, engineer, operator, safety officer)</td>
                 </tr>
                 <tr>
-                    <td colspan="4">
-                        HIRA no : <em><small>(choose HIRA number and copy of HIRA must be attach)</small></em>                          
-                        <input name="files" id="files" type="file" @(isCanEdit == true ? "" : "disabled") />
+                    <td colspan="6">
+                        HIRA no <i><b>(Filename Format: &lt;name of KBP&gt;-&lt;name of sub KBP&gt;/HIRA-&lt;sequence number&gt; &lt;Process/Activity&gt; R&lt;revision number&gt;-&lt;yymmdd (date of HIRA)&gt;.pdf)</b></i> : <em><small>(choose HIRA number and copy of HIRA must be attach)</small></em>                          
+                        @if (isCanEdit == true) {
+                        <div id="hira-docs"></div>
+                        <button class="btn btn-success" id="add-new-hira">Upload HIRA</button>
+                        }
                         @{
-                            if(Model.hira_document != null && Model.hira_document.Count > 0){
-                                <ul id="existing-files" class="k-upload-files k-reset" style="display: none;">
-                                    @foreach (PermitToWork.Models.Hira.HiraEntity hira in Model.hira_document) {
-                                    <li class="k-file" data-att-id="@(hira.filename)">
+                            if (Model.hira_docs != null)
+                            {
+                                string[] hiraDocs = Model.hira_docs.Split(new string[] {"#@#"}, StringSplitOptions.None);
+                                <ul id="existing-files" class="k-upload-files k-reset">
+                                    @foreach (string s in hiraDocs) {
+                                        if (s != "") {
+                                        var fileName = HttpUtility.UrlDecode(s);
+                                    <li class="k-file" data-att-id="@(Path.GetFileName(fileName))">
                                         <span class="k-icon k-success">uploaded</span>
-                                        <span class="k-filename" title="@(hira.filename)"><a href="@hira.location">@hira.filename</a><span class="k-progress"><span class="k-state-selected k-progress-status" style="width: 100%;"></span></span></span>
-                                        <button type="button" class="k-button k-button-icontext k-upload-action"><span class="k-icon k-delete"></span>Remove</button>
+                                        <span class="k-filename" title="@(Path.GetFileName(fileName))" style="max-width:none"><a href="@Url.Content("~/" + fileName)" target="_blank">@(Path.GetFileName(fileName))</a><span class="k-progress"><span class="k-state-selected k-progress-status" style="width: 100%;"></span></span></span>
                                     </li>
+                                        }
                                     }
                                 </ul>
                             }
@@ -1108,7 +1408,7 @@
                 </tr>
                 <tr>
                     <td>3</td>
-                    <td class="small">Are the works changing the system or design available this time?</td>
+                    <td class="small">Are the works not changing the system or design available this time?</td>
                     <td>
                         <select id="pre_job_3_spv" @(user_ptw[1] == true && Model.acc_supervisor_approve == null && isCanEdit == true ? "" : "disabled")>
                           <option value="0" @(Model.pre_job_3_spv == 0 ? "selected" : "")>N/A</option>
@@ -1202,10 +1502,24 @@
                                 supervisor project maanger; FO : Facility owner; All parties have right to stop work when control method is not adequate to control the hazard
                               </em><br />
                         <span id="pre_job_notes_required" style="display:none;color:red"></span>
-                        <textarea class="table-textarea" id="pre_job_notes" @(isCanEdit == true ? "" : "disabled")>@Model.pre_job_notes</textarea>
+                        <textarea class="table-textarea" id="pre_job_notes" @(isCanEdit == true ? "" : "disabled")>@(user_ptw[1] == true && isCanEdit == true ? Model.pre_job_notes + "\nSpv: " : (user_ptw[3] == true && isCanEdit == true && Model.acc_assessor != null ? Model.pre_job_notes + "\nFO: " : Model.pre_job_notes))</textarea>
                     </td>
                 </tr>
             </tbody>
+        </table>
+        <table class="table table-bordered">
+            <tr>
+                <td>
+                    Notes from FO to Assessor:<br />
+                    @Model.acc_notes_fo_ass
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Notes from Assessor to FO:<br />
+                    @Model.acc_notes_ass_fo
+                </td>
+            </tr>
         </table>
         <table class="table table-bordered">
             <thead>
@@ -1232,20 +1546,21 @@
                     <td class="td-centre">
                         @if (isClearenceComplete.Value && Model.acc_ptw_requestor_approve == null && user_ptw[0] == true)
                         {
-                            <button class="btn" type="button" id="requestor_acc">Accept</button><br />
+                            <button class="btn btn-success" type="button" id="requestor_acc">Accept</button><br />
                             <span id="loading_requestor_acc" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                         }
                         else
                         {
                             <img id="img_approve_requestor" width="50" height="50" @(Model.acc_ptw_requestor_approve == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.acc_ptw_requestor_approve == null ? "" : Model.acc_ptw_requestor_approve.Substring(1))"/><br />
                         }
-                        <span>@(listUser.listUser.Where(p => p.id == Model.acc_ptw_requestor.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                        <span>@(Model.is_guest == 1 ? Model.acc_ptw_requestor : listUser.listUser.Where(p => p.id == Model.acc_ptw_requestor.AsInt()).FirstOrDefault().alpha_name)</span><br />
                         <strong><u>PTW Requestor</u></strong>
                     </td>
                     <td class="td-centre">
                         @if (Model.acc_ptw_requestor_approve != null && Model.acc_supervisor_approve == null && user_ptw[1] == true)
                         {
-                            <button class="btn btn-success" type="button" id="supervisor_acc">Accept</button> <button class="btn btn-danger" type="button" id="supervisor_reject">Reject</button><br />
+                            <button class="btn btn-success" type="button" id="supervisor_acc">Accept</button> 
+                            if (Model.is_guest != 1) { <button class="btn btn-danger" type="button" id="supervisor_reject">Reject</button> }<br />
                             <span id="loading_supervisor_acc" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                         }
                         else
@@ -1283,7 +1598,7 @@
                         }
                         @if (Model.acc_supervisor_approve != null && Model.acc_assessor_approve == null && Model.status == (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.ACCSPV && user_ptw[3] == true)
                         {
-                            string fo_code = Model.ptw_no.Substring(0, 3);
+                            string fo_code = Model.ptw_no.Split('-')[0];
                             <select id="acc_assessor">
                                 <option value="">Choose One</option>
                             @foreach (PermitToWork.Models.User.UserEntity u in listUser.listUser)
@@ -1326,11 +1641,11 @@
                         }*@
                         @if (Model.acc_fo != null)
                         {
-                            if ((Model.acc_fo_approve == null && Model.acc_fo_delegate == requestor.id.ToString()) || (Model.acc_fo_approve != null && Model.acc_fo_approve.Substring(0, 1) == "d"))
+                            if ((Model.acc_fo_approve == null && user_ptw[3] == true) || (Model.acc_fo_approve != null && Model.acc_fo_approve.Substring(0, 1) == "d"))
                             {
-                                <span>@listUser.listUser.Where(p => p.id == Model.acc_fo_delegate.AsInt()).FirstOrDefault().alpha_name</span><br />
+                                <span>@listUser.listUser.Where(p => p.id == requestor.id).FirstOrDefault().alpha_name</span><br />
                             }
-                            <span>@((Model.acc_fo_approve == null && Model.acc_fo_delegate == requestor.id.ToString()) || (Model.acc_fo_approve != null && Model.acc_fo_approve.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.acc_fo.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                            <span>@((Model.acc_fo_approve == null && user_ptw[3] == true) || (Model.acc_fo_approve != null && Model.acc_fo_approve.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.acc_fo.AsInt()).FirstOrDefault().alpha_name)</span><br />
                         }
                         <strong><u>Facility Owner</u></strong>
                     </td>
@@ -1486,10 +1801,18 @@
                         Note: <em>write any concern related to cancellation PTW, attach other check sheet if necessary
                               </em><br />
                         <span id="cancel_notes_required" style="display:none;color:red"></span>
-                        <textarea class="table-textarea" id="cancel_notes" @(isCancel == true && ((user_ptw[4] == true && Model.can_supervisor_approve == null) || (user_ptw[5] == true && Model.can_assessor_approve == null) || (user_ptw[6] == true && Model.can_fo_approve == null)) && Model.has_extend == false ? "" : "disabled")>@Model.cancel_notes</textarea>
+                        <textarea class="table-textarea" id="cancel_notes" @(isCancel == true && ((user_ptw[4] == true && Model.can_supervisor_approve == null) || (user_ptw[5] == true && Model.can_assessor_approve == null) || (user_ptw[6] == true && Model.can_fo_approve == null)) && Model.has_extend == false ? "" : "disabled")>@(user_ptw[4] == true ? Model.cancel_notes + "\nSpv: " : (user_ptw[6] == true ? Model.cancel_notes + "\nFO: " : Model.cancel_notes))</textarea>
                     </td>
                 </tr>
             </tbody>
+        </table>
+        <table class="table table-bordered">
+            <tr>
+                <td>
+                    Notes from Assessor to FO:<br />
+                    @Model.can_notes_ass_fo
+                </td>
+            </tr>
         </table>
         <table class="table table-bordered">
             <thead>
@@ -1510,22 +1833,24 @@
                 </tr>
                 <tr>
                     <td class="td-centre" style="width:50%">
-                        @if (Model.can_ptw_requestor_approve == null && user_ptw[0] == true && Model.status == (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.CANCEL && Model.has_extend == false)
+                        @if (Model.can_ptw_requestor_approve == null && user_ptw[0] == true && Model.status == (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.CANCEL && Model.has_extend == false && Model.safety_briefing_status == (int)PermitToWork.Models.SafetyBriefing.SafetyBriefingEntity.SafetyBriefingStatus.CANCELLATIONSIGNCOMPLETE)
                         {
-                            <button class="btn" type="button" id="requestor_can">Accept</button><br />
+                            <button class="btn btn-success" type="button" id="requestor_can">Accept</button><br />
                             <span id="loading_requestor_can" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
-                        }
-                        else
+                        } else if (Model.can_ptw_requestor_approve == null && user_ptw[0] == true && Model.status == (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.CANCEL && Model.has_extend == false && Model.safety_briefing_status != (int)PermitToWork.Models.SafetyBriefing.SafetyBriefingEntity.SafetyBriefingStatus.CANCELLATIONSIGNCOMPLETE) {
+                            <text><span>You Must Attach Safety Briefing first in Safety Briefing section. You can go to Safety Briefing by clicking "Safety Briefing" at top of PTW Document.<br /></span></text>
+                        } else
                         {
                             <img id="img_cancel_requestor" width="50" height="50" @(Model.can_ptw_requestor_approve == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_ptw_requestor_approve == null ? "" : Model.can_ptw_requestor_approve.Substring(1))"/><br />
                         }
-                        <span>@(listUser.listUser.Where(p => p.id == Model.can_ptw_requestor.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                        <span>@(Model.is_guest == 1 ? Model.can_ptw_requestor : listUser.listUser.Where(p => p.id == Model.can_ptw_requestor.AsInt()).FirstOrDefault().alpha_name)</span><br />
                         <strong><u>PTW Requestor</u></strong>
                     </td>
                     <td class="td-centre">
                         @if (Model.can_ptw_requestor_approve != null && Model.can_supervisor_approve == null && user_ptw[4] == true && Model.has_extend == false)
                         {
-                            <button class="btn" type="button" id="supervisor_reject_can">Reject</button><button class="btn" type="button" id="supervisor_can">Accept</button><br />
+                            <button class="btn btn-success" type="button" id="supervisor_can">Accept</button>
+                            if (Model.is_guest != 1) { <button class="btn btn-danger" type="button" id="supervisor_reject_can">Reject</button> }<br />
                             <span id="loading_supervisor_can" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                         }
                         else
@@ -1549,7 +1874,8 @@
                     <td class="td-centre">
                         @if (Model.can_supervisor_approve != null && Model.can_assessor_approve == null && user_ptw[5] == true && Model.has_extend == false)
                         {
-                            <button class="btn" type="button" id="assessor_reject_can">Reject</button><button class="btn" type="button" id="assessor_can">Accept</button><br />
+                            <button class="btn btn-success" type="button" id="assessor_can">Accept</button>
+                            <button class="btn btn-danger" type="button" id="assessor_reject_can">Reject</button><br />
                             <span id="loading_assessor_can" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                         }
                         else
@@ -1566,18 +1892,18 @@
                     <td class="td-centre">
                         @if (Model.can_assessor_approve != null && Model.can_fo_approve == null && user_ptw[6] == true && Model.has_extend == false)
                         {
-                            <button class="btn" type="button" id="fo_reject_can">Reject</button><button class="btn" type="button" id="fo_can">Accept</button><br />
+                            <button class="btn btn-success" type="button" id="fo_can">Accept</button><button class="btn btn-danger" type="button" id="fo_reject_can">Reject</button><br />
                             <span id="loading_fo_can" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                         }
                         else
                         {
                             <img id="img_cancel_fo" width="50" height="50" @(Model.can_fo_approve == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_fo_approve == null ? "" : Model.can_fo_approve.Substring(1))"/><br />
                         }
-                        @if ((Model.can_fo_approve == null && Model.can_fo_delegate == requestor.id.ToString()) || (Model.can_fo_approve != null && Model.can_fo_approve.Substring(0, 1) == "d"))
+                        @if ((Model.can_fo_approve == null && user_ptw[6] == true) || (Model.can_fo_approve != null && Model.can_fo_approve.Substring(0, 1) == "d"))
                         {
-                                <span>@listUser.listUser.Where(p => p.id == Model.can_fo_delegate.AsInt()).FirstOrDefault().alpha_name</span><br />
+                                <span>@listUser.listUser.Where(p => p.id == requestor.id).FirstOrDefault().alpha_name</span><br />
                         }
-                            <span>@((Model.can_fo_approve == null && Model.can_fo_delegate == requestor.id.ToString()) || (Model.can_fo_approve != null && Model.can_fo_approve.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.can_fo.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                            <span>@((Model.can_fo_approve == null && user_ptw[6] == true) || (Model.can_fo_approve != null && Model.can_fo_approve.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.can_fo.AsInt()).FirstOrDefault().alpha_name)</span><br />
                         <strong><u>Facility Owner</u></strong>
                     </td>
                 </tr>
@@ -1588,15 +1914,15 @@
         <br />
 
         <button class="btn" onclick="back()">Back</button>  
-        @if (isCanEdit == true || Model.status == (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.CANREQ || Model.status == (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.CANASS)
+        @if (isCanEdit == true || (Model.is_guest == 1 && Model.status == (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.CANREQ) || Model.status == (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.CANASS)
         {
-        <button class="btn" onclick="save()">Save</button>
+        <button class="btn" onclick="save()">Save as Draft</button>
         }
-        @if (user_ptw[0] == true && Model.status == (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.ACCFO && isClearenceClose == true)
+        @if (((Model.is_guest != 1 && user_ptw[0] == true) || user_ptw[1] == true) && Model.status == (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.ACCFO && isClearenceClose == true && !Model.has_extend)
         {
         <button class="btn" onclick="cancelPtw()">Cancel PTW</button>
         }
-        <span id="loading" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span>
+        <span id="loading" style="display:none"><img src="@Url.Content("~/Content/Images/loading.gif")" alt="loading" width="24" height="24" /> Saving.. Please Wait..</span>
     </div>
 </div>
 
@@ -1613,7 +1939,7 @@
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
     <button class="btn btn-primary" id="reject_button">Reject</button>
-    <span id="loading_reject" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span>
+    <span id="loading_reject" style="display:none"><img src="@Url.Content("~/Content/Images/loading.gif")" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span>
   </div>
 </div>
 
@@ -1630,7 +1956,23 @@
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
     <button class="btn btn-primary" id="assessor_acc_rej">Send and Sign</button>
-    <span id="loading_ass_acc_rej" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span>
+    <span id="loading_ass_acc_rej" style="display:none"><img src="@Url.Content("~/Content/Images/loading.gif")" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="comment_fo" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="Reject" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="comment_foLabel">Facility Owner's Note</h3>
+  </div>
+  <div class="modal-body">
+    <label for="comment_ass">Notes</label><textarea id="comment_fo_notes">@Model.acc_notes_fo_ass</textarea>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="fo_save">Save and Send</button>
+    <span id="loading_fo_notes" style="display:none"><img src="@Url.Content("~/Content/Images/loading.gif")" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span>
   </div>
 </div>
 
@@ -1665,6 +2007,50 @@
     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
     <button class="btn btn-primary" id="create-loto">Create LOTO</button>
   </div>
+</div>
+
+<!-- Modal -->
+<div id="add-hira" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="loto" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="add-hira-label">Upload HIRA</h3>
+  </div>
+    <div class="modal-body">
+        <input type="file" name="files" id="files" />
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true" type="button">Close</button>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="guest-name" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="loto" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="guest-name-label">Set Name And Signature</h3>
+  </div>
+    <form class="form-horizontal">
+        <div class="modal-body">
+            <div class="control-group">
+                <label class="control-label" for="datepicker">Name</label>
+                <div class="controls">
+                  <input type="text" id="acc_requestor" value="" />
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label" for="inputPassword">Signature</label>
+                <div class="controls">
+                  <input type="file" id="acc_images_uploader" name="files" />
+                <input type="hidden" id="acc_images" value="" />
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <button class="btn btn-primary" id="save" type="button">Save</button>
+            <span id="loading_set" style="display:none"><img src="@Url.Content("~/Content/Images/loading.gif")" alt="loading" width="24" height="24" /> Saving.. Please Wait..</span>
+        </div>
+    </form>
 </div>
 
 

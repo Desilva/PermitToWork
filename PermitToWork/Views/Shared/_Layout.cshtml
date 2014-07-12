@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@{
+    bool? inspector = ViewBag.inspector as bool?;
+    bool? isFo = ViewBag.isFo as bool?;
+}
+<!DOCTYPE html>
 <html>
 <head>
     <title>@ViewBag.Title</title>   
@@ -33,6 +37,7 @@
 		
 		<div id="search">
 			<input type="hidden" id="history" value=""/>
+            <input type="hidden" id="prev-history" value=""/>
 		</div>
 		<div id="user-nav" class="navbar navbar-inverse">
             <ul class="nav btn-group">
@@ -44,18 +49,34 @@
 		<div id="sidebar">
 			<a href="#" class="visible-phone"><i class="icon icon-home"></i> Dashboard</a>
 			<ul>
-				<li id="home" class="active home"><a href="#"><i class="icon icon-home"></i> <span>Dashboard</span></a></li>
-				<li id="submenu-ptw" class="submenu open">
-					<a href="#"><i class="icon icon-th-list"></i> <span>Permit To Work</span> <span class="label">3</span></a>
-					<ul>
-                        <li id="ptw" class="ptw"><a href="#">Permit To Work</a></li>
-						<li id="safety" class="safety"><a href="#">Safety Briefing</a></li>
-						<li id="hira" class="hira"><a href="#">Hira</a></li>
-                        <li id="lotto1" class="lotto1"><a href="#">Lotto 1</a></li>
-                        <li id="lotto2" class="lotto2"><a href="#">Lotto 2</a></li>
-                        <li id="lotto3" class="lotto3"><a href="#">Lotto 3</a></li>
+                <li class="submenu" id="master-data">
+					<a href="#"><i class="icon icon-th-list"></i> <span>Master Data</span></a>
+                    <ul>
+                        <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "Hira")');">HIRA Management</a></li>
+                        <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterPtwHolderNo")');">PTW Holder No</a></li>
+                        <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterRequestedPtwNo")');">Requested PTW Holder No</a></li>
+                        <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterFO")');">Facility Owner</a></li>
+						<li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterAssessor")');">Assessor</a></li>
+                        <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterDeptHead")');">Dept. Head FO</a></li>
+                        <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterSO")');">Safety Officer</a></li>
+                        <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterEI")');">E&I</a></li>
+                        <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterFacilities")');">Civil</a></li>
+                        <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterErector")');">Erector</a></li>
+                        <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterInspector")');">Inspector</a></li>
+                        <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterDepartment")');">Department</a></li>
+                        <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterSection")');">Section</a></li>
+                        <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterAreaCode")');">Area Code</a></li>
+                        <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterLockBox")');">Lock Box</a></li>
+                        <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterRadiationPO")');">Radiation Protection Officer</a></li>
+                        <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterRadiographer")');">Radiographer</a></li>
 					</ul>
 				</li>
+				<li id="home" class="active home"><a href="#"><i class="icon icon-home"></i> <span>Dashboard</span></a></li>
+                @if (inspector == true) {
+                <li id="scaffold-inspection" class="" data-url="@Url.Action("Index","InspectionNo")"><a href="#"><i class="icon icon-th-list"></i> <span>Scaffolding Inspection</span></a></li>
+                }
+                <li id="loto-point" class="" data-url="@Url.Action("LotoPoint","Loto")"><a href="#"><i class="icon icon-th-list"></i> <span>Remove LOTO Point</span></a></li>
+                <li id="delegate-fo" class="" data-url="@Url.Action("Index","MasterDelegateFO")"><a href="#"><i class="icon icon-th-list"></i> <span>Delegation FO</span></a></li>
 			</ul>	
 		</div>
         <div id="content">

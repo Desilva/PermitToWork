@@ -52,6 +52,7 @@
                             Work Location: 
                         </td>
                         <td>
+                            <input type="hidden" class="" id="id_loto" value="@ViewBag.id_loto" />
                             <input type="text" class="" id="work-location" value="@Model.work_location" @(isCanEdit[0] ? "" : "disabled") />
                         </td>
                     </tr>
@@ -97,7 +98,7 @@
                             <b>Qty of Pad Lock Usage: </b>
                         </td>
                         <td>
-                            <input type="number" class="" id="pad-lock-usage" value="@(Model.qty_pad_lock_usage == null ? 0 : Model.qty_pad_lock_usage)" @(isCanEdit[0] || isCanEdit[6] ? "" : "disabled") />
+                            <input type="number" class="" id="pad-lock-usage" value="@(Model.qty_pad_lock_usage == null ? 0 : Model.qty_pad_lock_usage)" @(isCanEdit[1] || isCanEdit[6] ? "" : "disabled") />
                         </td>
                     </tr>
                     <tr>
@@ -105,7 +106,7 @@
                             <b>Balance (remaining pad lock in the box): </b>
                         </td>
                         <td>
-                            <input type="number" class="" id="balance" value="@Model.balance" disabled />
+                            <input type="number" class="" id="balance" value="@Model.balance" @(isCanEdit[1] || isCanEdit[6] ? "" : "disabled") />
                         </td>
                     </tr>
                 </table>
@@ -120,30 +121,89 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td colspan="2" rowspan="2">Approval <br />Date / Time: @(Model.approval_date != null ? Model.approval_date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
+                                <td colspan="2">Approval Date / Time: @(Model.approval_date != null ? Model.approval_date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
                                 <td colspan="3" class="text-center">Oncoming Permit Holder</td>
                             </tr>
                             <tr>
-                                <td>No</td>
-                                <td>Name + Sign</td>
-                                <td>Date / Time</td>
-                            </tr>
-                            <tr>
-                                <td rowspan="6" style="vertical-align:bottom;text-align:center">
-                                    @if (Model.approval_supervisor_signature != null) {
+                                <td rowspan="@(Model.lotoComingHolder.Count > 6 ? Model.lotoComingHolder.Count + 1 : 7)" style="vertical-align:bottom;text-align:center">
+                                    @if (Model.approval_supervisor_signature != null)
+                                    {
                                     <img src="@Model.approval_supervisor_signature.Substring(1)" width="100" height="100" /><br />
                                     }
                                     @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.SUPERVISOR.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.SUPERVISOR.ToString()].alpha_name : "")<br />
                                     1<sup>st</sup> Supervisor
                                 </td>
-                                <td rowspan="6" style="vertical-align:bottom;text-align:center">
-                                    @if (Model.approval_fo_signature != null) {
+                                <td rowspan="@(Model.lotoComingHolder.Count > 6 ? Model.lotoComingHolder.Count + 1 : 7)" style="vertical-align:bottom;text-align:center">
+                                    @if (Model.approval_fo_signature != null)
+                                    {
                                     <img src="@Model.approval_fo_signature.Substring(1)" width="100" height="100" /><br />
+                                    }
+                                    @if (Model.approval_fo_signature != null && Model.approval_fo_signature.Substring(0,1) == "d") {
+                                        <text>@Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.APPROVALFACILITYOWNERDELEGATE.ToString()].alpha_name<br />a/n </text>
                                     }
                                     @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.APPROVALFACILITYOWNER.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.APPROVALFACILITYOWNER.ToString()].alpha_name : "")<br />
                                     Facility Owner
                                 </td>
-                                <td class="text-center">2</td>
+                                <td>No</td>
+                                <td>Name + Sign</td>
+                                <td>Date / Time</td>
+                            </tr>
+
+                                @if (Model.lotoComingHolder.Count > 6)
+                                {
+                                    foreach (PermitToWork.Models.ClearancePermit.LotoComingHolderEntity comingHolder in Model.lotoComingHolder)
+                                    {
+                            <tr>
+                                <td class="text-center">@comingHolder.no_holder</td>
+                                <td class="text-center">
+                                    @if (comingHolder.holder_sign_approval != null)
+                                    {
+                                        <img width="25" height="25" src="@comingHolder.holder_sign_approval.Substring(1)" /><br />
+                                    }
+                                    @if (comingHolder.holder_sign_approval != null && comingHolder.holder_sign_approval.Substring(0, 1) == "d")
+                                    {
+                                        @comingHolder.userApprovalDelegate.alpha_name;
+                                    }
+                                    @(comingHolder.holder_sign_approval != null && comingHolder.holder_sign_approval.Substring(0, 1) == "d" ? "a/n" : "") @comingHolder.userEntity.alpha_name
+                                </td>
+                                <td class="text-center">@(comingHolder.holder_date_approval != null ? comingHolder.holder_date_approval.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
+                            </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    int count = 6 - Model.lotoComingHolder.Count;
+                                    int prevNo = 1;
+                                    foreach (PermitToWork.Models.ClearancePermit.LotoComingHolderEntity comingHolder in Model.lotoComingHolder)
+                                    {
+                                        prevNo = comingHolder.no_holder.Value;
+                            <tr>
+                                <td class="text-center">@comingHolder.no_holder</td>
+                                <td class="text-center">
+                                    @if (comingHolder.holder_sign_approval != null)
+                                    {
+                                        <img width="25" height="25" src="@comingHolder.holder_sign_approval.Substring(1)" /><br />
+                                    }
+                                    @if (comingHolder.holder_sign_approval != null && comingHolder.holder_sign_approval.Substring(0, 1) == "d")
+                                    {
+                                        @comingHolder.userApprovalDelegate.alpha_name;
+                                    }
+                                    @(comingHolder.holder_sign_approval != null && comingHolder.holder_sign_approval.Substring(0, 1) == "d" ? "a/n" : "") @comingHolder.userEntity.alpha_name
+                                </td>
+                                <td class="text-center">@(comingHolder.holder_date_approval != null ? comingHolder.holder_date_approval.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
+                            </tr>
+                                    }
+                                    for (int i = prevNo + 1; i <= 7; i++)
+                                    {
+                            <tr>
+                                <td class="text-center">@i</td>
+                                <td class="text-center">
+                                </td>
+                                <td class="text-center"></td>
+                            </tr>
+                                    }
+                                }
+                                @*<td class="text-center">2</td>
                                 <td class="text-center">
                                     @if (Model.approval_holder_2_signature != null)
                                     {
@@ -152,52 +212,52 @@
                                     @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER2.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER2.ToString()].alpha_name : "")
                                 </td>
                                 <td class="text-center">@(Model.approval_holder_2_datetime != null ? Model.approval_holder_2_datetime.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
-                            </tr>
-                            <tr>
+                            </tr>*@
+                            @*<tr>
                                 <td class="text-center">3</td>
                                 <td class="text-center">@if (Model.approval_holder_3_signature != null)
-                                    {
+                                                        {
                                         <img width="25" height="25" src="@Model.approval_holder_3_signature" /><br />
-                                    }
+                                                        }
                                     @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER3.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER3.ToString()].alpha_name : "")</td>
                                 <td class="text-center">@(Model.approval_holder_3_datetime != null ? Model.approval_holder_3_datetime.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
                             </tr>
                             <tr>
                                 <td class="text-center">4</td>
                                 <td class="text-center">@if (Model.approval_holder_4_signature != null)
-                                    {
+                                                        {
                                         <img width="25" height="25" src="@Model.approval_holder_4_signature" /><br />
-                                    }
+                                                        }
                                     @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER4.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER4.ToString()].alpha_name : "")</td>
                                 <td class="text-center">@(Model.approval_holder_4_datetime != null ? Model.approval_holder_4_datetime.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
                             </tr>
                             <tr>
                                 <td class="text-center">5</td>
                                 <td class="text-center">@if (Model.approval_holder_5_signature != null)
-                                    {
+                                                        {
                                         <img width="25" height="25" src="@Model.approval_holder_5_signature" /><br />
-                                    }
+                                                        }
                                     @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER5.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER5.ToString()].alpha_name : "")</td>
                                 <td class="text-center">@(Model.approval_holder_5_datetime != null ? Model.approval_holder_5_datetime.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
                             </tr>
                             <tr>
                                 <td class="text-center">6</td>
                                 <td class="text-center">@if (Model.approval_holder_6_signature != null)
-                                    {
+                                                        {
                                         <img width="25" height="25" src="@Model.approval_holder_6_signature" /><br />
-                                    }
+                                                        }
                                     @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER6.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER6.ToString()].alpha_name : "")</td>
                                 <td class="text-center">@(Model.approval_holder_6_datetime != null ? Model.approval_holder_6_datetime.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
                             </tr>
                             <tr>
                                 <td class="text-center">7</td>
                                 <td class="text-center">@if (Model.approval_holder_7_signature != null)
-                                    {
+                                                        {
                                         <img width="25" height="25" src="@Model.approval_holder_7_signature" /><br />
-                                    }
+                                                        }
                                     @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER7.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER7.ToString()].alpha_name : "")</td>
                                 <td class="text-center">@(Model.approval_holder_7_datetime != null ? Model.approval_holder_7_datetime.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
-                            </tr>
+                            </tr>*@
                             <tr>
                                 <td colspan="5">
                                     Note:
@@ -210,6 +270,28 @@
             </div>
             <div class="row-fluid">
                 <div class="span12">
+                    @if (isCanEdit[2])
+                    {
+                        <input type="button" class="btn btn-success" value="Save and Send to Approve" id="save-approval" />
+                    }
+
+                    @if (isCanEdit[3] || isCanEdit[4])
+                    {
+                        <input type="button" class="btn btn-success" value="Save and Approve" id="save-approve" data-who="@(isCanEdit[3] ? 1 : (isCanEdit[4] ? 2 : 0))" />
+                    }
+
+                    @if (isCanEdit[5])
+                    {
+                        <input type="button" class="btn btn-success" value="Approve" id="approve-coming-holder" />
+                        <input type="button" class="btn btn-warning" value="Change Point" id="change-point" />
+                    }
+                </div>
+                <div class="span12">
+                    &nbsp;
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span12">
                     <table class="table table-bordered">
                         <thead>
                             <tr>
@@ -218,58 +300,172 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td colspan="2" rowspan="2">Suspended <br />Requestor: </td>
+                                <td colspan="2">Suspended Requestor: @(Model.lotoSuspension.LastOrDefault() != null ? Model.lotoSuspension.LastOrDefault().requestorUser.alpha_name : "")</td>
                                 <td colspan="3" class="text-center">Oncoming Permit Holder</td>
                             </tr>
                             <tr>
+                                
+                            </tr>
+                            <tr>
+                                <td rowspan="7" style="vertical-align:bottom;text-align:center">
+                                    @if (Model.lotoSuspension.LastOrDefault() != null && Model.lotoSuspension.LastOrDefault().requestor_signature != null)
+                                    {
+                                    <img src="@Model.lotoSuspension.LastOrDefault().requestor_signature" width="100" height="100" /><br />
+                                    }
+                                    @(Model.lotoSuspension.LastOrDefault() != null ? Model.lotoSuspension.LastOrDefault().requestorUser.alpha_name : "")<br />
+                                    Requestor</td>
+                                <td rowspan="7" style="vertical-align:bottom;text-align:center">
+                                    @if (Model.lotoSuspension.LastOrDefault() != null && Model.lotoSuspension.LastOrDefault().fo_signature != null)
+                                    {
+                                    <img src="@Model.lotoSuspension.LastOrDefault().fo_signature" width="100" height="100" /><br />
+                                    }
+                                    @if (Model.lotoSuspension.LastOrDefault() != null)
+                                    {
+                                        PermitToWork.Models.ClearancePermit.LotoSuspensionEntity suspension = Model.lotoSuspension.LastOrDefault();
+                                        if (suspension.foUser != null)
+                                        {
+                                        <text>@suspension.foUser.alpha_name<br /></text>    
+                                        }
+                                    }
+                                    Facility Owner</td>
                                 <td>No</td>
                                 <td>Name + Sign</td>
                                 <td>Date / Time</td>
                             </tr>
-                            <tr>
-                                <td rowspan="6" style="vertical-align:bottom;text-align:center">Requestor</td>
-                                <td rowspan="6" style="vertical-align:bottom;text-align:center">Facility Owner</td>
-                                <td>2</td>
-                                <td>@if (Model.cancellation_holder_2_signature != null)
+                            @if (Model.lotoSuspension.LastOrDefault() != null)
+                            {
+                                PermitToWork.Models.ClearancePermit.LotoSuspensionEntity suspension = Model.lotoSuspension.LastOrDefault();
+                                if (suspension.suspensionHolder.Count > 6)
+                                {
+                                    foreach (PermitToWork.Models.ClearancePermit.LotoSuspensionHolderEntity suspensionHolder in suspension.suspensionHolder)
                                     {
-                                        <img width="25" height="25" src="@Model.cancellation_holder_2_signature" /><br />
+                            <tr>
+                                <td class="text-center">@suspensionHolder.no_holder</td>
+                                <td class="text-center">
+                                    @if (suspensionHolder.holder_sign_approval != null)
+                                    {
+                                        <img width="25" height="25" src="@suspensionHolder.holder_sign_approval.Substring(1)" /><br />
                                     }
-                                    @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER2.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER2.ToString()].alpha_name : "")</td>
-                                <td></td>
+                                    @if (suspensionHolder.holder_sign_approval != null && suspensionHolder.holder_sign_approval.Substring(0, 1) == "d")
+                                    {
+                                        @suspensionHolder.userApprovalDelegate.alpha_name;
+                                    }
+                                    @(suspensionHolder.holder_sign_approval != null && suspensionHolder.holder_sign_approval.Substring(0, 1) == "d" ? "a/n" : "") @suspensionHolder.userEntity.alpha_name
+                                </td>
+                                <td class="text-center">@(suspensionHolder.holder_date_approval != null ? suspensionHolder.holder_date_approval.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
                             </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    int count = 6 - Model.lotoComingHolder.Count;
+                                    int prevNo = 1;
+                                    foreach (PermitToWork.Models.ClearancePermit.LotoSuspensionHolderEntity suspensionHolder in suspension.suspensionHolder)
+                                    {
+                                        prevNo = suspensionHolder.no_holder.Value;
                             <tr>
-                                <td>3</td>
-                                <td></td>
-                                <td></td>
+                                <td class="text-center">@suspensionHolder.no_holder</td>
+                                <td class="text-center">
+                                    @if (suspensionHolder.holder_sign_approval != null)
+                                    {
+                                        <img width="25" height="25" src="@suspensionHolder.holder_sign_approval.Substring(1)" /><br />
+                                    }
+                                    @if (suspensionHolder.holder_sign_approval != null && suspensionHolder.holder_sign_approval.Substring(0, 1) == "d")
+                                    {
+                                        @suspensionHolder.userApprovalDelegate.alpha_name;
+                                    }
+                                    @(suspensionHolder.holder_sign_approval != null && suspensionHolder.holder_sign_approval.Substring(0, 1) == "d" ? "a/n" : "") @suspensionHolder.userEntity.alpha_name
+                                </td>
+                                <td class="text-center">@(suspensionHolder.holder_date_approval != null ? suspensionHolder.holder_date_approval.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
                             </tr>
+                                    }
+                                    for (int i = prevNo + 1; i <= 7; i++)
+                                    {
                             <tr>
-                                <td>4</td>
-                                <td></td>
-                                <td></td>
+                                <td class="text-center">&nbsp;</td>
+                                <td class="text-center">
+                                </td>
+                                <td class="text-center"></td>
                             </tr>
+                                    }
+                                }
+                            } else {
+                                for (int i = 2; i <= 7; i++)
+                                {
                             <tr>
-                                <td>5</td>
-                                <td></td>
-                                <td></td>
+                                <td class="text-center">&nbsp;</td>
+                                <td class="text-center">
+                                </td>
+                                <td class="text-center"></td>
                             </tr>
-                            <tr>
-                                <td>6</td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>7</td>
-                                <td></td>
-                                <td></td>
-                            </tr>
+                                }
+                            }
                             <tr>
                                 <td colspan="5">
                                     Note:
-                                    <textarea class="table-textarea"></textarea>
+                                    @foreach (PermitToWork.Models.ClearancePermit.LotoSuspensionEntity suspension in Model.lotoSuspension)
+                                    {
+                                        <h5>@suspension.suspend_no</h5>
+                                        <p>@suspension.notes</p>
+                                        <hr />
+                                    }
+                                    <textarea class="table-textarea" id="suspension-notes" @(isCanEdit[17] ? "" : "disabled")>@(Model.lotoSuspension.LastOrDefault() != null ? Model.lotoSuspension.LastOrDefault().notes : "")</textarea>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span12">
+                    @if (isCanEdit[16])
+                    {
+                        <input type="button" class="btn btn-warning" id="request-suspension" value="Request Suspension" />
+                    }
+                    @if (isCanEdit[17])
+                    {
+                        <input type="button" class="btn btn-success" id="approval-suspension" value="Send to Agree Suspension" />
+                    }
+                    @if (isCanEdit[18])
+                    {
+                        <input type="button" class="btn btn-success" id="agree-suspension" value="Agree Suspension" />
+                        <input type="button" class="btn btn-danger" id="reject-suspension" value="Reject Suspension" />
+                    }
+                    @if (isCanEdit[19])
+                    {
+                        <input type="button" class="btn btn-success" id="save-suspension" value="Save" />
+                    }
+                    @if (isCanEdit[20])
+                    {
+                        <input type="button" class="btn btn-success" id="approve-suspension" value="Approve" />
+                    }
+                    @if (isCanEdit[21])
+                    {
+                        <input type="button" class="btn btn-success" id="approve-fo-suspension" value="Approve" />
+                    }
+                    @if (isCanEdit[22])
+                    {
+                        <input type="button" class="btn btn-warning" id="complete-suspension" value="Cancel Suspension" />
+                    }
+                    @if (isCanEdit[23])
+                    {
+                        <input type="button" class="btn btn-warning" id="send-complete-suspension" value="Request Agree Suspension Cancellation" />
+                    }
+                    @if (isCanEdit[24])
+                    {
+                        <input type="button" class="btn btn-warning" id="agree-complete-suspension" value="Agree Suspension Cancellation" />
+                    }
+                    @if (isCanEdit[25])
+                    {
+                        <input type="button" class="btn btn-warning" id="send-inspect-complete-suspension" value="Send to Inspect" />
+                    }
+                    @if (isCanEdit[26])
+                    {
+                        <input type="button" class="btn btn-success" id="inspect-complete-suspension" value="Save and Approve" />
+                    }
+                </div>
+                <div class="span12">
+                    &nbsp;
                 </div>
             </div>
             <div class="row-fluid">
@@ -282,80 +478,127 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td colspan="2" rowspan="2">Cancelation <br />Date: </td>
+                                <td colspan="2">Cancelation Date: @(Model.cancellation_fo_signature_date != null ? Model.cancellation_fo_signature_date.Value.ToString("dd MMM yyyy hh:mm tt") : "")</td>
                                 <td colspan="3" class="text-center">Oncoming Permit Holder</td>
                             </tr>
                             <tr>
-                                <td>No</td>
-                                <td>Name + Sign</td>
-                                <td>Date / Time</td>
-                            </tr>
-                            <tr>
-                                <td rowspan="6" style="vertical-align:bottom;text-align:center">
-                                    @if (Model.cancellation_supervisor_signature != null) {
+                                <td rowspan="@(Model.lotoComingHolder.Count > 6 ? Model.lotoComingHolder.Count + 1 : 7)" style="vertical-align:bottom;text-align:center">
+                                    @if (Model.cancellation_supervisor_signature != null)
+                                    {
                                     <img src="@Model.cancellation_supervisor_signature" width="100" height="100" /><br />
                                     }
                                     @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.SUPERVISOR.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.SUPERVISOR.ToString()].alpha_name : "")<br />
                                     Requestor's Supervisor</td>
-                                <td rowspan="6" style="vertical-align:bottom;text-align:center">
-                                    @if (Model.cancellation_fo_signature != null) {
+                                <td rowspan="@(Model.lotoComingHolder.Count > 6 ? Model.lotoComingHolder.Count + 1 : 7)" style="vertical-align:bottom;text-align:center">
+                                    @if (Model.cancellation_fo_signature != null)
+                                    {
                                     <img src="@Model.cancellation_fo_signature" width="100" height="100" /><br />
                                     }
                                     @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.CANCELLATIONFACILITYOWNER.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.CANCELLATIONFACILITYOWNER.ToString()].alpha_name : "")<br />
                                     Facility Owner</td>
-                                <td class="text-center">2</td>
-                                <td class="text-center">@if (Model.cancellation_holder_2_signature != null)
-                                    {
-                                        <img width="25" height="25" src="@Model.cancellation_holder_2_signature" /><br />
-                                    }
-                                    @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER2.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER2.ToString()].alpha_name : "")</td>
-                                <td class="text-center">@(Model.cancellation_holder_2_signature_date != null ? Model.cancellation_holder_2_signature_date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
+                                <td>No</td>
+                                <td>Name + Sign</td>
+                                <td>Date / Time</td>
                             </tr>
+                            @if (Model.lotoComingHolder.Count > 6)
+                                {
+                                    foreach (PermitToWork.Models.ClearancePermit.LotoComingHolderEntity comingHolder in Model.lotoComingHolder)
+                                    {
                             <tr>
+                                <td class="text-center">@comingHolder.no_holder</td>
+                                <td class="text-center">
+                                    @if (comingHolder.holder_sign_cancellation != null)
+                                    {
+                                        <img width="25" height="25" src="@comingHolder.holder_sign_cancellation.Substring(1)" /><br />
+                                    }
+                                    @if (comingHolder.holder_sign_cancellation != null && comingHolder.holder_sign_cancellation.Substring(0, 1) == "d")
+                                    {
+                                        @comingHolder.userCancellationDelegate.alpha_name;
+                                    }
+                                    @(comingHolder.holder_sign_cancellation != null && comingHolder.holder_sign_cancellation.Substring(0, 1) == "d" ? "a/n" : "") @comingHolder.userEntity.alpha_name
+                                </td>
+                                <td class="text-center">@(comingHolder.holder_date_cancellation != null ? comingHolder.holder_date_cancellation.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
+                            </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    int count = 6 - Model.lotoComingHolder.Count;
+                                    int prevNo = 1;
+                                    foreach (PermitToWork.Models.ClearancePermit.LotoComingHolderEntity comingHolder in Model.lotoComingHolder)
+                                    {
+                                        prevNo = comingHolder.no_holder.Value;
+                            <tr>
+                                <td class="text-center">@comingHolder.no_holder</td>
+                                <td class="text-center">
+                                    @if (comingHolder.holder_sign_cancellation != null)
+                                    {
+                                        <img width="25" height="25" src="@comingHolder.holder_sign_cancellation.Substring(1)" /><br />
+                                    }
+                                    @if (comingHolder.holder_sign_cancellation != null && comingHolder.holder_sign_cancellation.Substring(0, 1) == "d")
+                                    {
+                                        @comingHolder.userCancellationDelegate.alpha_name;
+                                    }
+                                    @(comingHolder.holder_sign_cancellation != null && comingHolder.holder_sign_cancellation.Substring(0, 1) == "d" ? "a/n" : "") @comingHolder.userEntity.alpha_name
+                                </td>
+                                <td class="text-center">@(comingHolder.holder_date_cancellation != null ? comingHolder.holder_date_cancellation.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
+                            </tr>
+                                    }
+                                    for (int i = prevNo + 1; i <= 7; i++)
+                                    {
+                            <tr>
+                                <td class="text-center">@i</td>
+                                <td class="text-center">
+                                </td>
+                                <td class="text-center"></td>
+                            </tr>
+                                    }
+                                }
+                            @*<tr>
                                 <td class="text-center">3</td>
                                 <td class="text-center">@if (Model.cancellation_holder_3_signature != null)
-                                    {
+                                                        {
                                         <img width="25" height="25" src="@Model.cancellation_holder_3_signature" /><br />
-                                    }
+                                                        }
                                     @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER3.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER3.ToString()].alpha_name : "")</td>
                                 <td class="text-center">@(Model.cancellation_holder_3_signature_date != null ? Model.cancellation_holder_3_signature_date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
                             </tr>
                             <tr>
                                 <td class="text-center">4</td>
                                 <td class="text-center">@if (Model.cancellation_holder_4_signature != null)
-                                    {
+                                                        {
                                         <img width="25" height="25" src="@Model.cancellation_holder_4_signature" /><br />
-                                    }
+                                                        }
                                     @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER4.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER4.ToString()].alpha_name : "")</td>
                                 <td class="text-center">@(Model.cancellation_holder_4_signature_date != null ? Model.cancellation_holder_4_signature_date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
                             </tr>
                             <tr>
                                 <td class="text-center">5</td>
                                 <td class="text-center">@if (Model.cancellation_holder_5_signature != null)
-                                    {
+                                                        {
                                         <img width="25" height="25" src="@Model.cancellation_holder_5_signature" /><br />
-                                    }
+                                                        }
                                     @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER5.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER5.ToString()].alpha_name : "")</td>
                                 <td class="text-center">@(Model.cancellation_holder_5_signature_date != null ? Model.cancellation_holder_5_signature_date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
                             </tr>
                             <tr>
                                 <td class="text-center">6</td>
                                 <td class="text-center">@if (Model.cancellation_holder_6_signature != null)
-                                    {
+                                                        {
                                         <img width="25" height="25" src="@Model.cancellation_holder_6_signature" /><br />
-                                    }
+                                                        }
                                     @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER6.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER6.ToString()].alpha_name : "")</td>
                                 <td class="text-center">@(Model.cancellation_holder_6_signature_date != null ? Model.cancellation_holder_6_signature_date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
                             </tr>
                             <tr>
                                 <td class="text-center">7</td>
                                 <td class="text-center">@if (Model.cancellation_holder_7_signature != null)
-                                    {
+                                                        {
                                         <img width="25" height="25" src="@Model.cancellation_holder_7_signature" /><br />
-                                    }
+                                                        }
                                     @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER7.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER7.ToString()].alpha_name : "")</td>
                                 <td class="text-center">@(Model.cancellation_holder_7_signature_date != null ? Model.cancellation_holder_7_signature_date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
-                            </tr>
+                            </tr>*@
                             <tr>
                                 <td colspan="5">
                                     Note:
@@ -377,22 +620,7 @@
                     @if (isCanEdit[1])
                     {
                         <input type="button" class="btn btn-success" value="Save and Send to Inspect" id="save-inspect" />
-                    }
-
-                    @if (isCanEdit[2])
-                    {
-                        <input type="button" class="btn btn-success" value="Save and Send to Approve" id="save-approval" />
-                    }
-
-                    @if (isCanEdit[3] || isCanEdit[4])
-                    {
-                        <input type="button" class="btn btn-success" value="Save and Approve" id="save-approve" data-who="@(isCanEdit[3] ? 1 : (isCanEdit[4] ? 2 : 0))" />
-                    }
-
-                    @if (isCanEdit[5])
-                    {
-                        <input type="button" class="btn btn-success" value="Approve" id="approve-coming-holder" />
-                        <input type="button" class="btn btn-warning" value="Change Point" id="change-point" />
+                        <input type="button" class="btn btn-default" value="Save as Draft" id="save-draft-2" data-state="@(isCanEdit[6] ? 1 : 0)" />
                     }
                     @if (isCanEdit[7])
                     {
@@ -417,6 +645,8 @@
                     {
                         <input type="button" class="btn btn-success" value="Save and Sign Cancellation" id="sign-cancel-loto" data-who="@(isCanEdit[14] ? 1 : (isCanEdit[15] ? 2 : 0))" />
                     }
+                    <input type="button" class="btn btn-primary" value="Back" id="back" />
+                    <span id="loading" style="display:none"><img src="@Url.Content("~/Content/Images/loading.gif")" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span>
                 </div>
             </div> 
         </div>
@@ -471,20 +701,75 @@
   </div>
 </div>
 
+<!-- Modal -->
+<div id="removed" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="Add" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="removeLabel">LOTO Point Remove</h3>
+  </div>
+  <div class="modal-body">
+    <form class="form-horizontal">
+        <input type="hidden" id="r-point-id" value="0" />
+        <div class="control-group">
+            <label class="control-label" for="removed-by">Removed By</label>
+            <div class="controls">
+                <select id="removed-by">
+                    <option value="">Select One</option>
+                    @foreach (PermitToWork.Models.User.UserEntity user in listUser)
+                    {
+                        <option value="@user.id">@user.alpha_name</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="removed-time">Removed Date Time</label>
+            <div class="controls">
+                <input id="removed-time">
+            </div>
+        </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="save-remove">Save</button>
+  </div>
+</div>
+
 <script type="text/x-kendo-template" id="command-template">
     <div class="row-command">
-    # if('@isCanEdit[0]' == 'True') { #
-        <a class="k-button k-button-icontext k-grid-edit" href="\#" title="Edit"><span class="k-icon k-edit"></span>Edit</a>
-        <a class="k-button k-button-icontext k-grid-delete" href="\#" title="Delete"><span class="k-icon k-delete"></span>Delete</a>
-    # } #
-    # if ('@isCanEdit[1]' == 'True' || '@isCanEdit[8]' == 'True') { #
-        <a class="k-button k-button-icontext k-grid-agree" href="\#" title="Set Agreed & Applied" onclick="event.preventDefault();setAgreed(#= id #,'#= loto_point_agreed #','#= applied_by #','#= kendo.toString(applied_by_time,'MM/dd/yyyy hh:mm tt') #')"><span class="k-icon k-agree"></span>set Agreed & Applied</a>
-    #} #
-    # if ('@(isCanEdit[2] || isCanEdit[9])' == 'True') { #
-        <a class="k-button k-button-icontext k-grid-inspect" href="\#" title="Inspected & verified" onclick="event.preventDefault();setInspected(#= id #)"><span class="k-icon k-inspect"></span>Inspect & Verify</a>
-    #} #
-    # if('@isCanEdit[6]' == 'True') { #
-        <a class="k-button k-button-icontext k-grid-edit" href="\#" title="Edit"><span class="k-icon k-edit"></span>Edit</a>
+    # if (is_set_empty != 1) { #
+        # if('@isCanEdit[0]' == 'True') { #
+            <a class="k-button k-button-icontext k-grid-edit" href="\#" title="Edit"><span class="k-icon k-edit"></span>Edit</a>
+            <a class="k-button k-button-icontext k-grid-delete" href="\#" title="Delete"><span class="k-icon k-delete"></span>Delete</a>
+        # } #
+        # if ('@isCanEdit[1]' == 'True' || '@isCanEdit[8]' == 'True') { #
+            <a class="k-button k-button-icontext k-grid-edit" href="\#" title="Set Agreed & Applied""><span class="k-icon k-edit"></span>set Agreed & Applied</a>
+        #} #
+        # if ('@(isCanEdit[2] || isCanEdit[20] || isCanEdit[26])' == 'True' && removed_by == null) { #
+            <a class="k-button k-button-icontext k-grid-inspect" href="\#" title="Inspected & verified" onclick="event.preventDefault();setInspected(#= id #)"><span class="k-icon k-inspect"></span>Inspect & Verify</a>
+        #} #
+        # if('@isCanEdit[17]' == 'True') { #
+            <a class="k-button k-button-icontext k-grid-edit" href="\#" title="Edit"><span class="k-icon k-edit"></span>Edit</a>
+            # if (is_removed != null && is_removed == 1) { #
+            <a class="k-button k-button-icontext k-grid-remove" href="\#" onclick="event.preventDefault();requestRemove(#= id #)" title="Request for Removal"><span class="k-icon k-remove"></span>Cancel Request for Removal</a>
+            # } else { #
+            <a class="k-button k-button-icontext k-grid-remove" href="\#" onclick="event.preventDefault();requestRemove(#= id #)" title="Request for Removal"><span class="k-icon k-remove"></span>Request for Removal</a>
+            # } #
+        # } #
+        # if ('@isCanEdit[19]' == 'True' && (applied_by == null)) { #
+            <a class="k-button k-button-icontext k-grid-edit" href="\#" title="Set Agreed & Applied""><span class="k-icon k-edit"></span>set Agreed & Applied</a>
+        #} #
+        # if (('@isCanEdit[19]' == 'True' && is_removed == 1 && removed_by == null) || ('@(Model.status == (int)PermitToWork.Models.ClearancePermit.LotoEntity.LOTOStatus.LOTOCANCELLED)' == 'True' && removed_by == null)) { #
+            <a class="k-button k-button-icontext k-grid-remove" href="\#" title="Remove" onclick="event.preventDefault();removePoint(#= id #,'#= removed_by #','#= kendo.toString(removed_by_time,'MM/dd/yyyy hh:mm tt') #')"><span class="k-icon k-delete"></span>Remove</a>
+        #} #
+        # if('@isCanEdit[23]' == 'True' && applied_by == null) { #
+            <a class="k-button k-button-icontext k-grid-edit" href="\#" title="Edit"><span class="k-icon k-edit"></span>Edit</a>
+            <a class="k-button k-button-icontext k-grid-delete" href="\#" title="Delete"><span class="k-icon k-delete"></span>Delete</a>
+        # } #
+        # if('@isCanEdit[25]' == 'True' && applied_by == null) { #
+            <a class="k-button k-button-icontext k-grid-edit" href="\#" title="Set Agreed & Applied""><span class="k-icon k-edit"></span>set Agreed & Applied</a>
+        # } #
     # } #
     </div>
 </script>
@@ -506,7 +791,7 @@
                     }
                 },
                 update: {
-                    url: '@Url.Action("EditLOTOPoint", "Loto", new { id_loto = Model.id })' + '&is_change=' + '@(isCanEdit[6] ? 1 : 0)',
+                    url: '@(isCanEdit[0] || isCanEdit[17] || (isCanEdit[23]) ? Url.Action("EditLOTOPoint", "Loto", new { id_loto = Model.id }) + "&is_change=" + (isCanEdit[17] ? 1 : 0) : Url.Action("SaveAgreedApplied","Loto"))',
                     type: "POST",
                     complete: function (e) {
                         $("#grid-loto-point").data("kendoGrid").dataSource.read();
@@ -529,6 +814,23 @@
                             for (var member in product) {
                                 if (member == "user") {
                                     result["id_user"] = product[member]["id"];
+                                } else if (member == "applied_by") {
+                                    if (typeof (product[member]) == typeof ({}) && product[member] != null) {
+                                        result["applied_by"] = product[member]["id"];
+                                    } else {
+                                        result["applied_by"] = product[member];
+                                    }
+                                } else if (member == "loto_point_agreed") {
+                                    if (typeof (product[member]) == typeof ({}) && product[member] != null) {
+                                        result["loto_point_agreed"] = product[member]["code"];
+                                    } else {
+                                        result["loto_point_agreed"] = product[member];
+                                    }
+                                } else if (member == "applied_by_time") {
+                                    var date = product[member];
+                                    if (date != null) {
+                                        result["applied_by_time"] = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes();
+                                    }
                                 } else {
                                     if (product[member] == null) {
                                         result[member] = "";
@@ -550,13 +852,13 @@
                     id: "id",
                     fields: {
                         id: { type: "number", editable: false },
-                        tag_id: { type: "string" },
-                        description: { type: "string" },
-                        drawing_number: { type: "string" },
-                        loto_point_proposed: { type: "string" },
-                        loto_point_agreed: { type: "string", editable: false, nullable: true },
-                        applied_by: { type: "string", editable: false, nullable: true },
-                        applied_by_time: { type: "date", editable: false, nullable: true, format: "{0:MM/dd/yyyy hh:mm tt}" },
+                        tag_id: { type: "string" @(isCanEdit[0] || isCanEdit[17] || isCanEdit[23] ? "" : ", editable: false") },
+                        description: { type: "string" @(isCanEdit[0] || isCanEdit[17] || isCanEdit[23] ? "" : ", editable: false") },
+                        drawing_number: { type: "string" @(isCanEdit[0] || isCanEdit[17] || isCanEdit[23] ? "" : ", editable: false") },
+                        loto_point_proposed: { type: "string" @(isCanEdit[0] || isCanEdit[17] || isCanEdit[23] ? "" : ", editable: false") },
+                        loto_point_agreed: { editable: true, nullable: true },
+                        applied_by: { editable: true, nullable: true },
+                        applied_by_time: { type: "date", editable: true, nullable: true, format: "{0:MM/dd/yyyy hh:mm tt}" },
                         inspected_1: { type: "string", editable: false, nullable: true },
                         inspected_2: { type: "string", editable: false, nullable: true },
                         inspected_3: { type: "string", editable: false, nullable: true },
@@ -567,7 +869,9 @@
                         inspected_7: { type: "string", editable: false, nullable: true },
                         removed_by: { type: "string", editable: false, nullable: true },
                         removed_by_time: { type: "date", editable: false, nullable: true },
-                        remarks: { type: "string", nullable: true }
+                        remarks: { type: "string", nullable: true },
+                        is_set_empty: { type: "number", nullable: true, editable: false },
+                        is_removed: { nullable: true }
                     }
                 }
             },
@@ -579,7 +883,8 @@
             pageable: true,
             sortable: true,
             filterable: true,
-            @if (isCanEdit[0] || isCanEdit[6])
+            dataBound: onDataBound,
+            @if (isCanEdit[0] || isCanEdit[17] || isCanEdit[23])
             { <text>toolbar: ["create"],</text> }
             columns: [
                 {
@@ -631,7 +936,7 @@
         });
 
         function proposedEditor(container, options) {
-            $('<input data-text-field="description" data-value-field="code" data-bind="value:' + options.field + '"  />')
+            $('<input data-text-field="description" data-value-field="code" data-bind="value:' + options.field + '" @(isCanEdit[0] || isCanEdit[17] || isCanEdit[23] == true ? "" : "disabled")  />')
                 .appendTo(container)
                 .kendoDropDownList({
                     autoBind: true,
@@ -646,7 +951,7 @@
         }
 
         function agreedEditor(container, options) {
-            $('<input data-text-field="description" data-value-field="code" data-bind="value:' + options.field + '" disabled />')
+            $('<input data-text-field="description" data-value-field="code" data-bind="value:' + options.field + '" @(isCanEdit[1] || isCanEdit[8] || isCanEdit[19] || isCanEdit[25] ? "" : "disabled") />')
                 .appendTo(container)
                 .kendoDropDownList({
                     autoBind: true,
@@ -661,7 +966,7 @@
         }
 
         function appliedEditor(container, options) {
-            $('<input data-text-field="alpha_name" data-value-field="id" data-bind="value:' + options.field + '" disabled />')
+            $('<input data-text-field="alpha_name" data-value-field="id" data-bind="value:' + options.field + '" @(isCanEdit[1] || isCanEdit[8] || isCanEdit[19] || isCanEdit[25] ? "" : "disabled") />')
                 .appendTo(container)
                 .kendoDropDownList({
                     autoBind: true,
@@ -676,7 +981,7 @@
         }
 
         function appliedDateEditor(container, options) {
-            var input = $("<input/>");
+            var input = $("<input data-bind='value:" + options.field + "' @(isCanEdit[1] || isCanEdit[8] || isCanEdit[19] || isCanEdit[25] ? "" : "disabled") />");
             input.attr("name", options.field);
             input
                 .appendTo(container)
@@ -698,7 +1003,24 @@
                     },
                     optionLabel: "--Select One--",
                 });
+        }
+
+        function onDataBound(e) {
+            dataView = this.dataSource.view();
+            for (var i in dataView) {
+                if (dataView[i].is_set_empty == 1) {
+                    var uid = dataView[i].uid;
+                    var uid1 = dataView[i].bomc;
+                    $("#grid-loto-point tbody").find("tr[data-uid=" + uid + "]").css("background-color", "lightblue");
+                }
+
+                if (dataView[i].is_removed == 1) {
+                    var uid = dataView[i].uid;
+                    var uid1 = dataView[i].bomc;
+                    $("#grid-loto-point tbody").find("tr[data-uid=" + uid + "]").css("background-color", "pink");
+                }
             }
+        }
 
         function removedDateEditor(container, options) {
             var input = $("<input/>");
@@ -780,7 +1102,7 @@
             });
         });
 
-        $('#save-complete').click(function () {
+        $('#save-draft-2').click(function () {
             var values = {
                 id: '@Model.id',
                 work_location: $('#work-location').val(),
@@ -790,8 +1112,27 @@
                 balance: $('#balance').val(),
             }
 
+            $.post('@Url.Action("SaveDraft", "Loto")', values, function (resp) {
+                if (resp.status == "200") {
+                    alert('Save success.');
+                    $('#content').load('@Url.Action("Edit", "Loto")');
+                }
+            });
+        });
+
+        $('#save-complete').click(function () {
+            var values = {
+                id: '@Model.id',
+                work_location: $('#work-location').val(),
+                lock_box_no: $('#lock-box-no').data('kendoMultiSelect').value().toString(),
+                initial_pad_lock: $('#initial-pad-lock').val(),
+                qty_pad_lock_usage: $('#pad-lock-usage').val(),
+                balance: $('#balance').val(),
+            }
+            $('#loading').show();
             if ($(this).data('state') == 1) {
                 $.post('@Url.Action("saveChangeApprove", "Loto")', values, function (resp) {
+                    $('#loading').hide();
                     if (resp.status == "200") {
                         alert('Save success. Others Permit Holder has been informed to approve LOTO Point changed.');
                         $('#content').load('@Url.Action("Edit", "Loto")');
@@ -799,6 +1140,7 @@
                 });
             } else {
                 $.post('@Url.Action("SaveComplete", "Loto")', values, function (resp) {
+                    $('#loading').hide();
                     if (resp.status == "200") {
                         alert('Save success. Facility Owner has been informed to choose agreed LOTO Point Position & apply it.');
                         $('#content').load('@Url.Action("Edit", "Loto")');
@@ -809,10 +1151,17 @@
 
         $('#save-inspect').click(function () {
             var values = {
-                id: '@Model.id'
+                id: '@Model.id',
+                work_location: $('#work-location').val(),
+                lock_box_no: $('#lock-box-no').data('kendoMultiSelect').value().toString(),
+                initial_pad_lock: $('#initial-pad-lock').val(),
+                qty_pad_lock_usage: $('#pad-lock-usage').val(),
+                balance: $('#balance').val(),
             }
 
+            $('#loading').show();
             $.post('@Url.Action("SaveAndInspect", "Loto")', values, function (resp) {
+                $('#loading').hide();
                 if (resp.status == "200") {
                     alert('Save success. Requestor has been informed to inspect and verify applied LOTO Point Position.');
                     $('#content').load('@Url.Action("Edit", "Loto")');
@@ -825,7 +1174,9 @@
                 id: '@Model.id'
             }
 
+            $('#loading').show();
             $.post('@Url.Action("SaveAndSendApprove", "Loto")', values, function (resp) {
+                $('#loading').hide();
                 if (resp.status == "200") {
                     alert('Save success. Supervisor has been informed to approve.');
                     $('#content').load('@Url.Action("Edit", "Loto")');
@@ -840,7 +1191,9 @@
                 approval_notes: $('#approval-notes').val(),
             }
 
+            $('#loading').show();
             $.post('@Url.Action("SaveApprove", "Loto")', values, function (resp) {
+                $('#loading').hide();
                 if (resp.status == "200") {
                     alert('LOTO Permit is approved.');
                     $('#content').load('@Url.Action("Edit", "Loto")');
@@ -854,7 +1207,9 @@
                 approval_notes: $('#approval-notes').val(),
             }
 
+            $('#loading').show();
             $.post('@Url.Action("SaveComingHolderApprove", "Loto")', values, function (resp) {
+                $('#loading').hide();
                 if (resp.status == "200") {
                     alert('LOTO Permit is approved.');
                     $('#content').load('@Url.Action("Edit", "Loto")');
@@ -880,7 +1235,9 @@
                 id: '@Model.id',
             }
 
+            $('#loading').show();
             $.post('@Url.Action("HolderApproveChange", "Loto")', values, function (resp) {
+                $('#loading').hide();
                 if (resp.status == "200") {
                     alert('LOTO Permit is approved.');
                     $('#content').load('@Url.Action("Edit", "Loto")');
@@ -893,7 +1250,9 @@
                 id: '@Model.id'
             }
 
+            $('#loading').show();
             $.post('@Url.Action("SaveAndInspectChange", "Loto")', values, function (resp) {
+                $('#loading').hide();
                 if (resp.status == "200") {
                     alert('Save success. Requestor and others Permit Holder has been informed to inspect and verify applied LOTO Point Position.');
                     $('#content').load('@Url.Action("Edit", "Loto")');
@@ -908,7 +1267,9 @@
                 approval_notes: $('#approval-notes').val(),
             }
 
+            $('#loading').show();
             $.post('@Url.Action("SaveApproveChange", "Loto")', values, function (resp) {
+                $('#loading').hide();
                 if (resp.status == "200") {
                     alert('LOTO Permit is approved.');
                     $('#content').load('@Url.Action("Edit", "Loto")');
@@ -916,13 +1277,138 @@
             });
         });
 
+        $('#request-suspension').click(function () {
+            var values = {
+                id: '@Model.id',
+            }
+            $.post('@Url.Action("RequestSuspension", "Loto")', values, function (resp) {
+                alert('Suspension is requested. You may make changes on the LOTO Point then send for approval.');
+                $('#content').load('@Url.Action("Edit", "Loto")');
+                $('#grid-loto-point').focus();
+            });
+        });
+
+        $('#agree-suspension').click(function () {
+            var values = {
+                id: '@Model.id',
+            }
+            $.post('@Url.Action("AgreeSuspension", "Loto")', values, function (resp) {
+                alert('Suspension is agreed.');
+                $('#content').load('@Url.Action("Edit", "Loto")');
+                $('#grid-loto-point').focus();
+            });
+        });
+
+        $('#approval-suspension').click(function () {
+            var values = {
+                id: '@Model.id',
+                notes: $('#suspension-notes').val(),
+            }
+            $.post('@Url.Action("SendApprovalSuspension", "Loto")', values, function (resp) {
+                alert('All other\'s Holder has been informed to review and approve LOTO Suspension.\nIf all holder approved, Facility Owner will be informed to applied / removed requested LOTO Point changes.');
+                $('#content').load('@Url.Action("Edit", "Loto")');
+                $('.k-add').focus();
+            });
+        });
+
+        $('#save-suspension').click(function () {
+            var values = {
+                id: '@Model.id',
+                notes: $('#suspension-notes').val(),
+            }
+            $.post('@Url.Action("saveApprovalFOSuspension", "Loto")', values, function (resp) {
+                alert('LOTO Holder has been informed to inspect LOTO Point.');
+                $('#content').load('@Url.Action("Edit", "Loto")');
+            });
+        });
+
+        $('#approve-suspension').click(function () {
+            var values = {
+                id: '@Model.id',
+                notes: $('#suspension-notes').val(),
+            }
+            $.post('@Url.Action("approveSuspension", "Loto")', values, function (resp) {
+                alert('Loto Permit Suspension is approved.');
+                $('#content').load('@Url.Action("Edit", "Loto")');
+            });
+        });
+
+        $('#approve-fo-suspension').click(function () {
+            var values = {
+                id: '@Model.id',
+                notes: $('#suspension-notes').val(),
+            }
+            $.post('@Url.Action("approveFOSuspension", "Loto")', values, function (resp) {
+                alert('Loto Permit Suspension is approved by Facility Owner.');
+                $('#content').load('@Url.Action("Edit", "Loto")');
+            });
+        });
+
+        $('#complete-suspension').click(function () {
+            var values = {
+                id: '@Model.id',
+            }
+            $.post('@Url.Action("completeSuspension", "Loto")', values, function (resp) {
+                alert('Loto Permit Suspension is cancelled. You may add LOTO Point.');
+                $('#content').load('@Url.Action("Edit", "Loto")');
+                $('.k-add').focus();
+            });
+        });
+
+        $('#send-complete-suspension').click(function () {
+            var values = {
+                id: '@Model.id',
+            }
+            $.post('@Url.Action("SendCompleteSuspension", "Loto")', values, function (resp) {
+                alert('Loto Permit Suspension cancellation is sent to other holder.');
+                $('#content').load('@Url.Action("Edit", "Loto")');
+                $('.k-add').focus();
+            });
+        });
+
+        $('#agree-complete-suspension').click(function () {
+            var values = {
+                id: '@Model.id',
+            }
+            $.post('@Url.Action("agreeCompleteSuspension", "Loto")', values, function (resp) {
+                alert('Loto Permit Suspension Cancellation is agreed.');
+                $('#content').load('@Url.Action("Edit", "Loto")');
+                $('.k-add').focus();
+            });
+        });
+
+        $('#send-inspect-complete-suspension').click(function () {
+            var values = {
+                id: '@Model.id',
+            }
+            $.post('@Url.Action("sendInspectCompleteSuspension", "Loto")', values, function (resp) {
+                alert('Loto Permit Suspension Cancellation is sent to inspected by Holder.');
+                $('#content').load('@Url.Action("Edit", "Loto")');
+                $('.k-add').focus();
+            });
+        });
+
+        $('#inspect-complete-suspension').click(function () {
+            var values = {
+                id: '@Model.id',
+            }
+            $.post('@Url.Action("inspectCompleteSuspension", "Loto")', values, function (resp) {
+                alert('Loto Permit Suspension Cancellation is saved.');
+                $('#content').load('@Url.Action("Edit", "Loto")');
+                $('.k-add').focus();
+            });
+        });
+
         $('#cancel-loto').click(function () {
             var values = {
                 id: '@Model.id',
                 cancellation_notes: $('#cancellation-notes').val(),
+                id_loto: $('#id_loto').val()
             }
 
+            $('#loading').show();
             $.post('@Url.Action("HolderCancelLoto", "Loto")', values, function (resp) {
+                $('#loading').hide();
                 if (resp.status == "200") {
                     alert('LOTO Permit is cancelled.');
                     $('#content').load('@Url.Action("Edit", "Loto")');
@@ -934,6 +1420,7 @@
             var values = {
                 id: '@Model.id',
                 cancellation_notes: $('#cancellation-notes').val(),
+                id_loto: $('#id_loto').val()
             }
 
             var who = $(this).data('who');
@@ -944,7 +1431,9 @@
                 url = '@Url.Action("FOCancelLoto", "Loto")';
             }
 
+            $('#loading').show();
             $.post(url, values, function (resp) {
+                $('#loading').hide();
                 if (resp.status == "200") {
                     alert('LOTO Permit is cancelled.');
                     $('#content').load('@Url.Action("Edit", "Loto")');
@@ -955,12 +1444,16 @@
         $('#lock-box-no').data('kendoMultiSelect').dataSource.filter({});
         $('#lock-box-no').data('kendoMultiSelect').value($("#lock-box-hid").val().split(","));
 
-        @if (!isCanEdit[0] && !isCanEdit[6])
+        @if (!isCanEdit[1] && !isCanEdit[6])
         {
             <text>$('#lock-box-no').data('kendoMultiSelect').enable(false);</text>    
         }
 
         var start = $("#applied-time").kendoDateTimePicker({
+            parseFormats: ["MM/dd/yyyy hh:mm tt"]
+        }).data("kendoDateTimePicker");
+
+        var start2 = $("#removed-time").kendoDateTimePicker({
             parseFormats: ["MM/dd/yyyy hh:mm tt"]
         }).data("kendoDateTimePicker");
 
@@ -976,6 +1469,25 @@
                 $("#grid-loto-point").data("kendoGrid").dataSource.read();
                 $('#agreed').modal('hide');
             });
+        });
+
+        $('#save-remove').click(function () {
+            var values = {
+                id: $('#r-point-id').val(),
+                removed_by: $('#removed-by').val(),
+                removed_by_time: $('#removed-time').val(),
+            }
+
+            $.post('@Url.Action("RemovePoint", "Loto")', values, function (resp) {
+                $("#grid-loto-point").data("kendoGrid").dataSource.read();
+                $('#removed').modal('hide');
+            });
+        });
+
+        $('#back').click(function () {
+            var his = $('#history').val();
+            $('#history').val($('#prev-history').val());
+            $('#content').load(his);
         });
     })
 
@@ -998,6 +1510,22 @@
             $('#applied-time').val('');
         }
         $('#agreed').modal('show');
+    }
+
+    function removePoint(id, by, time) {
+        $('#r-point-id').val(id);
+        if (by != 'null') {
+            $('#removed-by').val(by);
+        } else {
+            $('#removed-by').val('');
+        }
+
+        if (time != 'null') {
+            $('#removed-time').val(time);
+        } else {
+            $('#removed-time').val('');
+        }
+        $('#removed').modal('show');
     }
 
     function getLOTOPoint(a) {
@@ -1036,6 +1564,7 @@
     function setInspected(id) {
         $.post('@Url.Action("saveInspectedVerified", "Loto")', { id: id, id_loto : '@Model.id', isChange : '@(isCanEdit[9] ? 1 : 0)' }, function (resp) {
             $("#grid-loto-point").data("kendoGrid").dataSource.read();
+            $('#content').load('@Url.Action("Edit", "Loto")');
         });
     }
 
@@ -1044,5 +1573,14 @@
             return "<img src='" + url + "' width='25' height='25' />";
         }
         return "";
+    }
+
+    function requestRemove(id) {
+        var values = {
+            id: id,
+        };
+        $.post('@Url.Action("requestRemoval", "Loto")', values, function (resp) {
+            $("#grid-loto-point").data("kendoGrid").dataSource.read();
+        });
     }
 </script>

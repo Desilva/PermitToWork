@@ -1,4 +1,5 @@
 ﻿using PermitToWork.Models.Master;
+using PermitToWork.Models.User;
 using PermitToWork.Utilities;
 using System;
 using System.Collections.Generic;
@@ -103,6 +104,43 @@ namespace PermitToWork.Controllers
             {
                 return Json(new { status = HttpStatusCode.InternalServerError, message = "Something's wrong" });
             }
+        }
+
+        public ActionResult Index()
+        {
+            return PartialView();
+        }
+
+        [HttpPost]
+        public JsonResult Binding()
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            var result = new MstSectionEntity().getListMstSection();
+            return Json(result);
+        }
+
+        [HttpPost]
+        public JsonResult AddSection(MstSectionEntity a)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            a.addSection();
+            return Json(true);
+        }
+
+        [HttpPost]
+        public JsonResult EditSection(MstSectionEntity a)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            a.editSection();
+            return Json(true);
+        }
+
+        [HttpPost]
+        public JsonResult DeleteSection(MstSectionEntity a)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            a.deleteSection();
+            return Json(true);
         }
 
     }

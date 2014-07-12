@@ -1,0 +1,194 @@
+﻿@using PermitToWork.Models.SafetyBriefing
+@model SafetyBriefingEntity
+@{
+    Layout = null;
+    var listUser = ViewBag.listUser as PermitToWork.Models.User.ListUser;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Print Safety Briefing</title>
+    <link rel="stylesheet" href="@Url.Content("~/Content/bootstrap.css")" />
+	<link rel="stylesheet" href="@Url.Content("~/Content/bootstrap-responsive.css")" />
+    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="container-fluid header-form">
+        <div class="row-fluid">
+            <div class="span3 logo">
+                <img src="../../Img/logo-clean.png" />
+            </div>
+            <div class="span6 title">
+                <b>SAFETY BRIEFING</b><br />
+                Star Energy Geothermal (Wayang Windu) Limited
+            </div>
+        </div>
+        <div class="row-fluid separator">
+        </div>
+        <div class="row-fluid">
+            <div class="span2">
+                <b>Section / <small>Bagian</small></b> 
+            </div>
+            <div class="span3">
+                @Model.section
+            </div>
+            <div class="span2">
+                <b>Date / <small>Tanggal</small></b>
+            </div>
+            <div class="span3">
+                @(Model.date != null ? Model.date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span2">
+                <b>Work Area / <small>Lokasi Kerja</small></b>
+            </div>
+            <div class="span3">
+                @Model.work_area
+            </div>
+            <div class="span2">
+                <b>Topic / <small>Topik</small></b>
+            </div>
+            <div class="span3">
+                @Model.topic
+            </div>
+        </div>
+        <div class="row-fluid">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th class="th-centre" style="width:50%"><strong>Hazard / Bahaya </strong></th>
+                        <th class="th-centre"><strong>Control Method / Cara Pengendalian </strong></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            @Model.hazard
+                        </td>
+                        <td>
+                            @Model.control_method
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="td-centre">
+                            <u>Remember, Don't do anything unsafe, Safety First, kept area clean and tidy</u><br />
+                            <small><strong>Ingat jangan lakukan sesuatu yang tidak aman, utamakan keselamatan, pertahankan lingkungan bersih dan rapi</strong></small>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="small">
+                            When conducting the safety briefing hazard identification please consider the environemnt of the area you will be working in, the task that you will be undertaking and the equipment or subtances you will be taking into the area with you. The safety briefing shall include the house keeping of the working area before, during and after work.
+                        </td>
+                        <td class="small">
+                            Ketika melakukan pengarahan keselamatan identifikasikan bahaya pertimbangkan lingkungan dimana kita akan bekerja, pekerjaan yang akan dilakukan serta peralatan yang akan digunakan. Pengarahan keselamatan harus mencakup sebelum, selama dan setelah bekerja.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row-fluid warning">
+            <u>I have read and understood all of hazards associated with the works.</u><br/>
+            <strong><small>Saya telah membaca dan memahami bahaya terkait dengan pekerjaan yang akan dilakukan</small></strong>
+        </div>
+        <h5>List of Personel</h5>
+        <div class="row-fluid">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th class="th-centre" style="width:5%">No</th>
+                        <th class="th-centre" style="width:25%">Name</th>
+                        <th class="th-centre" style="width:20%">ID Badge No</th>
+                        <th class="th-centre" colspan="4">Signature</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{int i = 0, j = 0; }
+                    @foreach (SafetyBriefingUserEntity user in Model.listUser)
+                    {
+                        i++;
+                        if (i == 1)
+                        {
+                    <tr>
+                        <td class="td-centre">@i</td>
+                        <td class="td-centre">@user.userEntity.alpha_name</td>
+                        <td class="td-centre">@user.id_badge</td>
+                        <td colspan="2" rowspan="2">1</td>
+                        <td colspan="2" rowspan="2">&nbsp;<br />&nbsp;<br />2</td>
+                    </tr>
+                        } else if (i == 2)
+                        {
+                    <tr>
+                        <td class="td-centre">@i</td>
+                        <td class="td-centre">@user.userEntity.alpha_name</td>
+                        <td class="td-centre">@user.id_badge</td>
+                    </tr>
+                        } else {
+                            j = (j >= 4 ? 1 : j+1);
+                            if (j == 1)
+                            {
+                    <tr>
+                        <td class="td-centre">@i</td>
+                        <td class="td-centre">@user.userEntity.alpha_name</td>
+                        <td class="td-centre">@user.id_badge</td>
+                        <td rowspan="4">@i</td>
+                        <td rowspan="4">&nbsp;<br />&nbsp;<br />@(i+1)</td>
+                        <td rowspan="4">&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br />@(i+2)</td>
+                        <td rowspan="4">&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br />@(i+3)</td>
+                    </tr>
+                            } else {
+                    <tr>
+                        <td class="td-centre">@i</td>
+                        <td class="td-centre">@user.userEntity.alpha_name</td>
+                        <td class="td-centre">@user.id_badge</td>
+                    </tr>
+                            }   
+                        }
+                    }
+                    @{i++;}
+                    @for (int a = i; i <= 22; i++)
+                    {
+                        if (i == 1)
+                        {
+                    <tr>
+                        <td class="td-centre">@i</td>
+                        <td class="td-centre">&nbsp;</td>
+                        <td class="td-centre">&nbsp;</td>
+                        <td class="td-centre" colspan="2" rowspan="2">1</td>
+                        <td class="td-centre" colspan="2" rowspan="2">&nbsp;<br />2</td>
+                    </tr>
+                        } else if (i == 2)
+                        {
+                    <tr>
+                        <td class="td-centre">@i</td>
+                        <td class="td-centre">&nbsp;</td>
+                        <td class="td-centre">&nbsp;</td>
+                    </tr>
+                        } else {
+                            j = (j >= 4 ? 1 : j + 1);
+                            if (j == 1)
+                            {
+                    <tr>
+                        <td class="td-centre">@i</td>
+                        <td class="td-centre">&nbsp;</td>
+                        <td class="td-centre">&nbsp;</td>
+                        <td rowspan="4">@i</td>
+                        <td rowspan="4">&nbsp;<br />&nbsp;<br />@(i+1)</td>
+                        <td rowspan="4">&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br />@(i+2)</td>
+                        <td rowspan="4">&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br />&nbsp;<br />@(i+3)</td>
+                    </tr>
+                            } else {
+                    <tr>
+                        <td class="td-centre">@i</td>
+                        <td class="td-centre">&nbsp;</td>
+                        <td class="td-centre">&nbsp;</td>
+                    </tr>
+                            }   
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

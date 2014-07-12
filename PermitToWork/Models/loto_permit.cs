@@ -16,11 +16,14 @@ namespace PermitToWork.Models
     {
         public loto_permit()
         {
-            this.loto_glarf = new HashSet<loto_glarf>();
+            this.loto_coming_holder = new HashSet<loto_coming_holder>();
             this.loto_point = new HashSet<loto_point>();
+            this.loto_suspension = new HashSet<loto_suspension>();
+            this.permit_to_work = new HashSet<permit_to_work>();
         }
     
         public int id { get; set; }
+        public Nullable<int> id_glarf { get; set; }
         public string loto_no { get; set; }
         public string requestor { get; set; }
         public string supervisor { get; set; }
@@ -88,7 +91,10 @@ namespace PermitToWork.Models
         public string cancellation_notes { get; set; }
         public string cancellation_facility_owner { get; set; }
     
-        public virtual ICollection<loto_glarf> loto_glarf { get; set; }
+        public virtual ICollection<loto_coming_holder> loto_coming_holder { get; set; }
+        public virtual loto_glarf loto_glarf { get; set; }
         public virtual ICollection<loto_point> loto_point { get; set; }
+        public virtual ICollection<loto_suspension> loto_suspension { get; set; }
+        public virtual ICollection<permit_to_work> permit_to_work { get; set; }
     }
 }

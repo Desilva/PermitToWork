@@ -28,4 +28,22 @@
             }
         </tbody>
     </table>
+    <div class="row-fluid">
+        <div class="span12">
+            <input type="button" class="btn btn-primary" id="back" data-url="@ViewBag.backPath" value="Back" />
+        </div>
+    </div>
 </div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#back').click(function () {
+            var history = $(this).data('url');
+            history = history.toLowerCase();
+            if (history.indexOf('home') >= 0) {
+                window.location = history;
+            } else {
+                $('#content').load(history);
+            }
+        });
+    });
+</script>

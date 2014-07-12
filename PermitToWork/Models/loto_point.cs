@@ -33,6 +33,9 @@ namespace PermitToWork.Models
         public string inspected_5 { get; set; }
         public string inspected_6 { get; set; }
         public string inspected_7 { get; set; }
+        public Nullable<byte> is_removed { get; set; }
+        public Nullable<byte> is_edited { get; set; }
+        public Nullable<byte> is_set_empty { get; set; }
     
         public virtual loto_permit loto_permit { get; set; }
     }

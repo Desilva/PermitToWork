@@ -1,4 +1,5 @@
 ﻿using PermitToWork.Models.Master;
+using PermitToWork.Models.User;
 using PermitToWork.Utilities;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,14 @@ namespace PermitToWork.Controllers
 {
     public class MasterAssessorController : Controller
     {
+        //
+        // GET: /MasterAssessor
+
+        public ActionResult Index()
+        {
+            return PartialView();
+        }
+        
         //
         // GET: /MasterAssessor/List
 
@@ -110,6 +119,38 @@ namespace PermitToWork.Controllers
                 Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 return Json(new { status = HttpStatusCode.InternalServerError, message = "Something's wrong" });
             }
+        }
+
+        [HttpPost]
+        public JsonResult Binding()
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            var result = new MstAssessorEntity().getListAssessor(user);
+            return Json(result);
+        }
+
+        [HttpPost]
+        public JsonResult AddAssessor(MstAssessorEntity a)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            a.addAssessor();
+            return Json(true);
+        }
+
+        [HttpPost]
+        public JsonResult EditAssessor(MstAssessorEntity a)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            a.editAssessor();
+            return Json(true);
+        }
+
+        [HttpPost]
+        public JsonResult DeleteAssessor(MstAssessorEntity a)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            a.deleteAssessor();
+            return Json(true);
         }
 
     }

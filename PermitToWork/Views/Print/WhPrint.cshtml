@@ -1,0 +1,741 @@
+﻿@using PermitToWork.Models.WorkingHeight
+@model WorkingHeightEntity
+@{
+    Layout = null;
+    var listUser = ViewBag.listUser as PermitToWork.Models.User.ListUser;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Print Confined Space Entry Permit</title>
+    <link rel="stylesheet" href="@Url.Content("~/Content/bootstrap.css")" />
+	<link rel="stylesheet" href="@Url.Content("~/Content/bootstrap-responsive.css")" />
+    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="container-fluid header-form">
+        <div class="row-fluid">
+            <div class="span3 logo">
+                <img src="../../Img/logo-clean.png" />
+            </div>
+            <div class="span6 title">
+                <b>WORKING AT HEIGHT PERMIT</b><br />
+                Star Energy Geothermal (Wayang Windu) Limited
+            </div>
+
+            <div class="span3 no">
+                <br /><i>WH No : <span id="ptw_no">@Model.wh_no</span></i>
+            </div>
+        </div>
+        <div class="row-fluid separator">
+        </div>
+        <div class="row-fluid">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th colspan="4" class="title-form">
+                            <b>1. GENERAL INFORMATION</b> <small><i>(Fill by requestor review by Facility Owner)</i></small>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><b>Description of Work at<br />height task:</b></td>
+                        <td colspan="3">@Model.description</td>
+                    </tr>
+                    <tr>
+                        <td><b>Work Location:</b></td>
+                        <td>@Model.work_location</td>
+                        <td><b>From :</b> @(Model.from != null ? Model.from.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
+                        <td><b>Until :</b> @(Model.until != null ? Model.until.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
+                    </tr>
+                    <tr>
+                        <td><b>Requestor</b></td>
+                        <td>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.REQUESTOR.ToString()].alpha_name</td>
+                        <td colspan="2"><b>Number of crew :</b> @Model.total_crew</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row-fluid">
+            <div class="span12">
+
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div class="span6">
+                <div style="border:1px solid #000">
+                    <table style="width:100%">
+                        <tr>
+                            <th style="width:10%">
+                                @if (Model.access == 1) {
+                                    <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                                } else {
+                                    <img src="@Url.Content("~/Img/box.png")" width="20" />
+                                }
+                            </th>
+                            <th style="width:60%;text-align:left">
+                                WORK BOX <br /><small><i>(man basket, for lifting purpose needs other lifting equipment)</i></small>
+                            </th>
+                            <th style="width:30%" class="td-centre">
+                                Yes / No / N/A
+                            </th>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">
+                                1)
+                            </td>
+                            <td>
+                                Work box is suitable for the task?
+                            </td>
+                            <td class="td-centre">
+                                @(Model.workbox_access_arr[0] == "0" ? "N/A" : (Model.workbox_access_arr[0] == "1" ? "Yes" : (Model.workbox_access_arr[0] == "2" ? "No" : "")))
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">
+                                2)
+                            </td>
+                            <td>
+                                Work box has valid color code and available tag?
+                            </td>
+                            <td class="td-centre">
+                                @(Model.workbox_access_arr[1] == "0" ? "N/A" : (Model.workbox_access_arr[1] == "1" ? "Yes" : (Model.workbox_access_arr[1] == "2" ? "No" : "")))
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">
+                                3)
+                            </td>
+                            <td>
+                                Overhead hazards have been controlled?
+                            </td>
+                            <td class="td-centre">
+                                @(Model.workbox_access_arr[2] == "0" ? "N/A" : (Model.workbox_access_arr[2] == "1" ? "Yes" : (Model.workbox_access_arr[2] == "2" ? "No" : "")))
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">
+                                4)
+                            </td>
+                            <td>
+                                Anchor point for fall arrest suitable and accessible?
+                            </td>
+                            <td class="td-centre">
+                                @(Model.workbox_access_arr[3] == "0" ? "N/A" : (Model.workbox_access_arr[3] == "1" ? "Yes" : (Model.workbox_access_arr[3] == "2" ? "No" : "")))
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="border:1px solid #000">
+                    <table style="width:100%">
+                        <tr>
+                            <th style="width:10%">
+                                @if (Model.access == 2) {
+                                    <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                                } else {
+                                    <img src="@Url.Content("~/Img/box.png")" width="20" />
+                                }
+                            </th>
+                            <th style="width:60%;text-align:left">
+                                LADDER <small><i>(portable ladder)</i></small>
+                            </th>
+                            <th style="width:30%" class="td-centre">
+                                Yes / No / N/A
+                            </th>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">
+                                1)
+                            </td>
+                            <td>
+                                Is the ladder secured and suitable for the task?
+                            </td>
+                            <td class="td-centre">
+                                @(Model.ladder_access_arr[0] == "0" ? "N/A" : (Model.ladder_access_arr[0] == "1" ? "Yes" : (Model.ladder_access_arr[0] == "2" ? "No" : "")))
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">
+                                2)
+                            </td>
+                            <td>
+                                Can work be performed maintaining 3 points of contact?
+                            </td>
+                            <td class="td-centre">
+                                @(Model.ladder_access_arr[1] == "0" ? "N/A" : (Model.ladder_access_arr[1] == "1" ? "Yes" : (Model.ladder_access_arr[1] == "2" ? "No" : "")))
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">
+                                3)
+                            </td>
+                            <td>
+                                Ladder material from non conductive material?
+                            </td>
+                            <td class="td-centre">
+                                @(Model.ladder_access_arr[2] == "0" ? "N/A" : (Model.ladder_access_arr[2] == "1" ? "Yes" : (Model.ladder_access_arr[2] == "2" ? "No" : "")))
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">
+                                4)
+                            </td>
+                            <td>
+                                Anchor point for fall arrest suitable and accessible?
+                            </td>
+                            <td class="td-centre">
+                                @(Model.ladder_access_arr[3] == "0" ? "N/A" : (Model.ladder_access_arr[3] == "1" ? "Yes" : (Model.ladder_access_arr[3] == "2" ? "No" : "")))
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="border:1px solid #000">
+                    <table style="width:100%">
+                        <tr>
+                            <th style="width:10%">
+                                @if (Model.access == 3) {
+                                    <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                                } else {
+                                    <img src="@Url.Content("~/Img/box.png")" width="20" />
+                                }
+                            </th>
+                            <th style="width:60%;text-align:left">
+                                ELEVATED WORK PLATFORM <small><i>(movable work platform equipped by mechanical adjustment for operation)</i></small>
+                            </th>
+                            <th style="width:30%" class="td-centre">
+                                Yes / No / N/A
+                            </th>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">
+                                1)
+                            </td>
+                            <td>
+                                Has the equipment certified?
+                            </td>
+                            <td class="td-centre">
+                                @(Model.elevated_access_arr[0] == "0" ? "N/A" : (Model.elevated_access_arr[0] == "1" ? "Yes" : (Model.elevated_access_arr[0] == "2" ? "No" : "")))
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">
+                                2)
+                            </td>
+                            <td>
+                                Overhead hazards have been controlled?
+                            </td>
+                            <td class="td-centre">
+                                @(Model.elevated_access_arr[1] == "0" ? "N/A" : (Model.elevated_access_arr[1] == "1" ? "Yes" : (Model.elevated_access_arr[1] == "2" ? "No" : "")))
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">
+                                3)
+                            </td>
+                            <td>
+                                Anchor point for fall arrest suitable and accessible?
+                            </td>
+                            <td class="td-centre">
+                                @(Model.elevated_access_arr[2] == "0" ? "N/A" : (Model.elevated_access_arr[2] == "1" ? "Yes" : (Model.elevated_access_arr[2] == "2" ? "No" : "")))
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="span6">
+                <div style="border:1px solid #000">
+                    <table style="width:100%">
+                        <tr>
+                            <th style="width:10%">
+                                @if (Model.access == 4) {
+                                    <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                                } else {
+                                    <img src="@Url.Content("~/Img/box.png")" width="20" />
+                                }
+                            </th>
+                            <th style="width:60%;text-align:left">
+                                SCAFFOLDING <small><i>(for install and dismantle erector must be as permit holder)</i></small>
+                            </th>
+                            <th style="width:30%" class="td-centre">
+                                Yes / No / N/A
+                            </th>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">&nbsp;</td>
+                            <td class="td-centre">
+                                <table style="width:100%">
+                                    <tr>
+                                        <td>
+                                            @if (Model.scaffolding == 1) {
+                                                <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                                            } else {
+                                                <img src="@Url.Content("~/Img/box.png")" width="20" />
+                                            }
+                                            <b>Erection  </b>
+                                        </td>
+                                        <td>
+                                            @if (Model.scaffolding == 2) {
+                                                <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                                            } else {
+                                                <img src="@Url.Content("~/Img/box.png")" width="20" />
+                                            }
+                                            <b>Utilization  </b>
+                                        </td>
+                                        <td>
+                                            @if (Model.scaffolding == 3) {
+                                                <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                                            } else {
+                                                <img src="@Url.Content("~/Img/box.png")" width="20" />
+                                            }
+                                            <b>Dismantling  </b>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">&nbsp;</td>
+                            <td>
+                                <table style="width:100%">
+                                    <tr>
+                                        <td>
+                                             <b>Load capacity:</b> @Model.load_capacity 
+                                        </td>
+                                        <td>
+                                             <b>No of Person:</b> @Model.no_person
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">
+                                1) 
+                            </td>
+                            <td>
+                                Erection & Dismantling
+                            </td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">&nbsp;</td>
+                            <td>
+                                a.  <b>Erector Certificate No:</b> @Model.erector_certificate_no
+                            </td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">&nbsp;</td>
+                            <td>
+                                b.  <b>Valid until, date:</b> @(Model.erector_valid_date != null ? Model.erector_valid_date.Value.ToString("dd MMM yyyy hh:mm tt") : "")
+                            </td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">&nbsp;</td>
+                            <td>
+                                c.  Has scaffold design been approved?
+                            </td>
+                            <td class="td-centre">
+                                @(Model.scaffold_access_arr[0] == "0" ? "N/A" : (Model.scaffold_access_arr[0] == "1" ? "Yes" : (Model.scaffold_access_arr[0] == "2" ? "No" : "")))
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">
+                                2) 
+                            </td>
+                            <td>
+                                Utilization
+                            </td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">&nbsp;</td>
+                            <td>
+                                a.  Has the scaffolding been certified?
+                            </td>
+                            <td class="td-centre">
+                                @(Model.scaffold_access_arr[1] == "0" ? "N/A" : (Model.scaffold_access_arr[1] == "1" ? "Yes" : (Model.scaffold_access_arr[1] == "2" ? "No" : "")))
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">&nbsp;</td>
+                            <td>
+                                    <b>Inspector certify no:</b> @Model.inspector_certify_no
+                            </td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">&nbsp;</td>
+                            <td>
+                                b. <b>Scaffolding Inspection no:</b> @Model.no_inspection
+                            </td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">&nbsp;</td>
+                            <td class="td-centre" style="height:75px;vertical-align:bottom">
+                                @if (Model.inspector_signature != null)
+                                {
+                                    <img id="img-approve-inspector" width="50" height="50" src="@Model.inspector_signature" />
+                                }
+                                <u><i>Inspector Approval</i></u>
+                                <br /><span>@(Model.inspectorUser != null ? Model.inspectorUser.user.alpha_name : "") @(Model.inspector_signature != null ? "- " + Model.inspector_sign_date.Value.ToString("dd MMM yyyy") : "")</span>
+                            </td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">&nbsp;</td>
+                            <td>
+                                c.  <b>Valid until:</b> @(Model.utilization_valid_date != null ? Model.utilization_valid_date.Value.ToString("dd MMM yyyy hh:mm tt") : "")
+                            </td>
+                            <td>
+                                &nbsp;
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">
+                                3) 
+                            </td>
+                            <td>
+                                Dismantling
+                            </td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td class="td-centre">&nbsp;</td>
+                            <td>
+                                a. Has dismantle scaffolding approved by previous user?
+                            </td>
+                            <td class="td-centre">
+                                @(Model.scaffold_access_arr[2] == "0" ? "N/A" : (Model.scaffold_access_arr[2] == "1" ? "Yes" : (Model.scaffold_access_arr[2] == "2" ? "No" : "")))
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <div style="border:1px solid #000">
+                <table style="width:100%">
+                    <tr>
+                        <th colspan="5">
+                            FALL PREVENTION
+                        </th>
+                    </tr>
+                    <tr>
+                        <td class="td-centre">
+                            1)
+                        </td>
+                        <td colspan="4">
+                            Fall prevention system:
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td-centre" style="width:5%">&nbsp;</td>
+                        <td style="width:30%">
+                            @if (Model.mandatory_fall_prevention_arr.Contains("1"))
+                            {
+                                <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                            } else {
+                                <img src="@Url.Content("~/Img/box.png")" width="20" />
+                            }
+                            Fall arrest
+                        </td>
+                        <td class="td-centre" style="width:5%">
+                            2)
+                        </td>
+                        <td>
+                            Anchor points and lanyard restricts fall of no more than 600mm.
+                        </td>
+                        <td class="td-centre" style="width:10%">
+                            @(Model.fall_prevention_assess_arr[0] == "0" ? "N/A" : (Model.fall_prevention_assess_arr[0] == "1" ? "Yes" : (Model.fall_prevention_assess_arr[0] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td-centre" style="width:5%">&nbsp;</td>
+                        <td style="width:30%">
+                            @if (Model.mandatory_fall_prevention_arr.Contains("2"))
+                            {
+                                <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                            } else {
+                                <img src="@Url.Content("~/Img/box.png")" width="20" />
+                            }
+                            Safety Net
+                        </td>
+                        <td class="td-centre" style="width:5%">
+                            3)
+                        </td>
+                        <td>
+                            Equipment to be use in good condition.
+                        </td>
+                        <td class="td-centre" style="width:10%">
+                            @(Model.fall_prevention_assess_arr[1] == "0" ? "N/A" : (Model.fall_prevention_assess_arr[1] == "1" ? "Yes" : (Model.fall_prevention_assess_arr[1] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td-centre" style="width:5%">&nbsp;</td>
+                        <td style="width:30%">
+                            @if (Model.mandatory_fall_prevention_arr.LastOrDefault() != null && Model.mandatory_fall_prevention_arr.LastOrDefault() != "2" && Model.mandatory_fall_prevention_arr.LastOrDefault() != "1")
+                            {
+                                <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                            } else {
+                                <img src="@Url.Content("~/Img/box.png")" width="20" />
+                            }
+                            <b>Other:</b> @(Model.mandatory_fall_prevention_arr.LastOrDefault() != null && Model.mandatory_fall_prevention_arr.LastOrDefault() != "2" && Model.mandatory_fall_prevention_arr.LastOrDefault() != "1" ? Model.mandatory_fall_prevention_arr.LastOrDefault() : "")
+                        </td>
+                        <td class="td-centre" style="width:5%">
+                            4)
+                        </td>
+                        <td>
+                            Equipment designed to limit fall potential.
+                        </td>
+                        <td class="td-centre" style="width:10%">
+                            @(Model.fall_prevention_assess_arr[2] == "0" ? "N/A" : (Model.fall_prevention_assess_arr[2] == "1" ? "Yes" : (Model.fall_prevention_assess_arr[2] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="row-fluid">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th class="title-form" colspan="4"><b>4. PRE-JOB SCREENING</b> <small><i>(Fill assessment with yes, no, or N/A; Req: Requestor; Er: Erector; FO: Facility Owner)</i></small></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="2" class="radio-title-form"><b>No</b></td>
+                        <td rowspan="2" class="radio-title-form"><b>Description</b></td>
+                        <td colspan="2" class="radio-title-form"><b>Assessment</b></td>
+                    </tr>
+                    <tr>
+                        <td class="radio-title-form">Requestor / Erector *</td>
+                        <td class="radio-title-form">FO</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>Personnel(s) are competent in working at height</td>
+                        <td class="radio-title-form">
+                            @(Model.screening_req_arr[0] == "0" ? "N/A" : (Model.screening_req_arr[0] == "1" ? "Yes" : (Model.screening_req_arr[0] == "2" ? "No" : "")))
+                        </td>
+                        <td class="radio-title-form">
+                            @(Model.screening_fo_arr[0] == "0" ? "N/A" : (Model.screening_fo_arr[0] == "1" ? "Yes" : (Model.screening_fo_arr[0] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Emergency rescue plan is available & work leader/ supervisor has briefed his personnel</td>
+                        <td class="radio-title-form">
+                            @(Model.screening_req_arr[1] == "0" ? "N/A" : (Model.screening_req_arr[1] == "1" ? "Yes" : (Model.screening_req_arr[1] == "2" ? "No" : "")))
+                        </td>
+                        <td class="radio-title-form">
+                            @(Model.screening_fo_arr[1] == "0" ? "N/A" : (Model.screening_fo_arr[1] == "1" ? "Yes" : (Model.screening_fo_arr[1] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Working at height can be done with safely way </td>
+                        <td class="radio-title-form">
+                            @(Model.screening_req_arr[2] == "0" ? "N/A" : (Model.screening_req_arr[2] == "1" ? "Yes" : (Model.screening_req_arr[2] == "2" ? "No" : "")))
+                        </td>
+                        <td class="radio-title-form">
+                            @(Model.screening_fo_arr[2] == "0" ? "N/A" : (Model.screening_fo_arr[2] == "1" ? "Yes" : (Model.screening_fo_arr[2] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">Note <small><i>(write any consent related the working at height permit)</i></small>: <br />
+                            <textarea class="table-textarea">@Model.pre_screening_note</textarea>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row-fluid">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th colspan="3" class="title-form">
+                            <b>5. APPROVAL</b>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="td-centre">
+                            @if (Model.requestor_signature != null)
+                            {
+                            <img id="img_approve_operator" width="50" height="50" @(Model.requestor_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.requestor_signature == null ? "" : Model.requestor_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre">
+                            @if (Model.supervisor_signature != null)
+                            {
+                            <img id="img_approve_supervisor" width="50" height="50" @(Model.supervisor_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.supervisor_signature == null ? "" : Model.supervisor_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre">
+                            @if (Model.facility_owner_signature != null)
+                            {
+                            <img id="img_approve_fo" width="50" height="50" @(Model.facility_owner_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.facility_owner_signature == null ? "" : Model.facility_owner_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td-centre">
+                            <i><u>Requestor / Erector</u></i><br />
+                            @if ((Model.requestor_signature != null && Model.requestor_signature.Substring(0, 1) == "d"))
+                            {
+                            
+                                <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.REQUESTORDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @if (Model.access == 4 && (Model.scaffolding == 1 || Model.scaffolding == 3))
+                            {
+                                <text>@(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.ERECTOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.ERECTOR.ToString()].alpha_name : "")</text>
+                            }
+                            else
+                            {
+                                <text>@(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.REQUESTOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.REQUESTOR.ToString()].alpha_name : "")</text>
+                            }
+                        
+                        </td>
+                        <td class="td-centre">
+                            <i><u>Supervisor</u></i><br />
+                            @if ((Model.supervisor_signature != null && Model.supervisor_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.SUPERVISORDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.SUPERVISOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.SUPERVISOR.ToString()].alpha_name : "")
+                        </td>
+                        <td class="td-centre">
+                            <i><u>Facility Owner</u></i><br />
+                            @if ((Model.facility_owner_signature != null && Model.facility_owner_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.FACILITYOWNERDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.FACILITYOWNER.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.FACILITYOWNER.ToString()].alpha_name : "")
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row-fluid">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th colspan="4" class="title-form">
+                            <b>6. CANCELATION </b><small><i>(Worker supervisor responsible to completed assessments prior cancellations review by safety officer & facility owner)</i></small>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="2" class="radio-title-form"><b>No</b></td>
+                        <td rowspan="2" class="radio-title-form"><b>Description</b></td>
+                        <td colspan="2" class="radio-title-form"><b>Assessment</b></td>
+                    </tr>
+                    <tr>
+                        <td class="radio-title-form">Requestor / Erector *</td>
+                        <td class="radio-title-form">FO</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td>Working at height completed</td>
+                        <td class="radio-title-form">
+                            @(Model.can_screening_req_arr[0] == "0" ? "N/A" : (Model.can_screening_req_arr[0] == "1" ? "Yes" : (Model.can_screening_req_arr[0] == "2" ? "No" : "")))
+                        </td>
+                        <td class="radio-title-form">
+                            @(Model.can_screening_fo_arr[0] == "0" ? "N/A" : (Model.can_screening_fo_arr[0] == "1" ? "Yes" : (Model.can_screening_fo_arr[0] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Are the access to work location height has been disabled <i>(secured , dismantled, demobilized)</i></td>
+                        <td class="radio-title-form">
+                            @(Model.can_screening_req_arr[1] == "0" ? "N/A" : (Model.can_screening_req_arr[1] == "1" ? "Yes" : (Model.can_screening_req_arr[1] == "2" ? "No" : "")))
+                        </td>
+                        <td class="radio-title-form">
+                            @(Model.can_screening_fo_arr[1] == "0" ? "N/A" : (Model.can_screening_fo_arr[1] == "1" ? "Yes" : (Model.can_screening_fo_arr[1] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Specific for scaffolding :Are the scaffolding going to  be utilized by other <br /><small><i>If  NO put red tag, erector shall dismantle the scaffolding, If YES  Confirm Scaffolding inspector to check latest condition.</i></small></td>
+                        <td class="radio-title-form">
+                            @(Model.can_screening_req_arr[2] == "0" ? "N/A" : (Model.can_screening_req_arr[2] == "1" ? "Yes" : (Model.can_screening_req_arr[2] == "2" ? "No" : "")))
+                        </td>
+                        <td class="radio-title-form">
+                            @(Model.can_screening_fo_arr[2] == "0" ? "N/A" : (Model.can_screening_fo_arr[2] == "1" ? "Yes" : (Model.can_screening_fo_arr[2] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row-fluid">
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <td class="td-centre" style="height:50px">
+                            @if (Model.can_requestor_signature != null)
+                            {
+                            <img id="img_approve_operator_can" width="50" height="50" @(Model.can_requestor_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_requestor_signature == null ? "" : Model.can_requestor_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre">
+                            @if (Model.can_supervisor_signature != null)
+                            {
+                            <img id="img_approve_supervisor_can" width="50" height="50" @(Model.can_supervisor_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_supervisor_signature == null ? "" : Model.can_supervisor_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre">
+                            @if (Model.can_facility_owner_signature != null)
+                            {
+                            <img id="img_approve_fo_can" width="50" height="50" @(Model.can_facility_owner_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_facility_owner_signature == null ? "" : Model.can_facility_owner_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="td-centre">
+                            <i><u>Requestor / Erector</u></i><br />
+                            @if ((Model.can_requestor_signature != null && Model.can_requestor_signature.Substring(0, 1) == "d"))
+                            {
+                            
+                                <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.CANREQUESTORDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @if (Model.access == 4 && (Model.scaffolding == 1 || Model.scaffolding == 3))
+                            {
+                                <text>@(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.ERECTOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.ERECTOR.ToString()].alpha_name : "")</text>
+                            }
+                            else
+                            {
+                                <text>@(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.REQUESTOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.REQUESTOR.ToString()].alpha_name : "")</text>
+                            }
+                        
+                        </td>
+                        <td class="td-centre">
+                            <i><u>Supervisor</u></i><br />
+                            @if ((Model.can_supervisor_signature != null && Model.can_supervisor_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.CANSUPERVISORDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.SUPERVISOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.SUPERVISOR.ToString()].alpha_name : "")
+                        </td>
+                        <td class="td-centre">
+                            <i><u>Facility Owner</u></i><br />
+                            @if ((Model.can_facility_owner_signature != null && Model.can_facility_owner_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.CANFACILITYOWNERDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.FACILITYOWNER.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.FACILITYOWNER.ToString()].alpha_name : "")
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

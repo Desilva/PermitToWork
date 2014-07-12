@@ -1,0 +1,651 @@
+﻿@using PermitToWork.Models.ClearancePermit
+@model ExcavationEntity
+@{
+    Layout = null;
+    var listUser = ViewBag.listUser as PermitToWork.Models.User.ListUser;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Print Excavation Permit</title>
+    <link rel="stylesheet" href="@Url.Content("~/Content/bootstrap.css")" />
+	<link rel="stylesheet" href="@Url.Content("~/Content/bootstrap-responsive.css")" />
+    <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="container-fluid header-form">
+        <div class="row-fluid">
+            <div class="span3 logo">
+                <img src="../../Img/logo-clean.png" />
+            </div>
+            <div class="span6 title">
+                <b>EXCAVATION PERMIT</b><br />
+                Star Energy Geothermal (Wayang Windu) Limited
+            </div>
+
+            <div class="span3 no">
+                <br /><i>EX No : <span id="ptw_no">@Model.ex_no</span></i>
+            </div>
+        </div>
+        <div class="row-fluid separator">
+        </div>
+        <div class="row-fluid">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="title-form" colspan="4"><b>1.  GENERAL INFORMATION </b></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><b>Work Location:</b></td>
+                        <td>@Model.work_location</td>
+                        <td><b>Supervisor <small>(project manager)</small>: </b></td>
+                        <td>@(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SUPERVISOR.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SUPERVISOR.ToString()].alpha_name : "")</td>
+                    </tr>
+                    <tr>
+                        <td><b>Worker Leaders:</b> </td>
+                        <td>@(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.REQUESTOR.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.REQUESTOR.ToString()].alpha_name : "")</td>
+                        <td><b>Total Crew:</b></td>
+                        <td>@Model.total_crew</td>
+                    </tr>
+                    <tr>
+                        <td><b>Purpose:</b></td>
+                        <td colspan="3">@Model.purpose</td>
+                    </tr>
+                    <tr>
+                        <td><b>Estimate Date, from:</b></td>
+                        <td>@(Model.estimate_start_date != null ? Model.estimate_start_date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
+                        <td><b>To:</b> </td>
+                        <td>@(Model.estimate_end_date != null ? Model.estimate_end_date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row-fluid">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th class="title-form" colspan="5"><b>2. PRE-JOB SCREENING <small><i>(Fill with yes: if agree; No: if disagree or N/A: if not applicable with description statement)</i></small></b></th>
+                        <th colspan="2">Hira no : @Model.getHiraNo()</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="width:5%">NO</td>
+                        <td colspan="2">DESCRIPTION</td>
+                        <td>Spv</td>
+                        <td>E&I</td>
+                        <td>CIV</td>
+                        <td>FO</td>
+                    </tr>
+                    <tr>
+                        <td>1</td>
+                        <td colspan="2">Underground facilities (power cable, control cable, communication, pipe, etc)</td>
+                        <td>
+                            @(Model.pre_screening_spv_arr[0] == "0" ? "N/A" : (Model.pre_screening_spv_arr[0] == "1" ? "Yes" : (Model.pre_screening_spv_arr[0] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_ei_arr[0] == "0" ? "N/A" : (Model.pre_screening_ei_arr[0] == "1" ? "Yes" : (Model.pre_screening_ei_arr[0] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_fac_arr[0] == "0" ? "N/A" : (Model.pre_screening_fac_arr[0] == "1" ? "Yes" : (Model.pre_screening_fac_arr[0] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_fo_arr[0] == "0" ? "N/A" : (Model.pre_screening_fo_arr[0] == "1" ? "Yes" : (Model.pre_screening_fo_arr[0] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td colspan="2">Need LOTO and/or bypass</td>
+                        <td>
+                            @(Model.pre_screening_spv_arr[1] == "0" ? "N/A" : (Model.pre_screening_spv_arr[1] == "1" ? "Yes" : (Model.pre_screening_spv_arr[1] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_ei_arr[1] == "0" ? "N/A" : (Model.pre_screening_ei_arr[1] == "1" ? "Yes" : (Model.pre_screening_ei_arr[1] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_fac_arr[1] == "0" ? "N/A" : (Model.pre_screening_fac_arr[1] == "1" ? "Yes" : (Model.pre_screening_fac_arr[1] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_fo_arr[1] == "0" ? "N/A" : (Model.pre_screening_fo_arr[1] == "1" ? "Yes" : (Model.pre_screening_fo_arr[1] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td colspan="2">E&I and facilities official need inspection</td>
+                        <td>
+                            @(Model.pre_screening_spv_arr[2] == "0" ? "N/A" : (Model.pre_screening_spv_arr[2] == "1" ? "Yes" : (Model.pre_screening_spv_arr[2] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_ei_arr[2] == "0" ? "N/A" : (Model.pre_screening_ei_arr[2] == "1" ? "Yes" : (Model.pre_screening_ei_arr[2] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_fac_arr[2] == "0" ? "N/A" : (Model.pre_screening_fac_arr[2] == "1" ? "Yes" : (Model.pre_screening_fac_arr[2] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_fo_arr[2] == "0" ? "N/A" : (Model.pre_screening_fo_arr[2] == "1" ? "Yes" : (Model.pre_screening_fo_arr[2] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td colspan="2">E&I and facilities official need to involve during work commences</td>
+                        <td>
+                            @(Model.pre_screening_spv_arr[3] == "0" ? "N/A" : (Model.pre_screening_spv_arr[3] == "1" ? "Yes" : (Model.pre_screening_spv_arr[3] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_ei_arr[3] == "0" ? "N/A" : (Model.pre_screening_ei_arr[3] == "1" ? "Yes" : (Model.pre_screening_ei_arr[3] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_fac_arr[3] == "0" ? "N/A" : (Model.pre_screening_fac_arr[3] == "1" ? "Yes" : (Model.pre_screening_fac_arr[3] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_fo_arr[3] == "0" ? "N/A" : (Model.pre_screening_fo_arr[3] == "1" ? "Yes" : (Model.pre_screening_fo_arr[3] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td colspan="2">Manual Excavation perform needed</td>
+                        <td>
+                            @(Model.pre_screening_spv_arr[4] == "0" ? "N/A" : (Model.pre_screening_spv_arr[4] == "1" ? "Yes" : (Model.pre_screening_spv_arr[4] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_ei_arr[4] == "0" ? "N/A" : (Model.pre_screening_ei_arr[4] == "1" ? "Yes" : (Model.pre_screening_ei_arr[4] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_fac_arr[4] == "0" ? "N/A" : (Model.pre_screening_fac_arr[4] == "1" ? "Yes" : (Model.pre_screening_fac_arr[4] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_fo_arr[4] == "0" ? "N/A" : (Model.pre_screening_fo_arr[4] == "1" ? "Yes" : (Model.pre_screening_fo_arr[4] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td colspan="2">May air hazard arise</td>
+                        <td>
+                            @(Model.pre_screening_spv_arr[5] == "0" ? "N/A" : (Model.pre_screening_spv_arr[5] == "1" ? "Yes" : (Model.pre_screening_spv_arr[5] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_ei_arr[5] == "0" ? "N/A" : (Model.pre_screening_ei_arr[5] == "1" ? "Yes" : (Model.pre_screening_ei_arr[5] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_fac_arr[5] == "0" ? "N/A" : (Model.pre_screening_fac_arr[5] == "1" ? "Yes" : (Model.pre_screening_fac_arr[5] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_fo_arr[5] == "0" ? "N/A" : (Model.pre_screening_fo_arr[5] == "1" ? "Yes" : (Model.pre_screening_fo_arr[5] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td colspan="2">Are excavation experts available</td>
+                        <td>
+                            @(Model.pre_screening_spv_arr[6] == "0" ? "N/A" : (Model.pre_screening_spv_arr[6] == "1" ? "Yes" : (Model.pre_screening_spv_arr[6] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_ei_arr[6] == "0" ? "N/A" : (Model.pre_screening_ei_arr[6] == "1" ? "Yes" : (Model.pre_screening_ei_arr[6] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_fac_arr[6] == "0" ? "N/A" : (Model.pre_screening_fac_arr[6] == "1" ? "Yes" : (Model.pre_screening_fac_arr[6] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_fo_arr[6] == "0" ? "N/A" : (Model.pre_screening_fo_arr[6] == "1" ? "Yes" : (Model.pre_screening_fo_arr[6] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td colspan="2">Backfilling need approval from SEG</td>
+                        <td>
+                            @(Model.pre_screening_spv_arr[7] == "0" ? "N/A" : (Model.pre_screening_spv_arr[7] == "1" ? "Yes" : (Model.pre_screening_spv_arr[7] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_ei_arr[7] == "0" ? "N/A" : (Model.pre_screening_ei_arr[7] == "1" ? "Yes" : (Model.pre_screening_ei_arr[7] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_fac_arr[7] == "0" ? "N/A" : (Model.pre_screening_fac_arr[7] == "1" ? "Yes" : (Model.pre_screening_fac_arr[7] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_fo_arr[7] == "0" ? "N/A" : (Model.pre_screening_fo_arr[7] == "1" ? "Yes" : (Model.pre_screening_fo_arr[7] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td colspan="2">Disposal site need permit from enviroment official</td>
+                        <td>
+                            @(Model.pre_screening_spv_arr[8] == "0" ? "N/A" : (Model.pre_screening_spv_arr[8] == "1" ? "Yes" : (Model.pre_screening_spv_arr[8] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_ei_arr[8] == "0" ? "N/A" : (Model.pre_screening_ei_arr[8] == "1" ? "Yes" : (Model.pre_screening_ei_arr[8] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_fac_arr[8] == "0" ? "N/A" : (Model.pre_screening_fac_arr[8] == "1" ? "Yes" : (Model.pre_screening_fac_arr[8] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_fo_arr[8] == "0" ? "N/A" : (Model.pre_screening_fo_arr[8] == "1" ? "Yes" : (Model.pre_screening_fo_arr[8] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td colspan="2">Excavation completion need approval from SEG <small>(land leveling, compaction, backfilling)</small></td>
+                        <td>
+                            @(Model.pre_screening_spv_arr[9] == "0" ? "N/A" : (Model.pre_screening_spv_arr[9] == "1" ? "Yes" : (Model.pre_screening_spv_arr[9] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_ei_arr[9] == "0" ? "N/A" : (Model.pre_screening_ei_arr[9] == "1" ? "Yes" : (Model.pre_screening_ei_arr[9] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_fac_arr[9] == "0" ? "N/A" : (Model.pre_screening_fac_arr[9] == "1" ? "Yes" : (Model.pre_screening_fac_arr[9] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_fo_arr[9] == "0" ? "N/A" : (Model.pre_screening_fo_arr[9] == "1" ? "Yes" : (Model.pre_screening_fo_arr[9] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>11</td>
+                        <td colspan="2" style="width:45%">Excavation can be done safely</td>
+                        <td>
+                            @(Model.pre_screening_spv_arr[10] == "0" ? "N/A" : (Model.pre_screening_spv_arr[10] == "1" ? "Yes" : (Model.pre_screening_spv_arr[10] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_ei_arr[10] == "0" ? "N/A" : (Model.pre_screening_ei_arr[10] == "1" ? "Yes" : (Model.pre_screening_ei_arr[10] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_fac_arr[10] == "0" ? "N/A" : (Model.pre_screening_fac_arr[10] == "1" ? "Yes" : (Model.pre_screening_fac_arr[10] == "2" ? "No" : "")))
+                        </td>
+                        <td>
+                            @(Model.pre_screening_fo_arr[10] == "0" ? "N/A" : (Model.pre_screening_fo_arr[10] == "1" ? "Yes" : (Model.pre_screening_fo_arr[10] == "2" ? "No" : "")))
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>12</td>
+                        <td style="width:20%">Excavation performed by</td>
+                        <td colspan="5">
+                            <ul class="inline table-ul">
+                                <li>
+                                    @if (Model.excavation_performed == "1") {
+                                        <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                                    } else {
+                                        <img src="@Url.Content("~/Img/box.png")" width="20"/>
+                                    }
+                                    Manual</li>
+                                <li>@if (Model.excavation_performed == "2") {
+                                        <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                                    } else {
+                                        <img src="@Url.Content("~/Img/box.png")" width="20"/>
+                                    }Heavy Equipment</li>
+                                <li>@if (Model.excavation_performed == "3") {
+                                        <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                                    } else {
+                                        <img src="@Url.Content("~/Img/box.png")" width="20"/>
+                                    }Combined</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>13</td>
+                        <td>Excavation method</td>
+                        <td colspan="5">
+                            <ul class="inline table-ul">
+                                <li>
+                                    @if (Model.excavation_method == "1") {
+                                        <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                                    } else {
+                                        <img src="@Url.Content("~/Img/box.png")" width="20"/>
+                                    }Sloping / Trenching
+                                </li>
+                                <li>
+                                    @if (Model.excavation_method == "2") {
+                                        <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                                    } else {
+                                        <img src="@Url.Content("~/Img/box.png")" width="20"/>
+                                    }Shoring
+                                </li>
+                                <li>
+                                    @if (Model.excavation_method != null && Model.excavation_method != "1" && Model.excavation_method != "2")
+                                    {
+                                        <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                                    } else {
+                                        <img src="@Url.Content("~/Img/box.png")" width="20"/>
+                                    }Other <small>(specify)</small>
+                                </li>
+                                <li>@(Model.excavation_method != null && Model.excavation_method != "1" && Model.excavation_method != "2" ? Model.excavation_method : "")</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>14</td>
+                        <td>Equipment</td>
+                        <td colspan="5">
+                            <ul class="inline table-ul">
+                                <li>
+                                    @if (Model.equipment == "1") {
+                                        <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                                    } else {
+                                        <img src="@Url.Content("~/Img/box.png")" width="20"/>
+                                    }Hand tools
+                                </li>
+                                <li>
+                                    @if (Model.equipment == "2") {
+                                        <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                                    } else {
+                                        <img src="@Url.Content("~/Img/box.png")" width="20"/>
+                                    }Backhoe
+                                </li>
+                                <li>
+                                    @if (Model.equipment == "3") {
+                                        <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                                    } else {
+                                        <img src="@Url.Content("~/Img/box.png")" width="20"/>
+                                    }Dozer
+                                </li>
+                                <li>
+                                    @if (Model.equipment == "4") {
+                                        <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                                    } else {
+                                        <img src="@Url.Content("~/Img/box.png")" width="20"/>
+                                    }Auger
+                                </li>
+                                <li>
+                                    @if (Model.equipment == "5") {
+                                        <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                                    } else {
+                                        <img src="@Url.Content("~/Img/box.png")" width="20"/>
+                                    }Pilling
+                                </li>
+                                <li>
+                                    @if (Model.equipment != null && Model.equipment != "1" && Model.equipment != "2" && Model.equipment != "3" && Model.equipment != "4" && Model.equipment != "5")
+                                    {
+                                        <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                                    } else {
+                                        <img src="@Url.Content("~/Img/box.png")" width="20"/>
+                                    }Other <small>(specify)</small>
+                                </li>
+                                <li>@(Model.equipment != null && Model.equipment != "1" && Model.equipment != "2" && Model.equipment != "3" && Model.equipment != "4" && Model.equipment != "5" ? Model.equipment : "")</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>15</td>
+                        <td>Estimated soil volume</td>
+                        <td colspan="5">
+                            @Model.soil_volume  m<sup>3</sup>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>16</td>
+                        <td>Disposal Location</td>
+                        <td colspan="5">
+                            <ul class="inline table-ul">
+                                <li>@Model.disposal_location</li>
+                                <li>
+                                    @if (Model.disposal_type == "1") {
+                                        <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                                    } else {
+                                        <img src="@Url.Content("~/Img/box.png")" width="20"/>
+                                    }Permanent
+                                </li>
+                                <li>
+                                    @if (Model.disposal_type == "2") {
+                                        <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
+                                    } else {
+                                        <img src="@Url.Content("~/Img/box.png")" width="20"/>
+                                    }Temporary
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="7">
+                            <h6>Note :</h6>
+                            <ul>
+                                <li>
+                                    Write any consent related to work execution below
+                                </li>
+                            </ul>
+                            <textarea class="table-textarea">@Model.screening_remark</textarea>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>   
+        </div>
+        <div class="row-fluid">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th colspan="5" class="title-form">
+                            <b>3. APPROVAL</b>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="3" class="td-centre">
+                            <strong>Verified by</strong>
+                        </td>
+                        <td colspan="2" class="td-centre">
+                            <strong>Approved by</strong>
+                        </td>
+                    </tr>
+                    <tr style="height:100px;">
+                        <td class="td-centre">
+                            @if (Model.supervisor_signature != null)
+                            {
+                            <img id="img_approve_supervisor" width="50" height="50" @(Model.supervisor_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.supervisor_signature == null ? "" : Model.supervisor_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        @*<td class="td-centre">
+                            @if (Model.safety_officer_signature != null)
+                            {
+                            <img id="img_approve_so" width="50" height="50" @(Model.safety_officer_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.safety_officer_signature == null ? "" : Model.safety_officer_signature.Substring(1))"/><br />
+                            }
+                        </td>*@
+                        <td class="td-centre">
+                            @if (Model.ei_signature != null)
+                            {
+                            <img id="img_approve_ei" width="50" height="50" @(Model.ei_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.ei_signature == null ? "" : Model.ei_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre">
+                            @if (Model.facilities_signature != null)
+                            {
+                            <img id="img_approve_fac" width="50" height="50" @(Model.facilities_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.facilities_signature == null ? "" : Model.facilities_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre">
+                            @if (Model.requestor_signature != null)
+                            {
+                            <img id="img_approve_requestor" width="50" height="50" @(Model.requestor_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.requestor_signature == null ? "" : Model.requestor_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre">
+                            @if (Model.facility_owner_signature != null)
+                            {
+                            <img id="img_approve_fo" width="50" height="50" @(Model.facility_owner_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.facility_owner_signature == null ? "" : Model.facility_owner_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                    </tr>
+                
+                    <tr>
+                        <td class="td-centre">
+                            @if ((Model.supervisor_signature != null && Model.supervisor_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SUPERVISORDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SUPERVISOR.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SUPERVISOR.ToString()].alpha_name : "")
+                            <br /><b>Supervisor</b>
+                        </td>
+                        @*<td class="td-centre">
+                            @if (isCanEdit[0])
+                            {
+                                @(Html.DropDownList("safety-officer", ViewBag.listSO as List<SelectListItem>, (isCanEdit[0] ? new { @class = "table-input-170" } as object : new { @class = "table-input-170", disabled = "disabled" } as object)));
+                            }
+                            else
+                            {
+                                if ((Model.safety_officer_signature == null && isCanEdit[3] && Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SAFETYOFFICER.ToString()] != null && requestor.id != Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SAFETYOFFICER.ToString()].id))
+                                {
+                                    <text>@requestor.alpha_name<br />a/n </text>
+                                }
+                                else if ((Model.safety_officer_signature != null && Model.safety_officer_signature.Substring(0, 1) == "d"))
+                                {
+                                    <text>@Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SAFETYOFFICERDELEGATE.ToString()].alpha_name<br />a/n </text>
+                                }
+                                @(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SAFETYOFFICER.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SAFETYOFFICER.ToString()].alpha_name : "")
+                            }
+                            <br /><b>SHE</b>
+                        </td>*@
+                        <td class="td-centre">
+                            @if ((Model.ei_signature != null && Model.ei_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.EIDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInExcavation.Keys.ToList().Exists(p => p == PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.EI.ToString()) ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.EI.ToString()].alpha_name : "")
+                            <br /><b>E&I</b>
+                        </td>
+                        <td class="td-centre">
+                            @if ((Model.facilities_signature != null && Model.facilities_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIESDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInExcavation.Keys.ToList().Exists(p => p == PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIES.ToString()) ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIES.ToString()].alpha_name : "")
+                            <br /><b>Civil</b>
+                        </td>
+                        <td class="td-centre">
+                            @if ((Model.requestor_signature != null && Model.requestor_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.REQUESTORDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.REQUESTOR.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.REQUESTOR.ToString()].alpha_name : "")
+                            <br /><b>Requestor</b>
+                        </td>
+                        <td class="td-centre">
+                            @if ((Model.facility_owner_signature != null && Model.facility_owner_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITYOWNERDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITYOWNER.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITYOWNER.ToString()].alpha_name : "")
+                            <br /><b>Facility Owner</b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6">
+                            Note: <small>(Write any consent related excavation program i.e hazard precaution, special condition, excavation engineer assign, attach other sheet if necessary)</small>
+                            <textarea class="table-textarea">@Model.approval_note</textarea>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="row-fluid">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th colspan="5" class="title-form">
+                            <b>4. CANCELLATION</b>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="height:100px;">
+                        <td class="td-centre">
+                            @if (Model.can_requestor_signature != null)
+                            {
+                            <img id="img_approve_requestor_can" width="50" height="50" @(Model.can_requestor_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_requestor_signature == null ? "" : Model.can_requestor_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre">
+                            @if (Model.can_supervisor_signature != null)
+                            {
+                            <img id="img_approve_spv_can" width="50" height="50" @(Model.can_supervisor_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_supervisor_signature == null ? "" : Model.can_supervisor_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre">
+                            @if (Model.can_ei_signature != null)
+                            {
+                            <img id="img_approve_ei_can" width="50" height="50" @(Model.can_ei_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_ei_signature == null ? "" : Model.can_ei_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        <td class="td-centre">
+                            @if (Model.can_facilities_signature != null)
+                            {
+                            <img id="img_approve_fac_can" width="50" height="50" @(Model.can_facilities_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_facilities_signature == null ? "" : Model.can_facilities_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                        @*<td class="td-centre">
+                            @if (Model.can_safety_officer_signature != null)
+                            {
+                            <img id="img_approve_she_can" width="50" height="50" @(Model.can_safety_officer_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_safety_officer_signature == null ? "" : Model.can_safety_officer_signature.Substring(1))"/><br />
+                            }
+                        </td>*@
+                        <td class="td-centre">
+                            @if (Model.can_facility_owner_signature != null)
+                            {
+                            <img id="img_approve_fo_can" width="50" height="50" @(Model.can_facility_owner_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_facility_owner_signature == null ? "" : Model.can_facility_owner_signature.Substring(1))"/><br />
+                            }
+                        </td>
+                    </tr>
+                
+                    <tr>
+                        <td class="td-centre">
+                            @if ((Model.can_requestor_signature != null && Model.can_requestor_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.CANREQUESTORDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.REQUESTOR.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.REQUESTOR.ToString()].alpha_name : "")
+                            <br /><b>Requestor</b>
+                        </td>
+                        <td class="td-centre">
+                            @if ((Model.can_supervisor_signature != null && Model.can_supervisor_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.CANSUPERVISORDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SUPERVISOR.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SUPERVISOR.ToString()].alpha_name : "")
+                            <br /><b>Supervisor</b>
+                        </td>
+                        <td class="td-centre">
+                            @if ((Model.can_ei_signature != null && Model.can_ei_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.CANEIDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.EI.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.EI.ToString()].alpha_name : "")
+                            <br /><b>E&I</b>
+                        </td>
+                        <td class="td-centre">
+                            @if ((Model.can_facilities_signature != null && Model.can_facilities_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.CANFACILITIESDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIES.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIES.ToString()].alpha_name : "")
+                            <br /><b>Civil</b>
+                        </td>
+                        @*<td class="td-centre">
+                            @if ((Model.can_safety_officer_signature == null && isCanEdit[13] && requestor.id != Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SAFETYOFFICER.ToString()].id))
+                            {
+                                <text>@requestor.alpha_name<br />a/n </text>
+                            }
+                            else if ((Model.can_safety_officer_signature != null && Model.can_safety_officer_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.CANSAFETYOFFICERDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SAFETYOFFICER.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SAFETYOFFICER.ToString()].alpha_name : "")
+                            <br /><b>SHE</b>
+                        </td>*@
+                        <td class="td-centre">
+                            @if ((Model.can_facility_owner_signature != null && Model.can_facility_owner_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.CANFACILITYOWNERDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITYOWNER.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITYOWNER.ToString()].alpha_name : "")
+                            <br /><b>Facility Owner</b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6">
+                            Note: <small>Write any related to completion work excavation i.e. special condition, by pass existing facilities, etc</small>
+                            <textarea class="table-textarea" id="cancellation-note">@Model.cancellation_note</textarea>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

@@ -18,6 +18,7 @@ namespace PermitToWork.Models
         {
             this.loto_glarf_user = new HashSet<loto_glarf_user>();
             this.permit_to_work = new HashSet<permit_to_work>();
+            this.loto_permit = new HashSet<loto_permit>();
         }
     
         public int id { get; set; }
@@ -31,6 +32,6 @@ namespace PermitToWork.Models
     
         public virtual ICollection<loto_glarf_user> loto_glarf_user { get; set; }
         public virtual ICollection<permit_to_work> permit_to_work { get; set; }
-        public virtual loto_permit loto_permit { get; set; }
+        public virtual ICollection<loto_permit> loto_permit { get; set; }
     }
 }

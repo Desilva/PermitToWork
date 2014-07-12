@@ -12,20 +12,28 @@ namespace PermitToWork.Models.ClearancePermit
     public class LotoEntity : loto_permit, IClearancePermitEntity
     {
         public override ICollection<loto_point> loto_point { get { return null; } set { } }
-        public override ICollection<loto_glarf> loto_glarf { get { return null; } set { } } 
+        public override ICollection<loto_coming_holder> loto_coming_holder { get { return null; } set { } }
+        public override loto_glarf loto_glarf { get { return null; } set { } }
+        public override ICollection<loto_suspension> loto_suspension { get { return null; } set { } }
+        public override ICollection<permit_to_work> permit_to_work { get { return null; } set { } }
 
         public int ids { get; set; }
         public string statusText { get; set; }
 
         public Dictionary<string, UserEntity> listUserInLOTO { get; set; }
+        public string work_description { get; set; }
+        public UserEntity supervisorUser { get; set; }
 
         public List<LotoPointEntity> lotoPoint { get; set; }
+        public List<LotoComingHolderEntity> lotoComingHolder { get; set; }
+        public List<LotoSuspensionEntity> lotoSuspension { get; set; }
 
         public enum userInLOTO
         {
             REQUESTOR,
             SUPERVISOR,
             APPROVALFACILITYOWNER,
+            APPROVALFACILITYOWNERDELEGATE,
             ONCOMINGHOLDER1,
             ONCOMINGHOLDER2,
             ONCOMINGHOLDER3,
@@ -35,6 +43,7 @@ namespace PermitToWork.Models.ClearancePermit
             ONCOMINGHOLDER7,
             NEWCOMINGHOLDER,
             CANCELLATIONFACILITYOWNER,
+            CANCELLATIONFACILITYOWNERDELEGATE,
         }
 
         public enum LOTOStatus
@@ -76,15 +85,34 @@ namespace PermitToWork.Models.ClearancePermit
             // this.ptw = new PtwEntity(fi.id_ptw.Value);
             ModelUtilization.Clone(loto, this);
             this.lotoPoint = new LotoPointEntity().getList(user, this.id);
+            this.lotoComingHolder = new LotoComingHolderEntity().getList(user, this.id);
+            this.work_description = "";
+            foreach (permit_to_work permit in loto.permit_to_work)
+            {
+                this.work_description += permit.work_description + ", ";
+            }
+            if (this.work_description.Length != 0)
+            {
+                this.work_description = this.work_description.Substring(0, this.work_description.Length - 2);
+            }
+            if (this.supervisor != null)
+            {
+                this.supervisorUser = new UserEntity(Int32.Parse(this.supervisor), user.token, user);
+            }
+
+            this.lotoSuspension = new LotoSuspensionEntity().getList(user, this.id);
             getUserInLOTO(user);
         }
 
-        public LotoEntity(string requestor, string work_location, int id_glarf, string acc_spv = null)
+        public LotoEntity(string requestor, string work_location, int id_glarf, string acc_spv = null, string acc_fo = null)
             : this()
         {
-            this.requestor = requestor + '#' + id_glarf;
+            this.requestor = requestor;
             this.work_location = work_location;
             this.supervisor = acc_spv;
+            this.id_glarf = id_glarf;
+            this.approval_facility_owner = acc_fo;
+            this.cancellation_facility_owner = acc_fo;
             this.status = (int)LOTOStatus.CREATE;
         }
 
@@ -106,49 +134,26 @@ namespace PermitToWork.Models.ClearancePermit
             return retVal;
         }
 
-        public int addNewHolder(string oncomingHolder, int glarf_id)
+        public int addNewHolder(string oncomingHolder, string comingHolderSupervisor)
         {
             int retVal = 0;
             loto_permit loto = this.db.loto_permit.Find(this.id);
             if (loto != null)
             {
-                if (loto.oncoming_holder_2 == null)
+                int holder_no = 2;
+                LotoComingHolderEntity comingHolder = this.lotoComingHolder.LastOrDefault();
+                if (comingHolder != null)
                 {
-                    loto.oncoming_holder_2 = oncomingHolder + '#' + glarf_id;
-                    loto.new_coming_holder = loto.new_coming_holder + "#" + 2;
-                }
-                else if (loto.oncoming_holder_3 == null)
-                {
-                    loto.oncoming_holder_3 = oncomingHolder + '#' + glarf_id;
-                    loto.new_coming_holder = loto.new_coming_holder + "#" + 3;
-                }
-                else if (loto.oncoming_holder_4 == null)
-                {
-                    loto.oncoming_holder_4 = oncomingHolder + '#' + glarf_id;
-                    loto.new_coming_holder = loto.new_coming_holder + "#" + 4;
-                }
-                else if (loto.oncoming_holder_5 == null)
-                {
-                    loto.oncoming_holder_5 = oncomingHolder + '#' + glarf_id;
-                    loto.new_coming_holder = loto.new_coming_holder + "#" + 5;
-                }
-                else if (loto.oncoming_holder_6 == null)
-                {
-                    loto.oncoming_holder_6 = oncomingHolder + '#' + glarf_id;
-                    loto.new_coming_holder = loto.new_coming_holder + "#" + 6;
-                }
-                else if (loto.oncoming_holder_7 == null)
-                {
-                    loto.oncoming_holder_7 = oncomingHolder + '#' + glarf_id;
-                    loto.new_coming_holder = loto.new_coming_holder + "#" + 7;
-                }
-                else
-                {
-                    return -1;
+                    holder_no = comingHolder.no_holder.Value + 1;
                 }
 
-                this.db.Entry(loto).State = EntityState.Modified;
-                retVal = this.db.SaveChanges();
+                LotoComingHolderEntity lo = new LotoComingHolderEntity(this.id, oncomingHolder, holder_no, comingHolderSupervisor);
+                retVal = lo.create();
+
+                LotoGlarfUserEntity glarfUser = new LotoGlarfUserEntity(this.id_glarf.Value, comingHolderSupervisor, 0);
+                glarfUser.create();
+                glarfUser = new LotoGlarfUserEntity(this.id_glarf.Value, oncomingHolder, 0);
+                glarfUser.create();
             }
 
             return retVal;
@@ -284,7 +289,7 @@ namespace PermitToWork.Models.ClearancePermit
                 {
                     loto.approval_fo_signature = "a" + user.signature;
                 }
-                else if (user.id == this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].employee_delegate)
+                else
                 {
                     loto.approval_fo_signature = "d" + user.signature;
                     loto.approval_fo_signature_delegate = user.id.ToString();
@@ -298,12 +303,32 @@ namespace PermitToWork.Models.ClearancePermit
                 this.db.Entry(loto).State = EntityState.Modified;
                 retVal = this.db.SaveChanges();
 
-                foreach (loto_glarf glarf in loto.loto_glarf)
+                foreach (permit_to_work ptw in loto.permit_to_work)
                 {
-                    if (glarf.requestor == this.listUserInLOTO[userInLOTO.REQUESTOR.ToString()].id.ToString())
+                    if (ptw.acc_ptw_requestor == this.listUserInLOTO[userInLOTO.REQUESTOR.ToString()].id.ToString())
                     {
-                        PtwEntity ptw = new PtwEntity(glarf.permit_to_work.ElementAt(0).id, user);
-                        ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
+                        bool isComplete = true;
+                        PtwEntity ptwE = new PtwEntity(ptw.id, user);
+                        foreach (LotoEntity lotos in ptwE.lotoPermit)
+                        {
+                            if (ptw.acc_ptw_requestor == lotos.requestor)
+                            {
+                                isComplete = isComplete && lotos.approval_fo_signature != null;
+                            }
+
+                            foreach (LotoComingHolderEntity comingHolder in lotos.lotoComingHolder)
+                            {
+                                if (ptw.acc_supervisor == comingHolder.holder_spv)
+                                {
+                                    isComplete = isComplete && comingHolder.isApprove();
+                                }
+                            }
+                        }
+
+                        if (isComplete)
+                        {
+                            ptwE.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
+                        }
                     }
                 }
             }
@@ -316,114 +341,61 @@ namespace PermitToWork.Models.ClearancePermit
             loto_permit loto = this.db.loto_permit.Find(this.id);
             if (loto != null)
             {
-                if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER2.ToString()] != null && user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER2.ToString()].id)
+                foreach (LotoComingHolderEntity comingHolder in this.lotoComingHolder)
                 {
-                    loto.approval_holder_2_signature = "a" + user.signature;
-                    loto.approval_holder_2_datetime = DateTime.Now;
-
-                    foreach (loto_glarf glarf in loto.loto_glarf)
+                    if (user.id == comingHolder.userEntity.id || user.id == comingHolder.userEntity.employee_delegate)
                     {
-                        if (glarf.requestor == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER2.ToString()].id.ToString())
-                        {
-                            PtwEntity ptw = new PtwEntity(glarf.permit_to_work.ElementAt(0).id, user);
-                            ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
-                        }
+                        comingHolder.signApprove(user);
                     }
                 }
 
-                if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER3.ToString()] != null && user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER3.ToString()].id)
-                {
-                    loto.approval_holder_3_signature = "a" + user.signature;
-                    loto.approval_holder_3_datetime = DateTime.Now;
-
-                    foreach (loto_glarf glarf in loto.loto_glarf)
-                    {
-                        if (glarf.requestor == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER3.ToString()].id.ToString())
-                        {
-                            PtwEntity ptw = new PtwEntity(glarf.permit_to_work.ElementAt(0).id, user);
-                            ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
-                        }
-                    }
-                }
-
-                if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER4.ToString()] != null && user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER4.ToString()].id)
-                {
-                    loto.approval_holder_4_signature = "a" + user.signature;
-                    loto.approval_holder_4_datetime = DateTime.Now;
-
-                    foreach (loto_glarf glarf in loto.loto_glarf)
-                    {
-                        if (glarf.requestor == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER4.ToString()].id.ToString())
-                        {
-                            PtwEntity ptw = new PtwEntity(glarf.permit_to_work.ElementAt(0).id, user);
-                            ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
-                        }
-                    }
-                }
-
-                if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER5.ToString()] != null && user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER5.ToString()].id)
-                {
-                    loto.approval_holder_5_signature = "a" + user.signature;
-                    loto.approval_holder_5_datetime = DateTime.Now;
-
-                    foreach (loto_glarf glarf in loto.loto_glarf)
-                    {
-                        if (glarf.requestor == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER5.ToString()].id.ToString())
-                        {
-                            PtwEntity ptw = new PtwEntity(glarf.permit_to_work.ElementAt(0).id, user);
-                            ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
-                        }
-                    }
-                }
-
-                if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER6.ToString()] != null && user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER6.ToString()].id)
-                {
-                    loto.approval_holder_6_signature = "a" + user.signature;
-                    loto.approval_holder_6_datetime = DateTime.Now;
-
-                    foreach (loto_glarf glarf in loto.loto_glarf)
-                    {
-                        if (glarf.requestor == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER6.ToString()].id.ToString())
-                        {
-                            PtwEntity ptw = new PtwEntity(glarf.permit_to_work.ElementAt(0).id, user);
-                            ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
-                        }
-                    }
-                }
-                
-                if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER7.ToString()] != null && user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER7.ToString()].id)
-                {
-                    loto.approval_holder_7_signature = "a" + user.signature;
-                    loto.approval_holder_7_datetime = DateTime.Now;
-
-                    foreach (loto_glarf glarf in loto.loto_glarf)
-                    {
-                        if (glarf.requestor == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER7.ToString()].id.ToString())
-                        {
-                            PtwEntity ptw = new PtwEntity(glarf.permit_to_work.ElementAt(0).id, user);
-                            ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
-                        }
-                    }
-                }
-
-                if (loto.new_coming_holder.Split('#')[0] == user.id.ToString())
-                {
-                    loto.new_coming_holder = null;
-                }
+                //if (loto.new_coming_holder.Split('#')[0] == user.id.ToString())
+                //{
+                //    loto.new_coming_holder = null;
+                //}
 
                 loto.approval_notes = this.approval_notes;
-                if ((loto.oncoming_holder_2 == null || (loto.oncoming_holder_2 != null && loto.approval_holder_2_signature != null)) &&
-                    (loto.oncoming_holder_3 == null || (loto.oncoming_holder_3 != null && loto.approval_holder_3_signature != null)) &&
-                    (loto.oncoming_holder_4 == null || (loto.oncoming_holder_4 != null && loto.approval_holder_4_signature != null)) &&
-                    (loto.oncoming_holder_5 == null || (loto.oncoming_holder_5 != null && loto.approval_holder_5_signature != null)) &&
-                    (loto.oncoming_holder_6 == null || (loto.oncoming_holder_6 != null && loto.approval_holder_6_signature != null)) &&
-                    (loto.oncoming_holder_7 == null || (loto.oncoming_holder_7 != null && loto.approval_holder_7_signature != null)))
-                {
-                    loto.status = (int)LOTOStatus.COMINGHOLDERSIGN;
-                }
+                //if ((loto.oncoming_holder_2 == null || (loto.oncoming_holder_2 != null && loto.approval_holder_2_signature != null)) &&
+                //    (loto.oncoming_holder_3 == null || (loto.oncoming_holder_3 != null && loto.approval_holder_3_signature != null)) &&
+                //    (loto.oncoming_holder_4 == null || (loto.oncoming_holder_4 != null && loto.approval_holder_4_signature != null)) &&
+                //    (loto.oncoming_holder_5 == null || (loto.oncoming_holder_5 != null && loto.approval_holder_5_signature != null)) &&
+                //    (loto.oncoming_holder_6 == null || (loto.oncoming_holder_6 != null && loto.approval_holder_6_signature != null)) &&
+                //    (loto.oncoming_holder_7 == null || (loto.oncoming_holder_7 != null && loto.approval_holder_7_signature != null)))
+                //{
+                //    loto.status = (int)LOTOStatus.COMINGHOLDERSIGN;
+                //}
 
                 this.db.Entry(loto).State = EntityState.Modified;
                 retVal = this.db.SaveChanges();
+
+                foreach (permit_to_work ptw in loto.permit_to_work)
+                {
+                    if (ptw.acc_ptw_requestor == this.listUserInLOTO[userInLOTO.REQUESTOR.ToString()].id.ToString())
+                    {
+                        bool isComplete = true;
+                        PtwEntity ptwE = new PtwEntity(ptw.id, user);
+                        foreach (LotoEntity lotos in ptwE.lotoPermit)
+                        {
+                            if (ptw.acc_ptw_requestor == lotos.requestor)
+                            {
+                                isComplete = isComplete && lotos.approval_fo_signature != null;
+                            }
+
+                            foreach (LotoComingHolderEntity comingHolder in lotos.lotoComingHolder)
+                            {
+                                if (ptw.acc_supervisor == comingHolder.holder_spv)
+                                {
+                                    isComplete = isComplete && comingHolder.isApprove();
+                                }
+                            }
+                        }
+
+                        if (isComplete)
+                        {
+                            ptwE.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
+                        }
+                    }
+                }
             }
             return retVal;
         }
@@ -435,6 +407,11 @@ namespace PermitToWork.Models.ClearancePermit
             if (loto != null)
             {
                 loto.status = (int)LOTOStatus.SENDTOFO;
+
+                LotoPointEntity lotoPoint = new LotoPointEntity();
+                lotoPoint.id_loto = this.id;
+                lotoPoint.is_set_empty = 1;
+                lotoPoint.create();
 
                 this.db.Entry(loto).State = EntityState.Modified;
                 retVal = this.db.SaveChanges();
@@ -794,7 +771,7 @@ namespace PermitToWork.Models.ClearancePermit
                 {
                     loto.approval_fo_signature = "a" + user.signature;
                 }
-                else if (user.id == this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].employee_delegate)
+                else
                 {
                     loto.approval_fo_signature = "d" + user.signature;
                     loto.approval_fo_signature_delegate = user.id.ToString();
@@ -811,99 +788,377 @@ namespace PermitToWork.Models.ClearancePermit
             return retVal;
         }
 
-        public int holderCancel(UserEntity user)
+        public int suspendLoto(UserEntity user)
         {
             int retVal = 0;
             loto_permit loto = this.db.loto_permit.Find(this.id);
             if (loto != null)
             {
-                if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER2.ToString()] != null)
+                if (user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].id)
                 {
-                    LotoGlarfEntity lotoGlarf = new LotoGlarfEntity(Int32.Parse(this.oncoming_holder_2.Split('#')[1]), user);
-                    if ((user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER2.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER2.ToString()].employee_delegate) && lotoGlarf.status == (int)LotoGlarfEntity.GlarfStatus.CANCELLATIONSIGNCOMPLETE)
+                    List<string> otherHolder = new List<string>();
+                    foreach (LotoComingHolderEntity comingHolder in this.lotoComingHolder)
                     {
-                        loto.cancellation_holder_2_signature = user.signature;
-                        loto.cancellation_holder_2_signature_date = DateTime.Now;
-
-                        PtwEntity ptw = new PtwEntity(lotoGlarf.id_ptw, user);
-                        ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.CLOSE, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
+                        if (!comingHolder.isCancel())
+                            otherHolder.Add(comingHolder.holder_spv);
                     }
+
+                    LotoSuspensionEntity suspension = new LotoSuspensionEntity(this.id, this.supervisor, this.lotoSuspension.Count + 1, otherHolder, this.approval_facility_owner);
+                    retVal = suspension.create();
+                }
+                else
+                {
+                    List<string> otherHolder = new List<string>();
+                    if (this.cancellation_supervisor_signature == null)
+                        otherHolder.Add(this.supervisor);
+                    foreach (LotoComingHolderEntity comingHolder in this.lotoComingHolder)
+                    {
+                        if (comingHolder.userEntity.id != user.id && !comingHolder.isCancel())
+                        {
+                            otherHolder.Add(comingHolder.holder_spv);
+                        }
+                    }
+
+                    LotoSuspensionEntity suspension = new LotoSuspensionEntity(this.id, user.id.ToString(), this.lotoSuspension.Count + 1, otherHolder, this.approval_facility_owner);
+                    retVal = suspension.create();
                 }
 
-                if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER3.ToString()] != null)
-                {
-                    LotoGlarfEntity lotoGlarf = new LotoGlarfEntity(Int32.Parse(this.oncoming_holder_3.Split('#')[1]), user);
-                    if ((user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER3.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER3.ToString()].employee_delegate) && lotoGlarf.status == (int)LotoGlarfEntity.GlarfStatus.CANCELLATIONSIGNCOMPLETE)
-                    {
-                        loto.cancellation_holder_3_signature = user.signature;
-                        loto.cancellation_holder_3_signature_date = DateTime.Now;
-
-                        PtwEntity ptw = new PtwEntity(lotoGlarf.id_ptw, user);
-                        ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.CLOSE, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
-                    }
-                }
-
-                if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER4.ToString()] != null)
-                {
-                    LotoGlarfEntity lotoGlarf = new LotoGlarfEntity(Int32.Parse(this.oncoming_holder_4.Split('#')[1]), user);
-                    if ((user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER4.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER4.ToString()].employee_delegate) && lotoGlarf.status == (int)LotoGlarfEntity.GlarfStatus.CANCELLATIONSIGNCOMPLETE)
-                    {
-                        loto.cancellation_holder_4_signature = user.signature;
-                        loto.cancellation_holder_4_signature_date = DateTime.Now;
-
-                        PtwEntity ptw = new PtwEntity(lotoGlarf.id_ptw, user);
-                        ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.CLOSE, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
-                    }
-                }
-
-                if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER5.ToString()] != null)
-                {
-                    LotoGlarfEntity lotoGlarf = new LotoGlarfEntity(Int32.Parse(this.oncoming_holder_5.Split('#')[1]), user);
-                    if ((user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER5.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER5.ToString()].employee_delegate) && lotoGlarf.status == (int)LotoGlarfEntity.GlarfStatus.CANCELLATIONSIGNCOMPLETE)
-                    {
-                        loto.cancellation_holder_5_signature = user.signature;
-                        loto.cancellation_holder_5_signature_date = DateTime.Now;
-
-                        PtwEntity ptw = new PtwEntity(lotoGlarf.id_ptw, user);
-                        ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.CLOSE, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
-                    }
-                }
-
-                if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER6.ToString()] != null)
-                {
-                    LotoGlarfEntity lotoGlarf = new LotoGlarfEntity(Int32.Parse(this.oncoming_holder_6.Split('#')[1]), user);
-                    if ((user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER6.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER6.ToString()].employee_delegate) && lotoGlarf.status == (int)LotoGlarfEntity.GlarfStatus.CANCELLATIONSIGNCOMPLETE)
-                    {
-                        loto.cancellation_holder_6_signature = user.signature;
-                        loto.cancellation_holder_6_signature_date = DateTime.Now;
-
-                        PtwEntity ptw = new PtwEntity(lotoGlarf.id_ptw, user);
-                        ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.CLOSE, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
-                    }
-                }
-
-                if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER7.ToString()] != null)
-                {
-                    LotoGlarfEntity lotoGlarf = new LotoGlarfEntity(Int32.Parse(this.oncoming_holder_7.Split('#')[1]), user);
-                    if ((user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER7.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER7.ToString()].employee_delegate) && lotoGlarf.status == (int)LotoGlarfEntity.GlarfStatus.CANCELLATIONSIGNCOMPLETE)
-                    {
-                        loto.cancellation_holder_7_signature = user.signature;
-                        loto.cancellation_holder_7_signature_date = DateTime.Now;
-
-                        PtwEntity ptw = new PtwEntity(lotoGlarf.id_ptw, user);
-                        ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.CLOSE, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
-                    }
-                }
-                loto.cancellation_notes = this.cancellation_notes;
-
+                loto.status = (int)LOTOStatus.LOTOSUSPENSION;
                 this.db.Entry(loto).State = EntityState.Modified;
                 retVal = this.db.SaveChanges();
+            }
+            return retVal;
+        }
+
+        internal int sendAgreePointSuspension(UserEntity user, string notes)
+        {
+            int retVal = 0;
+            loto_permit loto = this.db.loto_permit.Find(this.id);
+            if (loto != null)
+            {
+                LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+                if (suspension != null)
+                {
+                    suspension.status = (int)LotoSuspensionEntity.SuspensionStatus.EDITANDSEND;
+                    suspension.notes = notes;
+
+                    if (suspension.suspensionHolder.Count == 0)
+                    {
+                        suspension.status = (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONAPPROVE;
+                    }
+
+                    retVal = suspension.sendApprove();
+                }
             }
 
             return retVal;
         }
 
-        public int spvCancel(UserEntity user)
+        public int agreeSuspension(UserEntity user)
+        {
+            int retVal = 0;
+            loto_permit loto = this.db.loto_permit.Find(this.id);
+            if (loto != null)
+            {
+                LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+                if (suspension != null)
+                {
+                    retVal = suspension.agreeSuspension(user);
+                }
+            }
+
+            return retVal;
+        }
+
+        public int saveAppliedFOSuspension(UserEntity user, string notes)
+        {
+            int retVal = 0;
+            loto_permit loto = this.db.loto_permit.Find(this.id);
+            if (loto != null)
+            {
+                LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+                if (suspension != null)
+                {
+                    suspension.status = (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONFOAPPROVE;
+                    suspension.notes = notes;
+                    suspension.facility_owner = user.id.ToString();
+
+                    retVal = suspension.foToHolderInspection();
+                }
+            }
+
+            return retVal;
+        }
+
+        public int saveApprovedInspected(UserEntity user, string notes)
+        {
+            int retVal = 0;
+            loto_permit loto = this.db.loto_permit.Find(this.id);
+            if (loto != null)
+            {
+                LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+                if (suspension != null)
+                {
+                    suspension.notes = notes;
+                    
+                    bool isComplete = true;
+                    if (user.id == suspension.requestorUser.id)
+                    {
+                        suspension.requestor_signature = user.signature;
+                        foreach (LotoSuspensionHolderEntity suspensionHolder in suspension.suspensionHolder)
+                        {
+                            if (!suspensionHolder.isApprove())
+                            {
+                                isComplete = false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        isComplete = suspension.requestor_signature != null;
+                        foreach (LotoSuspensionHolderEntity suspensionHolder in suspension.suspensionHolder)
+                        {
+                            if (user.id != suspensionHolder.userEntity.id && !suspensionHolder.isApprove())
+                            {
+                                isComplete = false;
+                            }
+                            else if(user.id == suspensionHolder.userEntity.id)
+                            {
+                                suspensionHolder.signApprove(user);
+                            }
+                        }
+                    }
+
+                    if (isComplete)
+                    {
+                        suspension.status = (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONINSPECTION;
+                    }
+
+                    retVal = suspension.approveInspection();
+                }
+            }
+
+            return retVal;
+        }
+
+        public int foApproveSuspension(UserEntity user, string notes) {
+            int retVal = 0;
+            loto_permit loto = this.db.loto_permit.Find(this.id);
+            if (loto != null)
+            {
+                LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+                if (suspension != null)
+                {
+                    suspension.status = (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONAPPROVED;
+                    suspension.notes = notes;
+                    suspension.fo_signature = user.signature;
+
+                    retVal = suspension.approveFO(user);
+                }
+            }
+
+            return retVal;
+        }
+
+        public int suspensionCompletion(UserEntity user)
+        {
+            int retVal = 0;
+            loto_permit loto = this.db.loto_permit.Find(this.id);
+            if (loto != null)
+            {
+                LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+                if (suspension != null)
+                {
+                    suspension.status = (int)LotoSuspensionEntity.SuspensionStatus.SUSPENDCOMPLETE;
+
+                    retVal = suspension.completeSuspension();
+                }
+            }
+            return retVal;
+        }
+
+        public int suspensionCompletionSend(UserEntity user)
+        {
+            int retVal = 0;
+            loto_permit loto = this.db.loto_permit.Find(this.id);
+            if (loto != null)
+            {
+                bool complete = true;
+                foreach (LotoPointEntity lotoPoint in this.lotoPoint)
+                {
+                    if (lotoPoint.is_set_empty == null || lotoPoint.is_set_empty == 0)
+                        complete = complete && lotoPoint.applied_by != null;
+                }
+
+                LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+                if (suspension != null)
+                {
+                    if (!complete)
+                    {
+                        suspension.status = (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONCOMPLETESEND;
+
+                        retVal = suspension.sendCompleteAgreement();
+                    }
+                    else
+                    {
+                        suspension.status = (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONCOMPLETED;
+
+                        retVal = suspension.completedSuspension();
+
+                        loto.status = (int)LOTOStatus.FOSIGN;
+
+                        this.db.Entry(loto).State = EntityState.Modified;
+                        this.db.SaveChanges();
+
+                        retVal = 100;
+                    }
+                }
+            }
+            return retVal;
+        }
+
+        public int agreeCompleteSuspension(UserEntity user)
+        {
+            int retVal = 0;
+            loto_permit loto = this.db.loto_permit.Find(this.id);
+            if (loto != null)
+            {
+                LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+                if (suspension != null)
+                {
+                    retVal = suspension.agreeCompleteSuspension(user, loto.id);
+                }
+            }
+
+            return retVal;
+        }
+
+        public int saveAppliedFOCompleteSuspension(UserEntity user)
+        {
+            int retVal = 0;
+            loto_permit loto = this.db.loto_permit.Find(this.id);
+            if (loto != null)
+            {
+                LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+                if (suspension != null)
+                {
+                    suspension.status = (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONCOMPLETEINSPECTED;
+
+                    retVal = suspension.foToHolderCompleteInspection();
+                }
+            }
+
+            return retVal;
+        }
+
+        public int saveApprovedInspectedCompleteSuspension(UserEntity user)
+        {
+            int retVal = 0;
+            loto_permit loto = this.db.loto_permit.Find(this.id);
+            if (loto != null)
+            {
+                LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+                if (suspension != null)
+                {
+                    bool isComplete = true;
+                    if (user.id == suspension.requestorUser.id)
+                    {
+                        suspension.can_requestor_signature = user.signature;
+                        foreach (LotoSuspensionHolderEntity suspensionHolder in suspension.suspensionHolder)
+                        {
+                            if (!suspensionHolder.isApproveComplete())
+                            {
+                                isComplete = false;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        isComplete = suspension.can_requestor_signature != null;
+                        foreach (LotoSuspensionHolderEntity suspensionHolder in suspension.suspensionHolder)
+                        {
+                            if (user.id != suspensionHolder.userEntity.id && !suspensionHolder.isApproveComplete())
+                            {
+                                isComplete = false;
+                            }
+                            else if (user.id == suspensionHolder.userEntity.id)
+                            {
+                                suspensionHolder.signCancellation(user);
+                            }
+                        }
+                    }
+
+                    if (isComplete)
+                    {
+                        suspension.status = (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONCOMPLETED;
+
+                        loto.status = (int)LOTOStatus.FOSIGN;
+
+                        this.db.Entry(loto).State = EntityState.Modified;
+                        this.db.SaveChanges();
+                    }
+
+                    retVal = suspension.approveInspectionComplete();
+                }
+            }
+
+            return retVal;
+        }
+
+        public int lotoCancel(UserEntity user)
+        {
+            int retVal = 0;
+            loto_permit loto = this.db.loto_permit.Find(this.id);
+            if (loto != null)
+            {
+                if (user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].id)
+                {
+                    LotoGlarfEntity glarf = new LotoGlarfEntity(this.id_glarf.Value, user);
+                    retVal = glarf.setCancel();
+                }
+                else
+                {
+                    retVal = 2;
+                }
+            }
+            return retVal;
+        }
+
+        public int holderCancel(UserEntity user, int id_loto)
+        {
+            int retVal = 0;
+            loto_permit loto = this.db.loto_permit.Find(this.id);
+            if (loto != null)
+            {
+                bool complete = loto.cancellation_supervisor_signature != null;
+                foreach (LotoComingHolderEntity comingHolder in this.lotoComingHolder)
+                {
+                    if (user.id == comingHolder.userEntity.id || user.id == comingHolder.userEntity.employee_delegate)
+                    {
+                        comingHolder.signCancellation(user);
+                    }
+                    else
+                    {
+                        complete = complete && comingHolder.isCancel();
+                    }
+                }
+                loto.cancellation_notes = this.cancellation_notes;
+                if (complete) loto.status = (int)LOTOStatus.CANCELSPV;
+
+                this.db.Entry(loto).State = EntityState.Modified;
+                retVal = this.db.SaveChanges();
+
+                if (!complete)
+                {
+                    PtwEntity ptw = new PtwEntity(id_loto, user);
+                    ptw.checkLotoCancellationComplete(user);
+                }
+            }
+
+            return retVal;
+        }
+
+        public int spvCancel(UserEntity user, int id_loto)
         {
             int retVal = 0;
             loto_permit loto = this.db.loto_permit.Find(this.id);
@@ -915,36 +1170,49 @@ namespace PermitToWork.Models.ClearancePermit
                     {
                         loto.cancellation_supervisor_signature = user.signature;
                         loto.cancellation_supervisor_signature_date = DateTime.Now;
-                        loto.status = (int)LOTOStatus.CANCELSPV;
                         loto.cancellation_notes = this.cancellation_notes;
+
+                        bool complete = true;
+                        foreach (LotoComingHolderEntity comingHolder in this.lotoComingHolder)
+                        {
+                            complete = complete && comingHolder.isCancel();
+                        }
+                        if (complete) loto.status = (int)LOTOStatus.CANCELSPV;
 
                         this.db.Entry(loto).State = EntityState.Modified;
                         retVal = this.db.SaveChanges();
+
+                        if (!complete)
+                        {
+                            PtwEntity ptw = new PtwEntity(id_loto, user);
+                            ptw.checkLotoCancellationComplete(user);
+                        }
                     }
                 }
             }
             return retVal;
         }
 
-        public int FOCancel(UserEntity user)
+        public int FOCancel(UserEntity user, int id_loto)
         {
             int retVal = 0;
             loto_permit loto = this.db.loto_permit.Find(this.id);
             if (loto != null)
             {
-                loto.cancellation_facility_owner = user.id.ToString();
+                if (user.id.ToString() != this.cancellation_facility_owner)
+                {
+                    loto.cancellation_fo_signature_delegate = user.id.ToString();
+                }
                 loto.cancellation_fo_signature = user.signature;
                 loto.cancellation_fo_signature_date = DateTime.Now;
                 loto.cancellation_notes = this.cancellation_notes;
                 loto.status = (int)LOTOStatus.LOTOCANCELLED;
 
-                LotoGlarfEntity lotoGlarf = new LotoGlarfEntity(Int32.Parse(this.requestor.Split('#')[1]), user);
-
-                PtwEntity ptw = new PtwEntity(lotoGlarf.id_ptw, user);
-                ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.CLOSE, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
-
                 this.db.Entry(loto).State = EntityState.Modified;
                 retVal = this.db.SaveChanges();
+
+                PtwEntity ptw = new PtwEntity(id_loto, user);
+                ptw.checkLotoCancellationComplete(user);
             }
             return retVal;
         }
@@ -975,6 +1243,12 @@ namespace PermitToWork.Models.ClearancePermit
             userId = 0;
             Int32.TryParse(this.approval_facility_owner, out userId);
             this.listUserInLOTO.Add(userInLOTO.APPROVALFACILITYOWNER.ToString(), listUser.listUser.Find(p => p.id == userId));
+
+            if (this.approval_fo_signature_delegate != null)
+            {
+                Int32.TryParse(this.approval_fo_signature_delegate, out userId);
+                this.listUserInLOTO.Add(userInLOTO.APPROVALFACILITYOWNERDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
+            }
 
             userId = 0;
             if (this.oncoming_holder_1 != null)
@@ -1075,6 +1349,12 @@ namespace PermitToWork.Models.ClearancePermit
             {
                 this.listUserInLOTO.Add(userInLOTO.CANCELLATIONFACILITYOWNER.ToString(), null);
             }
+
+            if (this.cancellation_fo_signature_delegate != null)
+            {
+                Int32.TryParse(this.cancellation_fo_signature_delegate, out userId);
+                this.listUserInLOTO.Add(userInLOTO.CANCELLATIONFACILITYOWNERDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
+            }
         }
         #endregion
 
@@ -1087,13 +1367,13 @@ namespace PermitToWork.Models.ClearancePermit
             {
                 string timestamp = DateTime.UtcNow.Ticks.ToString();
                 List<string> s = new List<string>();
-                //s.Add(fo.email);
-                s.Add("septu.jamasoka@gmail.com"); // email FO
+                s.Add(fo.email);
+                // s.Add("septu.jamasoka@gmail.com"); // email FO
                 if (fo.employee_delegate != null)
                 {
                     UserEntity del = new UserEntity(fo.employee_delegate.Value, token, user);
-                    //s.Add(del.email);
-                    s.Add("septu.jamasoka@gmail.com"); // email Delegasi FO
+                    s.Add(del.email);
+                    // s.Add("septu.jamasoka@gmail.com"); // email Delegasi FO
                 }
 
                 string encodedValue = stat + salt + fo.id + val + this.id;
@@ -1131,9 +1411,12 @@ namespace PermitToWork.Models.ClearancePermit
 
         public bool isCanEditFirstRequestor(UserEntity user)
         {
-            if ((user.id == this.listUserInLOTO[userInLOTO.REQUESTOR.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.REQUESTOR.ToString()].employee_delegate) && this.status == (int)LOTOStatus.CREATE)
+            if (this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()] != null)
             {
-                return true;
+                if ((user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].employee_delegate) && this.status == (int)LOTOStatus.CREATE)
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -1142,7 +1425,12 @@ namespace PermitToWork.Models.ClearancePermit
         {
             if (this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()] != null)
             {
+                List<UserEntity> listDel = this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].GetDelegateFO(user);
                 if ((user.id == this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].employee_delegate) && this.status == (int)LOTOStatus.SENDTOFO)
+                {
+                    return true;
+                }
+                else if (listDel.Exists(p => p.id == user.id) && this.status == (int)LOTOStatus.SENDTOFO)
                 {
                     return true;
                 }
@@ -1152,7 +1440,7 @@ namespace PermitToWork.Models.ClearancePermit
 
         public bool isCanInspect(UserEntity user)
         {
-            if ((user.id == this.listUserInLOTO[userInLOTO.REQUESTOR.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.REQUESTOR.ToString()].employee_delegate) && this.status == (int)LOTOStatus.FOAPPLIED)
+            if ((user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].employee_delegate) && this.status == (int)LOTOStatus.FOAPPLIED)
             {
                 return true;
             }
@@ -1175,7 +1463,12 @@ namespace PermitToWork.Models.ClearancePermit
         {
             if (this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()] != null)
             {
+                List<UserEntity> listDel = this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].GetDelegateFO(user);
                 if ((user.id == this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].employee_delegate) && this.status == (int)LOTOStatus.SPVSIGN)
+                {
+                    return true;
+                }
+                else if (listDel.Exists(p => p.id == user.id) && this.status == (int)LOTOStatus.SPVSIGN)
                 {
                     return true;
                 }
@@ -1187,17 +1480,9 @@ namespace PermitToWork.Models.ClearancePermit
         {
             loto_permit loto = this.db.loto_permit.Find(this.id);
             bool isApproveGlarf = false;
-            if (this.listUserInLOTO[userInLOTO.NEWCOMINGHOLDER.ToString()] != null)
+            foreach (LotoComingHolderEntity comingHolder in lotoComingHolder)
             {
-                //foreach (loto_glarf glarf in loto.loto_glarf)
-                //{
-                //    if (glarf.requestor == this.listUserInLOTO[userInLOTO.NEWCOMINGHOLDER.ToString()].id.ToString())
-                //    {
-                //        isApproveGlarf = glarf.status == (int)PermitToWork.Models.ClearancePermit.LotoGlarfEntity.GlarfStatus.SPVSIGN;
-                //    }
-                //}
-
-                if ((user.id == this.listUserInLOTO[userInLOTO.NEWCOMINGHOLDER.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.NEWCOMINGHOLDER.ToString()].employee_delegate) && (this.status == (int)LOTOStatus.FOSIGN || this.status == (int)LOTOStatus.COMINGHOLDERSIGN))
+                if ((user.id == comingHolder.userEntity.id || user.id == comingHolder.userEntity.employee_delegate) && comingHolder.holder_sign_approval == null)
                 {
                     return true;
                 }
@@ -1282,9 +1567,9 @@ namespace PermitToWork.Models.ClearancePermit
         {
 
             ListUser listUser = new ListUser(user.token, user.id);
-            List<UserEntity> listHWFO = listUser.GetHotWorkFO();
+            List<UserEntity> listDel = this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].GetDelegateFO(user);
 
-            if (listHWFO.Exists(p => p.id == user.id) && this.status == (int)LOTOStatus.CHGSENDTOFO)
+            if ((this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].id == user.id || listDel.Exists(p => p.id == user.id)) && this.status == (int)LOTOStatus.CHGSENDTOFO)
             {
                 return true;
             }
@@ -1417,7 +1702,12 @@ namespace PermitToWork.Models.ClearancePermit
         {
             if (this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()] != null)
             {
+                List<UserEntity> listDel = this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].GetDelegateFO(user);
                 if ((user.id == this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].employee_delegate) && this.status == (int)LOTOStatus.CHGSPVSIGN)
+                {
+                    return true;
+                }
+                else if (listDel.Exists(p => p.id == user.id) && this.status == (int)LOTOStatus.CHGSPVSIGN)
                 {
                     return true;
                 }
@@ -1425,60 +1715,386 @@ namespace PermitToWork.Models.ClearancePermit
             return false;
         }
 
+        public bool isCanSuspend(UserEntity user) {
+            if (this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()] != null)
+            {
+                bool isCan = false;
+                if ((user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].employee_delegate) && this.status != (int)LOTOStatus.FOSIGN)
+                {
+                    isCan = false;
+                }
+                else if ((user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].employee_delegate) && this.status == (int)LOTOStatus.FOSIGN && this.cancellation_supervisor_signature == null)
+                {
+                    isCan = true;
+                }
+                else if (this.status == (int)LOTOStatus.LOTOSUSPENSION || this.cancellation_supervisor_signature != null)
+                {
+                    isCan = false;
+                }
+                else
+                {
+                    foreach (LotoComingHolderEntity comingHolder in this.lotoComingHolder)
+                    {
+                        if ((user.id == comingHolder.userEntity.id || user.id == comingHolder.userEntity.employee_delegate) && comingHolder.isApprove() && !comingHolder.isCancel())
+                        {
+                            isCan = true;
+                        }
+                        else
+                        {
+                            isCan = false;
+                        }
+                    }
+                }
+                return isCan;
+            }
+            return false;
+        }
+
+        public bool isCanEditOnSuspension(UserEntity user) {
+            if (this.status == (int)LOTOStatus.LOTOSUSPENSION) {
+                LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+                if (suspension != null) {
+                    if (user.id == suspension.requestorUser.id && suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.SUSPENDED) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public bool isCanApproveChangeSuspension(UserEntity user)
+        {
+            if (this.status == (int)LOTOStatus.LOTOSUSPENSION)
+            {
+                LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+                if (suspension != null && suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.EDITANDSEND)
+                {
+                    foreach (LotoSuspensionHolderEntity suspensionHolder in suspension.suspensionHolder)
+                    {
+                        if ((user.id == suspensionHolder.userEntity.id || user.id == suspensionHolder.userEntity.employee_delegate) && !suspensionHolder.isAgree())
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        public bool isCanSetAgreedRemovedFO(UserEntity user) {
+            if (this.status == (int)LOTOStatus.LOTOSUSPENSION)
+            {
+                LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+                if (suspension != null)
+                {
+                    ListUser listUser = new ListUser(user.token, user.id);
+                    List<UserEntity> listDel = this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].GetDelegateFO(user);
+
+                    if (listDel.Exists(p => p.id == user.id) && suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONAPPROVE)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public bool isCanInspectChangeHolder(UserEntity user)
+        {
+            if (this.status == (int)LOTOStatus.LOTOSUSPENSION)
+            {
+                LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+                if (suspension != null && suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONFOAPPROVE)
+                {
+                    bool isCan = false;
+                    if ((user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].employee_delegate))
+                    {
+                        foreach (LotoPointEntity lotoPoint in this.lotoPoint)
+                        {
+                            if (lotoPoint.inspected_1 == null)
+                            {
+                                isCan = true;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (LotoComingHolderEntity comingHolder in this.lotoComingHolder)
+                        {
+                            if ((user.id == comingHolder.userEntity.id || user.id == comingHolder.userEntity.employee_delegate))
+                            {
+                                var enumerator = this.lotoPoint.GetEnumerator();
+                                while (enumerator.MoveNext() && !isCan)
+                                {
+                                    LotoPointEntity lotoPoint = enumerator.Current;
+
+                                    switch (comingHolder.no_holder)
+                                    {
+                                        case 2:
+                                            if (lotoPoint.inspected_2 == null)
+                                            {
+                                                isCan = true;
+                                            }
+                                            break;
+                                        case 3:
+                                            if (lotoPoint.inspected_3 == null)
+                                            {
+                                                isCan = true;
+                                            }
+                                            break;
+                                        case 4:
+                                            if (lotoPoint.inspected_4 == null)
+                                            {
+                                                isCan = true;
+                                            }
+                                            break;
+                                        case 5:
+                                            if (lotoPoint.inspected_5 == null)
+                                            {
+                                                isCan = true;
+                                            }
+                                            break;
+                                        case 6:
+                                            if (lotoPoint.inspected_6 == null)
+                                            {
+                                                isCan = true;
+                                            }
+                                            break;
+                                        case 7:
+                                            if (lotoPoint.inspected_7 == null)
+                                            {
+                                                isCan = true;
+                                            }
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (!isCan)
+                    {
+                        if (user.id == suspension.requestorUser.id)
+                        {
+                            if (suspension.requestor_signature == null)
+                            {
+                                isCan = true;
+                            }
+                        }
+
+                        foreach (LotoSuspensionHolderEntity suspensionHolder in suspension.suspensionHolder)
+                        {
+                            if (user.id == suspensionHolder.userEntity.id && !suspensionHolder.isApprove())
+                            {
+                                isCan = true;
+                            }
+                        }
+                    }
+                    return isCan;
+                }
+            }
+            return false;
+        }
+
+        public bool isCanApproveFOSuspension(UserEntity user)
+        {
+            if (this.status == (int)LOTOStatus.LOTOSUSPENSION)
+            {
+                LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+                if (suspension != null)
+                {
+
+                    List<UserEntity> listDel = suspension.foUser.GetDelegateFO(user);
+                    if (suspension.foUser != null && (suspension.foUser.id == user.id || listDel.Exists(p => p.id == user.id)) && suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONINSPECTION)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public bool isCanCompleteSuspension(UserEntity user)
+        {
+            if (this.status == (int)LOTOStatus.LOTOSUSPENSION)
+            {
+                LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+                if (suspension != null)
+                {
+                    if (user.id == suspension.requestorUser.id && suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONAPPROVED)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public bool isCanAddPointOnCompleteSuspension(UserEntity user)
+        {
+            if (this.status == (int)LOTOStatus.LOTOSUSPENSION)
+            {
+                LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+                if (suspension != null)
+                {
+                    if (user.id == suspension.requestorUser.id && suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.SUSPENDCOMPLETE)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public bool isCanAgreedNewLotoPointCompleteSuspension(UserEntity user)
+        {
+            if (this.status == (int)LOTOStatus.LOTOSUSPENSION)
+            {
+                LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+                if (suspension != null && suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONCOMPLETESEND)
+                {
+                    foreach (LotoSuspensionHolderEntity suspensionHolder in suspension.suspensionHolder)
+                    {
+                        if ((user.id == suspensionHolder.userEntity.id || user.id == suspensionHolder.userEntity.employee_delegate) && !suspensionHolder.isAgree())
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        public bool isCanSetAppliedCompleteSuspension(UserEntity user)
+        {
+            if (this.status == (int)LOTOStatus.LOTOSUSPENSION)
+            {
+                LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+                if (suspension != null && suspension.foUser != null)
+                {
+                    List<UserEntity> listDel = suspension.foUser.GetDelegateFO(user);
+
+                    if ((listDel.Exists(p => p.id == user.id) || suspension.foUser.id == user.id) && suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONCOMPLETEAGREED)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public bool isCanInspectHolderCompleteSuspension(UserEntity user)
+        {
+            if (this.status == (int)LOTOStatus.LOTOSUSPENSION)
+            {
+                LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+                if (suspension != null && suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONCOMPLETEINSPECTED)
+                {
+                    bool isCan = false;
+                    if ((user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].employee_delegate))
+                    {
+                        foreach (LotoPointEntity lotoPoint in this.lotoPoint)
+                        {
+                            if (lotoPoint.inspected_1 == null)
+                            {
+                                isCan = true;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (LotoComingHolderEntity comingHolder in this.lotoComingHolder)
+                        {
+                            if ((user.id == comingHolder.userEntity.id || user.id == comingHolder.userEntity.employee_delegate))
+                            {
+                                var enumerator = this.lotoPoint.GetEnumerator();
+                                while (enumerator.MoveNext() && !isCan)
+                                {
+                                    LotoPointEntity lotoPoint = enumerator.Current;
+
+                                    switch (comingHolder.no_holder)
+                                    {
+                                        case 2:
+                                            if (lotoPoint.inspected_2 == null)
+                                            {
+                                                isCan = true;
+                                            }
+                                            break;
+                                        case 3:
+                                            if (lotoPoint.inspected_3 == null)
+                                            {
+                                                isCan = true;
+                                            }
+                                            break;
+                                        case 4:
+                                            if (lotoPoint.inspected_4 == null)
+                                            {
+                                                isCan = true;
+                                            }
+                                            break;
+                                        case 5:
+                                            if (lotoPoint.inspected_5 == null)
+                                            {
+                                                isCan = true;
+                                            }
+                                            break;
+                                        case 6:
+                                            if (lotoPoint.inspected_6 == null)
+                                            {
+                                                isCan = true;
+                                            }
+                                            break;
+                                        case 7:
+                                            if (lotoPoint.inspected_7 == null)
+                                            {
+                                                isCan = true;
+                                            }
+                                            break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (!isCan)
+                    {
+                        if (user.id == suspension.requestorUser.id)
+                        {
+                            if (suspension.can_requestor_signature == null)
+                            {
+                                isCan = true;
+                            }
+                        }
+
+                        foreach (LotoSuspensionHolderEntity suspensionHolder in suspension.suspensionHolder)
+                        {
+                            if (user.id == suspensionHolder.userEntity.id && !suspensionHolder.isApproveComplete())
+                            {
+                                isCan = true;
+                            }
+                        }
+                    }
+                    return isCan;
+                }
+            }
+            return false;
+        }
+
         public bool isCanCancel(UserEntity user)
         {
-            if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER2.ToString()] != null)
+            if (this.status == (int)LOTOStatus.FOSIGN)
             {
-                LotoGlarfEntity lotoGlarf = new LotoGlarfEntity(Int32.Parse(this.oncoming_holder_2.Split('#')[1]), user);
-                if ((user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER2.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER2.ToString()].employee_delegate) && lotoGlarf.status == (int)LotoGlarfEntity.GlarfStatus.CANCELLATIONSIGNCOMPLETE && this.cancellation_holder_2_signature == null)
+                var enume = this.lotoComingHolder.GetEnumerator();
+                bool found = false;
+                while (enume.MoveNext() && !found)
                 {
-                    return true;
+                    LotoComingHolderEntity comingHolder = enume.Current;
+                    if ((user.id == comingHolder.userEntity.id || user.id == comingHolder.userEntity.employee_delegate) && !comingHolder.isCancel())
+                    {
+                        found = true;
+                    }
                 }
-            }
-
-            if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER3.ToString()] != null)
-            {
-                LotoGlarfEntity lotoGlarf = new LotoGlarfEntity(Int32.Parse(this.oncoming_holder_3.Split('#')[1]), user);
-                if ((user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER3.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER3.ToString()].employee_delegate) && lotoGlarf.status == (int)LotoGlarfEntity.GlarfStatus.CANCELLATIONSIGNCOMPLETE && this.cancellation_holder_3_signature == null)
-                {
-                    return true;
-                }
-            }
-
-            if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER4.ToString()] != null)
-            {
-                LotoGlarfEntity lotoGlarf = new LotoGlarfEntity(Int32.Parse(this.oncoming_holder_4.Split('#')[1]), user);
-                if ((user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER4.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER4.ToString()].employee_delegate) && lotoGlarf.status == (int)LotoGlarfEntity.GlarfStatus.CANCELLATIONSIGNCOMPLETE && this.cancellation_holder_4_signature == null)
-                {
-                    return true;
-                }
-            }
-
-            if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER5.ToString()] != null)
-            {
-                LotoGlarfEntity lotoGlarf = new LotoGlarfEntity(Int32.Parse(this.oncoming_holder_5.Split('#')[1]), user);
-                if ((user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER5.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER5.ToString()].employee_delegate) && lotoGlarf.status == (int)LotoGlarfEntity.GlarfStatus.CANCELLATIONSIGNCOMPLETE && this.cancellation_holder_5_signature == null)
-                {
-                    return true;
-                }
-            }
-
-            if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER6.ToString()] != null)
-            {
-                LotoGlarfEntity lotoGlarf = new LotoGlarfEntity(Int32.Parse(this.oncoming_holder_6.Split('#')[1]), user);
-                if ((user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER6.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER6.ToString()].employee_delegate) && lotoGlarf.status == (int)LotoGlarfEntity.GlarfStatus.CANCELLATIONSIGNCOMPLETE && this.cancellation_holder_6_signature == null)
-                {
-                    return true;
-                }
-            }
-
-            if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER7.ToString()] != null)
-            {
-                LotoGlarfEntity lotoGlarf = new LotoGlarfEntity(Int32.Parse(this.oncoming_holder_7.Split('#')[1]), user);
-                if ((user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER7.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER7.ToString()].employee_delegate) && lotoGlarf.status == (int)LotoGlarfEntity.GlarfStatus.CANCELLATIONSIGNCOMPLETE && this.cancellation_holder_7_signature == null)
-                {
-                    return true;
-                }
+                return found;
             }
 
             return false;
@@ -1488,8 +2104,8 @@ namespace PermitToWork.Models.ClearancePermit
         {
             if (this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()] != null)
             {
-                LotoGlarfEntity lotoGlarf = new LotoGlarfEntity(Int32.Parse(this.requestor.Split('#')[1]), user);
-                if ((user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].employee_delegate) && lotoGlarf.status == (int)LotoGlarfEntity.GlarfStatus.CANCELLATIONSIGNCOMPLETE && this.status < (int)LOTOStatus.CANCELSPV)
+                LotoGlarfEntity lotoGlarf = new LotoGlarfEntity(this.id_glarf.Value, user);
+                if ((user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].employee_delegate) && lotoGlarf.status == (int)LotoGlarfEntity.GlarfStatus.CANCELLATIONSIGNCOMPLETE && this.cancellation_supervisor_signature == null)
                 {
                     return true;
                 }
@@ -1500,10 +2116,9 @@ namespace PermitToWork.Models.ClearancePermit
 
         public bool isCanCancelFO(UserEntity user)
         {
-            ListUser listUser = new ListUser(user.token, user.id);
-            List<UserEntity> listHWFO = listUser.GetHotWorkFO();
+            List<UserEntity> listDel = this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].GetDelegateFO(user);
 
-            if (listHWFO.Exists(p => p.id == user.id) && this.status == (int)LOTOStatus.CANCELSPV)
+            if ((listDel.Exists(p => p.id == user.id) || this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].id == user.id) && this.status == (int)LOTOStatus.CANCELSPV)
             {
                 return true;
             }
@@ -1540,12 +2155,20 @@ namespace PermitToWork.Models.ClearancePermit
                 }
             }
 
+            foreach (LotoComingHolderEntity comingHolder in lotoComingHolder)
+            {
+                if (user.id == comingHolder.userEntity.id || user.id == comingHolder.userEntity.employee_delegate)
+                {
+                    return true;
+                }
+            }
+
             return false;
         }
 
         public List<LotoEntity> listLoto(UserEntity user)
         {
-            List<int> listId = this.db.loto_permit.Where(p => (p.status == (int)LOTOStatus.FOSIGN || p.status == (int)LOTOStatus.COMINGHOLDERSIGN) && p.loto_glarf.Count > 0).Select(p => p.id).ToList();
+            List<int> listId = this.db.loto_permit.Where(p => p.status < (int)LOTOStatus.LOTOCANCELLED).Select(p => p.id).ToList();
             List<LotoEntity> result = new List<LotoEntity>();
             foreach (int i in listId)
             {
@@ -1561,10 +2184,20 @@ namespace PermitToWork.Models.ClearancePermit
         {
             int retVal = 0;
 
+            UserEntity userFo = new UserEntity(Int32.Parse(this.approval_facility_owner), user.token, user);
             SendEmail sendEmail = new SendEmail();
+
             List<string> s = new List<string>();
-            //s.Add(fo.email);
+#if (!DEBUG)
+            s.Add(userFo.email);
+            List<UserEntity> listDel = userFo.GetDelegateFO(user);
+            foreach (UserEntity u in listDel)
+            {
+                s.Add(u.email);
+            }
+#else
             s.Add("septu.jamasoka@gmail.com"); // email FO
+#endif
             string message = url + "Home?p=Loto/edit/" + this.id;
 
             sendEmail.Send(s, message, "LOTO Permit Facility Owner Set Agreed LOTO Point and Applied");
@@ -1576,10 +2209,15 @@ namespace PermitToWork.Models.ClearancePermit
         {
             int retVal = 0;
 
+            UserEntity userFo = new UserEntity(Int32.Parse(this.supervisor), user.token, user);
             SendEmail sendEmail = new SendEmail();
+
             List<string> s = new List<string>();
-            //s.Add(fo.email);
+#if (!DEBUG)
+            s.Add(userFo.email);
+#else
             s.Add("septu.jamasoka@gmail.com"); // email FO
+#endif
             string message = url + "Home?p=Loto/edit/" + this.id;
 
             sendEmail.Send(s, message, "LOTO Permit Inspection and Verification");
@@ -1591,10 +2229,15 @@ namespace PermitToWork.Models.ClearancePermit
         {
             int retVal = 0;
 
+            UserEntity userFo = new UserEntity(Int32.Parse(this.supervisor), user.token, user);
             SendEmail sendEmail = new SendEmail();
+
             List<string> s = new List<string>();
-            //s.Add(fo.email);
+#if (!DEBUG)
+            s.Add(userFo.email);
+#else
             s.Add("septu.jamasoka@gmail.com"); // email FO
+#endif
             string message = url + "Home?p=Loto/edit/" + this.id;
 
             sendEmail.Send(s, message, "LOTO Permit Supervisor Approval");
@@ -1606,10 +2249,20 @@ namespace PermitToWork.Models.ClearancePermit
         {
             int retVal = 0;
 
+            UserEntity userFo = new UserEntity(Int32.Parse(this.approval_facility_owner), user.token, user);
             SendEmail sendEmail = new SendEmail();
+
             List<string> s = new List<string>();
-            //s.Add(fo.email);
+#if (!DEBUG)
+            s.Add(userFo.email);
+            List<UserEntity> listDel = userFo.GetDelegateFO(user);
+            foreach (UserEntity u in listDel)
+            {
+                s.Add(u.email);
+            }
+#else
             s.Add("septu.jamasoka@gmail.com"); // email FO
+#endif
             string message = url + "Home?p=Loto/edit/" + this.id;
 
             sendEmail.Send(s, message, "LOTO Permit Facility Owner Approval");
@@ -1632,107 +2285,291 @@ namespace PermitToWork.Models.ClearancePermit
             return retVal;
         }
 
-        public int sendEmailComingHolderRequestChange(string url, UserEntity user)
+        public int sendEmailAgreeSuspension(string url, UserEntity user)
         {
             int retVal = 0;
-
             SendEmail sendEmail = new SendEmail();
+
             List<string> s = new List<string>();
-            //s.Add(fo.email);
+#if (!DEBUG)
+            LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+            if (suspension != null && suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.EDITANDSEND)
+            {
+                foreach (LotoSuspensionHolderEntity suspensionHolder in suspension.suspensionHolder)
+                {
+                    s.Add(suspensionHolder.userEntity.email);
+                }
+            }
+            else if (suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONAPPROVE)
+            {
+                s.Add(suspension.foUser.email);
+                List<UserEntity> listDel = suspension.foUser.GetDelegateFO(user);
+                foreach (UserEntity u in listDel)
+                {
+                    s.Add(u.email);
+                }
+            }
+#else
             s.Add("septu.jamasoka@gmail.com"); // email FO
+#endif
             string message = url + "Home?p=Loto/edit/" + this.id;
 
-            sendEmail.Send(s, message, "LOTO Permit Oncoming Holder Request Change");
+            sendEmail.Send(s, message, "LOTO Permit Suspension Need To Be Agreed");
 
             return retVal;
         }
 
-        public int sendEmailOtherHolderApproveChange(string url, UserEntity user)
+        public int sendEmailHolderAgreedSuspension(string url, UserEntity user)
         {
             int retVal = 0;
-
             SendEmail sendEmail = new SendEmail();
+
             List<string> s = new List<string>();
-            //s.Add(fo.email);
+#if (!DEBUG)
+            LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+            if (suspension != null && suspension.status != (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONAPPROVE)
+            {
+                s.Add(suspension.requestorUser.email);
+            }
+            else
+            {
+                s.Add(suspension.foUser.email);
+                List<UserEntity> listDel = suspension.foUser.GetDelegateFO(user);
+                foreach (UserEntity u in listDel)
+                {
+                    s.Add(u.email);
+                }
+            }
+#else
             s.Add("septu.jamasoka@gmail.com"); // email FO
+#endif
             string message = url + "Home?p=Loto/edit/" + this.id;
 
-            sendEmail.Send(s, message, "LOTO Permit Others Holder Approval");
+            sendEmail.Send(s, message, "LOTO Permit Suspension Agreed by " + user.alpha_name);
 
             return retVal;
         }
 
-        public int sendEmailFOAgreedChange(string url, UserEntity user)
+        public int sendEmailFoAppliedSuspension(string url, UserEntity user)
         {
             int retVal = 0;
-
             SendEmail sendEmail = new SendEmail();
+
             List<string> s = new List<string>();
-            //s.Add(fo.email);
+#if (!DEBUG)
+            LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+            if (suspension != null)
+            {
+                s.Add(suspension.requestorUser.email);
+                foreach (LotoSuspensionHolderEntity suspensionHolder in suspension.suspensionHolder)
+                {
+                    s.Add(suspensionHolder.userEntity.email);
+                }
+            }
+#else
             s.Add("septu.jamasoka@gmail.com"); // email FO
+#endif
             string message = url + "Home?p=Loto/edit/" + this.id;
 
-            sendEmail.Send(s, message, "LOTO Permit Others Holder Approval");
+            sendEmail.Send(s, message, "LOTO Permit Suspension Point Agreed and Applied by Facility Owner");
 
             return retVal;
         }
 
-        public int sendEmailInspectionChange(string url, UserEntity user)
+        public int sendEmailCompleteInspectedSuspension(string url, UserEntity user)
         {
             int retVal = 0;
-
             SendEmail sendEmail = new SendEmail();
+
             List<string> s = new List<string>();
-            //s.Add(fo.email);
+#if (!DEBUG)
+            LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+            if (suspension != null && suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONINSPECTION)
+            {
+                s.Add(suspension.foUser.email);
+                List<UserEntity> listDel = suspension.foUser.GetDelegateFO(user);
+                foreach (UserEntity u in listDel)
+                {
+                    s.Add(u.email);
+                }
+            }
+#else
             s.Add("septu.jamasoka@gmail.com"); // email FO
+#endif
             string message = url + "Home?p=Loto/edit/" + this.id;
 
-            sendEmail.Send(s, message, "LOTO Permit Holders Approval");
+            sendEmail.Send(s, message, "LOTO Permit Suspension Inspected by LOTO Holder, Need To Be Approved by Facility Owner");
 
             return retVal;
         }
 
-        public int sendEmailSpvChangeApproval(string url, UserEntity user)
+        public int sendEmailFoApprovedSuspension(string url, UserEntity user)
         {
             int retVal = 0;
-
             SendEmail sendEmail = new SendEmail();
+
             List<string> s = new List<string>();
-            //s.Add(fo.email);
+#if (!DEBUG)
+            LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+            if (suspension != null)
+            {
+                s.Add(suspension.requestorUser.email);
+                foreach (LotoSuspensionHolderEntity suspensionHolder in suspension.suspensionHolder)
+                {
+                    s.Add(suspensionHolder.userEntity.email);
+                }
+            }
+#else
             s.Add("septu.jamasoka@gmail.com"); // email FO
+#endif
             string message = url + "Home?p=Loto/edit/" + this.id;
 
-            sendEmail.Send(s, message, "LOTO Permit Supervisor Approval");
+            sendEmail.Send(s, message, "LOTO Permit Suspension Approved By Facility Owner");
 
             return retVal;
         }
 
-        public int sendEmailFOChangeApproval(string url, UserEntity user)
+        public int sendEmailAgreeCompletionSuspension(string url, UserEntity user)
         {
             int retVal = 0;
-
             SendEmail sendEmail = new SendEmail();
+
             List<string> s = new List<string>();
-            //s.Add(fo.email);
+#if (!DEBUG)
+            LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+            if (suspension != null && suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.EDITANDSEND)
+            {
+                foreach (LotoSuspensionHolderEntity suspensionHolder in suspension.suspensionHolder)
+                {
+                    s.Add(suspensionHolder.userEntity.email);
+                }
+            }
+            else if (suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONAPPROVE)
+            {
+                s.Add(suspension.foUser.email);
+                List<UserEntity> listDel = suspension.foUser.GetDelegateFO(user);
+                foreach (UserEntity u in listDel)
+                {
+                    s.Add(u.email);
+                }
+            }
+#else
             s.Add("septu.jamasoka@gmail.com"); // email FO
+#endif
             string message = url + "Home?p=Loto/edit/" + this.id;
 
-            sendEmail.Send(s, message, "LOTO Permit Facility Owner Approval");
+            sendEmail.Send(s, message, "LOTO Permit Suspension Inspected by LOTO Holder, Need To Be Approved by Facility Owner");
 
             return retVal;
         }
 
-        public int sendEmailOncomingHolderChangeApproval(string url, UserEntity user)
+        public int sendEmailHolderAgreedCompletionSuspension(string url, UserEntity user)
         {
             int retVal = 0;
-
             SendEmail sendEmail = new SendEmail();
+
             List<string> s = new List<string>();
-            //s.Add(fo.email);
+#if (!DEBUG)
+            LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+            if (suspension != null && suspension.status != (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONAPPROVE)
+            {
+                s.Add(suspension.requestorUser.email);
+            }
+            else
+            {
+                s.Add(suspension.foUser.email);
+                List<UserEntity> listDel = suspension.foUser.GetDelegateFO(user);
+                foreach (UserEntity u in listDel)
+                {
+                    s.Add(u.email);
+                }
+            }
+#else
             s.Add("septu.jamasoka@gmail.com"); // email FO
+#endif
             string message = url + "Home?p=Loto/edit/" + this.id;
 
-            sendEmail.Send(s, message, "LOTO Permit Oncoming Holder Change Approval");
+            sendEmail.Send(s, message, "LOTO Permit Suspension Agreed by " + user.alpha_name);
+
+            return retVal;
+        }
+
+        public int sendEmailFoAppliedCompletionSuspension(string url, UserEntity user)
+        {
+            int retVal = 0;
+            SendEmail sendEmail = new SendEmail();
+
+            List<string> s = new List<string>();
+#if (!DEBUG)
+            LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+            if (suspension != null)
+            {
+                s.Add(suspension.requestorUser.email);
+                foreach (LotoSuspensionHolderEntity suspensionHolder in suspension.suspensionHolder)
+                {
+                    s.Add(suspensionHolder.userEntity.email);
+                }
+            }
+#else
+            s.Add("septu.jamasoka@gmail.com"); // email FO
+#endif
+            string message = url + "Home?p=Loto/edit/" + this.id;
+
+            sendEmail.Send(s, message, "LOTO Permit Suspension Point Agreed and Applied by Facility Owner");
+
+            return retVal;
+        }
+
+        public int sendEmailCompleteInspectedCompletionSuspension(string url, UserEntity user)
+        {
+            int retVal = 0;
+            SendEmail sendEmail = new SendEmail();
+
+            List<string> s = new List<string>();
+#if (!DEBUG)
+            LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
+            if (suspension != null && suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONINSPECTION)
+            {
+                s.Add(suspension.foUser.email);
+                List<UserEntity> listDel = suspension.foUser.GetDelegateFO(user);
+                foreach (UserEntity u in listDel)
+                {
+                    s.Add(u.email);
+                }
+            }
+#else
+            s.Add("septu.jamasoka@gmail.com"); // email FO
+#endif
+            string message = url + "Home?p=Loto/edit/" + this.id;
+
+            sendEmail.Send(s, message, "LOTO Permit Suspension Inspected by LOTO Holder, Need To Be Approved by Facility Owner");
+
+            return retVal;
+        }
+
+        public int sendEmailFOCancellation(string url, UserEntity user)
+        {
+            int retVal = 0;
+            SendEmail sendEmail = new SendEmail();
+
+            List<string> s = new List<string>();
+#if (!DEBUG)
+            if(this.status == (int)LOTOStatus.CANCELSPV)
+            {
+
+                s.Add(this.listUserInLOTO[userInLOTO.CANCELLATIONFACILITYOWNER.ToString()].email);
+                List<UserEntity> listDel = this.listUserInLOTO[userInLOTO.CANCELLATIONFACILITYOWNER.ToString()].GetDelegateFO(user);
+                foreach (UserEntity u in listDel)
+                {
+                    s.Add(u.email);
+                }
+            }
+#else
+            s.Add("septu.jamasoka@gmail.com"); // email FO
+#endif
+            string message = url + "Home?p=Loto/edit/" + this.id;
+
+            sendEmail.Send(s, message, "LOTO Permit Cancellation By Facility Owner");
 
             return retVal;
         }
@@ -1753,5 +2590,38 @@ namespace PermitToWork.Models.ClearancePermit
         }
 
         #endregion
+
+        internal List<LotoEntity> listLotoRemove(UserEntity userLogin)
+        {
+            List<int> listId = this.db.loto_permit.Select(p => p.id).ToList();
+            List<LotoEntity> result = new List<LotoEntity>();
+            foreach (int i in listId)
+            {
+                LotoEntity loto = new LotoEntity(i, userLogin);
+                if (loto.status == (int)LOTOStatus.LOTOCANCELLED)
+                {
+                    result.Add(loto);
+                }
+                else
+                {
+                    var enumerator = loto.lotoPoint.GetEnumerator();
+                    bool need = false;
+                    while (enumerator.MoveNext() && !need)
+                    {
+                        LotoPointEntity lotoPoint = enumerator.Current;
+                        if (lotoPoint.is_removed == 1 && lotoPoint.removed_by == null)
+                        {
+                            need = true;
+                        }
+                        if (need)
+                        {
+                            result.Add(loto);
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
     }
 }

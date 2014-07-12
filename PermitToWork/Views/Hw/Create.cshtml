@@ -270,16 +270,16 @@
                 extension: 0,
             };
             switch (type) {
-                case '1': url = 'Hw/supervisorAccReject'; break;
-                case '2': url = 'Hw/fireWatchAccReject'; break;
-                case '3': url = 'Hw/fOAccReject'; break;
-                case '4': url = 'Hw/supervisorCanReject'; break;
-                case '5': url = 'Hw/fireWatchCanReject'; break;
-                case '6': url = 'Hw/fOCanReject'; break;
+                case '1': url = '@Url.Action("supervisorAccReject","Hw")'; break;
+                case '2': url = '@Url.Action("fireWatchAccReject","Hw")'; break;
+                case '3': url = '@Url.Action("fOAccReject","Hw")'; break;
+                case '4': url = '@Url.Action("supervisorCanReject","Hw")'; break;
+                case '5': url = '@Url.Action("fireWatchCanReject","Hw")'; break;
+                case '6': url = '@Url.Action("fOCanReject","Hw")'; break;
             };
 
             if (type > 6) {
-                url = 'Hw/fOAccReject';
+                url = '@Url.Action("fOAccReject","Hw")';
                 values.extension = parseInt(type) - 6;
             }
             $('#reject_button').attr('disabled', 'disabled');
@@ -308,7 +308,7 @@
             };
             $('#gas_tester_acc').attr('disabled', 'disabled');
             $('#loading_gas_tester_acc').css('display', 'inline-block');
-            $.post("Hw/gasTesterAcc", values, function (resp) {
+            $.post("@Url.Action("gasTesterAcc","Hw")", values, function (resp) {
                 if (resp.status == "200" || resp.status == "201") {
                     save();
                 } else if (resp.status == "400") {
@@ -332,7 +332,7 @@
                 };
                 $('#work_leader_acc').attr('disabled', 'disabled');
                 $('#loading_work_leader_acc').css('display', 'inline-block');
-                $.post("Hw/requestorAcc", values, function (resp) {
+                $.post("@Url.Action("requestorAcc","Hw")", values, function (resp) {
                     if (resp.status == "200" || resp.status == "201") {
                         save();
                     } else if (resp.status == "400") {
@@ -359,7 +359,7 @@
             };
             $('#work_leader_acc').attr('disabled', 'disabled');
             $('#loading_work_leader_acc').css('display', 'inline-block');
-            $.post("Hw/requestorAcc", values, function (resp) {
+            $.post("@Url.Action("requestorAcc","Hw")", values, function (resp) {
                 if (resp.status == "200" || resp.status == "201") {
                     $('#approvalRequestor').modal('hide');
                     save();
@@ -392,7 +392,7 @@
             };
             $('#supervisor_acc').attr('disabled', 'disabled');
             $('#loading_supervisor_acc').css('display', 'inline-block');
-            $.post("Hw/supervisorAcc", values, function (resp) {
+            $.post("@Url.Action("supervisorAcc","Hw")", values, function (resp) {
                 if (resp.status == "200" || resp.status == "201") {
                     save();
                 } else if (resp.status == "400") {
@@ -419,7 +419,7 @@
             };
             $('#fire_watch_acc').attr('disabled', 'disabled');
             $('#loading_fire_watch_acc').css('display', 'inline-block');
-            $.post("Hw/fireWatchAcc", values, function (resp) {
+            $.post("@Url.Action("fireWatchAcc","Hw")", values, function (resp) {
                 if (resp.status == "200" || resp.status == "201") {
                     save();
                 } else if (resp.status == "400") {
@@ -442,7 +442,7 @@
             };
             $('#fo_acc').attr('disabled', 'disabled');
             $('#loading_fo_acc').css('display', 'inline-block');
-            $.post("Hw/fOAcc", values, function (resp) {
+            $.post("@Url.Action("fOAcc","Hw")", values, function (resp) {
                 if (resp.status == "200" || resp.status == "201") {
                     save();
                 } else if (resp.status == "400") {
@@ -465,7 +465,7 @@
             };
             $('.ext_gas_tester_acc').attr('disabled', 'disabled');
             $('#loading_ext_gas_tester_acc_' + values.extension).css('display', 'inline-block');
-            $.post("Hw/gasTesterAcc", values, function (resp) {
+            $.post("@Url.Action("gasTesterAcc","Hw")", values, function (resp) {
                 if (resp.status == "200" || resp.status == "201") {
                     save();
                 } else if (resp.status == "400") {
@@ -488,7 +488,7 @@
             };
             $('.ext_work_leader_acc').attr('disabled', 'disabled');
             $('#loading_ext_work_leader_acc_' + values.extension).css('display', 'inline-block');
-            $.post("Hw/requestorAcc", values, function (resp) {
+            $.post("@Url.Action("requestorAcc","Hw")", values, function (resp) {
                 if (resp.status == "200" || resp.status == "201") {
                     save();
                 } else if (resp.status == "400") {
@@ -511,7 +511,7 @@
             };
             $('.ext_fo_acc').attr('disabled', 'disabled');
             $('#loading_ext_fo_acc_' + values.extension).css('display', 'inline-block');
-            $.post("Hw/fOAcc", values, function (resp) {
+            $.post("@Url.Action("fOAcc","Hw")", values, function (resp) {
                 if (resp.status == "200" || resp.status == "201") {
                     save();
                 } else if (resp.status == "400") {
@@ -534,7 +534,7 @@
             };
             $('#work_leader_can').attr('disabled', 'disabled');
             $('#loading_work_leader_can').css('display', 'inline-block');
-            $.post("Hw/requestorCan", values, function (resp) {
+            $.post("@Url.Action("requestorCan","Hw")", values, function (resp) {
                 if (resp.status == "200" || resp.status == "201") {
                     save();
                 } else if (resp.status == "400") {
@@ -557,7 +557,7 @@
             };
             $('#supervisor_can').attr('disabled', 'disabled');
             $('#loading_supervisor_can').css('display', 'inline-block');
-            $.post("Hw/supervisorCan", values, function (resp) {
+            $.post("@Url.Action("supervisorCan","Hw")", values, function (resp) {
                 if (resp.status == "200" || resp.status == "201") {
                     save();
                 } else if (resp.status == "400") {
@@ -584,7 +584,7 @@
             };
             $('#fire_watch_can').attr('disabled', 'disabled');
             $('#loading_fire_watch_can').css('display', 'inline-block');
-            $.post("Hw/fireWatchCan", values, function (resp) {
+            $.post("@Url.Action("fireWatchCan","Hw")", values, function (resp) {
                 if (resp.status == "200" || resp.status == "201") {
                     save();
                 } else if (resp.status == "400") {
@@ -607,7 +607,7 @@
             };
             $('#fo_can').attr('disabled', 'disabled');
             $('#loading_fo_can').css('display', 'inline-block');
-            $.post("Hw/fOCan", values, function (resp) {
+            $.post("@Url.Action("fOCan","Hw")", values, function (resp) {
                 if (resp.status == "200" || resp.status == "201") {
                     save();
                 } else if (resp.status == "400") {
@@ -670,12 +670,12 @@
                 values.notes = notes;
                 $('#save').attr('disabled', 'disabled');
                 $('#loading').css('display', 'inline-block');
-                $.post("/Hw/EditExtHw", values, function (resp) {
+                $.post("@Url.Action("EditExtHw","Hw")", values, function (resp) {
                     if (resp.status == "200") {
                         $('#save').removeAttr('disabled');
                         $('#loading').hide();
                         alert("Hot Work Permit for extension number " + extend + " save successful!");
-                        $('#content').load('Hw/Edit/@Model.id');
+                        $('#content').load('@Url.Action("Edit", "Hw", new { id = Model.id })');
                     } else if (resp.status == "400") {
                         $('#save').removeAttr('disabled');
                         $('#loading').hide();
@@ -738,10 +738,12 @@
                 };
 
                 values.id = '@Model.id';
-                $.post("/Hw/EditHw", values, function (resp) {
+                $('#loading').css('display', 'inline-block');
+                $.post("@Url.Action("EditHw","Hw")", values, function (resp) {
+                    $('#loading').css('display', 'none');
                     if (resp.status == "200") {
                         alert("Hot Work Permit save successful!");
-                        $('#content').load('Hw/Edit/@Model.id');
+                        $('#content').load('@Url.Action("Edit", "Hw", new { id = Model.id })');
                     } else if (resp.status == "400")
                         alert("Hot Work Permit failed to save\nMessage : " + resp.message);
                 });
@@ -760,7 +762,13 @@
     }
 
     function back() {
-        $('#content').load('Ptw/Edit/@Model.id_ptw');
+        var history = $('#history').val();
+        history = history.toLowerCase();
+        if (history.indexOf('home') >= 0) {
+            window.location = history;
+        } else {
+            $('#content').load(history);
+        }
     }
 
     function addExtension() {
@@ -770,10 +778,12 @@
             user_id: '@requestor.id',
         };
         if (r == true) {
-            $.post("/Hw/ExtendHw", values, function (resp) {
+            $('#loading').css('display', 'inline-block');
+            $.post("@Url.Action("ExtendHw","Hw")", values, function (resp) {
+                $('#loading').css('display', 'none');
                 if (resp.status == "200") {
                     alert("Hot Work has been extends.");
-                    $('#content').load('Hw/Edit/@Model.id');
+                    $('#content').load('@Url.Action("Edit", "Hw", new { id = Model.id })');
                 }
             });
         } else {
@@ -788,10 +798,12 @@
             user_id: '@requestor.id',
         };
         if (r == true) {
-            $.post("/Hw/CloseHw", values, function (resp) {
+            $('#loading').css('display', 'inline-block');
+            $.post("@Url.Action("CloseHw","Hw")", values, function (resp) {
+                $('#loading').css('display', 'none');
                 if (resp.status == "200") {
                     alert("Hot Work has closed by Work Leader.");
-                    $('#content').load('Hw/Edit/@Model.id');
+                    $('#content').load('@Url.Action("Edit", "Hw", new { id = Model.id })');
                 }
             });
         } else {
@@ -863,7 +875,7 @@
             <tr>
                 <td>3</td>
                 <td>Work Leader</td>
-                <td colspan="2"><input type="text" class="table-input" id="work_leader" value="@listUser.listUser.Find(p => p.id == Model.work_leader.AsInt()).alpha_name" disabled/></td>
+                <td colspan="2"><input type="text" class="table-input" id="work_leader" value="@(Model.is_guest ? Model.work_leader : listUser.listUser.Find(p => p.id == Model.work_leader.AsInt()).alpha_name)" disabled/></td>
             </tr>
             <tr>
                 <td>4</td>
@@ -877,7 +889,7 @@
         <thead>
             <tr>
                 <th class="title-form" colspan="8"><b>2. PRE-JOB SCREENING</b></th>
-                <th colspan="3">Hira no : @Model.getHiraNo()</th>
+                <th colspan="3">Hira no : @Model.hira_no</th>
             </tr>
         </thead>
         <tbody>
@@ -909,15 +921,6 @@
                             @(i == 0 && isCanEdit[0] == true && user_hw[1] == true && Model.status < (int)HwEntity.statusHW.GASTESTER ? "" : 
                             (i == 1 && isCanEdit[0] == true && user_hw[3] == true && Model.status == (int)HwEntity.statusHW.SPVSCREENING ? "" : 
                             (i >= 2 && isCanEdit[i-1] == true && user_hw[9+(i-2)*2] == true && Model.status == (3+(i-1)*5) ? "" : "disabled")))>
-                            <option value="0" @(i == 0 && Model.screening_spv[0] == "0" ? "selected" : 
-                                (i == 1 && Model.screening_fo[0] == "0" ? "selected" : 
-                                (i == 2 && Model.screening_1[0] == "0" ? "selected" : 
-                                (i == 3 && Model.screening_2[0] == "0" ? "selected" : 
-                                (i == 4 && Model.screening_3[0] == "0" ? "selected" : 
-                                (i == 5 && Model.screening_4[0] == "0" ? "selected" : 
-                                (i == 6 && Model.screening_5[0] == "0" ? "selected" : 
-                                (i == 7 && Model.screening_6[0] == "0" ? "selected" : 
-                                (i == 8 && Model.screening_7[0] == "0" ? "selected" : "")))))))))>N/A</option>
                             <option value="1" @(i == 0 && Model.screening_spv[0] == "1" ? "selected" : 
                                 (i == 1 && Model.screening_fo[0] == "1" ? "selected" : 
                                 (i == 2 && Model.screening_1[0] == "1" ? "selected" : 
@@ -935,7 +938,16 @@
                                 (i == 5 && Model.screening_4[0] == "2" ? "selected" : 
                                 (i == 6 && Model.screening_5[0] == "2" ? "selected" : 
                                 (i == 7 && Model.screening_6[0] == "2" ? "selected" : 
-                                (i == 8 && Model.screening_7[0] == "2" ? "selected" : "")))))))))>No</option>  
+                                (i == 8 && Model.screening_7[0] == "2" ? "selected" : "")))))))))>No</option> 
+                            <option value="0" @(i == 0 && Model.screening_spv[0] == "0" ? "selected" : 
+                                (i == 1 && Model.screening_fo[0] == "0" ? "selected" : 
+                                (i == 2 && Model.screening_1[0] == "0" ? "selected" : 
+                                (i == 3 && Model.screening_2[0] == "0" ? "selected" : 
+                                (i == 4 && Model.screening_3[0] == "0" ? "selected" : 
+                                (i == 5 && Model.screening_4[0] == "0" ? "selected" : 
+                                (i == 6 && Model.screening_5[0] == "0" ? "selected" : 
+                                (i == 7 && Model.screening_6[0] == "0" ? "selected" : 
+                                (i == 8 && Model.screening_7[0] == "0" ? "selected" : "")))))))))>N/A</option> 
                         </select>
                     </td>
                   }
@@ -953,15 +965,6 @@
                             @(i == 0 && isCanEdit[0] == true && user_hw[1] == true && Model.status < (int)HwEntity.statusHW.GASTESTER ? "" : 
                             (i == 1 && isCanEdit[0] == true && user_hw[3] == true && Model.status == (int)HwEntity.statusHW.SPVSCREENING ? "" : 
                             (i >= 2 && isCanEdit[i-1] == true && user_hw[9+(i-2)*2] == true && Model.status == (3+(i-1)*5) ? "" : "disabled")))>
-                            <option value="0" @(i == 0 && Model.screening_spv[1] == "0" ? "selected" : 
-                                (i == 1 && Model.screening_fo[1] == "0" ? "selected" : 
-                                (i == 2 && Model.screening_1[1] == "0" ? "selected" : 
-                                (i == 3 && Model.screening_2[1] == "0" ? "selected" : 
-                                (i == 4 && Model.screening_3[1] == "0" ? "selected" : 
-                                (i == 5 && Model.screening_4[1] == "0" ? "selected" : 
-                                (i == 6 && Model.screening_5[1] == "0" ? "selected" : 
-                                (i == 7 && Model.screening_6[1] == "0" ? "selected" : 
-                                (i == 8 && Model.screening_7[1] == "0" ? "selected" : "")))))))))>N/A</option>
                             <option value="1" @(i == 0 && Model.screening_spv[1] == "1" ? "selected" : 
                                 (i == 1 && Model.screening_fo[1] == "1" ? "selected" : 
                                 (i == 2 && Model.screening_1[1] == "1" ? "selected" : 
@@ -980,6 +983,15 @@
                                 (i == 6 && Model.screening_5[1] == "2" ? "selected" : 
                                 (i == 7 && Model.screening_6[1] == "2" ? "selected" : 
                                 (i == 8 && Model.screening_7[1] == "2" ? "selected" : "")))))))))>No</option>  
+                            <option value="0" @(i == 0 && Model.screening_spv[1] == "0" ? "selected" : 
+                                (i == 1 && Model.screening_fo[1] == "0" ? "selected" : 
+                                (i == 2 && Model.screening_1[1] == "0" ? "selected" : 
+                                (i == 3 && Model.screening_2[1] == "0" ? "selected" : 
+                                (i == 4 && Model.screening_3[1] == "0" ? "selected" : 
+                                (i == 5 && Model.screening_4[1] == "0" ? "selected" : 
+                                (i == 6 && Model.screening_5[1] == "0" ? "selected" : 
+                                (i == 7 && Model.screening_6[1] == "0" ? "selected" : 
+                                (i == 8 && Model.screening_7[1] == "0" ? "selected" : "")))))))))>N/A</option>
                         </select>
                     </td>
                   }
@@ -996,15 +1008,6 @@
                             @(i == 0 && isCanEdit[0] == true && user_hw[1] == true && Model.status < (int)HwEntity.statusHW.GASTESTER ? "" : 
                             (i == 1 && isCanEdit[0] == true && user_hw[3] == true && Model.status == (int)HwEntity.statusHW.SPVSCREENING ? "" : 
                             (i >= 2 && isCanEdit[i-1] == true && user_hw[9+(i-2)*2] == true && Model.status == (3+(i-1)*5) ? "" : "disabled")))>
-                            <option value="0" @(i == 0 && Model.screening_spv[2] == "0" ? "selected" : 
-                                (i == 1 && Model.screening_fo[2] == "0" ? "selected" : 
-                                (i == 2 && Model.screening_1[2] == "0" ? "selected" : 
-                                (i == 3 && Model.screening_2[2] == "0" ? "selected" : 
-                                (i == 4 && Model.screening_3[2] == "0" ? "selected" : 
-                                (i == 5 && Model.screening_4[2] == "0" ? "selected" : 
-                                (i == 6 && Model.screening_5[2] == "0" ? "selected" : 
-                                (i == 7 && Model.screening_6[2] == "0" ? "selected" : 
-                                (i == 8 && Model.screening_7[2] == "0" ? "selected" : "")))))))))>N/A</option>
                             <option value="1" @(i == 0 && Model.screening_spv[2] == "1" ? "selected" : 
                                 (i == 1 && Model.screening_fo[2] == "1" ? "selected" : 
                                 (i == 2 && Model.screening_1[2] == "1" ? "selected" : 
@@ -1022,7 +1025,16 @@
                                 (i == 5 && Model.screening_4[2] == "2" ? "selected" : 
                                 (i == 6 && Model.screening_5[2] == "2" ? "selected" : 
                                 (i == 7 && Model.screening_6[2] == "2" ? "selected" : 
-                                (i == 8 && Model.screening_7[2] == "2" ? "selected" : "")))))))))>No</option>                      
+                                (i == 8 && Model.screening_7[2] == "2" ? "selected" : "")))))))))>No</option>    
+                            <option value="0" @(i == 0 && Model.screening_spv[2] == "0" ? "selected" : 
+                                (i == 1 && Model.screening_fo[2] == "0" ? "selected" : 
+                                (i == 2 && Model.screening_1[2] == "0" ? "selected" : 
+                                (i == 3 && Model.screening_2[2] == "0" ? "selected" : 
+                                (i == 4 && Model.screening_3[2] == "0" ? "selected" : 
+                                (i == 5 && Model.screening_4[2] == "0" ? "selected" : 
+                                (i == 6 && Model.screening_5[2] == "0" ? "selected" : 
+                                (i == 7 && Model.screening_6[2] == "0" ? "selected" : 
+                                (i == 8 && Model.screening_7[2] == "0" ? "selected" : "")))))))))>N/A</option>                  
                         </select>
                     </td>
                   }
@@ -1039,15 +1051,6 @@
                             @(i == 0 && isCanEdit[0] == true && user_hw[1] == true && Model.status < (int)HwEntity.statusHW.GASTESTER ? "" : 
                             (i == 1 && isCanEdit[0] == true && user_hw[3] == true && Model.status == (int)HwEntity.statusHW.SPVSCREENING ? "" : 
                             (i >= 2 && isCanEdit[i-1] == true && user_hw[9+(i-2)*2] == true && Model.status == (3+(i-1)*5) ? "" : "disabled")))>
-                            <option value="0" @(i == 0 && Model.screening_spv[3] == "0" ? "selected" : 
-                                (i == 1 && Model.screening_fo[3] == "0" ? "selected" : 
-                                (i == 2 && Model.screening_1[3] == "0" ? "selected" : 
-                                (i == 3 && Model.screening_2[3] == "0" ? "selected" : 
-                                (i == 4 && Model.screening_3[3] == "0" ? "selected" : 
-                                (i == 5 && Model.screening_4[3] == "0" ? "selected" : 
-                                (i == 6 && Model.screening_5[3] == "0" ? "selected" : 
-                                (i == 7 && Model.screening_6[3] == "0" ? "selected" : 
-                                (i == 8 && Model.screening_7[3] == "0" ? "selected" : "")))))))))>N/A</option>
                             <option value="1" @(i == 0 && Model.screening_spv[3] == "1" ? "selected" : 
                                 (i == 1 && Model.screening_fo[3] == "1" ? "selected" : 
                                 (i == 2 && Model.screening_1[3] == "1" ? "selected" : 
@@ -1065,7 +1068,16 @@
                                 (i == 5 && Model.screening_4[3] == "2" ? "selected" : 
                                 (i == 6 && Model.screening_5[3] == "2" ? "selected" : 
                                 (i == 7 && Model.screening_6[3] == "2" ? "selected" : 
-                                (i == 8 && Model.screening_7[3] == "2" ? "selected" : "")))))))))>No</option>                      
+                                (i == 8 && Model.screening_7[3] == "2" ? "selected" : "")))))))))>No</option>   
+                            <option value="0" @(i == 0 && Model.screening_spv[3] == "0" ? "selected" : 
+                                (i == 1 && Model.screening_fo[3] == "0" ? "selected" : 
+                                (i == 2 && Model.screening_1[3] == "0" ? "selected" : 
+                                (i == 3 && Model.screening_2[3] == "0" ? "selected" : 
+                                (i == 4 && Model.screening_3[3] == "0" ? "selected" : 
+                                (i == 5 && Model.screening_4[3] == "0" ? "selected" : 
+                                (i == 6 && Model.screening_5[3] == "0" ? "selected" : 
+                                (i == 7 && Model.screening_6[3] == "0" ? "selected" : 
+                                (i == 8 && Model.screening_7[3] == "0" ? "selected" : "")))))))))>N/A</option>                   
                         </select>
                     </td>
                   }
@@ -1083,15 +1095,6 @@
                             @(i == 0 && isCanEdit[0] == true && user_hw[1] == true && Model.status < (int)HwEntity.statusHW.GASTESTER ? "" : 
                             (i == 1 && isCanEdit[0] == true && user_hw[3] == true && Model.status == (int)HwEntity.statusHW.SPVSCREENING ? "" : 
                             (i >= 2 && isCanEdit[i-1] == true && user_hw[9+(i-2)*2] == true && Model.status == (3+(i-1)*5) ? "" : "disabled")))>
-                            <option value="0" @(i == 0 && Model.screening_spv[4] == "0" ? "selected" : 
-                                (i == 1 && Model.screening_fo[4] == "0" ? "selected" : 
-                                (i == 2 && Model.screening_1[4] == "0" ? "selected" : 
-                                (i == 3 && Model.screening_2[4] == "0" ? "selected" : 
-                                (i == 4 && Model.screening_3[4] == "0" ? "selected" : 
-                                (i == 5 && Model.screening_4[4] == "0" ? "selected" : 
-                                (i == 6 && Model.screening_5[4] == "0" ? "selected" : 
-                                (i == 7 && Model.screening_6[4] == "0" ? "selected" : 
-                                (i == 8 && Model.screening_7[4] == "0" ? "selected" : "")))))))))>N/A</option>
                             <option value="1" @(i == 0 && Model.screening_spv[4] == "1" ? "selected" : 
                                 (i == 1 && Model.screening_fo[4] == "1" ? "selected" : 
                                 (i == 2 && Model.screening_1[4] == "1" ? "selected" : 
@@ -1110,6 +1113,15 @@
                                 (i == 6 && Model.screening_5[4] == "2" ? "selected" : 
                                 (i == 7 && Model.screening_6[4] == "2" ? "selected" : 
                                 (i == 8 && Model.screening_7[4] == "2" ? "selected" : "")))))))))>No</option>  
+                            <option value="0" @(i == 0 && Model.screening_spv[4] == "0" ? "selected" : 
+                                (i == 1 && Model.screening_fo[4] == "0" ? "selected" : 
+                                (i == 2 && Model.screening_1[4] == "0" ? "selected" : 
+                                (i == 3 && Model.screening_2[4] == "0" ? "selected" : 
+                                (i == 4 && Model.screening_3[4] == "0" ? "selected" : 
+                                (i == 5 && Model.screening_4[4] == "0" ? "selected" : 
+                                (i == 6 && Model.screening_5[4] == "0" ? "selected" : 
+                                (i == 7 && Model.screening_6[4] == "0" ? "selected" : 
+                                (i == 8 && Model.screening_7[4] == "0" ? "selected" : "")))))))))>N/A</option>
                         </select>
                     </td>
                   }
@@ -1127,15 +1139,6 @@
                             @(i == 0 && isCanEdit[0] == true && user_hw[1] == true && Model.status < (int)HwEntity.statusHW.GASTESTER ? "" : 
                             (i == 1 && isCanEdit[0] == true && user_hw[3] == true && Model.status == (int)HwEntity.statusHW.SPVSCREENING ? "" : 
                             (i >= 2 && isCanEdit[i-1] == true && user_hw[9+(i-2)*2] == true && Model.status == (3+(i-1)*5) ? "" : "disabled")))>
-                            <option value="0" @(i == 0 && Model.screening_spv[5] == "0" ? "selected" : 
-                                (i == 1 && Model.screening_fo[5] == "0" ? "selected" : 
-                                (i == 2 && Model.screening_1[5] == "0" ? "selected" : 
-                                (i == 3 && Model.screening_2[5] == "0" ? "selected" : 
-                                (i == 4 && Model.screening_3[5] == "0" ? "selected" : 
-                                (i == 5 && Model.screening_4[5] == "0" ? "selected" : 
-                                (i == 6 && Model.screening_5[5] == "0" ? "selected" : 
-                                (i == 7 && Model.screening_6[5] == "0" ? "selected" : 
-                                (i == 8 && Model.screening_7[5] == "0" ? "selected" : "")))))))))>N/A</option>
                             <option value="1" @(i == 0 && Model.screening_spv[5] == "1" ? "selected" : 
                                 (i == 1 && Model.screening_fo[5] == "1" ? "selected" : 
                                 (i == 2 && Model.screening_1[5] == "1" ? "selected" : 
@@ -1154,6 +1157,15 @@
                                 (i == 6 && Model.screening_5[5] == "2" ? "selected" : 
                                 (i == 7 && Model.screening_6[5] == "2" ? "selected" : 
                                 (i == 8 && Model.screening_7[5] == "2" ? "selected" : "")))))))))>No</option>  
+                            <option value="0" @(i == 0 && Model.screening_spv[5] == "0" ? "selected" : 
+                                (i == 1 && Model.screening_fo[5] == "0" ? "selected" : 
+                                (i == 2 && Model.screening_1[5] == "0" ? "selected" : 
+                                (i == 3 && Model.screening_2[5] == "0" ? "selected" : 
+                                (i == 4 && Model.screening_3[5] == "0" ? "selected" : 
+                                (i == 5 && Model.screening_4[5] == "0" ? "selected" : 
+                                (i == 6 && Model.screening_5[5] == "0" ? "selected" : 
+                                (i == 7 && Model.screening_6[5] == "0" ? "selected" : 
+                                (i == 8 && Model.screening_7[5] == "0" ? "selected" : "")))))))))>N/A</option>
                         </select>
                     </td>
                   }
@@ -1171,15 +1183,6 @@
                             @(i == 0 && isCanEdit[0] == true && user_hw[1] == true && Model.status < (int)HwEntity.statusHW.GASTESTER ? "" : 
                             (i == 1 && isCanEdit[0] == true && user_hw[3] == true && Model.status == (int)HwEntity.statusHW.SPVSCREENING ? "" : 
                             (i >= 2 && isCanEdit[i-1] == true && user_hw[9+(i-2)*2] == true && Model.status == (3+(i-1)*5) ? "" : "disabled")))>
-                            <option value="0" @(i == 0 && Model.screening_spv[6] == "0" ? "selected" : 
-                                (i == 1 && Model.screening_fo[6] == "0" ? "selected" : 
-                                (i == 2 && Model.screening_1[6] == "0" ? "selected" : 
-                                (i == 3 && Model.screening_2[6] == "0" ? "selected" : 
-                                (i == 4 && Model.screening_3[6] == "0" ? "selected" : 
-                                (i == 5 && Model.screening_4[6] == "0" ? "selected" : 
-                                (i == 6 && Model.screening_5[6] == "0" ? "selected" : 
-                                (i == 7 && Model.screening_6[6] == "0" ? "selected" : 
-                                (i == 8 && Model.screening_7[6] == "0" ? "selected" : "")))))))))>N/A</option>
                             <option value="1" @(i == 0 && Model.screening_spv[6] == "1" ? "selected" : 
                                 (i == 1 && Model.screening_fo[6] == "1" ? "selected" : 
                                 (i == 2 && Model.screening_1[6] == "1" ? "selected" : 
@@ -1198,6 +1201,15 @@
                                 (i == 6 && Model.screening_5[6] == "2" ? "selected" : 
                                 (i == 7 && Model.screening_6[6] == "2" ? "selected" : 
                                 (i == 8 && Model.screening_7[6] == "2" ? "selected" : "")))))))))>No</option>  
+                            <option value="0" @(i == 0 && Model.screening_spv[6] == "0" ? "selected" : 
+                                (i == 1 && Model.screening_fo[6] == "0" ? "selected" : 
+                                (i == 2 && Model.screening_1[6] == "0" ? "selected" : 
+                                (i == 3 && Model.screening_2[6] == "0" ? "selected" : 
+                                (i == 4 && Model.screening_3[6] == "0" ? "selected" : 
+                                (i == 5 && Model.screening_4[6] == "0" ? "selected" : 
+                                (i == 6 && Model.screening_5[6] == "0" ? "selected" : 
+                                (i == 7 && Model.screening_6[6] == "0" ? "selected" : 
+                                (i == 8 && Model.screening_7[6] == "0" ? "selected" : "")))))))))>N/A</option>
                         </select>
                     </td>
                   }
@@ -1215,15 +1227,6 @@
                             @(i == 0 && isCanEdit[0] == true && user_hw[1] == true && Model.status < (int)HwEntity.statusHW.GASTESTER ? "" : 
                             (i == 1 && isCanEdit[0] == true && user_hw[3] == true && Model.status == (int)HwEntity.statusHW.SPVSCREENING ? "" : 
                             (i >= 2 && isCanEdit[i-1] == true && user_hw[9+(i-2)*2] == true && Model.status == (3+(i-1)*5) ? "" : "disabled")))>
-                            <option value="0" @(i == 0 && Model.screening_spv[7] == "0" ? "selected" : 
-                                (i == 1 && Model.screening_fo[7] == "0" ? "selected" : 
-                                (i == 2 && Model.screening_1[7] == "0" ? "selected" : 
-                                (i == 3 && Model.screening_2[7] == "0" ? "selected" : 
-                                (i == 4 && Model.screening_3[7] == "0" ? "selected" : 
-                                (i == 5 && Model.screening_4[7] == "0" ? "selected" : 
-                                (i == 6 && Model.screening_5[7] == "0" ? "selected" : 
-                                (i == 7 && Model.screening_6[7] == "0" ? "selected" : 
-                                (i == 8 && Model.screening_7[7] == "0" ? "selected" : "")))))))))>N/A</option>
                             <option value="1" @(i == 0 && Model.screening_spv[7] == "1" ? "selected" : 
                                 (i == 1 && Model.screening_fo[7] == "1" ? "selected" : 
                                 (i == 2 && Model.screening_1[7] == "1" ? "selected" : 
@@ -1242,6 +1245,15 @@
                                 (i == 6 && Model.screening_5[7] == "2" ? "selected" : 
                                 (i == 7 && Model.screening_6[7] == "2" ? "selected" : 
                                 (i == 8 && Model.screening_7[7] == "2" ? "selected" : "")))))))))>No</option>  
+                            <option value="0" @(i == 0 && Model.screening_spv[7] == "0" ? "selected" : 
+                                (i == 1 && Model.screening_fo[7] == "0" ? "selected" : 
+                                (i == 2 && Model.screening_1[7] == "0" ? "selected" : 
+                                (i == 3 && Model.screening_2[7] == "0" ? "selected" : 
+                                (i == 4 && Model.screening_3[7] == "0" ? "selected" : 
+                                (i == 5 && Model.screening_4[7] == "0" ? "selected" : 
+                                (i == 6 && Model.screening_5[7] == "0" ? "selected" : 
+                                (i == 7 && Model.screening_6[7] == "0" ? "selected" : 
+                                (i == 8 && Model.screening_7[7] == "0" ? "selected" : "")))))))))>N/A</option>
                         </select>
                     </td>
                   }
@@ -1259,15 +1271,6 @@
                             @(i == 0 && isCanEdit[0] == true && user_hw[1] == true && Model.status < (int)HwEntity.statusHW.GASTESTER ? "" : 
                             (i == 1 && isCanEdit[0] == true && user_hw[3] == true && Model.status == (int)HwEntity.statusHW.SPVSCREENING ? "" : 
                             (i >= 2 && isCanEdit[i-1] == true && user_hw[9+(i-2)*2] == true && Model.status == (3+(i-1)*5) ? "" : "disabled")))>
-                            <option value="0" @(i == 0 && Model.screening_spv[8] == "0" ? "selected" : 
-                                (i == 1 && Model.screening_fo[8] == "0" ? "selected" : 
-                                (i == 2 && Model.screening_1[8] == "0" ? "selected" : 
-                                (i == 3 && Model.screening_2[8] == "0" ? "selected" : 
-                                (i == 4 && Model.screening_3[8] == "0" ? "selected" : 
-                                (i == 5 && Model.screening_4[8] == "0" ? "selected" : 
-                                (i == 6 && Model.screening_5[8] == "0" ? "selected" : 
-                                (i == 7 && Model.screening_6[8] == "0" ? "selected" : 
-                                (i == 8 && Model.screening_7[8] == "0" ? "selected" : "")))))))))>N/A</option>
                             <option value="1" @(i == 0 && Model.screening_spv[8] == "1" ? "selected" : 
                                 (i == 1 && Model.screening_fo[8] == "1" ? "selected" : 
                                 (i == 2 && Model.screening_1[8] == "1" ? "selected" : 
@@ -1286,6 +1289,15 @@
                                 (i == 6 && Model.screening_5[8] == "2" ? "selected" : 
                                 (i == 7 && Model.screening_6[8] == "2" ? "selected" : 
                                 (i == 8 && Model.screening_7[8] == "2" ? "selected" : "")))))))))>No</option>  
+                            <option value="0" @(i == 0 && Model.screening_spv[8] == "0" ? "selected" : 
+                                (i == 1 && Model.screening_fo[8] == "0" ? "selected" : 
+                                (i == 2 && Model.screening_1[8] == "0" ? "selected" : 
+                                (i == 3 && Model.screening_2[8] == "0" ? "selected" : 
+                                (i == 4 && Model.screening_3[8] == "0" ? "selected" : 
+                                (i == 5 && Model.screening_4[8] == "0" ? "selected" : 
+                                (i == 6 && Model.screening_5[8] == "0" ? "selected" : 
+                                (i == 7 && Model.screening_6[8] == "0" ? "selected" : 
+                                (i == 8 && Model.screening_7[8] == "0" ? "selected" : "")))))))))>N/A</option>
                         </select>
                     </td>
                   }
@@ -1340,7 +1352,7 @@
                     {
                         if (Model.acc_gas_tester_approve == null && (user_hw[4] == true || user_hw[3] == true) && Model.status == (int)HwEntity.statusHW.FOSCREENING)
                         {
-                            <button class="btn" type="button" id="gas_tester_acc">Accept</button><br />
+                            <button class="btn btn-success" type="button" id="gas_tester_acc">Accept</button><br />
                             <span id="loading_gas_tester_acc" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                         }
                         else
@@ -1361,7 +1373,7 @@
                 <td> < 30 ppm</td>
                 <td><input type="text" class="table-input table-input-120" id="other_gas" value="@Model.other_gas" @((user_hw[4] == true || user_hw[3] == true) && isCanEdit[0] == true ? "" : "disabled") /></td>
                 <td rowspan="2"> Worker representative</td>
-                <td rowspan="2"> <span>@(listUser.listUser.Where(p => p.id == Model.work_leader.AsInt()).FirstOrDefault().alpha_name)</span></td>
+                <td rowspan="2"> <span>@(Model.is_guest ? Model.work_leader : listUser.listUser.Where(p => p.id == Model.work_leader.AsInt()).FirstOrDefault().alpha_name)</span></td>
             </tr>
             <tr>
                 <td>
@@ -1386,20 +1398,20 @@
                 <td class="td-centre">
                     @if (Model.acc_work_leader_approve == null && (user_hw[0] == true || user_hw[1] == true) && Model.status == (int)HwEntity.statusHW.GASTESTER)
                     {
-                        <button class="btn" type="button" id="work_leader_acc">Accept</button><br />
+                        <button class="btn btn-success" type="button" id="work_leader_acc">Accept</button><br />
                         <span id="loading_work_leader_acc" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                     }
                     else
                     {
                         <img id="img_approve_work_leader" width="50" height="50" @(Model.acc_work_leader_approve == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.acc_work_leader_approve == null ? "" : Model.acc_work_leader_approve.Substring(1))"/><br />
                     }
-                    <span>@(listUser.listUser.Where(p => p.id == Model.work_leader.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                    <span>@(Model.is_guest ? Model.work_leader : listUser.listUser.Where(p => p.id == Model.work_leader.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     <strong><u>Work Leader</u></strong>
                 </td>
                 <td class="td-centre">
                     @if (Model.acc_supervisor_approve == null && user_hw[1] == true && Model.status == (int)HwEntity.statusHW.ACCWORKLEADER)
                     {
-                        <button class="btn" type="button" id="supervisor_reject">Reject</button><button class="btn" type="button" id="supervisor_acc">Accept</button><br />
+                        <button class="btn btn-danger" type="button" id="supervisor_reject">Reject</button><button class="btn btn-success" type="button" id="supervisor_acc">Accept</button><br />
                         <span id="loading_supervisor_acc" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                     }
                     else
@@ -1449,7 +1461,7 @@
                 <td class="td-centre">
                     @if (Model.acc_fo_approve == null && user_hw[3] == true && Model.status == (int)HwEntity.statusHW.ACCSPV)
                     {
-                        <button class="btn" type="button" id="fo_reject">Reject</button><button class="btn" type="button" id="fo_acc">Accept</button><br />
+                        <button class="btn btn-danger" type="button" id="fo_reject">Reject</button><button class="btn btn-success" type="button" id="fo_acc">Accept</button><br />
                         <span id="loading_fo_acc" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                     }
                     else
@@ -1458,11 +1470,15 @@
                     }
                     @if (Model.acc_fo != null)
                     {
-                        if ((Model.acc_fo_approve == null && Model.acc_fo_delegate == requestor.id.ToString()) || (Model.acc_fo_approve != null && Model.acc_fo_approve.Substring(0, 1) == "d"))
+                        if (Model.acc_fo_approve == null && user_hw[3] == true && Model.acc_fo != requestor.id.ToString())
+                        {
+                            <span>@listUser.listUser.Where(p => p.id == requestor.id).FirstOrDefault().alpha_name</span><br />
+                        }
+                        else if (Model.acc_fo_approve != null && Model.acc_fo_approve.Substring(0, 1) == "d")
                         {
                             <span>@listUser.listUser.Where(p => p.id == Model.acc_fo_delegate.AsInt()).FirstOrDefault().alpha_name</span><br />
                         }
-                        <span>@((Model.acc_fo_approve == null && Model.acc_fo_delegate == requestor.id.ToString()) || (Model.acc_fo_approve != null && Model.acc_fo_approve.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.acc_fo.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                        <span>@((Model.acc_fo_approve == null && user_hw[3] == true && Model.acc_fo != requestor.id.ToString()) || (Model.acc_fo_approve != null && Model.acc_fo_approve.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.acc_fo.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                     <strong><u>Facility Owner</u></strong>
                 </td>
@@ -1529,7 +1545,7 @@
                     {
                         if (Model.ext_gas_tester_approve_1 == null && user_hw[8] == true && Model.status == (int)HwEntity.statusHW.EXTFOSCREENING1)
                         {
-                            <button class="btn ext_gas_tester_acc" type="button" ext-no="1">Accept</button><br />
+                            <button class="btn btn-success ext_gas_tester_acc" type="button" ext-no="1">Accept</button><br />
                             <span id="loading_ext_gas_tester_acc_1" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                         }
                         else
@@ -1542,19 +1558,19 @@
                 <td class="text-center">
                     @if (Model.ext_work_leader_approve_1 == null && user_hw[0] == true && Model.status == (int)HwEntity.statusHW.EXTGASTESTER1)
                     {
-                        <button class="btn ext_work_leader_acc" type="button" ext-no="1">Accept</button><br />
+                        <button class="btn btn-success ext_work_leader_acc" type="button" ext-no="1">Accept</button><br />
                         <span id="loading_ext_work_leader_acc_1" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                     }
                     else
                     {
                         <img id="img_approve_ext_work_leader_1" width="50" height="50" @(Model.ext_work_leader_approve_1 == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.ext_work_leader_approve_1 == null ? "" : Model.ext_work_leader_approve_1.Substring(1))"/><br />
                     }
-                    <span>@(listUser.listUser.Where(p => p.id == Model.ext_work_leader_1.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                    <span>@(Model.is_guest ? Model.ext_work_leader_1 : listUser.listUser.Where(p => p.id == Model.ext_work_leader_1.AsInt()).FirstOrDefault().alpha_name)</span><br />
                 </td>
                 <td class="text-center">
                     @if (Model.ext_fo_approve_1 == null && user_hw[9] == true && Model.status == (int)HwEntity.statusHW.EXTACCWORKLEADER1)
                     {
-                        <button class="btn ext_fo_reject" type="button" ext-no="1">Reject</button><button class="btn ext_fo_acc" type="button" ext-no="1">Accept</button><br />
+                        <button class="btn btn-danger ext_fo_reject" type="button" ext-no="1">Reject</button><button class="btn btn-success ext_fo_acc" type="button" ext-no="1">Accept</button><br />
                         <span id="loading_ext_fo_acc_1" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                     }
                     else
@@ -1563,11 +1579,15 @@
                     }
                     @if (Model.ext_fo_1 != null)
                     {
-                        if ((Model.ext_fo_approve_1 == null && Model.ext_fo_delegate_1 == requestor.id.ToString()) || (Model.ext_fo_approve_1 != null && Model.ext_fo_approve_1.Substring(0, 1) == "d"))
+                        if (Model.ext_fo_approve_1 == null && user_hw[9] == true && Model.ext_fo_1 != requestor.id.ToString())
+                        {
+                            <span>@listUser.listUser.Where(p => p.id == requestor.id).FirstOrDefault().alpha_name</span><br />
+                        }
+                        else if (Model.ext_fo_approve_1 != null && Model.ext_fo_approve_1.Substring(0, 1) == "d")
                         {
                             <span>@listUser.listUser.Where(p => p.id == Model.ext_fo_delegate_1.AsInt()).FirstOrDefault().alpha_name</span><br />
                         }
-                        <span>@((Model.ext_fo_approve_1 == null && Model.ext_fo_delegate_1 == requestor.id.ToString()) || (Model.ext_fo_approve_1 != null && Model.ext_fo_approve_1.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.ext_fo_1.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                        <span>@((Model.ext_fo_approve_1 == null && user_hw[9] == true && Model.ext_fo_1 != requestor.id.ToString()) || (Model.ext_fo_approve_1 != null && Model.ext_fo_approve_1.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.ext_fo_1.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                 </td>
                 <td><input id="ext_new_validity_1" class="datetimepicker" value="@(Model.ext_new_validity_1 != null ? Model.ext_new_validity_1.Value.ToString("MM/dd/yyyy hh:mm tt") : DateTime.Today.AddDays(1).AddHours(7).ToString("MM/dd/yyyy hh:mm tt"))"  disabled/></td>
@@ -1599,7 +1619,7 @@
                     {
                         if (Model.ext_gas_tester_approve_2 == null && user_hw[8] == true && Model.status == (int)HwEntity.statusHW.EXTFOSCREENING2)
                         {
-                            <button class="btn ext_gas_tester_acc" type="button" ext-no="2">Accept</button><br />
+                            <button class="btn btn-success ext_gas_tester_acc" type="button" ext-no="2">Accept</button><br />
                             <span id="loading_ext_gas_tester_acc_2" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                         }
                         else
@@ -1612,19 +1632,19 @@
                 <td class="text-center">
                     @if (Model.ext_work_leader_approve_2 == null && user_hw[0] == true && Model.status == (int)HwEntity.statusHW.EXTGASTESTER2)
                     {
-                        <button class="btn ext_work_leader_acc" type="button" ext-no="2">Accept</button><br />
+                        <button class="btn btn-success ext_work_leader_acc" type="button" ext-no="2">Accept</button><br />
                         <span id="loading_ext_work_leader_acc_2" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                     }
                     else
                     {
                         <img id="img_approve_ext_work_leader_2" width="50" height="50" @(Model.ext_work_leader_approve_2 == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.ext_work_leader_approve_2 == null ? "" : Model.ext_work_leader_approve_2.Substring(2))"/><br />
                     }
-                    <span>@(listUser.listUser.Where(p => p.id == Model.ext_work_leader_2.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                    <span>@(Model.is_guest ? Model.ext_work_leader_2 : listUser.listUser.Where(p => p.id == Model.ext_work_leader_2.AsInt()).FirstOrDefault().alpha_name)</span><br />
                 </td>
                 <td class="text-center">
                     @if (Model.ext_fo_approve_2 == null && user_hw[9] == true && Model.status == (int)HwEntity.statusHW.EXTACCWORKLEADER2)
                     {
-                        <button class="btn ext_fo_reject" type="button" ext-no="2">Reject</button><button class="btn ext_fo_acc" type="button" ext-no="2">Accept</button><br />
+                        <button class="btn btn-danger ext_fo_reject" type="button" ext-no="2">Reject</button><button class="btn btn-success ext_fo_acc" type="button" ext-no="2">Accept</button><br />
                         <span id="loading_ext_fo_acc_2" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                     }
                     else
@@ -1633,11 +1653,14 @@
                     }
                     @if (Model.ext_fo_2 != null)
                     {
-                        if ((Model.ext_fo_approve_2 == null && Model.ext_fo_delegate_2 == requestor.id.ToString()) || (Model.ext_fo_approve_2 != null && Model.ext_fo_approve_2.Substring(0, 2) == "d"))
+                        if (Model.ext_fo_approve_2 == null && user_hw[9] == true && Model.ext_fo_2 != requestor.id.ToString())
+                        {
+                            <span>@listUser.listUser.Where(p => p.id == requestor.id).FirstOrDefault().alpha_name</span><br />
+                        }else if (Model.ext_fo_approve_2 != null && Model.ext_fo_approve_2.Substring(0, 1) == "d")
                         {
                             <span>@listUser.listUser.Where(p => p.id == Model.ext_fo_delegate_2.AsInt()).FirstOrDefault().alpha_name</span><br />
                         }
-                        <span>@((Model.ext_fo_approve_2 == null && Model.ext_fo_delegate_2 == requestor.id.ToString()) || (Model.ext_fo_approve_2 != null && Model.ext_fo_approve_2.Substring(0, 2) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.ext_fo_2.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                        <span>@((Model.ext_fo_approve_2 == null && user_hw[9] == true && Model.ext_fo_2 != requestor.id.ToString()) || (Model.ext_fo_approve_2 != null && Model.ext_fo_approve_2.Substring(0, 2) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.ext_fo_2.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                 </td>
                 <td><input id="ext_new_validity_2" class="datetimepicker" value="@(Model.ext_new_validity_2 != null ? Model.ext_new_validity_2.Value.ToString("MM/dd/yyyy hh:mm tt") : DateTime.Today.AddDays(1).AddHours(7).ToString("MM/dd/yyyy hh:mm tt"))"  disabled/></td>
@@ -1669,7 +1692,7 @@
                     {
                         if (Model.ext_gas_tester_approve_3 == null && user_hw[8] == true && Model.status == (int)HwEntity.statusHW.EXTFOSCREENING3)
                         {
-                            <button class="btn ext_gas_tester_acc" type="button" ext-no="3">Accept</button><br />
+                            <button class="btn btn-success ext_gas_tester_acc" type="button" ext-no="3">Accept</button><br />
                             <span id="loading_ext_gas_tester_acc_3" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                         }
                         else
@@ -1682,19 +1705,19 @@
                 <td class="text-center">
                     @if (Model.ext_work_leader_approve_3 == null && user_hw[0] == true && Model.status == (int)HwEntity.statusHW.EXTGASTESTER3)
                     {
-                        <button class="btn ext_work_leader_acc" type="button" ext-no="3">Accept</button><br />
+                        <button class="btn btn-success ext_work_leader_acc" type="button" ext-no="3">Accept</button><br />
                         <span id="loading_ext_work_leader_acc_3" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                     }
                     else
                     {
                         <img id="img_approve_ext_work_leader_3" width="50" height="50" @(Model.ext_work_leader_approve_3 == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.ext_work_leader_approve_3 == null ? "" : Model.ext_work_leader_approve_3.Substring(3))"/><br />
                     }
-                    <span>@(listUser.listUser.Where(p => p.id == Model.ext_work_leader_3.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                    <span>@(Model.is_guest ? Model.ext_work_leader_3 : listUser.listUser.Where(p => p.id == Model.ext_work_leader_3.AsInt()).FirstOrDefault().alpha_name)</span><br />
                 </td>
                 <td class="text-center">
                     @if (Model.ext_fo_approve_3 == null && user_hw[9] == true && Model.status == (int)HwEntity.statusHW.EXTACCWORKLEADER3)
                     {
-                        <button class="btn ext_fo_reject" type="button" ext-no="3">Reject</button><button class="btn ext_fo_acc" type="button" ext-no="3">Accept</button><br />
+                        <button class="btn btn-danger ext_fo_reject" type="button" ext-no="3">Reject</button><button class="btn btn-success ext_fo_acc" type="button" ext-no="3">Accept</button><br />
                         <span id="loading_ext_fo_acc_3" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                     }
                     else
@@ -1703,11 +1726,14 @@
                     }
                     @if (Model.ext_fo_3 != null)
                     {
-                        if ((Model.ext_fo_approve_3 == null && Model.ext_fo_delegate_3 == requestor.id.ToString()) || (Model.ext_fo_approve_3 != null && Model.ext_fo_approve_3.Substring(0, 3) == "d"))
+                        if (Model.ext_fo_approve_3 == null && user_hw[9] == true && Model.ext_fo_3 != requestor.id.ToString())
+                        {
+                            <span>@listUser.listUser.Where(p => p.id == requestor.id).FirstOrDefault().alpha_name</span><br />
+                        }else if (Model.ext_fo_approve_3 != null && Model.ext_fo_approve_3.Substring(0, 1) == "d")
                         {
                             <span>@listUser.listUser.Where(p => p.id == Model.ext_fo_delegate_3.AsInt()).FirstOrDefault().alpha_name</span><br />
                         }
-                        <span>@((Model.ext_fo_approve_3 == null && Model.ext_fo_delegate_3 == requestor.id.ToString()) || (Model.ext_fo_approve_3 != null && Model.ext_fo_approve_3.Substring(0, 3) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.ext_fo_3.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                        <span>@((Model.ext_fo_approve_3 == null && user_hw[9] == true && Model.ext_fo_3 != requestor.id.ToString()) || (Model.ext_fo_approve_3 != null && Model.ext_fo_approve_3.Substring(0, 3) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.ext_fo_3.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                 </td>
                 <td><input id="ext_new_validity_3" class="datetimepicker" value="@(Model.ext_new_validity_3 != null ? Model.ext_new_validity_3.Value.ToString("MM/dd/yyyy hh:mm tt") : DateTime.Today.AddDays(1).AddHours(7).ToString("MM/dd/yyyy hh:mm tt"))"  disabled/></td>
@@ -1739,7 +1765,7 @@
                     {
                         if (Model.ext_gas_tester_approve_4 == null && user_hw[8] == true && Model.status == (int)HwEntity.statusHW.EXTFOSCREENING4)
                         {
-                            <button class="btn ext_gas_tester_acc" type="button" ext-no="4">Accept</button><br />
+                            <button class="btn btn-success ext_gas_tester_acc" type="button" ext-no="4">Accept</button><br />
                         <span id="loading_ext_gas_tester_acc_4" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                         }
                         else
@@ -1752,19 +1778,19 @@
                 <td class="text-center">
                     @if (Model.ext_work_leader_approve_4 == null && user_hw[0] == true && Model.status == (int)HwEntity.statusHW.EXTGASTESTER4)
                     {
-                        <button class="btn ext_work_leader_acc" type="button" ext-no="4">Accept</button><br />
+                        <button class="btn btn-success ext_work_leader_acc" type="button" ext-no="4">Accept</button><br />
                         <span id="loading_ext_work_leader_acc_4" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                     }
                     else
                     {
                         <img id="img_approve_ext_work_leader_4" width="50" height="50" @(Model.ext_work_leader_approve_4 == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.ext_work_leader_approve_4 == null ? "" : Model.ext_work_leader_approve_4.Substring(4))"/><br />
                     }
-                    <span>@(listUser.listUser.Where(p => p.id == Model.ext_work_leader_4.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                    <span>@(Model.is_guest ? Model.ext_work_leader_4 : listUser.listUser.Where(p => p.id == Model.ext_work_leader_4.AsInt()).FirstOrDefault().alpha_name)</span><br />
                 </td>
                 <td class="text-center">
                     @if (Model.ext_fo_approve_4 == null && user_hw[9] == true && Model.status == (int)HwEntity.statusHW.EXTACCWORKLEADER4)
                     {
-                        <button class="btn ext_fo_reject" type="button" ext-no="4">Reject</button><button class="btn ext_fo_acc" type="button" ext-no="4">Accept</button><br />
+                        <button class="btn btn-danger ext_fo_reject" type="button" ext-no="4">Reject</button><button class="btn btn-success ext_fo_acc" type="button" ext-no="4">Accept</button><br />
                         <span id="loading_ext_fo_acc_4" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                     }
                     else
@@ -1773,11 +1799,14 @@
                     }
                     @if (Model.ext_fo_4 != null)
                     {
-                        if ((Model.ext_fo_approve_4 == null && Model.ext_fo_delegate_4 == requestor.id.ToString()) || (Model.ext_fo_approve_4 != null && Model.ext_fo_approve_4.Substring(0, 4) == "d"))
+                        if (Model.ext_fo_approve_4 == null && user_hw[9] == true && Model.ext_fo_4 != requestor.id.ToString())
+                        {
+                            <span>@listUser.listUser.Where(p => p.id == requestor.id).FirstOrDefault().alpha_name</span><br />
+                        }else if (Model.ext_fo_approve_4 != null && Model.ext_fo_approve_4.Substring(0, 1) == "d")
                         {
                             <span>@listUser.listUser.Where(p => p.id == Model.ext_fo_delegate_4.AsInt()).FirstOrDefault().alpha_name</span><br />
                         }
-                        <span>@((Model.ext_fo_approve_4 == null && Model.ext_fo_delegate_4 == requestor.id.ToString()) || (Model.ext_fo_approve_4 != null && Model.ext_fo_approve_4.Substring(0, 4) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.ext_fo_4.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                        <span>@((Model.ext_fo_approve_4 == null && user_hw[9] == true && Model.ext_fo_4 != requestor.id.ToString()) || (Model.ext_fo_approve_4 != null && Model.ext_fo_approve_4.Substring(0, 4) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.ext_fo_4.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                 </td>
                 <td><input id="ext_new_validity_4" class="datetimepicker" value="@(Model.ext_new_validity_4 != null ? Model.ext_new_validity_4.Value.ToString("MM/dd/yyyy hh:mm tt") : DateTime.Today.AddDays(1).AddHours(7).ToString("MM/dd/yyyy hh:mm tt"))"  disabled/></td>
@@ -1809,7 +1838,7 @@
                     {
                         if (Model.ext_gas_tester_approve_5 == null && user_hw[8] == true && Model.status == (int)HwEntity.statusHW.EXTFOSCREENING5)
                         {
-                            <button class="btn ext_gas_tester_acc" type="button" ext-no="5">Accept</button><br />
+                            <button class="btn btn-success ext_gas_tester_acc" type="button" ext-no="5">Accept</button><br />
                             <span id="loading_ext_gas_tester_acc_5" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                         }
                         else
@@ -1822,19 +1851,19 @@
                 <td class="text-center">
                     @if (Model.ext_work_leader_approve_5 == null && user_hw[0] == true && Model.status == (int)HwEntity.statusHW.EXTGASTESTER5)
                     {
-                        <button class="btn ext_work_leader_acc" type="button" ext-no="5">Accept</button><br />
+                        <button class="btn btn-success ext_work_leader_acc" type="button" ext-no="5">Accept</button><br />
                         <span id="loading_ext_work_leader_acc_5" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                     }
                     else
                     {
                         <img id="img_approve_ext_work_leader_5" width="50" height="50" @(Model.ext_work_leader_approve_5 == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.ext_work_leader_approve_5 == null ? "" : Model.ext_work_leader_approve_5.Substring(5))"/><br />
                     }
-                    <span>@(listUser.listUser.Where(p => p.id == Model.ext_work_leader_5.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                    <span>@(Model.is_guest ? Model.ext_work_leader_5 : listUser.listUser.Where(p => p.id == Model.ext_work_leader_5.AsInt()).FirstOrDefault().alpha_name)</span><br />
                 </td>
                 <td class="text-center">
                     @if (Model.ext_fo_approve_5 == null && user_hw[9] == true && Model.status == (int)HwEntity.statusHW.EXTACCWORKLEADER5)
                     {
-                        <button class="btn ext_fo_reject" type="button" ext-no="5">Reject</button><button class="btn ext_fo_acc" type="button" ext-no="5">Accept</button><br />
+                        <button class="btn btn-danger ext_fo_reject" type="button" ext-no="5">Reject</button><button class="btn btn-success ext_fo_acc" type="button" ext-no="5">Accept</button><br />
                         <span id="loading_ext_fo_acc_5" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                     }
                     else
@@ -1843,11 +1872,14 @@
                     }
                     @if (Model.ext_fo_5 != null)
                     {
-                        if ((Model.ext_fo_approve_5 == null && Model.ext_fo_delegate_5 == requestor.id.ToString()) || (Model.ext_fo_approve_5 != null && Model.ext_fo_approve_5.Substring(0, 5) == "d"))
+                        if (Model.ext_fo_approve_5 == null && user_hw[9] == true && Model.ext_fo_5 != requestor.id.ToString())
+                        {
+                            <span>@listUser.listUser.Where(p => p.id == requestor.id).FirstOrDefault().alpha_name</span><br />
+                        }else if (Model.ext_fo_approve_5 != null && Model.ext_fo_approve_5.Substring(0, 1) == "d")
                         {
                             <span>@listUser.listUser.Where(p => p.id == Model.ext_fo_delegate_5.AsInt()).FirstOrDefault().alpha_name</span><br />
                         }
-                        <span>@((Model.ext_fo_approve_5 == null && Model.ext_fo_delegate_5 == requestor.id.ToString()) || (Model.ext_fo_approve_5 != null && Model.ext_fo_approve_5.Substring(0, 5) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.ext_fo_5.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                        <span>@((Model.ext_fo_approve_5 == null && user_hw[9] == true && Model.ext_fo_5 != requestor.id.ToString()) || (Model.ext_fo_approve_5 != null && Model.ext_fo_approve_5.Substring(0, 5) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.ext_fo_5.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                 </td>
                 <td><input id="ext_new_validity_5" class="datetimepicker" value="@(Model.ext_new_validity_5 != null ? Model.ext_new_validity_5.Value.ToString("MM/dd/yyyy hh:mm tt") : DateTime.Today.AddDays(1).AddHours(7).ToString("MM/dd/yyyy hh:mm tt"))"  disabled/></td>
@@ -1879,7 +1911,7 @@
                     {
                         if (Model.ext_gas_tester_approve_6 == null && user_hw[8] == true && Model.status == (int)HwEntity.statusHW.EXTFOSCREENING6)
                         {
-                            <button class="btn ext_gas_tester_acc" type="button" ext-no="6">Accept</button><br />
+                            <button class="btn btn-success ext_gas_tester_acc" type="button" ext-no="6">Accept</button><br />
                             <span id="loading_ext_gas_tester_acc_6" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                         }
                         else
@@ -1892,19 +1924,19 @@
                 <td class="text-center">
                     @if (Model.ext_work_leader_approve_6 == null && user_hw[0] == true && Model.status == (int)HwEntity.statusHW.EXTGASTESTER6)
                     {
-                        <button class="btn ext_work_leader_acc" type="button" ext-no="6">Accept</button><br />
+                        <button class="btn btn-success ext_work_leader_acc" type="button" ext-no="6">Accept</button><br />
                         <span id="loading_ext_work_leader_acc_6" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                     }
                     else
                     {
                         <img id="img_approve_ext_work_leader_6" width="50" height="50" @(Model.ext_work_leader_approve_6 == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.ext_work_leader_approve_6 == null ? "" : Model.ext_work_leader_approve_6.Substring(6))"/><br />
                     }
-                    <span>@(listUser.listUser.Where(p => p.id == Model.ext_work_leader_6.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                    <span>@(Model.is_guest ? Model.ext_work_leader_6 : listUser.listUser.Where(p => p.id == Model.ext_work_leader_6.AsInt()).FirstOrDefault().alpha_name)</span><br />
                 </td>
                 <td class="text-center">
                     @if (Model.ext_fo_approve_6 == null && user_hw[9] == true && Model.status == (int)HwEntity.statusHW.EXTACCWORKLEADER6)
                     {
-                        <button class="btn ext_fo_reject" type="button" ext-no="6">Reject</button><button class="btn ext_fo_acc" type="button" ext-no="6">Accept</button><br />
+                        <button class="btn btn-danger ext_fo_reject" type="button" ext-no="6">Reject</button><button class="btn btn-success ext_fo_acc" type="button" ext-no="6">Accept</button><br />
                         <span id="loading_ext_fo_acc_6" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                     }
                     else
@@ -1913,11 +1945,14 @@
                     }
                     @if (Model.ext_fo_6 != null)
                     {
-                        if ((Model.ext_fo_approve_6 == null && Model.ext_fo_delegate_6 == requestor.id.ToString()) || (Model.ext_fo_approve_6 != null && Model.ext_fo_approve_6.Substring(0, 6) == "d"))
+                        if (Model.ext_fo_approve_6 == null && user_hw[9] == true && Model.ext_fo_6 != requestor.id.ToString())
+                        {
+                            <span>@listUser.listUser.Where(p => p.id == requestor.id).FirstOrDefault().alpha_name</span><br />
+                        }else if (Model.ext_fo_approve_6 != null && Model.ext_fo_approve_6.Substring(0, 1) == "d")
                         {
                             <span>@listUser.listUser.Where(p => p.id == Model.ext_fo_delegate_6.AsInt()).FirstOrDefault().alpha_name</span><br />
                         }
-                        <span>@((Model.ext_fo_approve_6 == null && Model.ext_fo_delegate_6 == requestor.id.ToString()) || (Model.ext_fo_approve_6 != null && Model.ext_fo_approve_6.Substring(0, 6) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.ext_fo_6.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                        <span>@((Model.ext_fo_approve_6 == null && user_hw[9] == true && Model.ext_fo_6 != requestor.id.ToString()) || (Model.ext_fo_approve_6 != null && Model.ext_fo_approve_6.Substring(0, 6) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.ext_fo_6.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                 </td>
                 <td><input id="ext_new_validity_6" class="datetimepicker" value="@(Model.ext_new_validity_6 != null ? Model.ext_new_validity_6.Value.ToString("MM/dd/yyyy hh:mm tt") : DateTime.Today.AddDays(1).AddHours(7).ToString("MM/dd/yyyy hh:mm tt"))"  disabled/></td>
@@ -1949,7 +1984,7 @@
                     {
                         if (Model.ext_gas_tester_approve_7 == null && user_hw[8] == true && Model.status == (int)HwEntity.statusHW.EXTFOSCREENING7)
                         {
-                            <button class="btn ext_gas_tester_acc" type="button" ext-no="7">Accept</button><br />
+                            <button class="btn btn-success ext_gas_tester_acc" type="button" ext-no="7">Accept</button><br />
                             <span id="loading_ext_gas_tester_acc_7" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                         }
                         else
@@ -1962,19 +1997,19 @@
                 <td class="text-center">
                     @if (Model.ext_work_leader_approve_7 == null && user_hw[0] == true && Model.status == (int)HwEntity.statusHW.EXTGASTESTER7)
                     {
-                        <button class="btn ext_work_leader_acc" type="button" ext-no="7">Accept</button><br />
+                        <button class="btn btn-success ext_work_leader_acc" type="button" ext-no="7">Accept</button><br />
                         <span id="loading_ext_work_leader_acc_7" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                     }
                     else
                     {
                         <img id="img_approve_ext_work_leader_7" width="50" height="50" @(Model.ext_work_leader_approve_7 == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.ext_work_leader_approve_7 == null ? "" : Model.ext_work_leader_approve_7.Substring(7))"/><br />
                     }
-                    <span>@(listUser.listUser.Where(p => p.id == Model.ext_work_leader_7.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                    <span>@(Model.is_guest ? Model.ext_work_leader_7 : listUser.listUser.Where(p => p.id == Model.ext_work_leader_7.AsInt()).FirstOrDefault().alpha_name)</span><br />
                 </td>
                 <td class="text-center">
                     @if (Model.ext_fo_approve_7 == null && user_hw[9] == true && Model.status == (int)HwEntity.statusHW.EXTACCWORKLEADER7)
                     {
-                        <button class="btn ext_fo_reject" type="button" ext-no="7">Reject</button><button class="btn ext_fo_acc" type="button" ext-no="7">Accept</button><br />
+                        <button class="btn btn-danger ext_fo_reject" type="button" ext-no="7">Reject</button><button class="btn btn-success ext_fo_acc" type="button" ext-no="7">Accept</button><br />
                         <span id="loading_ext_fo_acc_7" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                     }
                     else
@@ -1983,11 +2018,14 @@
                     }
                     @if (Model.ext_fo_7 != null)
                     {
-                        if ((Model.ext_fo_approve_7 == null && Model.ext_fo_delegate_7 == requestor.id.ToString()) || (Model.ext_fo_approve_7 != null && Model.ext_fo_approve_7.Substring(0, 7) == "d"))
+                        if (Model.ext_fo_approve_7 == null && user_hw[9] == true && Model.ext_fo_7 != requestor.id.ToString())
+                        {
+                            <span>@listUser.listUser.Where(p => p.id == requestor.id).FirstOrDefault().alpha_name</span><br />
+                        }else if (Model.ext_fo_approve_7 != null && Model.ext_fo_approve_7.Substring(0, 1) == "d")
                         {
                             <span>@listUser.listUser.Where(p => p.id == Model.ext_fo_delegate_7.AsInt()).FirstOrDefault().alpha_name</span><br />
                         }
-                        <span>@((Model.ext_fo_approve_7 == null && Model.ext_fo_delegate_7 == requestor.id.ToString()) || (Model.ext_fo_approve_7 != null && Model.ext_fo_approve_7.Substring(0, 7) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.ext_fo_7.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                        <span>@((Model.ext_fo_approve_7 == null && user_hw[9] == true && Model.ext_fo_7 != requestor.id.ToString()) || (Model.ext_fo_approve_7 != null && Model.ext_fo_approve_7.Substring(0, 7) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.ext_fo_7.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                 </td>
                 <td><input id="ext_new_validity_7" class="datetimepicker" value="@(Model.ext_new_validity_7 != null ? Model.ext_new_validity_7.Value.ToString("MM/dd/yyyy hh:mm tt") : DateTime.Today.AddDays(1).AddHours(7).ToString("MM/dd/yyyy hh:mm tt"))"  disabled/></td>
@@ -2012,20 +2050,20 @@
                 <td class="td-centre">
                     @if (Model.can_work_leader_approve == null && user_hw[0] == true && Model.status == (int)HwEntity.statusHW.CANCEL)
                     {
-                        <button class="btn" type="button" id="work_leader_can">Accept</button><br />
+                        <button class="btn btn-success" type="button" id="work_leader_can">Accept</button><br />
                         <span id="loading_work_leader_can" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                     }
                     else
                     {
                         <img id="img_approve_work_leade_canr" width="50" height="50" @(Model.can_work_leader_approve == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_work_leader_approve == null ? "" : Model.can_work_leader_approve.Substring(1))"/><br />
                     }
-                    <span>@(listUser.listUser.Where(p => p.id == Model.work_leader.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                    <span>@(Model.is_guest ? Model.work_leader : listUser.listUser.Where(p => p.id == Model.work_leader.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     <strong><u>Work Leader</u></strong>
                 </td>
                 <td class="td-centre">
                     @if (Model.can_supervisor_approve == null && user_hw[5] == true && Model.status == (int)HwEntity.statusHW.CANWORKLEADER)
                     {
-                        <button class="btn" type="button" id="supervisor_reject_can">Reject</button><button class="btn" type="button" id="supervisor_can">Accept</button><br />
+                        <button class="btn btn-danger" type="button" id="supervisor_reject_can">Reject</button><button class="btn btn-success" type="button" id="supervisor_can">Accept</button><br />
                         <span id="loading_supervisor_reject_can" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                     }
                     else
@@ -2065,7 +2103,7 @@
                 <td class="td-centre">
                     @if (Model.can_fo_approve == null && user_hw[7] == true && Model.status == (int)HwEntity.statusHW.CANSPV)
                     {
-                        <button class="btn" type="button" id="fo_reject_can">Reject</button><button class="btn" type="button" id="fo_can">Accept</button><br />
+                        <button class="btn btn-danger" type="button" id="fo_reject_can">Reject</button><button class="btn btn-success" type="button" id="fo_can">Accept</button><br />
                         <span id="loading_fo_can" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span><br />
                     }
                     else
@@ -2074,11 +2112,15 @@
                     }
                     @if (Model.can_fo != null)
                     {
-                        if ((Model.can_fo_approve == null && Model.can_fo_delegate == requestor.id.ToString()) || (Model.can_fo_approve != null && Model.can_fo_approve.Substring(0, 1) == "d"))
+                        if (Model.can_fo_approve == null && user_hw[7] == true && Model.can_fo != requestor.id.ToString())
+                        {
+                            <span>@listUser.listUser.Where(p => p.id == requestor.id).FirstOrDefault().alpha_name</span><br />
+                        }
+                        else if (Model.can_fo_approve != null && Model.can_fo_approve.Substring(0, 1) == "d")
                         {
                             <span>@listUser.listUser.Where(p => p.id == Model.can_fo_delegate.AsInt()).FirstOrDefault().alpha_name</span><br />
                         }
-                        <span>@((Model.can_fo_approve == null && Model.can_fo_delegate == requestor.id.ToString()) || (Model.can_fo_approve != null && Model.can_fo_approve.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.can_fo.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                        <span>@((Model.can_fo_approve == null && user_hw[7] == true && Model.can_fo != requestor.id.ToString()) || (Model.can_fo_approve != null && Model.can_fo_approve.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.can_fo.AsInt()).FirstOrDefault().alpha_name)</span><br />
                     }
                     <strong><u>Facility Owner</u></strong>
                 </td>
@@ -2091,19 +2133,19 @@
     <button class="btn" onclick="back()">Back</button>  
     @if (isCanEdit[0] == true)
     {
-    <button class="btn" onclick="save()">Save</button>
+    <button class="btn btn-primary" onclick="save()">Save</button>
     }
     else if (isCanEdit[1] == true || isCanEdit[2] == true || isCanEdit[3] == true || isCanEdit[4] == true || isCanEdit[5] == true || isCanEdit[6] == true || isCanEdit[7] == true)
     {
-    <button class="btn" onclick="save()">Save</button>
+    <button class="btn btn-primary" onclick="save()">Save</button>
     }
-    @if (user_hw[0] == true && Model.status >= (int)HwEntity.statusHW.ACCFO && Model.status <= (int)HwEntity.statusHW.CANCEL && ptwStatus >= (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.ACCFO)
+    @if (((Model.is_guest && user_hw[1] == true) || user_hw[0] == true) && Model.status >= (int)HwEntity.statusHW.ACCFO && Model.status <= (int)HwEntity.statusHW.CANCEL && ptwStatus >= (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.ACCFO)
     {
         if (Model.isCanAddExtension())
         {
-    <button class="btn" onclick="addExtension()">Add Extension Hot Work</button>
+    <button class="btn btn-primary" onclick="addExtension()">Add Extension Hot Work</button>
         }
-    <button class="btn" onclick="closeHw()">Close Hot Work Permit</button>
+    <button class="btn btn-danger" onclick="closeHw()">Cancel Hot Work Permit</button>
     }
     <span id="loading" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span>
 </div>

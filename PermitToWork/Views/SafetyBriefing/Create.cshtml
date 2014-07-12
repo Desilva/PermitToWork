@@ -1,16 +1,14 @@
-﻿<script>
-    $(document).ready(function () {
-        addHandlerMenu();
-        $("#date").kendoDateTimePicker().data("kendoDateTimePicker");
-    });
-</script>
+﻿@model PermitToWork.Models.SafetyBriefing.SafetyBriefingEntity
+@{
+    bool[] isCanEdit = ViewBag.isCanEdit as bool[];
+    PermitToWork.Models.User.UserEntity requestor = Session["user"] as PermitToWork.Models.User.UserEntity;
+}
 <div id="content-header">
 	<h1>Safety Briefing</h1>
 </div>
 <div id="breadcrumb">
 	<a href="#" title="Go to Home" class="tip-bottom home"><i class="icon-home"></i> Home</a>
 	<a href="#"  class="tip-bottom ptw">Safety Briefing </a>
-    <a href="#" class="current">Create</a>
 </div>
 
 <div class="container-fluid header-form">
@@ -24,7 +22,7 @@
         </div>
 
         <div class="span3 no">
-            <br /><i>No : SB/20131212/001</i>
+            <br />
         </div>
     </div>
     <div class="row-fluid separator">
@@ -36,13 +34,13 @@
                 Section / <small>Bagian</small> 
             </div>
             <div class="span3">
-                <input type="text" id="section" class="table-input"/>
+                <input type="text" id="section" class="table-input" value="@Model.section" @(isCanEdit[0] ? "" : "disabled")/>
             </div>
             <div class="span2">
                 Date / <small>Tanggal</small>
             </div>
             <div class="span3">
-                <input id="date" class="datetimepicker" value="10/10/2011 12:00 AM" />
+                <input id="date" class="datetimepicker" value="@(Model.date != null ? Model.date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")" />
             </div>
         </div>
     </div>
@@ -53,13 +51,13 @@
                 Work Area / <small>Lokasi Kerja</small>
             </div>
             <div class="span3">
-                <input type="text" id="workArea" class="table-input"/>
+                <input type="text" id="work-area" class="table-input" value="@Model.work_area" @(isCanEdit[0] ? "" : "disabled") />
             </div>
             <div class="span2">
                 Topic / <small>Topik</small>
             </div>
             <div class="span3">
-                <input type="text" id="topic" class="table-input"/>
+                <input type="text" id="topic" class="table-input" value="@Model.topic" @(isCanEdit[0] ? "" : "disabled") />
             </div>
         </div>
     </div><br>
@@ -73,10 +71,10 @@
         <tbody>
             <tr>
                 <td>
-                    <textarea class="table-textarea" rows="9"></textarea>
+                    <textarea class="table-textarea" rows="9" id="hazard" @(isCanEdit[0] ? "" : "disabled")>@Model.hazard</textarea>
                 </td>
                 <td>
-                    <textarea class="table-textarea" rows="9"></textarea>
+                    <textarea class="table-textarea" rows="9" id="control-method" @(isCanEdit[0] ? "" : "disabled")>@Model.control_method</textarea>
                 </td>
             </tr>
             <tr>
@@ -97,10 +95,51 @@
     </table>
      <div class="row-fluid warning">
          <u>I have read and understood all of hazards associated with the works.</u><br/>
-         <strong></strong><small>Saya telah membaca dan memahami bahaya terkait dengan pekerjaan yang akan dilakukan</small></strong>
+         <strong><small>Saya telah membaca dan memahami bahaya terkait dengan pekerjaan yang akan dilakukan</small></strong>
     </div>
     <h5>List of Personel</h5>
-    <table class="table table-bordered">
+    <div class="row-fluid">
+        <div id="grid-safety-user"></div>
+    </div>
+    <div class="row-fluid">
+        <div class="span12">
+            Attachment(s)
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span12">
+            <input name="files" id="file-attachment" type="file" class="radiography-file" />
+            <ul id="existing-files-attachment" class="k-upload-files k-reset" style="display: none;">
+                @foreach (string file in Model.listDocumentUploaded)
+                {
+                <li class="k-file" data-att-id="@(file)">
+                    <span class="k-icon k-success">uploaded</span>
+                    <span class="k-filename" title="@(file)"><a href="@Url.Content("~/Upload/SafetyBriefing/" + Model.id + "/" + file)" target="_blank">@file</a><span class="k-progress"><span class="k-state-selected k-progress-status" style="width: 100%;"></span></span></span>
+                    <button type="button" class="k-button k-button-icontext k-upload-action" @(isCanEdit[0] ? "" : "disabled")><span class="k-icon k-delete"></span>Remove</button>
+                </li>
+                }
+            </ul>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span12">
+            @if (isCanEdit[0])
+            {
+                <input type="button" class="btn btn-success" value="Save for Print" id="send" />
+                <input type="button" class="btn btn-default" value="Save as Draft" id="save-draft" />
+            }
+            @if (isCanEdit[1])
+            {
+                <input type="button" class="btn btn-danger" value="Save for Cancellation" id="cancellation" />
+            }
+            @if (isCanEdit[2])
+            {
+                <a class="btn btn-primary" href="@Url.Action("Index", "Print", new { id = Model.id, type = 1, no = "" })">Print</a>
+            }
+            <input type="button" class="btn btn-default" value="Back" id="back" />
+        </div>
+    </div>
+    @*<table class="table table-bordered">
         <thead>
             <tr>
                 <th class="title-form th-centre"style="width:5%"><strong>No</strong></th>
@@ -303,5 +342,378 @@
                 <td></td>
             </tr>
         </tbody>
-    </table>
+    </table>*@
 </div>
+<!-- Modal -->
+<div id="user" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="Add" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="addLabel">User</h3>
+  </div>
+  <div class="modal-body">
+    <form class="form-horizontal">
+        <input type="hidden" id="glarf-user-id" value="0" />
+        <div class="control-group">
+            <label class="control-label" for="loto-point-agreed">User</label>
+            <div class="controls">
+                <ul class="inline">
+                    <li><label class="radio"><input name="seg-contractor" type="radio" value="1" id="extendPtw1" /> from Database</label>
+                    </li>
+                    <li><label class="radio"><input name="seg-contractor" type="radio" value="0" id="extendPtw0" /> Input Manual</label>
+                    </li>
+                </ul>
+            </div>
+            <div class="controls from-database" style="display:none">
+                <input id="user-from" data-text-field="alpha_name" data-value-field="id" />
+            </div>
+            <div class="controls input-manual" style="display:none">
+                <input type="text" id="user-manual">
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="loto-point-agreed">ID Badge No</label>
+            <div class="controls">
+                <input type="text" id="id-badge-no">
+            </div>
+        </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="save-user">Save</button>
+  </div>
+</div>
+<script type="text/x-kendo-template" id="command-template">
+    <div class="row-command">
+    # if('@isCanEdit[0]' == 'True') { #
+        <a class="k-button k-button-icontext k-grid-edit" href="\#" title="Edit" onclick="event.preventDefault();editUser(#= id #,'#= user #','#= id_badge #');"><span class="k-icon k-edit"></span>Edit</a>
+        <a class="k-button k-button-icontext k-grid-delete" href="\#" title="Delete"><span class="k-icon k-delete"></span>Delete</a>
+    # } #
+    </div>
+</script>
+<script type="text/x-kendo-template" id="toolbar-template">
+    <div class="row-command">
+    # if('@isCanEdit[0]' == 'True') { #
+        <a class="k-button k-button-icontext k-grid-add" href="\#" title="Add New User" onclick="event.preventDefault();addUser();"><span class="k-icon k-add"></span>Add New User</a>
+    # } #
+    </div>
+</script>
+<script>
+    $(document).ready(function () {
+        addHandlerMenu();
+        $("#date").kendoDateTimePicker().data("kendoDateTimePicker");
+
+        var dataSourceIn = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("BindingUser", "SafetyBriefing", new { id_safety = Model.id })',
+                    type: "POST"
+                },
+                create: {
+                    url: '@Url.Action("AddUser", "SafetyBriefing", new { id_safety = Model.id })',
+                    type: "POST",
+                    complete: function (e) {
+                        $("#grid-safety-user").data("kendoGrid").dataSource.read();
+                    }
+                },
+                update: {
+                    url: '@Url.Action("EditUser", "SafetyBriefing", new { id_safety = Model.id })',
+                    type: "POST",
+                    complete: function (e) {
+                        $("#grid-safety-user").data("kendoGrid").dataSource.read();
+                    }
+                },
+                destroy: {
+                    url: '@Url.Action("DeleteUser", "SafetyBriefing", new { id_safety = Model.id })',
+                    type: "POST",
+                    complete: function (e) {
+                        $("#grid-safety-user").data("kendoGrid").dataSource.read();
+                    }
+                },
+                parameterMap: function (options, operation) {
+                    if (operation !== "read" && options.models) {
+                        var result = {};
+
+                        for (var i = 0; i < options.models.length; i++) {
+                            var product = options.models[i];
+                            console.log(product);
+                            for (var member in product) {
+                                if (member == "userEntity") {
+                                    result["user"] = product[member];
+                                } else {
+                                    if (product[member] == null) {
+                                        result[member] = "";
+                                    } else {
+                                        result[member] = product[member];
+                                    }
+                                }
+                            }
+                        }
+
+                        return result;
+                    }
+                }
+            },
+            batch: true,
+            pageSize: 30,
+            schema: {
+                model: {
+                    id: "id",
+                    fields: {
+                        id: { type: "number", editable: false },
+                        userEntity: {},
+                        id_badge: { type: "string" },
+                    }
+                }
+            },
+            pageSize: 10
+        });
+
+        $("#grid-safety-user").kendoGrid({
+            dataSource: dataSourceIn,
+            pageable: true,
+            sortable: true,
+            filterable: true,
+            toolbar: kendo.template($("#toolbar-template").html()),
+            columns: [
+                {
+                    template: kendo.template($("#command-template").html()), title: "Command", width: "200px"
+                },
+                { field: "id", hidden: true },
+                { field: "userEntity", title: "Name", template: "#= getName(userEntity, user) #" },
+                { field: "id_badge", title: "ID Badge No", type: "string", width: 200 },
+                //{
+                //    command: [
+                //        {
+                //            name: "Edit",
+                //            click: editPtw
+                //        },
+                //        {
+                //            template: kendo.template($("#extend-template").html()),
+                //            name: "Extend",
+                //            click: extendPtw
+                //        },
+                //    ],
+                //    editable: {
+                //        destroy: false
+                //    },
+                //    width: 180
+                //}
+            ],
+            editable: true,
+            height: 400,
+        });
+
+        $('#save-user').click(function () {
+            var val = $('input[name="seg-contractor"]:checked').val();
+            var user = "";
+            var id = $('#glarf-user-id').val();
+            if (val == 1) {
+                user = $('#user-from').val();
+            } else if (val == 0) {
+                user = $('#user-manual').val();
+            }
+            var id_badge = $('#id-badge-no').val();
+
+            $.post('@Url.Action("SaveUser", "SafetyBriefing")', { user: user, id: id, id_badge: id_badge, id_safety: '@Model.id' }, function (resp) {
+                $("#grid-safety-user").data("kendoGrid").dataSource.read();
+                $('#user').modal('hide');
+            });
+        });
+
+        $('input[name="seg-contractor"]').click(function () {
+            var val = $(this).val();
+            if (val == 1) {
+                $('.input-manual').hide();
+                $('.from-database').show();
+            } else if (val == 0) {
+                $('.from-database').hide();
+                $('.input-manual').show();
+
+            }
+        });
+
+        $('#save-draft').click(function () {
+            var values = {
+                id: '@Model.id',
+                section: $('#section').val(),
+                work_area: $('#work-area').val(),
+                date: $('#date').val(),
+                topic: $('#topic').val(),
+                hazard: $('#hazard').val(),
+                control_method: $('#control-method').val()
+            }
+
+            $.post('@Url.Action("SaveAsDraft", "SafetyBriefing")', values, function (resp) {
+                alert('Safety Briefing is saved.');
+                $('#content').load('@Url.Action("Create", "SafetyBriefing")');
+            });
+        });
+
+        $('#send').click(function () {
+            var values = {
+                id: '@Model.id',
+                section: $('#section').val(),
+                work_area: $('#work-area').val(),
+                date: $('#date').val(),
+                topic: $('#topic').val(),
+                hazard: $('#hazard').val(),
+                control_method: $('#control-method').val()
+            }
+
+            $.post('@Url.Action("SaveForPrint", "SafetyBriefing")', values, function (resp) {
+                alert('Safety Briefing is saved. You may print this document prior to sign.');
+                $('#content').load('@Url.Action("Create", "SafetyBriefing")');
+            });
+        });
+
+        $('#cancellation').click(function () {
+            var values = {
+                id: '@Model.id',
+            }
+
+            $.post('@Url.Action("Cancellation", "SafetyBriefing")', values, function (resp) {
+                if (resp.status == "403") {
+                    alert('Safety Briefing that has been signed must be attached for cancellation.');
+                } else {
+                    alert('Safety Briefing is saved. Permit to Work may be cancelled.');
+                    $('#content').load('@Url.Action("Create", "SafetyBriefing")');
+                }
+            });
+        });
+
+        $('#back').click(function () {
+            $('#content').load($('#history').val());
+        });
+
+        $('#user-from')
+            .kendoDropDownList({
+                dataTextField: "alpha_name",
+                dataValueField: "id",
+                autoBind: true,
+                dataSource: {
+                    transport: {
+                        dataType: "json",
+                        read: '@Url.Action("ListingEmployee", "SafetyBriefing")'
+                    }
+                },
+                optionLabel: "--Select One--",
+                select: onSelectEmployee,
+            });
+
+        $("#file-attachment").kendoUpload({
+            async: {
+                saveUrl: "@Url.Action("saveAttachment", "SafetyBriefing")",
+                removeUrl: "@Url.Action("removeAttachment", "SafetyBriefing")",
+                autoUpload: true,
+            },
+            upload: onUpload,
+            remove: onRemove,
+            success: onSuccessAttachment,
+        });
+
+        $fileList = $("#existing-files-attachment");
+
+        if ($fileList.length > 0) {
+            $("#file-attachment").parent().parent().parent('div.k-upload').append($fileList);
+            $files = $(".k-file");
+            _fn = function (item) {
+                var $item, fileId, filenames;
+                $item = $(item);
+                fileId = $item.data("att-id");
+                filenames = [
+                  {
+                      name: fileId
+                  }
+                ];
+                return $item.data("fileNames", filenames);
+            };
+            for (_i = 0, _len = $files.length; _i < _len; _i++) {
+                item = $files[_i];
+                _fn(item);
+            }
+            $fileList.show();
+        }
+
+        function onUpload(e) {
+            // Array with information about the uploaded files
+            var files = e.files;
+
+            // Check the extension of each file and abort the upload if it is not .jpg
+            $.each(files, function () {
+                if (this.extension != ".pdf") {
+                    alert("Only .pdf files can be uploaded.")
+                    e.preventDefault();
+                }
+            });
+            e.data = { id: '@Model.id' };
+        }
+
+        function onRemove(e) {
+            e.data = { id: '@Model.id' };
+        }
+
+        function onSuccessAttachment(e) {
+            var files = e.files;
+            // Check the extension of each file and abort the upload if it is not .jpg
+            $.each(files, function () {
+                $('.k-filename[title="' + this.name + '"]').html('<a href="@Url.Content("~/Upload/SafetyBriefing/" + Model.id)' + this.name + '">' + this.name + '</a>');
+            });
+        }
+
+        @if (!isCanEdit[1])
+        {
+        <text>
+        $('#file-attachment').data('kendoUpload').disable();
+        </text>
+        }
+            
+        @if (!isCanEdit[0])
+            {
+        <text>
+        $('#date').data('kendoDateTimePicker').enable(false);
+        </text>
+            }
+        });
+
+    function getName(user) {
+        if (user != null) {
+            return user.alpha_name;
+        }
+        return "";
+    }
+
+    function onSelectEmployee(e) {
+        var dataItem = this.dataItem(e.item.index());
+        console.log(dataItem);
+        $('#id-badge-no').val(dataItem.employee_no);
+    }
+
+    function editUser(id, user, id_badge) {
+        $('#glarf-user-id').val(id);
+        $('#id-badge-no').val(id_badge);
+        if (isNaN(parseInt(user))) {
+            $('input[name="seg-contractor"][value="0"]').attr('checked', 'checked');
+            $('input[name="seg-contractor"][value="0"]').trigger('click');
+            $('#user-manual').val(user);
+            $("#user-from").data("kendoDropDownList").select(0);
+        } else {
+            $('input[name="seg-contractor"][value="1"]').attr('checked', 'checked');
+            $('input[name="seg-contractor"][value="1"]').trigger('click');
+            $("#user-from").data("kendoDropDownList").value(user);
+            $('#user-manual').val('');
+        }
+        $('#user').modal('show');
+    }
+
+    function addUser() {
+        $('input[name="seg-contractor"]').removeAttr('checked');
+        $('#glarf-user-id').val(0);
+        $('.from-database').hide();
+        $('.input-manual').hide();
+        $("#user-from").data("kendoDropDownList").select(0);
+        $('#user-manual').val('');
+        $('#id-badge-no').val('');
+        $('#user').modal('show');
+    }
+</script>

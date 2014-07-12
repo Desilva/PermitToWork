@@ -39,8 +39,6 @@ namespace PermitToWork.Models
         public DbSet<mst_ei> mst_ei { get; set; }
         public DbSet<mst_erector> mst_erector { get; set; }
         public DbSet<mst_facilities> mst_facilities { get; set; }
-        public DbSet<mst_facility_owner> mst_facility_owner { get; set; }
-        public DbSet<mst_inspector> mst_inspector { get; set; }
         public DbSet<mst_lock_box> mst_lock_box { get; set; }
         public DbSet<mst_loto_point> mst_loto_point { get; set; }
         public DbSet<mst_ptw_holder_no> mst_ptw_holder_no { get; set; }
@@ -49,9 +47,21 @@ namespace PermitToWork.Models
         public DbSet<mst_safety_officer> mst_safety_officer { get; set; }
         public DbSet<mst_section> mst_section { get; set; }
         public DbSet<permit_log> permit_log { get; set; }
-        public DbSet<permit_to_work> permit_to_work { get; set; }
         public DbSet<radiography> radiographies { get; set; }
+        public DbSet<loto_suspension_holder> loto_suspension_holder { get; set; }
         public DbSet<working_height> working_height { get; set; }
+        public DbSet<safety_briefing_user> safety_briefing_user { get; set; }
+        public DbSet<safety_briefing> safety_briefing { get; set; }
+        public DbSet<mst_inspector> mst_inspector { get; set; }
+        public DbSet<mst_no_inspection> mst_no_inspection { get; set; }
+        public DbSet<scaffolding_inspection> scaffolding_inspection { get; set; }
+        public DbSet<mst_facility_owner> mst_facility_owner { get; set; }
+        public DbSet<mst_area_code> mst_area_code { get; set; }
+        public DbSet<loto_coming_holder> loto_coming_holder { get; set; }
+        public DbSet<permit_to_work> permit_to_work { get; set; }
+        public DbSet<email_error> email_error { get; set; }
+        public DbSet<mst_delegate_fo> mst_delegate_fo { get; set; }
+        public DbSet<loto_suspension> loto_suspension { get; set; }
         public DbSet<loto_permit> loto_permit { get; set; }
     }
 }

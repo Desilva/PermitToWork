@@ -7,15 +7,22 @@
     <Schema Namespace="star_energy_ptwModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityContainer Name="star_energy_ptwModelStoreContainer">
           <EntitySet Name="confined_space" EntityType="star_energy_ptwModel.Store.confined_space" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="email_error" EntityType="star_energy_ptwModel.Store.email_error" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="excavation" EntityType="star_energy_ptwModel.Store.excavation" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="fire_impairment" EntityType="star_energy_ptwModel.Store.fire_impairment" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="hira_document" EntityType="star_energy_ptwModel.Store.hira_document" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="hot_work" EntityType="star_energy_ptwModel.Store.hot_work" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="loto_coming_holder" EntityType="star_energy_ptwModel.Store.loto_coming_holder" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="loto_glarf" EntityType="star_energy_ptwModel.Store.loto_glarf" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="loto_glarf_user" EntityType="star_energy_ptwModel.Store.loto_glarf_user" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="loto_permit" EntityType="star_energy_ptwModel.Store.loto_permit" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="loto_permit_to_work" EntityType="star_energy_ptwModel.Store.loto_permit_to_work" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="loto_point" EntityType="star_energy_ptwModel.Store.loto_point" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="loto_suspension" EntityType="star_energy_ptwModel.Store.loto_suspension" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="loto_suspension_holder" EntityType="star_energy_ptwModel.Store.loto_suspension_holder" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="mst_area_code" EntityType="star_energy_ptwModel.Store.mst_area_code" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="mst_assessor" EntityType="star_energy_ptwModel.Store.mst_assessor" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="mst_delegate_fo" EntityType="star_energy_ptwModel.Store.mst_delegate_fo" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="mst_department" EntityType="star_energy_ptwModel.Store.mst_department" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="mst_dept_head_fo" EntityType="star_energy_ptwModel.Store.mst_dept_head_fo" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="mst_ei" EntityType="star_energy_ptwModel.Store.mst_ei" store:Type="Tables" Schema="dbo" />
@@ -25,6 +32,7 @@
           <EntitySet Name="mst_inspector" EntityType="star_energy_ptwModel.Store.mst_inspector" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="mst_lock_box" EntityType="star_energy_ptwModel.Store.mst_lock_box" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="mst_loto_point" EntityType="star_energy_ptwModel.Store.mst_loto_point" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="mst_no_inspection" EntityType="star_energy_ptwModel.Store.mst_no_inspection" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="mst_ptw_holder_no" EntityType="star_energy_ptwModel.Store.mst_ptw_holder_no" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="mst_radiation_po" EntityType="star_energy_ptwModel.Store.mst_radiation_po" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="mst_radiographer" EntityType="star_energy_ptwModel.Store.mst_radiographer" store:Type="Tables" Schema="dbo" />
@@ -33,6 +41,9 @@
           <EntitySet Name="permit_log" EntityType="star_energy_ptwModel.Store.permit_log" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="permit_to_work" EntityType="star_energy_ptwModel.Store.permit_to_work" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="radiography" EntityType="star_energy_ptwModel.Store.radiography" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="safety_briefing" EntityType="star_energy_ptwModel.Store.safety_briefing" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="safety_briefing_user" EntityType="star_energy_ptwModel.Store.safety_briefing_user" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="scaffolding_inspection" EntityType="star_energy_ptwModel.Store.scaffolding_inspection" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="working_height" EntityType="star_energy_ptwModel.Store.working_height" store:Type="Tables" Schema="dbo" />
           <AssociationSet Name="FK_confined_space_permit_to_work" Association="star_energy_ptwModel.Store.FK_confined_space_permit_to_work">
             <End Role="permit_to_work" EntitySet="permit_to_work" />
@@ -54,17 +65,41 @@
             <End Role="permit_to_work" EntitySet="permit_to_work" />
             <End Role="hot_work" EntitySet="hot_work" />
           </AssociationSet>
-          <AssociationSet Name="FK_loto_glarf_loto_permit" Association="star_energy_ptwModel.Store.FK_loto_glarf_loto_permit">
+          <AssociationSet Name="FK_loto_coming_holder_loto_permit" Association="star_energy_ptwModel.Store.FK_loto_coming_holder_loto_permit">
             <End Role="loto_permit" EntitySet="loto_permit" />
-            <End Role="loto_glarf" EntitySet="loto_glarf" />
+            <End Role="loto_coming_holder" EntitySet="loto_coming_holder" />
           </AssociationSet>
           <AssociationSet Name="FK_loto_glarf_user_loto_glarf" Association="star_energy_ptwModel.Store.FK_loto_glarf_user_loto_glarf">
             <End Role="loto_glarf" EntitySet="loto_glarf" />
             <End Role="loto_glarf_user" EntitySet="loto_glarf_user" />
           </AssociationSet>
+          <AssociationSet Name="FK_loto_permit_loto_glarf" Association="star_energy_ptwModel.Store.FK_loto_permit_loto_glarf">
+            <End Role="loto_glarf" EntitySet="loto_glarf" />
+            <End Role="loto_permit" EntitySet="loto_permit" />
+          </AssociationSet>
+          <AssociationSet Name="FK_loto_permit_to_work_loto_permit" Association="star_energy_ptwModel.Store.FK_loto_permit_to_work_loto_permit">
+            <End Role="loto_permit" EntitySet="loto_permit" />
+            <End Role="loto_permit_to_work" EntitySet="loto_permit_to_work" />
+          </AssociationSet>
+          <AssociationSet Name="FK_loto_permit_to_work_permit_to_work" Association="star_energy_ptwModel.Store.FK_loto_permit_to_work_permit_to_work">
+            <End Role="permit_to_work" EntitySet="permit_to_work" />
+            <End Role="loto_permit_to_work" EntitySet="loto_permit_to_work" />
+          </AssociationSet>
           <AssociationSet Name="FK_loto_point_loto_permit" Association="star_energy_ptwModel.Store.FK_loto_point_loto_permit">
             <End Role="loto_permit" EntitySet="loto_permit" />
             <End Role="loto_point" EntitySet="loto_point" />
+          </AssociationSet>
+          <AssociationSet Name="FK_loto_suspension_loto_permit" Association="star_energy_ptwModel.Store.FK_loto_suspension_loto_permit">
+            <End Role="loto_permit" EntitySet="loto_permit" />
+            <End Role="loto_suspension" EntitySet="loto_suspension" />
+          </AssociationSet>
+          <AssociationSet Name="FK_mst_delegate_fo_mst_facility_owner" Association="star_energy_ptwModel.Store.FK_mst_delegate_fo_mst_facility_owner">
+            <End Role="mst_facility_owner" EntitySet="mst_facility_owner" />
+            <End Role="mst_delegate_fo" EntitySet="mst_delegate_fo" />
+          </AssociationSet>
+          <AssociationSet Name="FK_mst_no_inspection_scaffolding_inspection" Association="star_energy_ptwModel.Store.FK_mst_no_inspection_scaffolding_inspection">
+            <End Role="scaffolding_inspection" EntitySet="scaffolding_inspection" />
+            <End Role="mst_no_inspection" EntitySet="mst_no_inspection" />
           </AssociationSet>
           <AssociationSet Name="FK_permit_to_work_loto_permit" Association="star_energy_ptwModel.Store.FK_permit_to_work_loto_permit">
             <End Role="loto_glarf" EntitySet="loto_glarf" />
@@ -89,6 +124,18 @@
           <AssociationSet Name="FK_radiography_permit_to_work" Association="star_energy_ptwModel.Store.FK_radiography_permit_to_work">
             <End Role="permit_to_work" EntitySet="permit_to_work" />
             <End Role="radiography" EntitySet="radiography" />
+          </AssociationSet>
+          <AssociationSet Name="FK_safety_briefing_permit_to_work" Association="star_energy_ptwModel.Store.FK_safety_briefing_permit_to_work">
+            <End Role="permit_to_work" EntitySet="permit_to_work" />
+            <End Role="safety_briefing" EntitySet="safety_briefing" />
+          </AssociationSet>
+          <AssociationSet Name="FK_safety_briefing_user_safety_briefing" Association="star_energy_ptwModel.Store.FK_safety_briefing_user_safety_briefing">
+            <End Role="safety_briefing" EntitySet="safety_briefing" />
+            <End Role="safety_briefing_user" EntitySet="safety_briefing_user" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Table_1_loto_suspension" Association="star_energy_ptwModel.Store.FK_Table_1_loto_suspension">
+            <End Role="loto_suspension" EntitySet="loto_suspension" />
+            <End Role="loto_suspension_holder" EntitySet="loto_suspension_holder" />
           </AssociationSet>
           <AssociationSet Name="FK_working_height_permit_to_work" Association="star_energy_ptwModel.Store.FK_working_height_permit_to_work">
             <End Role="permit_to_work" EntitySet="permit_to_work" />
@@ -254,6 +301,16 @@
           <Property Name="status" Type="int" />
           <Property Name="random_pin" Type="varchar" MaxLength="4" />
         </EntityType>
+        <EntityType Name="email_error">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="emails" Type="text" />
+          <Property Name="content" Type="text" />
+          <Property Name="subject" Type="varchar(max)" />
+          <Property Name="exception" Type="text" />
+        </EntityType>
         <EntityType Name="excavation">
           <Key>
             <PropertyRef Name="id" />
@@ -368,6 +425,8 @@
           <Property Name="id_ptw" Type="int" />
           <Property Name="status" Type="int" />
           <Property Name="fi_no" Type="varchar" MaxLength="50" />
+          <Property Name="is_extend" Type="tinyint" />
+          <Property Name="datetime" Type="datetime" />
         </EntityType>
         <EntityType Name="hira_document">
           <Key>
@@ -537,6 +596,22 @@
           <Property Name="status" Type="int" />
           <Property Name="random_pin" Type="varchar" MaxLength="4" />
         </EntityType>
+        <EntityType Name="loto_coming_holder">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="id_loto" Type="int" />
+          <Property Name="holder_spv" Type="varchar" MaxLength="50" />
+          <Property Name="no_holder" Type="int" />
+          <Property Name="holder_sign_approval" Type="varchar" MaxLength="255" />
+          <Property Name="holder_date_approval" Type="datetime" />
+          <Property Name="holder_sign_delegate_approval" Type="varchar" MaxLength="50" />
+          <Property Name="holder_sign_cancellation" Type="varchar" MaxLength="255" />
+          <Property Name="holder_date_cancellation" Type="datetime" />
+          <Property Name="holder_sign_delegate_cancellation" Type="varchar" MaxLength="50" />
+          <Property Name="holder" Type="varchar" MaxLength="50" />
+        </EntityType>
         <EntityType Name="loto_glarf">
           <Key>
             <PropertyRef Name="id" />
@@ -556,7 +631,7 @@
           </Key>
           <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="id_glarf" Type="int" />
-          <Property Name="user" Type="varchar" MaxLength="50" />
+          <Property Name="user" Type="varchar" MaxLength="255" />
           <Property Name="user_application_signature" Type="varchar" MaxLength="255" />
           <Property Name="user_application_signature_date" Type="datetime" />
           <Property Name="user_cancellation_signature" Type="varchar" MaxLength="255" />
@@ -568,6 +643,7 @@
             <PropertyRef Name="id" />
           </Key>
           <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="id_glarf" Type="int" />
           <Property Name="loto_no" Type="varchar" MaxLength="50" />
           <Property Name="requestor" Type="varchar" MaxLength="50" />
           <Property Name="supervisor" Type="varchar" MaxLength="50" />
@@ -635,6 +711,14 @@
           <Property Name="cancellation_notes" Type="text" />
           <Property Name="cancellation_facility_owner" Type="varchar" MaxLength="50" />
         </EntityType>
+        <EntityType Name="loto_permit_to_work">
+          <Key>
+            <PropertyRef Name="id_loto" />
+            <PropertyRef Name="id_permit" />
+          </Key>
+          <Property Name="id_loto" Type="int" Nullable="false" />
+          <Property Name="id_permit" Type="int" Nullable="false" />
+        </EntityType>
         <EntityType Name="loto_point">
           <Key>
             <PropertyRef Name="id" />
@@ -658,6 +742,49 @@
           <Property Name="inspected_5" Type="varchar" MaxLength="255" />
           <Property Name="inspected_6" Type="varchar" MaxLength="255" />
           <Property Name="inspected_7" Type="varchar" MaxLength="255" />
+          <Property Name="is_removed" Type="tinyint" />
+          <Property Name="is_edited" Type="tinyint" />
+          <Property Name="is_set_empty" Type="tinyint" />
+        </EntityType>
+        <EntityType Name="loto_suspension">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="id_loto" Type="int" />
+          <Property Name="requestor" Type="varchar" MaxLength="50" />
+          <Property Name="facility_owner" Type="varchar" MaxLength="50" />
+          <Property Name="requestor_signature" Type="varchar" MaxLength="255" />
+          <Property Name="fo_signature" Type="varchar" MaxLength="255" />
+          <Property Name="suspend_no" Type="int" />
+          <Property Name="notes" Type="text" />
+          <Property Name="status" Type="int" />
+          <Property Name="can_requestor_signature" Type="varchar" MaxLength="255" />
+          <Property Name="fo_delegate" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="loto_suspension_holder">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="id_loto_suspension" Type="int" />
+          <Property Name="holder_spv" Type="varchar" MaxLength="50" />
+          <Property Name="no_holder" Type="int" />
+          <Property Name="holder_sign_approval" Type="varchar" MaxLength="255" />
+          <Property Name="holder_date_approval" Type="datetime" />
+          <Property Name="holder_sign_delegate_approval" Type="varchar" MaxLength="50" />
+          <Property Name="holder_sign_cancellation" Type="varchar" MaxLength="255" />
+          <Property Name="holder_date_cancellation" Type="datetime" />
+          <Property Name="holder_sign_delegate_cancellation" Type="varchar" MaxLength="50" />
+          <Property Name="is_agree" Type="int" />
+        </EntityType>
+        <EntityType Name="mst_area_code">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="area_code" Type="varchar" MaxLength="50" />
+          <Property Name="description" Type="varchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="mst_assessor">
           <Key>
@@ -666,6 +793,14 @@
           <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="id_employee" Type="int" />
           <Property Name="assessor_code" Type="varchar" MaxLength="10" />
+        </EntityType>
+        <EntityType Name="mst_delegate_fo">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="id_mst_fo" Type="int" />
+          <Property Name="user_delegate_id" Type="int" />
         </EntityType>
         <EntityType Name="mst_department">
           <Key>
@@ -711,6 +846,7 @@
           <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="id_employee" Type="int" />
           <Property Name="fo_code" Type="varchar" MaxLength="10" />
+          <Property Name="fo_name" Type="varchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="mst_inspector">
           <Key>
@@ -720,6 +856,7 @@
           <Property Name="id_employee" Type="int" />
           <Property Name="certificate_no" Type="varchar" MaxLength="100" />
           <Property Name="valid_date" Type="datetime" />
+          <Property Name="code_name" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="mst_lock_box">
           <Key>
@@ -735,6 +872,16 @@
           </Key>
           <Property Name="code" Type="varchar" Nullable="false" MaxLength="10" />
           <Property Name="description" Type="varchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="mst_no_inspection">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="inspector_id" Type="varchar" MaxLength="50" />
+          <Property Name="no_inspection" Type="varchar" MaxLength="50" />
+          <Property Name="valid_date" Type="datetime" />
+          <Property Name="id_inspection" Type="int" />
         </EntityType>
         <EntityType Name="mst_ptw_holder_no">
           <Key>
@@ -880,6 +1027,13 @@
           <Property Name="can_fo_approve" Type="varchar" MaxLength="255" />
           <Property Name="id_parent_ptw" Type="int" />
           <Property Name="status" Type="int" />
+          <Property Name="hira_docs" Type="text" />
+          <Property Name="acc_notes_fo_ass" Type="varchar(max)" />
+          <Property Name="acc_notes_ass_fo" Type="varchar(max)" />
+          <Property Name="can_notes_ass_fo" Type="varchar(max)" />
+          <Property Name="is_guest" Type="tinyint" />
+          <Property Name="guest_holder_no" Type="varchar" MaxLength="50" />
+          <Property Name="requested_no" Type="tinyint" />
         </EntityType>
         <EntityType Name="radiography">
           <Key>
@@ -934,6 +1088,261 @@
           <Property Name="operator" Type="varchar" MaxLength="50" />
           <Property Name="work_location" Type="varchar" MaxLength="255" />
           <Property Name="can_remark" Type="text" />
+        </EntityType>
+        <EntityType Name="safety_briefing">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="id_ptw" Type="int" />
+          <Property Name="section" Type="varchar" MaxLength="255" />
+          <Property Name="work_area" Type="varchar" MaxLength="255" />
+          <Property Name="date" Type="datetime" />
+          <Property Name="topic" Type="varchar" MaxLength="255" />
+          <Property Name="hazard" Type="text" />
+          <Property Name="control_method" Type="text" />
+          <Property Name="status" Type="int" />
+          <Property Name="requestor" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="safety_briefing_user">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="id_safety_briefing" Type="int" />
+          <Property Name="user" Type="varchar" MaxLength="255" />
+          <Property Name="id_badge" Type="varchar" MaxLength="255" />
+          <Property Name="user_signature" Type="varchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="scaffolding_inspection">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="date_inspection" Type="datetime" />
+          <Property Name="type_scaffold" Type="varchar" MaxLength="255" />
+          <Property Name="duties_scaffold" Type="varchar" MaxLength="50" />
+          <Property Name="pupose_scaffold" Type="varchar(max)" />
+          <Property Name="location" Type="varchar" MaxLength="255" />
+          <Property Name="name_scaffolder" Type="varchar(max)" />
+          <Property Name="base_ground_good" Type="varchar" MaxLength="50" />
+          <Property Name="base_ground_poor" Type="varchar" MaxLength="50" />
+          <Property Name="base_ground_remark" Type="varchar(max)" />
+          <Property Name="base_concrete_good" Type="varchar" MaxLength="50" />
+          <Property Name="base_concrete_poor" Type="varchar" MaxLength="50" />
+          <Property Name="base_concrete_remark" Type="varchar(max)" />
+          <Property Name="base_sole_plate_good" Type="varchar" MaxLength="50" />
+          <Property Name="base_sole_plate_poor" Type="varchar" MaxLength="50" />
+          <Property Name="base_sole_plate_remark" Type="varchar(max)" />
+          <Property Name="base_base_plate_good" Type="varchar" MaxLength="50" />
+          <Property Name="base_base_plate_poor" Type="varchar" MaxLength="50" />
+          <Property Name="base_base_plate_remark" Type="varchar(max)" />
+          <Property Name="base_adj_sole_plate_good" Type="varchar" MaxLength="50" />
+          <Property Name="base_adj_sole_plate_poor" Type="varchar" MaxLength="50" />
+          <Property Name="base_adj_sole_plate_remark" Type="varchar(max)" />
+          <Property Name="standard_diameter_good" Type="varchar" MaxLength="50" />
+          <Property Name="standard_diameter_poor" Type="varchar" MaxLength="50" />
+          <Property Name="standard_diameter_remark" Type="varchar(max)" />
+          <Property Name="standard_length_good" Type="varchar" MaxLength="50" />
+          <Property Name="standard_length_poor" Type="varchar" MaxLength="50" />
+          <Property Name="standard_length_remark" Type="varchar(max)" />
+          <Property Name="standard_leveling_good" Type="varchar" MaxLength="50" />
+          <Property Name="standard_leveling_poor" Type="varchar" MaxLength="50" />
+          <Property Name="standard_leveling_remark" Type="varchar(max)" />
+          <Property Name="standard_couplers_good" Type="varchar" MaxLength="50" />
+          <Property Name="standard_couplers_poor" Type="varchar" MaxLength="50" />
+          <Property Name="standard_couplers_remark" Type="varchar(max)" />
+          <Property Name="standard_pin_good" Type="varchar" MaxLength="50" />
+          <Property Name="standard_pin_poor" Type="varchar" MaxLength="50" />
+          <Property Name="standard_pin_remark" Type="varchar(max)" />
+          <Property Name="ledger_diameter_good" Type="varchar" MaxLength="50" />
+          <Property Name="ledger_diameter_poor" Type="varchar" MaxLength="50" />
+          <Property Name="ledger_diameter_remark" Type="varchar(max)" />
+          <Property Name="ledger_length_good" Type="varchar" MaxLength="50" />
+          <Property Name="ledger_length_poor" Type="varchar" MaxLength="50" />
+          <Property Name="ledger_length_remark" Type="varchar(max)" />
+          <Property Name="ledger_leveling_good" Type="varchar" MaxLength="50" />
+          <Property Name="ledger_leveling_poor" Type="varchar" MaxLength="50" />
+          <Property Name="ledger_leveling_remark" Type="varchar(max)" />
+          <Property Name="ledger_couplers_good" Type="varchar" MaxLength="50" />
+          <Property Name="ledger_couplers_poor" Type="varchar" MaxLength="50" />
+          <Property Name="ledger_couplers_remark" Type="varchar(max)" />
+          <Property Name="ledger_sleeve_couplers_good" Type="varchar" MaxLength="50" />
+          <Property Name="ledger_sleeve_couplers_poor" Type="varchar" MaxLength="50" />
+          <Property Name="ledger_sleeve_couplers_remark" Type="varchar(max)" />
+          <Property Name="transom_diameter_good" Type="varchar" MaxLength="50" />
+          <Property Name="transom_diameter_poor" Type="varchar" MaxLength="50" />
+          <Property Name="transom_diameter_remark" Type="varchar(max)" />
+          <Property Name="transom_length_good" Type="varchar" MaxLength="50" />
+          <Property Name="transom_length_poor" Type="varchar" MaxLength="50" />
+          <Property Name="transom_length_remark" Type="varchar(max)" />
+          <Property Name="transom_leveling_good" Type="varchar" MaxLength="50" />
+          <Property Name="transom_leveling_poor" Type="varchar" MaxLength="50" />
+          <Property Name="transom_leveling_remark" Type="varchar(max)" />
+          <Property Name="transom_couplers_good" Type="varchar" MaxLength="50" />
+          <Property Name="transom_couplers_poor" Type="varchar" MaxLength="50" />
+          <Property Name="transom_couplers_remark" Type="varchar(max)" />
+          <Property Name="transom_sleeve_couplers_good" Type="varchar" MaxLength="50" />
+          <Property Name="transom_sleeve_couplers_poor" Type="varchar" MaxLength="50" />
+          <Property Name="transom_sleeve_couplers_remark" Type="varchar(max)" />
+          <Property Name="putlog_diameter_good" Type="varchar" MaxLength="50" />
+          <Property Name="putlog_diameter_poor" Type="varchar" MaxLength="50" />
+          <Property Name="putlog_diameter_remark" Type="varchar(max)" />
+          <Property Name="putlog_length_good" Type="varchar" MaxLength="50" />
+          <Property Name="putlog_length_poor" Type="varchar" MaxLength="50" />
+          <Property Name="putlog_length_remark" Type="varchar(max)" />
+          <Property Name="putlog_leveling_good" Type="varchar" MaxLength="50" />
+          <Property Name="putlog_leveling_poor" Type="varchar" MaxLength="50" />
+          <Property Name="putlog_leveling_remark" Type="varchar(max)" />
+          <Property Name="bracing_diameter_good" Type="varchar" MaxLength="50" />
+          <Property Name="bracing_diameter_poor" Type="varchar" MaxLength="50" />
+          <Property Name="bracing_diameter_remark" Type="varchar(max)" />
+          <Property Name="bracing_length_good" Type="varchar" MaxLength="50" />
+          <Property Name="bracing_length_poor" Type="varchar" MaxLength="50" />
+          <Property Name="bracing_length_remark" Type="varchar(max)" />
+          <Property Name="bracing_pins_good" Type="varchar" MaxLength="50" />
+          <Property Name="bracing_pins_poor" Type="varchar" MaxLength="50" />
+          <Property Name="bracing_pins_remark" Type="varchar(max)" />
+          <Property Name="bracing_couplers_good" Type="varchar" MaxLength="50" />
+          <Property Name="bracing_couplers_poor" Type="varchar" MaxLength="50" />
+          <Property Name="bracing_couplers_remark" Type="varchar(max)" />
+          <Property Name="guardrail_ledger_diameter_good" Type="varchar" MaxLength="50" />
+          <Property Name="guardrail_ledger_diameter_poor" Type="varchar" MaxLength="50" />
+          <Property Name="guardrail_ledger_diameter_remark" Type="varchar(max)" />
+          <Property Name="guardrail_ledger_length_good" Type="varchar" MaxLength="50" />
+          <Property Name="guardrail_ledger_length_poor" Type="varchar" MaxLength="50" />
+          <Property Name="guardrail_ledger_length_remark" Type="varchar(max)" />
+          <Property Name="guardrail_ledger_leveling_good" Type="varchar" MaxLength="50" />
+          <Property Name="guardrail_ledger_leveling_poor" Type="varchar" MaxLength="50" />
+          <Property Name="guardrail_ledger_leveling_remark" Type="varchar(max)" />
+          <Property Name="guardrail_ledger_couplers_good" Type="varchar" MaxLength="50" />
+          <Property Name="guardrail_ledger_couplers_poor" Type="varchar" MaxLength="50" />
+          <Property Name="guardrail_ledger_couplers_remark" Type="varchar(max)" />
+          <Property Name="guardrail_ledger_sleeve_couplers_good" Type="varchar" MaxLength="50" />
+          <Property Name="guardrail_ledger_sleeve_couplers_poor" Type="varchar" MaxLength="50" />
+          <Property Name="guardrail_ledger_sleeve_couplers_remark" Type="varchar(max)" />
+          <Property Name="guardrail_transom_diameter_good" Type="varchar" MaxLength="50" />
+          <Property Name="guardrail_transom_diameter_poor" Type="varchar" MaxLength="50" />
+          <Property Name="guardrail_transom_diameter_remark" Type="varchar(max)" />
+          <Property Name="guardrail_transom_length_good" Type="varchar" MaxLength="50" />
+          <Property Name="guardrail_transom_length_poor" Type="varchar" MaxLength="50" />
+          <Property Name="guardrail_transom_length_remark" Type="varchar(max)" />
+          <Property Name="guardrail_transom_leveling_good" Type="varchar" MaxLength="50" />
+          <Property Name="guardrail_transom_leveling_poor" Type="varchar" MaxLength="50" />
+          <Property Name="guardrail_transom_leveling_remark" Type="varchar(max)" />
+          <Property Name="guardrail_transom_couplers_good" Type="varchar" MaxLength="50" />
+          <Property Name="guardrail_transom_couplers_poor" Type="varchar" MaxLength="50" />
+          <Property Name="guardrail_transom_couplers_remark" Type="varchar(max)" />
+          <Property Name="guardrail_transom_sleeve_couplers_good" Type="varchar" MaxLength="50" />
+          <Property Name="guardrail_transom_sleeve_couplers_poor" Type="varchar" MaxLength="50" />
+          <Property Name="guardrail_transom_sleeve_couplers_remark" Type="varchar(max)" />
+          <Property Name="platform_condition_good" Type="varchar" MaxLength="50" />
+          <Property Name="platform_condition_poor" Type="varchar" MaxLength="50" />
+          <Property Name="platform_condition_remark" Type="varchar(max)" />
+          <Property Name="platform_length_good" Type="varchar" MaxLength="50" />
+          <Property Name="platform_length_poor" Type="varchar" MaxLength="50" />
+          <Property Name="platform_length_remark" Type="varchar(max)" />
+          <Property Name="platform_width_good" Type="varchar" MaxLength="50" />
+          <Property Name="platform_width_poor" Type="varchar" MaxLength="50" />
+          <Property Name="platform_width_remark" Type="varchar(max)" />
+          <Property Name="platform_clearance_good" Type="varchar" MaxLength="50" />
+          <Property Name="platform_clearance_poor" Type="varchar" MaxLength="50" />
+          <Property Name="platform_clearance_remark" Type="varchar(max)" />
+          <Property Name="platform_lashing_good" Type="varchar" MaxLength="50" />
+          <Property Name="platform_lashing_poor" Type="varchar" MaxLength="50" />
+          <Property Name="platform_lashing_remark" Type="varchar(max)" />
+          <Property Name="platform_deflection_good" Type="varchar" MaxLength="50" />
+          <Property Name="platform_deflection_poor" Type="varchar" MaxLength="50" />
+          <Property Name="platform_deflection_remark" Type="varchar(max)" />
+          <Property Name="toeboard_condition_good" Type="varchar" MaxLength="50" />
+          <Property Name="toeboard_condition_poor" Type="varchar" MaxLength="50" />
+          <Property Name="toeboard_condition_remark" Type="varchar(max)" />
+          <Property Name="toeboard_length_good" Type="varchar" MaxLength="50" />
+          <Property Name="toeboard_length_poor" Type="varchar" MaxLength="50" />
+          <Property Name="toeboard_length_remark" Type="varchar(max)" />
+          <Property Name="toeboard_height_good" Type="varchar" MaxLength="50" />
+          <Property Name="toeboard_height_poor" Type="varchar" MaxLength="50" />
+          <Property Name="toeboard_height_remark" Type="varchar(max)" />
+          <Property Name="toeboard_clearance_good" Type="varchar" MaxLength="50" />
+          <Property Name="toeboard_clearance_poor" Type="varchar" MaxLength="50" />
+          <Property Name="toeboard_clearance_remark" Type="varchar(max)" />
+          <Property Name="toeboard_lashing_good" Type="varchar" MaxLength="50" />
+          <Property Name="toeboard_lashing_poor" Type="varchar" MaxLength="50" />
+          <Property Name="toeboard_lashing_remark" Type="varchar(max)" />
+          <Property Name="aluminium_ladder_condition_good" Type="varchar" MaxLength="50" />
+          <Property Name="aluminium_ladder_condition_poor" Type="varchar" MaxLength="50" />
+          <Property Name="aluminium_ladder_condition_remark" Type="varchar(max)" />
+          <Property Name="aluminium_ladder_length_good" Type="varchar" MaxLength="50" />
+          <Property Name="aluminium_ladder_length_poor" Type="varchar" MaxLength="50" />
+          <Property Name="aluminium_ladder_length_remark" Type="varchar(max)" />
+          <Property Name="aluminium_ladder_height_good" Type="varchar" MaxLength="50" />
+          <Property Name="aluminium_ladder_height_poor" Type="varchar" MaxLength="50" />
+          <Property Name="aluminium_ladder_height_remark" Type="varchar(max)" />
+          <Property Name="aluminium_ladder_putlog_good" Type="varchar" MaxLength="50" />
+          <Property Name="aluminium_ladder_putlog_poor" Type="varchar" MaxLength="50" />
+          <Property Name="aluminium_ladder_putlog_remark" Type="varchar(max)" />
+          <Property Name="aluminium_ladder_angle_good" Type="varchar" MaxLength="50" />
+          <Property Name="aluminium_ladder_angle_poor" Type="varchar" MaxLength="50" />
+          <Property Name="aluminium_ladder_angle_remark" Type="varchar(max)" />
+          <Property Name="ladder_tube_condition_good" Type="varchar" MaxLength="50" />
+          <Property Name="ladder_tube_condition_poor" Type="varchar" MaxLength="50" />
+          <Property Name="ladder_tube_condition_remark" Type="varchar(max)" />
+          <Property Name="ladder_tube_diameter_good" Type="varchar" MaxLength="50" />
+          <Property Name="ladder_tube_diameter_poor" Type="varchar" MaxLength="50" />
+          <Property Name="ladder_tube_diameter_remark" Type="varchar(max)" />
+          <Property Name="ladder_tube_height_good" Type="varchar" MaxLength="50" />
+          <Property Name="ladder_tube_height_poor" Type="varchar" MaxLength="50" />
+          <Property Name="ladder_tube_height_remark" Type="varchar(max)" />
+          <Property Name="ladder_tube_putlog_good" Type="varchar" MaxLength="50" />
+          <Property Name="ladder_tube_putlog_poor" Type="varchar" MaxLength="50" />
+          <Property Name="ladder_tube_putlog_remark" Type="varchar(max)" />
+          <Property Name="ladder_tube_angle_good" Type="varchar" MaxLength="50" />
+          <Property Name="ladder_tube_angle_poor" Type="varchar" MaxLength="50" />
+          <Property Name="ladder_tube_angle_remark" Type="varchar(max)" />
+          <Property Name="ladder_tube_coupler_good" Type="varchar" MaxLength="50" />
+          <Property Name="ladder_tube_coupler_poor" Type="varchar" MaxLength="50" />
+          <Property Name="ladder_tube_coupler_remark" Type="varchar(max)" />
+          <Property Name="gin_wheel_condition_good" Type="varchar" MaxLength="50" />
+          <Property Name="gin_wheel_condition_poor" Type="varchar" MaxLength="50" />
+          <Property Name="gin_wheel_condition_remark" Type="varchar(max)" />
+          <Property Name="gin_wheel_swl_good" Type="varchar" MaxLength="50" />
+          <Property Name="gin_wheel_swl_poor" Type="varchar" MaxLength="50" />
+          <Property Name="gin_wheel_swl_remark" Type="varchar(max)" />
+          <Property Name="gin_wheel_hoist_good" Type="varchar" MaxLength="50" />
+          <Property Name="gin_wheel_hoist_poor" Type="varchar" MaxLength="50" />
+          <Property Name="gin_wheel_hoist_remark" Type="varchar(max)" />
+          <Property Name="gin_wheel_catch_good" Type="varchar" MaxLength="50" />
+          <Property Name="gin_wheel_catch_poor" Type="varchar" MaxLength="50" />
+          <Property Name="gin_wheel_catch_remark" Type="varchar(max)" />
+          <Property Name="gin_wheel_clamp_good" Type="varchar" MaxLength="50" />
+          <Property Name="gin_wheel_clamp_poor" Type="varchar" MaxLength="50" />
+          <Property Name="gin_wheel_clamp_remark" Type="varchar(max)" />
+          <Property Name="ties_condition_good" Type="varchar" MaxLength="50" />
+          <Property Name="ties_condition_poor" Type="varchar" MaxLength="50" />
+          <Property Name="ties_condition_remark" Type="varchar(max)" />
+          <Property Name="ties_pipes_good" Type="varchar" MaxLength="50" />
+          <Property Name="ties_pipes_poor" Type="varchar" MaxLength="50" />
+          <Property Name="ties_pipes_remark" Type="varchar(max)" />
+          <Property Name="access_ladder_access_good" Type="varchar" MaxLength="50" />
+          <Property Name="access_ladder_access_poor" Type="varchar" MaxLength="50" />
+          <Property Name="access_ladder_access_remark" Type="varchar(max)" />
+          <Property Name="access_ladder_landing_platform_good" Type="varchar" MaxLength="50" />
+          <Property Name="access_ladder_landing_platform_poor" Type="varchar" MaxLength="50" />
+          <Property Name="access_ladder_landing_platform_remark" Type="varchar(max)" />
+          <Property Name="access_ladder_safety_good" Type="varchar" MaxLength="50" />
+          <Property Name="access_ladder_safety_poor" Type="varchar" MaxLength="50" />
+          <Property Name="access_ladder_safety_remark" Type="varchar(max)" />
+          <Property Name="general_surface_leveling_good" Type="varchar" MaxLength="50" />
+          <Property Name="general_surface_leveling_poor" Type="varchar" MaxLength="50" />
+          <Property Name="general_surface_leveling_remark" Type="varchar(max)" />
+          <Property Name="general_surface_safety_good" Type="varchar" MaxLength="50" />
+          <Property Name="general_surface_safety_poor" Type="varchar" MaxLength="50" />
+          <Property Name="general_surface_safety_remark" Type="varchar(max)" />
+          <Property Name="others_text" Type="varchar(max)" />
+          <Property Name="others_good" Type="varchar(max)" />
+          <Property Name="others_poor" Type="varchar(max)" />
+          <Property Name="others_remark" Type="varchar(max)" />
+          <Property Name="safety_recommendation" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="working_height">
           <Key>
@@ -992,6 +1401,7 @@
           <Property Name="can_facility_owner_signature_date" Type="datetime" />
           <Property Name="status" Type="int" />
           <Property Name="pre_screening_note" Type="text" />
+          <Property Name="no_inspection" Type="varchar" MaxLength="50" />
         </EntityType>
         <Association Name="FK_confined_space_permit_to_work">
           <End Role="permit_to_work" Type="star_energy_ptwModel.Store.permit_to_work" Multiplicity="0..1" />
@@ -1057,17 +1467,17 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_loto_glarf_loto_permit">
+        <Association Name="FK_loto_coming_holder_loto_permit">
           <End Role="loto_permit" Type="star_energy_ptwModel.Store.loto_permit" Multiplicity="0..1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="loto_glarf" Type="star_energy_ptwModel.Store.loto_glarf" Multiplicity="*" />
+          <End Role="loto_coming_holder" Type="star_energy_ptwModel.Store.loto_coming_holder" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="loto_permit">
               <PropertyRef Name="id" />
             </Principal>
-            <Dependent Role="loto_glarf">
-              <PropertyRef Name="id_loto_permit" />
+            <Dependent Role="loto_coming_holder">
+              <PropertyRef Name="id_loto" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1085,6 +1495,48 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_loto_permit_loto_glarf">
+          <End Role="loto_glarf" Type="star_energy_ptwModel.Store.loto_glarf" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="loto_permit" Type="star_energy_ptwModel.Store.loto_permit" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="loto_glarf">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="loto_permit">
+              <PropertyRef Name="id_glarf" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_loto_permit_to_work_loto_permit">
+          <End Role="loto_permit" Type="star_energy_ptwModel.Store.loto_permit" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="loto_permit_to_work" Type="star_energy_ptwModel.Store.loto_permit_to_work" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="loto_permit">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="loto_permit_to_work">
+              <PropertyRef Name="id_loto" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_loto_permit_to_work_permit_to_work">
+          <End Role="permit_to_work" Type="star_energy_ptwModel.Store.permit_to_work" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="loto_permit_to_work" Type="star_energy_ptwModel.Store.loto_permit_to_work" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="permit_to_work">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="loto_permit_to_work">
+              <PropertyRef Name="id_permit" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_loto_point_loto_permit">
           <End Role="loto_permit" Type="star_energy_ptwModel.Store.loto_permit" Multiplicity="0..1" />
           <End Role="loto_point" Type="star_energy_ptwModel.Store.loto_point" Multiplicity="*" />
@@ -1094,6 +1546,44 @@
             </Principal>
             <Dependent Role="loto_point">
               <PropertyRef Name="id_loto" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_loto_suspension_loto_permit">
+          <End Role="loto_permit" Type="star_energy_ptwModel.Store.loto_permit" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="loto_suspension" Type="star_energy_ptwModel.Store.loto_suspension" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="loto_permit">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="loto_suspension">
+              <PropertyRef Name="id_loto" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_mst_delegate_fo_mst_facility_owner">
+          <End Role="mst_facility_owner" Type="star_energy_ptwModel.Store.mst_facility_owner" Multiplicity="0..1" />
+          <End Role="mst_delegate_fo" Type="star_energy_ptwModel.Store.mst_delegate_fo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="mst_facility_owner">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="mst_delegate_fo">
+              <PropertyRef Name="id_mst_fo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_mst_no_inspection_scaffolding_inspection">
+          <End Role="scaffolding_inspection" Type="star_energy_ptwModel.Store.scaffolding_inspection" Multiplicity="0..1" />
+          <End Role="mst_no_inspection" Type="star_energy_ptwModel.Store.mst_no_inspection" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="scaffolding_inspection">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="mst_no_inspection">
+              <PropertyRef Name="id_inspection" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1171,6 +1661,48 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_safety_briefing_permit_to_work">
+          <End Role="permit_to_work" Type="star_energy_ptwModel.Store.permit_to_work" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="safety_briefing" Type="star_energy_ptwModel.Store.safety_briefing" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="permit_to_work">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="safety_briefing">
+              <PropertyRef Name="id_ptw" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_safety_briefing_user_safety_briefing">
+          <End Role="safety_briefing" Type="star_energy_ptwModel.Store.safety_briefing" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="safety_briefing_user" Type="star_energy_ptwModel.Store.safety_briefing_user" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="safety_briefing">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="safety_briefing_user">
+              <PropertyRef Name="id_safety_briefing" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Table_1_loto_suspension">
+          <End Role="loto_suspension" Type="star_energy_ptwModel.Store.loto_suspension" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="loto_suspension_holder" Type="star_energy_ptwModel.Store.loto_suspension_holder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="loto_suspension">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="loto_suspension_holder">
+              <PropertyRef Name="id_loto_suspension" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_working_height_permit_to_work">
           <End Role="permit_to_work" Type="star_energy_ptwModel.Store.permit_to_work" Multiplicity="0..1" />
           <End Role="working_height" Type="star_energy_ptwModel.Store.working_height" Multiplicity="*" />
@@ -1202,8 +1734,6 @@
           <EntitySet Name="mst_ei" EntityType="star_energy_ptwModel.mst_ei" />
           <EntitySet Name="mst_erector" EntityType="star_energy_ptwModel.mst_erector" />
           <EntitySet Name="mst_facilities" EntityType="star_energy_ptwModel.mst_facilities" />
-          <EntitySet Name="mst_facility_owner" EntityType="star_energy_ptwModel.mst_facility_owner" />
-          <EntitySet Name="mst_inspector" EntityType="star_energy_ptwModel.mst_inspector" />
           <EntitySet Name="mst_lock_box" EntityType="star_energy_ptwModel.mst_lock_box" />
           <EntitySet Name="mst_loto_point" EntityType="star_energy_ptwModel.mst_loto_point" />
           <EntitySet Name="mst_ptw_holder_no" EntityType="star_energy_ptwModel.mst_ptw_holder_no" />
@@ -1212,9 +1742,30 @@
           <EntitySet Name="mst_safety_officer" EntityType="star_energy_ptwModel.mst_safety_officer" />
           <EntitySet Name="mst_section" EntityType="star_energy_ptwModel.mst_section" />
           <EntitySet Name="permit_log" EntityType="star_energy_ptwModel.permit_log" />
-          <EntitySet Name="permit_to_work" EntityType="star_energy_ptwModel.permit_to_work" />
           <EntitySet Name="radiographies" EntityType="star_energy_ptwModel.radiography" />
+          <AssociationSet Name="FK_loto_glarf_user_loto_glarf" Association="star_energy_ptwModel.FK_loto_glarf_user_loto_glarf">
+            <End Role="loto_glarf" EntitySet="loto_glarf" />
+            <End Role="loto_glarf_user" EntitySet="loto_glarf_user" />
+          </AssociationSet>
+          <EntitySet Name="loto_suspension_holder" EntityType="star_energy_ptwModel.loto_suspension_holder" />
           <EntitySet Name="working_height" EntityType="star_energy_ptwModel.working_height" />
+          <EntitySet Name="safety_briefing_user" EntityType="star_energy_ptwModel.safety_briefing_user" />
+          <EntitySet Name="safety_briefing" EntityType="star_energy_ptwModel.safety_briefing" />
+          <AssociationSet Name="FK_safety_briefing_user_safety_briefing" Association="star_energy_ptwModel.FK_safety_briefing_user_safety_briefing">
+            <End Role="safety_briefing" EntitySet="safety_briefing" />
+            <End Role="safety_briefing_user" EntitySet="safety_briefing_user" />
+          </AssociationSet>
+          <EntitySet Name="mst_inspector" EntityType="star_energy_ptwModel.mst_inspector" />
+          <EntitySet Name="mst_no_inspection" EntityType="star_energy_ptwModel.mst_no_inspection" />
+          <EntitySet Name="scaffolding_inspection" EntityType="star_energy_ptwModel.scaffolding_inspection" />
+          <AssociationSet Name="FK_mst_no_inspection_scaffolding_inspection" Association="star_energy_ptwModel.FK_mst_no_inspection_scaffolding_inspection">
+            <End Role="scaffolding_inspection" EntitySet="scaffolding_inspection" />
+            <End Role="mst_no_inspection" EntitySet="mst_no_inspection" />
+          </AssociationSet>
+          <EntitySet Name="mst_facility_owner" EntityType="star_energy_ptwModel.mst_facility_owner" />
+          <EntitySet Name="mst_area_code" EntityType="star_energy_ptwModel.mst_area_code" />
+          <EntitySet Name="loto_coming_holder" EntityType="star_energy_ptwModel.loto_coming_holder" />
+          <EntitySet Name="permit_to_work" EntityType="star_energy_ptwModel.permit_to_work" />
           <AssociationSet Name="FK_confined_space_permit_to_work" Association="star_energy_ptwModel.FK_confined_space_permit_to_work">
             <End Role="permit_to_work" EntitySet="permit_to_work" />
             <End Role="confined_space" EntitySet="confined_space" />
@@ -1234,10 +1785,6 @@
           <AssociationSet Name="FK_hot_work_permit_to_work" Association="star_energy_ptwModel.FK_hot_work_permit_to_work">
             <End Role="permit_to_work" EntitySet="permit_to_work" />
             <End Role="hot_work" EntitySet="hot_work" />
-          </AssociationSet>
-          <AssociationSet Name="FK_loto_glarf_user_loto_glarf" Association="star_energy_ptwModel.FK_loto_glarf_user_loto_glarf">
-            <End Role="loto_glarf" EntitySet="loto_glarf" />
-            <End Role="loto_glarf_user" EntitySet="loto_glarf_user" />
           </AssociationSet>
           <AssociationSet Name="FK_permit_to_work_loto_permit" Association="star_energy_ptwModel.FK_permit_to_work_loto_permit">
             <End Role="loto_glarf" EntitySet="loto_glarf" />
@@ -1263,18 +1810,45 @@
             <End Role="permit_to_work" EntitySet="permit_to_work" />
             <End Role="radiography" EntitySet="radiographies" />
           </AssociationSet>
+          <AssociationSet Name="FK_safety_briefing_permit_to_work" Association="star_energy_ptwModel.FK_safety_briefing_permit_to_work">
+            <End Role="permit_to_work" EntitySet="permit_to_work" />
+            <End Role="safety_briefing" EntitySet="safety_briefing" />
+          </AssociationSet>
           <AssociationSet Name="FK_working_height_permit_to_work" Association="star_energy_ptwModel.FK_working_height_permit_to_work">
             <End Role="permit_to_work" EntitySet="permit_to_work" />
             <End Role="working_height" EntitySet="working_height" />
           </AssociationSet>
+          <EntitySet Name="email_error" EntityType="star_energy_ptwModel.email_error" />
+          <EntitySet Name="mst_delegate_fo" EntityType="star_energy_ptwModel.mst_delegate_fo" />
+          <AssociationSet Name="FK_mst_delegate_fo_mst_facility_owner" Association="star_energy_ptwModel.FK_mst_delegate_fo_mst_facility_owner">
+            <End Role="mst_facility_owner" EntitySet="mst_facility_owner" />
+            <End Role="mst_delegate_fo" EntitySet="mst_delegate_fo" />
+          </AssociationSet>
+          <EntitySet Name="loto_suspension" EntityType="star_energy_ptwModel.loto_suspension" />
+          <AssociationSet Name="FK_Table_1_loto_suspension" Association="star_energy_ptwModel.FK_Table_1_loto_suspension">
+            <End Role="loto_suspension" EntitySet="loto_suspension" />
+            <End Role="loto_suspension_holder" EntitySet="loto_suspension_holder" />
+          </AssociationSet>
           <EntitySet Name="loto_permit" EntityType="star_energy_ptwModel.loto_permit" />
-          <AssociationSet Name="FK_loto_glarf_loto_permit" Association="star_energy_ptwModel.FK_loto_glarf_loto_permit">
+          <AssociationSet Name="FK_loto_coming_holder_loto_permit" Association="star_energy_ptwModel.FK_loto_coming_holder_loto_permit">
             <End Role="loto_permit" EntitySet="loto_permit" />
+            <End Role="loto_coming_holder" EntitySet="loto_coming_holder" />
+          </AssociationSet>
+          <AssociationSet Name="FK_loto_permit_loto_glarf" Association="star_energy_ptwModel.FK_loto_permit_loto_glarf">
             <End Role="loto_glarf" EntitySet="loto_glarf" />
+            <End Role="loto_permit" EntitySet="loto_permit" />
           </AssociationSet>
           <AssociationSet Name="FK_loto_point_loto_permit" Association="star_energy_ptwModel.FK_loto_point_loto_permit">
             <End Role="loto_permit" EntitySet="loto_permit" />
             <End Role="loto_point" EntitySet="loto_point" />
+          </AssociationSet>
+          <AssociationSet Name="FK_loto_suspension_loto_permit" Association="star_energy_ptwModel.FK_loto_suspension_loto_permit">
+            <End Role="loto_permit" EntitySet="loto_permit" />
+            <End Role="loto_suspension" EntitySet="loto_suspension" />
+          </AssociationSet>
+          <AssociationSet Name="loto_permit_to_work" Association="star_energy_ptwModel.loto_permit_to_work">
+            <End Role="loto_permit" EntitySet="loto_permit" />
+            <End Role="permit_to_work" EntitySet="permit_to_work" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="confined_space">
@@ -1553,6 +2127,8 @@
           <Property Type="Int32" Name="status" />
           <Property Type="String" Name="fi_no" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="permit_to_work" Relationship="star_energy_ptwModel.FK_fire_impairment_permit_to_work" FromRole="fire_impairment" ToRole="permit_to_work" />
+          <Property Type="Byte" Name="is_extend" />
+          <Property Type="DateTime" Name="datetime" Precision="3" />
         </EntityType>
         <EntityType Name="hira_document">
           <Key>
@@ -1738,7 +2314,7 @@
           <Property Type="Int32" Name="status" />
           <NavigationProperty Name="loto_glarf_user" Relationship="star_energy_ptwModel.FK_loto_glarf_user_loto_glarf" FromRole="loto_glarf" ToRole="loto_glarf_user" />
           <NavigationProperty Name="permit_to_work" Relationship="star_energy_ptwModel.FK_permit_to_work_loto_permit" FromRole="loto_glarf" ToRole="permit_to_work" />
-          <NavigationProperty Name="loto_permit" Relationship="star_energy_ptwModel.FK_loto_glarf_loto_permit" FromRole="loto_glarf" ToRole="loto_permit" />
+          <NavigationProperty Name="loto_permit" Relationship="star_energy_ptwModel.FK_loto_permit_loto_glarf" FromRole="loto_glarf" ToRole="loto_permit" />
         </EntityType>
         <EntityType Name="loto_glarf_user">
           <Key>
@@ -1746,7 +2322,7 @@
           </Key>
           <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Type="Int32" Name="id_glarf" />
-          <Property Type="String" Name="user" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="user" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="user_application_signature" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Type="DateTime" Name="user_application_signature_date" Precision="3" />
           <Property Type="String" Name="user_cancellation_signature" MaxLength="255" FixedLength="false" Unicode="false" />
@@ -1777,6 +2353,9 @@
           <Property Type="String" Name="inspected_5" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="inspected_6" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="inspected_7" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="Byte" Name="is_removed" />
+          <Property Type="Byte" Name="is_edited" />
+          <Property Type="Byte" Name="is_set_empty" />
           <NavigationProperty Name="loto_permit" Relationship="star_energy_ptwModel.FK_loto_point_loto_permit" FromRole="loto_point" ToRole="loto_permit" />
         </EntityType>
         <EntityType Name="mst_assessor">
@@ -1824,23 +2403,6 @@
           </Key>
           <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Type="Int32" Name="id_employee" />
-        </EntityType>
-        <EntityType Name="mst_facility_owner">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Int32" Name="id_employee" />
-          <Property Type="String" Name="fo_code" MaxLength="10" FixedLength="false" Unicode="false" />
-        </EntityType>
-        <EntityType Name="mst_inspector">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Int32" Name="id_employee" />
-          <Property Type="String" Name="certificate_no" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="valid_date" Precision="3" />
         </EntityType>
         <EntityType Name="mst_lock_box">
           <Key>
@@ -1912,6 +2474,493 @@
           <Property Type="String" Name="status" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="comment" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Type="Int32" Name="permit_type" />
+        </EntityType>
+        <EntityType Name="radiography">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="id_ptw" />
+          <Property Type="String" Name="rg_no" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="purpose" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="radiographer_2" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="radiographer_1" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="radiographer_2_license_number" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="radiographer_1_license_number" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="radiation_protection_officer" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="radiation_protection_officer_license_number" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="potential_area_affected" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="total_crew" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="supervisor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="radiographic_source" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="estimate_time_start" Precision="3" />
+          <Property Type="DateTime" Name="estimate_time_end" Precision="3" />
+          <Property Type="String" Name="pre_screening_spv" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="pre_screening_rad" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="pre_screening_fo" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="operator_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="operator_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="radiographer_2_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="radiographer_2_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="supervisor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="supervisor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="safety_officer" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="safety_officer_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="safety_officer_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="facility_owner" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="facility_owner_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="facility_owner_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="pre_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_screening_spv" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_screening_rad" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_screening_fo" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_operator_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_operator_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_radiographer_2_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_radiographer_2_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_supervisor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_supervisor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_safety_officer_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_safety_officer_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_fo_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_fo_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="status" Nullable="false" />
+          <Property Type="String" Name="operator" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="work_location" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="permit_to_work" Relationship="star_energy_ptwModel.FK_radiography_permit_to_work" FromRole="radiography" ToRole="permit_to_work" />
+        </EntityType>
+        <Association Name="FK_loto_glarf_user_loto_glarf">
+          <End Type="star_energy_ptwModel.loto_glarf" Role="loto_glarf" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="star_energy_ptwModel.loto_glarf_user" Role="loto_glarf_user" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="loto_glarf">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="loto_glarf_user">
+              <PropertyRef Name="id_glarf" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="loto_suspension_holder">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="id_loto_suspension" />
+          <Property Type="String" Name="holder_spv" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="no_holder" />
+          <Property Type="String" Name="holder_sign_approval" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="holder_date_approval" Precision="3" />
+          <Property Type="String" Name="holder_sign_delegate_approval" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="holder_sign_cancellation" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="holder_date_cancellation" Precision="3" />
+          <Property Type="String" Name="holder_sign_delegate_cancellation" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="is_agree" />
+          <NavigationProperty Name="loto_suspension" Relationship="star_energy_ptwModel.FK_Table_1_loto_suspension" FromRole="loto_suspension_holder" ToRole="loto_suspension" />
+        </EntityType>
+        <EntityType Name="working_height">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="id_ptw" />
+          <Property Type="String" Name="wh_no" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="description" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="work_location" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="requestor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="from" Precision="3" />
+          <Property Type="DateTime" Name="until" Precision="3" />
+          <Property Type="Int32" Name="total_crew" />
+          <Property Type="Int32" Name="access" />
+          <Property Type="String" Name="workbox_access" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ladder_access" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="elevated_access" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="scaffolding" />
+          <Property Type="String" Name="load_capacity" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="no_person" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="erector" />
+          <Property Type="String" Name="erector_certificate_no" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="erector_valid_date" Precision="3" />
+          <Property Type="String" Name="scaffold_access" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="inspector" />
+          <Property Type="String" Name="inspector_certify_no" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="utilization_valid_date" Precision="3" />
+          <Property Type="String" Name="inspector_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="inspector_sign_date" Precision="3" />
+          <Property Type="String" Name="mandatory_fall_prevention" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="fall_prevention_assess" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="pre_screening_req" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="pre_screening_fo" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="requestor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="requestor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="requestor_signature_date" Precision="3" />
+          <Property Type="String" Name="supervisor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="supervisor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="supervisor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="supervisor_signature_date" Precision="3" />
+          <Property Type="String" Name="facility_owner" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="facility_owner_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="facility_owner_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="facility_owner_signature_date" Precision="3" />
+          <Property Type="String" Name="can_screening_req" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_screening_fo" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_requestor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_requestor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="can_requestor_signature_date" Precision="3" />
+          <Property Type="String" Name="can_supervisor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_supervisor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="can_supervisor_signature_date" Precision="3" />
+          <Property Type="String" Name="can_facility_owner_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_facility_owner_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="can_facility_owner_signature_date" Precision="3" />
+          <Property Type="Int32" Name="status" />
+          <Property Type="String" Name="pre_screening_note" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="no_inspection" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="permit_to_work" Relationship="star_energy_ptwModel.FK_working_height_permit_to_work" FromRole="working_height" ToRole="permit_to_work" />
+        </EntityType>
+        <EntityType Name="safety_briefing_user">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="id_safety_briefing" />
+          <Property Type="String" Name="user" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="id_badge" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="user_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="safety_briefing" Relationship="star_energy_ptwModel.FK_safety_briefing_user_safety_briefing" FromRole="safety_briefing_user" ToRole="safety_briefing" />
+        </EntityType>
+        <EntityType Name="safety_briefing">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="id_ptw" />
+          <Property Type="String" Name="section" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="work_area" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="date" Precision="3" />
+          <Property Type="String" Name="topic" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="hazard" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="control_method" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="status" />
+          <Property Type="String" Name="requestor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="safety_briefing_user" Relationship="star_energy_ptwModel.FK_safety_briefing_user_safety_briefing" FromRole="safety_briefing" ToRole="safety_briefing_user" />
+          <NavigationProperty Name="permit_to_work" Relationship="star_energy_ptwModel.FK_safety_briefing_permit_to_work" FromRole="safety_briefing" ToRole="permit_to_work" />
+        </EntityType>
+        <Association Name="FK_safety_briefing_user_safety_briefing">
+          <End Type="star_energy_ptwModel.safety_briefing" Role="safety_briefing" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="star_energy_ptwModel.safety_briefing_user" Role="safety_briefing_user" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="safety_briefing">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="safety_briefing_user">
+              <PropertyRef Name="id_safety_briefing" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="mst_inspector">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="id_employee" />
+          <Property Type="String" Name="certificate_no" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="valid_date" Precision="3" />
+          <Property Type="String" Name="code_name" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="mst_no_inspection">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="inspector_id" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="no_inspection" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="valid_date" Precision="3" />
+          <Property Type="Int32" Name="id_inspection" />
+          <NavigationProperty Name="scaffolding_inspection" Relationship="star_energy_ptwModel.FK_mst_no_inspection_scaffolding_inspection" FromRole="mst_no_inspection" ToRole="scaffolding_inspection" />
+        </EntityType>
+        <EntityType Name="scaffolding_inspection">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="DateTime" Name="date_inspection" Precision="3" />
+          <Property Type="String" Name="type_scaffold" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="duties_scaffold" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="pupose_scaffold" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="location" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="name_scaffolder" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="base_ground_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="base_ground_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="base_ground_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="base_concrete_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="base_concrete_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="base_concrete_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="base_sole_plate_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="base_sole_plate_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="base_sole_plate_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="base_base_plate_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="base_base_plate_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="base_base_plate_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="base_adj_sole_plate_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="base_adj_sole_plate_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="base_adj_sole_plate_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="standard_diameter_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="standard_diameter_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="standard_diameter_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="standard_length_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="standard_length_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="standard_length_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="standard_leveling_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="standard_leveling_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="standard_leveling_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="standard_couplers_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="standard_couplers_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="standard_couplers_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="standard_pin_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="standard_pin_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="standard_pin_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ledger_diameter_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ledger_diameter_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ledger_diameter_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ledger_length_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ledger_length_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ledger_length_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ledger_leveling_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ledger_leveling_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ledger_leveling_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ledger_couplers_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ledger_couplers_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ledger_couplers_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ledger_sleeve_couplers_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ledger_sleeve_couplers_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ledger_sleeve_couplers_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="transom_diameter_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="transom_diameter_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="transom_diameter_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="transom_length_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="transom_length_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="transom_length_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="transom_leveling_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="transom_leveling_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="transom_leveling_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="transom_couplers_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="transom_couplers_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="transom_couplers_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="transom_sleeve_couplers_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="transom_sleeve_couplers_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="transom_sleeve_couplers_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="putlog_diameter_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="putlog_diameter_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="putlog_diameter_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="putlog_length_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="putlog_length_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="putlog_length_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="putlog_leveling_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="putlog_leveling_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="putlog_leveling_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="bracing_diameter_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="bracing_diameter_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="bracing_diameter_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="bracing_length_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="bracing_length_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="bracing_length_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="bracing_pins_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="bracing_pins_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="bracing_pins_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="bracing_couplers_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="bracing_couplers_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="bracing_couplers_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_ledger_diameter_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_ledger_diameter_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_ledger_diameter_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_ledger_length_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_ledger_length_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_ledger_length_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_ledger_leveling_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_ledger_leveling_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_ledger_leveling_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_ledger_couplers_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_ledger_couplers_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_ledger_couplers_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_ledger_sleeve_couplers_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_ledger_sleeve_couplers_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_ledger_sleeve_couplers_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_transom_diameter_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_transom_diameter_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_transom_diameter_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_transom_length_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_transom_length_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_transom_length_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_transom_leveling_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_transom_leveling_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_transom_leveling_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_transom_couplers_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_transom_couplers_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_transom_couplers_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_transom_sleeve_couplers_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_transom_sleeve_couplers_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="guardrail_transom_sleeve_couplers_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="platform_condition_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="platform_condition_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="platform_condition_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="platform_length_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="platform_length_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="platform_length_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="platform_width_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="platform_width_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="platform_width_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="platform_clearance_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="platform_clearance_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="platform_clearance_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="platform_lashing_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="platform_lashing_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="platform_lashing_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="platform_deflection_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="platform_deflection_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="platform_deflection_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="toeboard_condition_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="toeboard_condition_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="toeboard_condition_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="toeboard_length_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="toeboard_length_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="toeboard_length_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="toeboard_height_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="toeboard_height_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="toeboard_height_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="toeboard_clearance_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="toeboard_clearance_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="toeboard_clearance_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="toeboard_lashing_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="toeboard_lashing_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="toeboard_lashing_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="aluminium_ladder_condition_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="aluminium_ladder_condition_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="aluminium_ladder_condition_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="aluminium_ladder_length_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="aluminium_ladder_length_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="aluminium_ladder_length_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="aluminium_ladder_height_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="aluminium_ladder_height_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="aluminium_ladder_height_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="aluminium_ladder_putlog_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="aluminium_ladder_putlog_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="aluminium_ladder_putlog_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="aluminium_ladder_angle_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="aluminium_ladder_angle_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="aluminium_ladder_angle_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ladder_tube_condition_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ladder_tube_condition_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ladder_tube_condition_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ladder_tube_diameter_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ladder_tube_diameter_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ladder_tube_diameter_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ladder_tube_height_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ladder_tube_height_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ladder_tube_height_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ladder_tube_putlog_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ladder_tube_putlog_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ladder_tube_putlog_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ladder_tube_angle_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ladder_tube_angle_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ladder_tube_angle_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ladder_tube_coupler_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ladder_tube_coupler_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ladder_tube_coupler_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="gin_wheel_condition_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="gin_wheel_condition_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="gin_wheel_condition_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="gin_wheel_swl_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="gin_wheel_swl_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="gin_wheel_swl_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="gin_wheel_hoist_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="gin_wheel_hoist_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="gin_wheel_hoist_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="gin_wheel_catch_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="gin_wheel_catch_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="gin_wheel_catch_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="gin_wheel_clamp_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="gin_wheel_clamp_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="gin_wheel_clamp_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ties_condition_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ties_condition_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ties_condition_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ties_pipes_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ties_pipes_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ties_pipes_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="access_ladder_access_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="access_ladder_access_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="access_ladder_access_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="access_ladder_landing_platform_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="access_ladder_landing_platform_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="access_ladder_landing_platform_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="access_ladder_safety_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="access_ladder_safety_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="access_ladder_safety_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="general_surface_leveling_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="general_surface_leveling_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="general_surface_leveling_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="general_surface_safety_good" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="general_surface_safety_poor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="general_surface_safety_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="others_text" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="others_good" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="others_poor" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="others_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="safety_recommendation" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="mst_no_inspection" Relationship="star_energy_ptwModel.FK_mst_no_inspection_scaffolding_inspection" FromRole="scaffolding_inspection" ToRole="mst_no_inspection" />
+        </EntityType>
+        <Association Name="FK_mst_no_inspection_scaffolding_inspection">
+          <End Type="star_energy_ptwModel.scaffolding_inspection" Role="scaffolding_inspection" Multiplicity="0..1" />
+          <End Type="star_energy_ptwModel.mst_no_inspection" Role="mst_no_inspection" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="scaffolding_inspection">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="mst_no_inspection">
+              <PropertyRef Name="id_inspection" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="mst_facility_owner">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="id_employee" />
+          <Property Type="String" Name="fo_code" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="fo_name" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="mst_delegate_fo" Relationship="star_energy_ptwModel.FK_mst_delegate_fo_mst_facility_owner" FromRole="mst_facility_owner" ToRole="mst_delegate_fo" />
+        </EntityType>
+        <EntityType Name="mst_area_code">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="area_code" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="description" MaxLength="255" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="loto_coming_holder">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="id_loto" />
+          <Property Type="String" Name="holder_spv" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="no_holder" />
+          <Property Type="String" Name="holder_sign_approval" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="holder_date_approval" Precision="3" />
+          <Property Type="String" Name="holder_sign_delegate_approval" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="holder_sign_cancellation" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="holder_date_cancellation" Precision="3" />
+          <Property Type="String" Name="holder_sign_delegate_cancellation" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="holder" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="loto_permit" Relationship="star_energy_ptwModel.FK_loto_coming_holder_loto_permit" FromRole="loto_coming_holder" ToRole="loto_permit" />
         </EntityType>
         <EntityType Name="permit_to_work">
           <Key>
@@ -2003,6 +3052,13 @@
           <Property Type="String" Name="can_fo_approve" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Type="Int32" Name="id_parent_ptw" />
           <Property Type="Int32" Name="status" />
+          <Property Type="String" Name="hira_docs" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_notes_fo_ass" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="acc_notes_ass_fo" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_notes_ass_fo" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="Byte" Name="is_guest" />
+          <Property Type="String" Name="guest_holder_no" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Byte" Name="requested_no" />
           <NavigationProperty Name="confined_space" Relationship="star_energy_ptwModel.FK_confined_space_permit_to_work" FromRole="permit_to_work" ToRole="confined_space" />
           <NavigationProperty Name="excavations" Relationship="star_energy_ptwModel.FK_excavation_permit_to_work" FromRole="permit_to_work" ToRole="excavation" />
           <NavigationProperty Name="fire_impairment" Relationship="star_energy_ptwModel.FK_fire_impairment_permit_to_work" FromRole="permit_to_work" ToRole="fire_impairment" />
@@ -2015,121 +3071,9 @@
           <NavigationProperty Name="permit_to_work1" Relationship="star_energy_ptwModel.FK_permit_to_work_permit_to_work" FromRole="permit_to_work" ToRole="permit_to_work1" />
           <NavigationProperty Name="permit_to_work2" Relationship="star_energy_ptwModel.FK_permit_to_work_permit_to_work" FromRole="permit_to_work1" ToRole="permit_to_work" />
           <NavigationProperty Name="radiographies" Relationship="star_energy_ptwModel.FK_radiography_permit_to_work" FromRole="permit_to_work" ToRole="radiography" />
+          <NavigationProperty Name="safety_briefing" Relationship="star_energy_ptwModel.FK_safety_briefing_permit_to_work" FromRole="permit_to_work" ToRole="safety_briefing" />
           <NavigationProperty Name="working_height" Relationship="star_energy_ptwModel.FK_working_height_permit_to_work" FromRole="permit_to_work" ToRole="working_height" />
-        </EntityType>
-        <EntityType Name="radiography">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Int32" Name="id_ptw" />
-          <Property Type="String" Name="rg_no" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="purpose" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="radiographer_2" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="radiographer_1" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="radiographer_2_license_number" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="radiographer_1_license_number" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="radiation_protection_officer" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="radiation_protection_officer_license_number" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="potential_area_affected" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="total_crew" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="supervisor" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="radiographic_source" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="estimate_time_start" Precision="3" />
-          <Property Type="DateTime" Name="estimate_time_end" Precision="3" />
-          <Property Type="String" Name="pre_screening_spv" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="pre_screening_rad" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="pre_screening_fo" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="operator_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="operator_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="radiographer_2_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="radiographer_2_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="supervisor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="supervisor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="safety_officer" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="safety_officer_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="safety_officer_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="facility_owner" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="facility_owner_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="facility_owner_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="pre_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_screening_spv" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_screening_rad" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_screening_fo" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_operator_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_operator_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_radiographer_2_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_radiographer_2_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_supervisor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_supervisor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_safety_officer_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_safety_officer_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_fo_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_fo_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="Int32" Name="status" Nullable="false" />
-          <Property Type="String" Name="operator" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="work_location" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_remark" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="permit_to_work" Relationship="star_energy_ptwModel.FK_radiography_permit_to_work" FromRole="radiography" ToRole="permit_to_work" />
-        </EntityType>
-        <EntityType Name="working_height">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Int32" Name="id_ptw" />
-          <Property Type="String" Name="wh_no" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="description" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="work_location" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="requestor" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="from" Precision="3" />
-          <Property Type="DateTime" Name="until" Precision="3" />
-          <Property Type="Int32" Name="total_crew" />
-          <Property Type="Int32" Name="access" />
-          <Property Type="String" Name="workbox_access" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="ladder_access" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="elevated_access" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="Int32" Name="scaffolding" />
-          <Property Type="String" Name="load_capacity" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="no_person" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="Int32" Name="erector" />
-          <Property Type="String" Name="erector_certificate_no" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="erector_valid_date" Precision="3" />
-          <Property Type="String" Name="scaffold_access" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="Int32" Name="inspector" />
-          <Property Type="String" Name="inspector_certify_no" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="utilization_valid_date" Precision="3" />
-          <Property Type="String" Name="inspector_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="inspector_sign_date" Precision="3" />
-          <Property Type="String" Name="mandatory_fall_prevention" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="fall_prevention_assess" MaxLength="25" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="pre_screening_req" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="pre_screening_fo" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="requestor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="requestor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="requestor_signature_date" Precision="3" />
-          <Property Type="String" Name="supervisor" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="supervisor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="supervisor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="supervisor_signature_date" Precision="3" />
-          <Property Type="String" Name="facility_owner" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="facility_owner_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="facility_owner_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="facility_owner_signature_date" Precision="3" />
-          <Property Type="String" Name="can_screening_req" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_screening_fo" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_requestor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_requestor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="can_requestor_signature_date" Precision="3" />
-          <Property Type="String" Name="can_supervisor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_supervisor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="can_supervisor_signature_date" Precision="3" />
-          <Property Type="String" Name="can_facility_owner_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_facility_owner_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="can_facility_owner_signature_date" Precision="3" />
-          <Property Type="Int32" Name="status" />
-          <Property Type="String" Name="pre_screening_note" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="permit_to_work" Relationship="star_energy_ptwModel.FK_working_height_permit_to_work" FromRole="working_height" ToRole="permit_to_work" />
+          <NavigationProperty Name="loto_permit" Relationship="star_energy_ptwModel.loto_permit_to_work" FromRole="permit_to_work" ToRole="loto_permit" />
         </EntityType>
         <Association Name="FK_confined_space_permit_to_work">
           <End Type="star_energy_ptwModel.permit_to_work" Role="permit_to_work" Multiplicity="0..1" />
@@ -2192,20 +3136,6 @@
             </Principal>
             <Dependent Role="hot_work">
               <PropertyRef Name="id_ptw" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_loto_glarf_user_loto_glarf">
-          <End Type="star_energy_ptwModel.loto_glarf" Role="loto_glarf" Multiplicity="0..1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="star_energy_ptwModel.loto_glarf_user" Role="loto_glarf_user" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="loto_glarf">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="loto_glarf_user">
-              <PropertyRef Name="id_glarf" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2283,6 +3213,20 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_safety_briefing_permit_to_work">
+          <End Type="star_energy_ptwModel.permit_to_work" Role="permit_to_work" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="star_energy_ptwModel.safety_briefing" Role="safety_briefing" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="permit_to_work">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="safety_briefing">
+              <PropertyRef Name="id_ptw" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_working_height_permit_to_work">
           <End Type="star_energy_ptwModel.permit_to_work" Role="permit_to_work" Multiplicity="0..1" />
           <End Type="star_energy_ptwModel.working_height" Role="working_height" Multiplicity="*" />
@@ -2295,11 +3239,75 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="email_error">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="String" Name="emails" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="content" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="subject" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="exception" MaxLength="Max" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="mst_delegate_fo">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="id_mst_fo" />
+          <Property Type="Int32" Name="user_delegate_id" />
+          <NavigationProperty Name="mst_facility_owner" Relationship="star_energy_ptwModel.FK_mst_delegate_fo_mst_facility_owner" FromRole="mst_delegate_fo" ToRole="mst_facility_owner" />
+        </EntityType>
+        <Association Name="FK_mst_delegate_fo_mst_facility_owner">
+          <End Type="star_energy_ptwModel.mst_facility_owner" Role="mst_facility_owner" Multiplicity="0..1" />
+          <End Type="star_energy_ptwModel.mst_delegate_fo" Role="mst_delegate_fo" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="mst_facility_owner">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="mst_delegate_fo">
+              <PropertyRef Name="id_mst_fo" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="loto_suspension">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="id_loto" />
+          <Property Type="String" Name="requestor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="facility_owner" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="requestor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="fo_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="suspend_no" />
+          <Property Type="String" Name="notes" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="status" />
+          <Property Type="String" Name="can_requestor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="fo_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="loto_suspension_holder" Relationship="star_energy_ptwModel.FK_Table_1_loto_suspension" FromRole="loto_suspension" ToRole="loto_suspension_holder" />
+          <NavigationProperty Name="loto_permit" Relationship="star_energy_ptwModel.FK_loto_suspension_loto_permit" FromRole="loto_suspension" ToRole="loto_permit" />
+        </EntityType>
+        <Association Name="FK_Table_1_loto_suspension">
+          <End Type="star_energy_ptwModel.loto_suspension" Role="loto_suspension" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="star_energy_ptwModel.loto_suspension_holder" Role="loto_suspension_holder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="loto_suspension">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="loto_suspension_holder">
+              <PropertyRef Name="id_loto_suspension" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityType Name="loto_permit">
           <Key>
             <PropertyRef Name="id" />
           </Key>
           <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="id_glarf" />
           <Property Type="String" Name="loto_no" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="requestor" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="supervisor" MaxLength="50" FixedLength="false" Unicode="false" />
@@ -2366,20 +3374,37 @@
           <Property Type="String" Name="cancellation_fo_signature_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="cancellation_notes" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="cancellation_facility_owner" MaxLength="50" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="loto_glarf" Relationship="star_energy_ptwModel.FK_loto_glarf_loto_permit" FromRole="loto_permit" ToRole="loto_glarf" />
+          <NavigationProperty Name="loto_coming_holder" Relationship="star_energy_ptwModel.FK_loto_coming_holder_loto_permit" FromRole="loto_permit" ToRole="loto_coming_holder" />
+          <NavigationProperty Name="loto_glarf" Relationship="star_energy_ptwModel.FK_loto_permit_loto_glarf" FromRole="loto_permit" ToRole="loto_glarf" />
           <NavigationProperty Name="loto_point" Relationship="star_energy_ptwModel.FK_loto_point_loto_permit" FromRole="loto_permit" ToRole="loto_point" />
+          <NavigationProperty Name="loto_suspension" Relationship="star_energy_ptwModel.FK_loto_suspension_loto_permit" FromRole="loto_permit" ToRole="loto_suspension" />
+          <NavigationProperty Name="permit_to_work" Relationship="star_energy_ptwModel.loto_permit_to_work" FromRole="loto_permit" ToRole="permit_to_work" />
         </EntityType>
-        <Association Name="FK_loto_glarf_loto_permit">
+        <Association Name="FK_loto_coming_holder_loto_permit">
           <End Type="star_energy_ptwModel.loto_permit" Role="loto_permit" Multiplicity="0..1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="star_energy_ptwModel.loto_glarf" Role="loto_glarf" Multiplicity="*" />
+          <End Type="star_energy_ptwModel.loto_coming_holder" Role="loto_coming_holder" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="loto_permit">
               <PropertyRef Name="id" />
             </Principal>
-            <Dependent Role="loto_glarf">
-              <PropertyRef Name="id_loto_permit" />
+            <Dependent Role="loto_coming_holder">
+              <PropertyRef Name="id_loto" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_loto_permit_loto_glarf">
+          <End Type="star_energy_ptwModel.loto_glarf" Role="loto_glarf" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="star_energy_ptwModel.loto_permit" Role="loto_permit" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="loto_glarf">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="loto_permit">
+              <PropertyRef Name="id_glarf" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2394,6 +3419,24 @@
               <PropertyRef Name="id_loto" />
             </Dependent>
           </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_loto_suspension_loto_permit">
+          <End Type="star_energy_ptwModel.loto_permit" Role="loto_permit" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="star_energy_ptwModel.loto_suspension" Role="loto_suspension" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="loto_permit">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="loto_suspension">
+              <PropertyRef Name="id_loto" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="loto_permit_to_work">
+          <End Type="star_energy_ptwModel.loto_permit" Role="loto_permit" Multiplicity="*" />
+          <End Type="star_energy_ptwModel.permit_to_work" Role="permit_to_work" Multiplicity="*" />
         </Association>
         </Schema>
     </edmx:ConceptualModels>
@@ -2634,6 +3677,8 @@
           <EntitySetMapping Name="fire_impairment">
             <EntityTypeMapping TypeName="star_energy_ptwModel.fire_impairment">
               <MappingFragment StoreEntitySet="fire_impairment">
+                <ScalarProperty Name="datetime" ColumnName="datetime" />
+                <ScalarProperty Name="is_extend" ColumnName="is_extend" />
                 <ScalarProperty Name="fi_no" ColumnName="fi_no" />
                 <ScalarProperty Name="status" ColumnName="status" />
                 <ScalarProperty Name="id_ptw" ColumnName="id_ptw" />
@@ -2879,6 +3924,9 @@
           <EntitySetMapping Name="loto_point">
             <EntityTypeMapping TypeName="star_energy_ptwModel.loto_point">
               <MappingFragment StoreEntitySet="loto_point">
+                <ScalarProperty Name="is_set_empty" ColumnName="is_set_empty" />
+                <ScalarProperty Name="is_edited" ColumnName="is_edited" />
+                <ScalarProperty Name="is_removed" ColumnName="is_removed" />
                 <ScalarProperty Name="inspected_7" ColumnName="inspected_7" />
                 <ScalarProperty Name="inspected_6" ColumnName="inspected_6" />
                 <ScalarProperty Name="inspected_5" ColumnName="inspected_5" />
@@ -2947,25 +3995,6 @@
           <EntitySetMapping Name="mst_facilities">
             <EntityTypeMapping TypeName="star_energy_ptwModel.mst_facilities">
               <MappingFragment StoreEntitySet="mst_facilities">
-                <ScalarProperty Name="id_employee" ColumnName="id_employee" />
-                <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="mst_facility_owner">
-            <EntityTypeMapping TypeName="star_energy_ptwModel.mst_facility_owner">
-              <MappingFragment StoreEntitySet="mst_facility_owner">
-                <ScalarProperty Name="fo_code" ColumnName="fo_code" />
-                <ScalarProperty Name="id_employee" ColumnName="id_employee" />
-                <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="mst_inspector">
-            <EntityTypeMapping TypeName="star_energy_ptwModel.mst_inspector">
-              <MappingFragment StoreEntitySet="mst_inspector">
-                <ScalarProperty Name="valid_date" ColumnName="valid_date" />
-                <ScalarProperty Name="certificate_no" ColumnName="certificate_no" />
                 <ScalarProperty Name="id_employee" ColumnName="id_employee" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
@@ -3048,9 +4077,464 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="radiographies">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.radiography">
+              <MappingFragment StoreEntitySet="radiography">
+                <ScalarProperty Name="can_remark" ColumnName="can_remark" />
+                <ScalarProperty Name="work_location" ColumnName="work_location" />
+                <ScalarProperty Name="operator" ColumnName="operator" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="can_fo_delegate" ColumnName="can_fo_delegate" />
+                <ScalarProperty Name="can_fo_signature" ColumnName="can_fo_signature" />
+                <ScalarProperty Name="can_safety_officer_delegate" ColumnName="can_safety_officer_delegate" />
+                <ScalarProperty Name="can_safety_officer_signature" ColumnName="can_safety_officer_signature" />
+                <ScalarProperty Name="can_supervisor_delegate" ColumnName="can_supervisor_delegate" />
+                <ScalarProperty Name="can_supervisor_signature" ColumnName="can_supervisor_signature" />
+                <ScalarProperty Name="can_radiographer_2_delegate" ColumnName="can_radiographer_2_delegate" />
+                <ScalarProperty Name="can_radiographer_2_signature" ColumnName="can_radiographer_2_signature" />
+                <ScalarProperty Name="can_operator_delegate" ColumnName="can_operator_delegate" />
+                <ScalarProperty Name="can_operator_signature" ColumnName="can_operator_signature" />
+                <ScalarProperty Name="can_screening_fo" ColumnName="can_screening_fo" />
+                <ScalarProperty Name="can_screening_rad" ColumnName="can_screening_rad" />
+                <ScalarProperty Name="can_screening_spv" ColumnName="can_screening_spv" />
+                <ScalarProperty Name="pre_remark" ColumnName="pre_remark" />
+                <ScalarProperty Name="facility_owner_delegate" ColumnName="facility_owner_delegate" />
+                <ScalarProperty Name="facility_owner_signature" ColumnName="facility_owner_signature" />
+                <ScalarProperty Name="facility_owner" ColumnName="facility_owner" />
+                <ScalarProperty Name="safety_officer_delegate" ColumnName="safety_officer_delegate" />
+                <ScalarProperty Name="safety_officer_signature" ColumnName="safety_officer_signature" />
+                <ScalarProperty Name="safety_officer" ColumnName="safety_officer" />
+                <ScalarProperty Name="supervisor_delegate" ColumnName="supervisor_delegate" />
+                <ScalarProperty Name="supervisor_signature" ColumnName="supervisor_signature" />
+                <ScalarProperty Name="radiographer_2_delegate" ColumnName="radiographer_2_delegate" />
+                <ScalarProperty Name="radiographer_2_signature" ColumnName="radiographer_2_signature" />
+                <ScalarProperty Name="operator_delegate" ColumnName="operator_delegate" />
+                <ScalarProperty Name="operator_signature" ColumnName="operator_signature" />
+                <ScalarProperty Name="pre_screening_fo" ColumnName="pre_screening_fo" />
+                <ScalarProperty Name="pre_screening_rad" ColumnName="pre_screening_rad" />
+                <ScalarProperty Name="pre_screening_spv" ColumnName="pre_screening_spv" />
+                <ScalarProperty Name="estimate_time_end" ColumnName="estimate_time_end" />
+                <ScalarProperty Name="estimate_time_start" ColumnName="estimate_time_start" />
+                <ScalarProperty Name="radiographic_source" ColumnName="radiographic_source" />
+                <ScalarProperty Name="supervisor" ColumnName="supervisor" />
+                <ScalarProperty Name="total_crew" ColumnName="total_crew" />
+                <ScalarProperty Name="potential_area_affected" ColumnName="potential_area_affected" />
+                <ScalarProperty Name="radiation_protection_officer_license_number" ColumnName="radiation_protection_officer_license_number" />
+                <ScalarProperty Name="radiation_protection_officer" ColumnName="radiation_protection_officer" />
+                <ScalarProperty Name="radiographer_1_license_number" ColumnName="radiographer_1_license_number" />
+                <ScalarProperty Name="radiographer_2_license_number" ColumnName="radiographer_2_license_number" />
+                <ScalarProperty Name="radiographer_1" ColumnName="radiographer_1" />
+                <ScalarProperty Name="radiographer_2" ColumnName="radiographer_2" />
+                <ScalarProperty Name="purpose" ColumnName="purpose" />
+                <ScalarProperty Name="rg_no" ColumnName="rg_no" />
+                <ScalarProperty Name="id_ptw" ColumnName="id_ptw" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="loto_suspension_holder">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.loto_suspension_holder">
+              <MappingFragment StoreEntitySet="loto_suspension_holder">
+                <ScalarProperty Name="is_agree" ColumnName="is_agree" />
+                <ScalarProperty Name="holder_sign_delegate_cancellation" ColumnName="holder_sign_delegate_cancellation" />
+                <ScalarProperty Name="holder_date_cancellation" ColumnName="holder_date_cancellation" />
+                <ScalarProperty Name="holder_sign_cancellation" ColumnName="holder_sign_cancellation" />
+                <ScalarProperty Name="holder_sign_delegate_approval" ColumnName="holder_sign_delegate_approval" />
+                <ScalarProperty Name="holder_date_approval" ColumnName="holder_date_approval" />
+                <ScalarProperty Name="holder_sign_approval" ColumnName="holder_sign_approval" />
+                <ScalarProperty Name="no_holder" ColumnName="no_holder" />
+                <ScalarProperty Name="holder_spv" ColumnName="holder_spv" />
+                <ScalarProperty Name="id_loto_suspension" ColumnName="id_loto_suspension" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="working_height">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.working_height">
+              <MappingFragment StoreEntitySet="working_height">
+                <ScalarProperty Name="no_inspection" ColumnName="no_inspection" />
+                <ScalarProperty Name="pre_screening_note" ColumnName="pre_screening_note" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="can_facility_owner_signature_date" ColumnName="can_facility_owner_signature_date" />
+                <ScalarProperty Name="can_facility_owner_delegate" ColumnName="can_facility_owner_delegate" />
+                <ScalarProperty Name="can_facility_owner_signature" ColumnName="can_facility_owner_signature" />
+                <ScalarProperty Name="can_supervisor_signature_date" ColumnName="can_supervisor_signature_date" />
+                <ScalarProperty Name="can_supervisor_delegate" ColumnName="can_supervisor_delegate" />
+                <ScalarProperty Name="can_supervisor_signature" ColumnName="can_supervisor_signature" />
+                <ScalarProperty Name="can_requestor_signature_date" ColumnName="can_requestor_signature_date" />
+                <ScalarProperty Name="can_requestor_delegate" ColumnName="can_requestor_delegate" />
+                <ScalarProperty Name="can_requestor_signature" ColumnName="can_requestor_signature" />
+                <ScalarProperty Name="can_screening_fo" ColumnName="can_screening_fo" />
+                <ScalarProperty Name="can_screening_req" ColumnName="can_screening_req" />
+                <ScalarProperty Name="facility_owner_signature_date" ColumnName="facility_owner_signature_date" />
+                <ScalarProperty Name="facility_owner_delegate" ColumnName="facility_owner_delegate" />
+                <ScalarProperty Name="facility_owner_signature" ColumnName="facility_owner_signature" />
+                <ScalarProperty Name="facility_owner" ColumnName="facility_owner" />
+                <ScalarProperty Name="supervisor_signature_date" ColumnName="supervisor_signature_date" />
+                <ScalarProperty Name="supervisor_delegate" ColumnName="supervisor_delegate" />
+                <ScalarProperty Name="supervisor_signature" ColumnName="supervisor_signature" />
+                <ScalarProperty Name="supervisor" ColumnName="supervisor" />
+                <ScalarProperty Name="requestor_signature_date" ColumnName="requestor_signature_date" />
+                <ScalarProperty Name="requestor_delegate" ColumnName="requestor_delegate" />
+                <ScalarProperty Name="requestor_signature" ColumnName="requestor_signature" />
+                <ScalarProperty Name="pre_screening_fo" ColumnName="pre_screening_fo" />
+                <ScalarProperty Name="pre_screening_req" ColumnName="pre_screening_req" />
+                <ScalarProperty Name="fall_prevention_assess" ColumnName="fall_prevention_assess" />
+                <ScalarProperty Name="mandatory_fall_prevention" ColumnName="mandatory_fall_prevention" />
+                <ScalarProperty Name="inspector_sign_date" ColumnName="inspector_sign_date" />
+                <ScalarProperty Name="inspector_signature" ColumnName="inspector_signature" />
+                <ScalarProperty Name="utilization_valid_date" ColumnName="utilization_valid_date" />
+                <ScalarProperty Name="inspector_certify_no" ColumnName="inspector_certify_no" />
+                <ScalarProperty Name="inspector" ColumnName="inspector" />
+                <ScalarProperty Name="scaffold_access" ColumnName="scaffold_access" />
+                <ScalarProperty Name="erector_valid_date" ColumnName="erector_valid_date" />
+                <ScalarProperty Name="erector_certificate_no" ColumnName="erector_certificate_no" />
+                <ScalarProperty Name="erector" ColumnName="erector" />
+                <ScalarProperty Name="no_person" ColumnName="no_person" />
+                <ScalarProperty Name="load_capacity" ColumnName="load_capacity" />
+                <ScalarProperty Name="scaffolding" ColumnName="scaffolding" />
+                <ScalarProperty Name="elevated_access" ColumnName="elevated_access" />
+                <ScalarProperty Name="ladder_access" ColumnName="ladder_access" />
+                <ScalarProperty Name="workbox_access" ColumnName="workbox_access" />
+                <ScalarProperty Name="access" ColumnName="access" />
+                <ScalarProperty Name="total_crew" ColumnName="total_crew" />
+                <ScalarProperty Name="until" ColumnName="until" />
+                <ScalarProperty Name="from" ColumnName="from" />
+                <ScalarProperty Name="requestor" ColumnName="requestor" />
+                <ScalarProperty Name="work_location" ColumnName="work_location" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="wh_no" ColumnName="wh_no" />
+                <ScalarProperty Name="id_ptw" ColumnName="id_ptw" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="safety_briefing_user">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.safety_briefing_user">
+              <MappingFragment StoreEntitySet="safety_briefing_user">
+                <ScalarProperty Name="user_signature" ColumnName="user_signature" />
+                <ScalarProperty Name="id_badge" ColumnName="id_badge" />
+                <ScalarProperty Name="user" ColumnName="user" />
+                <ScalarProperty Name="id_safety_briefing" ColumnName="id_safety_briefing" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="safety_briefing">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.safety_briefing">
+              <MappingFragment StoreEntitySet="safety_briefing">
+                <ScalarProperty Name="requestor" ColumnName="requestor" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="control_method" ColumnName="control_method" />
+                <ScalarProperty Name="hazard" ColumnName="hazard" />
+                <ScalarProperty Name="topic" ColumnName="topic" />
+                <ScalarProperty Name="date" ColumnName="date" />
+                <ScalarProperty Name="work_area" ColumnName="work_area" />
+                <ScalarProperty Name="section" ColumnName="section" />
+                <ScalarProperty Name="id_ptw" ColumnName="id_ptw" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="mst_inspector">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.mst_inspector">
+              <MappingFragment StoreEntitySet="mst_inspector">
+                <ScalarProperty Name="code_name" ColumnName="code_name" />
+                <ScalarProperty Name="valid_date" ColumnName="valid_date" />
+                <ScalarProperty Name="certificate_no" ColumnName="certificate_no" />
+                <ScalarProperty Name="id_employee" ColumnName="id_employee" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="mst_no_inspection">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.mst_no_inspection">
+              <MappingFragment StoreEntitySet="mst_no_inspection">
+                <ScalarProperty Name="id_inspection" ColumnName="id_inspection" />
+                <ScalarProperty Name="valid_date" ColumnName="valid_date" />
+                <ScalarProperty Name="no_inspection" ColumnName="no_inspection" />
+                <ScalarProperty Name="inspector_id" ColumnName="inspector_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="scaffolding_inspection">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.scaffolding_inspection">
+              <MappingFragment StoreEntitySet="scaffolding_inspection">
+                <ScalarProperty Name="safety_recommendation" ColumnName="safety_recommendation" />
+                <ScalarProperty Name="others_remark" ColumnName="others_remark" />
+                <ScalarProperty Name="others_poor" ColumnName="others_poor" />
+                <ScalarProperty Name="others_good" ColumnName="others_good" />
+                <ScalarProperty Name="others_text" ColumnName="others_text" />
+                <ScalarProperty Name="general_surface_safety_remark" ColumnName="general_surface_safety_remark" />
+                <ScalarProperty Name="general_surface_safety_poor" ColumnName="general_surface_safety_poor" />
+                <ScalarProperty Name="general_surface_safety_good" ColumnName="general_surface_safety_good" />
+                <ScalarProperty Name="general_surface_leveling_remark" ColumnName="general_surface_leveling_remark" />
+                <ScalarProperty Name="general_surface_leveling_poor" ColumnName="general_surface_leveling_poor" />
+                <ScalarProperty Name="general_surface_leveling_good" ColumnName="general_surface_leveling_good" />
+                <ScalarProperty Name="access_ladder_safety_remark" ColumnName="access_ladder_safety_remark" />
+                <ScalarProperty Name="access_ladder_safety_poor" ColumnName="access_ladder_safety_poor" />
+                <ScalarProperty Name="access_ladder_safety_good" ColumnName="access_ladder_safety_good" />
+                <ScalarProperty Name="access_ladder_landing_platform_remark" ColumnName="access_ladder_landing_platform_remark" />
+                <ScalarProperty Name="access_ladder_landing_platform_poor" ColumnName="access_ladder_landing_platform_poor" />
+                <ScalarProperty Name="access_ladder_landing_platform_good" ColumnName="access_ladder_landing_platform_good" />
+                <ScalarProperty Name="access_ladder_access_remark" ColumnName="access_ladder_access_remark" />
+                <ScalarProperty Name="access_ladder_access_poor" ColumnName="access_ladder_access_poor" />
+                <ScalarProperty Name="access_ladder_access_good" ColumnName="access_ladder_access_good" />
+                <ScalarProperty Name="ties_pipes_remark" ColumnName="ties_pipes_remark" />
+                <ScalarProperty Name="ties_pipes_poor" ColumnName="ties_pipes_poor" />
+                <ScalarProperty Name="ties_pipes_good" ColumnName="ties_pipes_good" />
+                <ScalarProperty Name="ties_condition_remark" ColumnName="ties_condition_remark" />
+                <ScalarProperty Name="ties_condition_poor" ColumnName="ties_condition_poor" />
+                <ScalarProperty Name="ties_condition_good" ColumnName="ties_condition_good" />
+                <ScalarProperty Name="gin_wheel_clamp_remark" ColumnName="gin_wheel_clamp_remark" />
+                <ScalarProperty Name="gin_wheel_clamp_poor" ColumnName="gin_wheel_clamp_poor" />
+                <ScalarProperty Name="gin_wheel_clamp_good" ColumnName="gin_wheel_clamp_good" />
+                <ScalarProperty Name="gin_wheel_catch_remark" ColumnName="gin_wheel_catch_remark" />
+                <ScalarProperty Name="gin_wheel_catch_poor" ColumnName="gin_wheel_catch_poor" />
+                <ScalarProperty Name="gin_wheel_catch_good" ColumnName="gin_wheel_catch_good" />
+                <ScalarProperty Name="gin_wheel_hoist_remark" ColumnName="gin_wheel_hoist_remark" />
+                <ScalarProperty Name="gin_wheel_hoist_poor" ColumnName="gin_wheel_hoist_poor" />
+                <ScalarProperty Name="gin_wheel_hoist_good" ColumnName="gin_wheel_hoist_good" />
+                <ScalarProperty Name="gin_wheel_swl_remark" ColumnName="gin_wheel_swl_remark" />
+                <ScalarProperty Name="gin_wheel_swl_poor" ColumnName="gin_wheel_swl_poor" />
+                <ScalarProperty Name="gin_wheel_swl_good" ColumnName="gin_wheel_swl_good" />
+                <ScalarProperty Name="gin_wheel_condition_remark" ColumnName="gin_wheel_condition_remark" />
+                <ScalarProperty Name="gin_wheel_condition_poor" ColumnName="gin_wheel_condition_poor" />
+                <ScalarProperty Name="gin_wheel_condition_good" ColumnName="gin_wheel_condition_good" />
+                <ScalarProperty Name="ladder_tube_coupler_remark" ColumnName="ladder_tube_coupler_remark" />
+                <ScalarProperty Name="ladder_tube_coupler_poor" ColumnName="ladder_tube_coupler_poor" />
+                <ScalarProperty Name="ladder_tube_coupler_good" ColumnName="ladder_tube_coupler_good" />
+                <ScalarProperty Name="ladder_tube_angle_remark" ColumnName="ladder_tube_angle_remark" />
+                <ScalarProperty Name="ladder_tube_angle_poor" ColumnName="ladder_tube_angle_poor" />
+                <ScalarProperty Name="ladder_tube_angle_good" ColumnName="ladder_tube_angle_good" />
+                <ScalarProperty Name="ladder_tube_putlog_remark" ColumnName="ladder_tube_putlog_remark" />
+                <ScalarProperty Name="ladder_tube_putlog_poor" ColumnName="ladder_tube_putlog_poor" />
+                <ScalarProperty Name="ladder_tube_putlog_good" ColumnName="ladder_tube_putlog_good" />
+                <ScalarProperty Name="ladder_tube_height_remark" ColumnName="ladder_tube_height_remark" />
+                <ScalarProperty Name="ladder_tube_height_poor" ColumnName="ladder_tube_height_poor" />
+                <ScalarProperty Name="ladder_tube_height_good" ColumnName="ladder_tube_height_good" />
+                <ScalarProperty Name="ladder_tube_diameter_remark" ColumnName="ladder_tube_diameter_remark" />
+                <ScalarProperty Name="ladder_tube_diameter_poor" ColumnName="ladder_tube_diameter_poor" />
+                <ScalarProperty Name="ladder_tube_diameter_good" ColumnName="ladder_tube_diameter_good" />
+                <ScalarProperty Name="ladder_tube_condition_remark" ColumnName="ladder_tube_condition_remark" />
+                <ScalarProperty Name="ladder_tube_condition_poor" ColumnName="ladder_tube_condition_poor" />
+                <ScalarProperty Name="ladder_tube_condition_good" ColumnName="ladder_tube_condition_good" />
+                <ScalarProperty Name="aluminium_ladder_angle_remark" ColumnName="aluminium_ladder_angle_remark" />
+                <ScalarProperty Name="aluminium_ladder_angle_poor" ColumnName="aluminium_ladder_angle_poor" />
+                <ScalarProperty Name="aluminium_ladder_angle_good" ColumnName="aluminium_ladder_angle_good" />
+                <ScalarProperty Name="aluminium_ladder_putlog_remark" ColumnName="aluminium_ladder_putlog_remark" />
+                <ScalarProperty Name="aluminium_ladder_putlog_poor" ColumnName="aluminium_ladder_putlog_poor" />
+                <ScalarProperty Name="aluminium_ladder_putlog_good" ColumnName="aluminium_ladder_putlog_good" />
+                <ScalarProperty Name="aluminium_ladder_height_remark" ColumnName="aluminium_ladder_height_remark" />
+                <ScalarProperty Name="aluminium_ladder_height_poor" ColumnName="aluminium_ladder_height_poor" />
+                <ScalarProperty Name="aluminium_ladder_height_good" ColumnName="aluminium_ladder_height_good" />
+                <ScalarProperty Name="aluminium_ladder_length_remark" ColumnName="aluminium_ladder_length_remark" />
+                <ScalarProperty Name="aluminium_ladder_length_poor" ColumnName="aluminium_ladder_length_poor" />
+                <ScalarProperty Name="aluminium_ladder_length_good" ColumnName="aluminium_ladder_length_good" />
+                <ScalarProperty Name="aluminium_ladder_condition_remark" ColumnName="aluminium_ladder_condition_remark" />
+                <ScalarProperty Name="aluminium_ladder_condition_poor" ColumnName="aluminium_ladder_condition_poor" />
+                <ScalarProperty Name="aluminium_ladder_condition_good" ColumnName="aluminium_ladder_condition_good" />
+                <ScalarProperty Name="toeboard_lashing_remark" ColumnName="toeboard_lashing_remark" />
+                <ScalarProperty Name="toeboard_lashing_poor" ColumnName="toeboard_lashing_poor" />
+                <ScalarProperty Name="toeboard_lashing_good" ColumnName="toeboard_lashing_good" />
+                <ScalarProperty Name="toeboard_clearance_remark" ColumnName="toeboard_clearance_remark" />
+                <ScalarProperty Name="toeboard_clearance_poor" ColumnName="toeboard_clearance_poor" />
+                <ScalarProperty Name="toeboard_clearance_good" ColumnName="toeboard_clearance_good" />
+                <ScalarProperty Name="toeboard_height_remark" ColumnName="toeboard_height_remark" />
+                <ScalarProperty Name="toeboard_height_poor" ColumnName="toeboard_height_poor" />
+                <ScalarProperty Name="toeboard_height_good" ColumnName="toeboard_height_good" />
+                <ScalarProperty Name="toeboard_length_remark" ColumnName="toeboard_length_remark" />
+                <ScalarProperty Name="toeboard_length_poor" ColumnName="toeboard_length_poor" />
+                <ScalarProperty Name="toeboard_length_good" ColumnName="toeboard_length_good" />
+                <ScalarProperty Name="toeboard_condition_remark" ColumnName="toeboard_condition_remark" />
+                <ScalarProperty Name="toeboard_condition_poor" ColumnName="toeboard_condition_poor" />
+                <ScalarProperty Name="toeboard_condition_good" ColumnName="toeboard_condition_good" />
+                <ScalarProperty Name="platform_deflection_remark" ColumnName="platform_deflection_remark" />
+                <ScalarProperty Name="platform_deflection_poor" ColumnName="platform_deflection_poor" />
+                <ScalarProperty Name="platform_deflection_good" ColumnName="platform_deflection_good" />
+                <ScalarProperty Name="platform_lashing_remark" ColumnName="platform_lashing_remark" />
+                <ScalarProperty Name="platform_lashing_poor" ColumnName="platform_lashing_poor" />
+                <ScalarProperty Name="platform_lashing_good" ColumnName="platform_lashing_good" />
+                <ScalarProperty Name="platform_clearance_remark" ColumnName="platform_clearance_remark" />
+                <ScalarProperty Name="platform_clearance_poor" ColumnName="platform_clearance_poor" />
+                <ScalarProperty Name="platform_clearance_good" ColumnName="platform_clearance_good" />
+                <ScalarProperty Name="platform_width_remark" ColumnName="platform_width_remark" />
+                <ScalarProperty Name="platform_width_poor" ColumnName="platform_width_poor" />
+                <ScalarProperty Name="platform_width_good" ColumnName="platform_width_good" />
+                <ScalarProperty Name="platform_length_remark" ColumnName="platform_length_remark" />
+                <ScalarProperty Name="platform_length_poor" ColumnName="platform_length_poor" />
+                <ScalarProperty Name="platform_length_good" ColumnName="platform_length_good" />
+                <ScalarProperty Name="platform_condition_remark" ColumnName="platform_condition_remark" />
+                <ScalarProperty Name="platform_condition_poor" ColumnName="platform_condition_poor" />
+                <ScalarProperty Name="platform_condition_good" ColumnName="platform_condition_good" />
+                <ScalarProperty Name="guardrail_transom_sleeve_couplers_remark" ColumnName="guardrail_transom_sleeve_couplers_remark" />
+                <ScalarProperty Name="guardrail_transom_sleeve_couplers_poor" ColumnName="guardrail_transom_sleeve_couplers_poor" />
+                <ScalarProperty Name="guardrail_transom_sleeve_couplers_good" ColumnName="guardrail_transom_sleeve_couplers_good" />
+                <ScalarProperty Name="guardrail_transom_couplers_remark" ColumnName="guardrail_transom_couplers_remark" />
+                <ScalarProperty Name="guardrail_transom_couplers_poor" ColumnName="guardrail_transom_couplers_poor" />
+                <ScalarProperty Name="guardrail_transom_couplers_good" ColumnName="guardrail_transom_couplers_good" />
+                <ScalarProperty Name="guardrail_transom_leveling_remark" ColumnName="guardrail_transom_leveling_remark" />
+                <ScalarProperty Name="guardrail_transom_leveling_poor" ColumnName="guardrail_transom_leveling_poor" />
+                <ScalarProperty Name="guardrail_transom_leveling_good" ColumnName="guardrail_transom_leveling_good" />
+                <ScalarProperty Name="guardrail_transom_length_remark" ColumnName="guardrail_transom_length_remark" />
+                <ScalarProperty Name="guardrail_transom_length_poor" ColumnName="guardrail_transom_length_poor" />
+                <ScalarProperty Name="guardrail_transom_length_good" ColumnName="guardrail_transom_length_good" />
+                <ScalarProperty Name="guardrail_transom_diameter_remark" ColumnName="guardrail_transom_diameter_remark" />
+                <ScalarProperty Name="guardrail_transom_diameter_poor" ColumnName="guardrail_transom_diameter_poor" />
+                <ScalarProperty Name="guardrail_transom_diameter_good" ColumnName="guardrail_transom_diameter_good" />
+                <ScalarProperty Name="guardrail_ledger_sleeve_couplers_remark" ColumnName="guardrail_ledger_sleeve_couplers_remark" />
+                <ScalarProperty Name="guardrail_ledger_sleeve_couplers_poor" ColumnName="guardrail_ledger_sleeve_couplers_poor" />
+                <ScalarProperty Name="guardrail_ledger_sleeve_couplers_good" ColumnName="guardrail_ledger_sleeve_couplers_good" />
+                <ScalarProperty Name="guardrail_ledger_couplers_remark" ColumnName="guardrail_ledger_couplers_remark" />
+                <ScalarProperty Name="guardrail_ledger_couplers_poor" ColumnName="guardrail_ledger_couplers_poor" />
+                <ScalarProperty Name="guardrail_ledger_couplers_good" ColumnName="guardrail_ledger_couplers_good" />
+                <ScalarProperty Name="guardrail_ledger_leveling_remark" ColumnName="guardrail_ledger_leveling_remark" />
+                <ScalarProperty Name="guardrail_ledger_leveling_poor" ColumnName="guardrail_ledger_leveling_poor" />
+                <ScalarProperty Name="guardrail_ledger_leveling_good" ColumnName="guardrail_ledger_leveling_good" />
+                <ScalarProperty Name="guardrail_ledger_length_remark" ColumnName="guardrail_ledger_length_remark" />
+                <ScalarProperty Name="guardrail_ledger_length_poor" ColumnName="guardrail_ledger_length_poor" />
+                <ScalarProperty Name="guardrail_ledger_length_good" ColumnName="guardrail_ledger_length_good" />
+                <ScalarProperty Name="guardrail_ledger_diameter_remark" ColumnName="guardrail_ledger_diameter_remark" />
+                <ScalarProperty Name="guardrail_ledger_diameter_poor" ColumnName="guardrail_ledger_diameter_poor" />
+                <ScalarProperty Name="guardrail_ledger_diameter_good" ColumnName="guardrail_ledger_diameter_good" />
+                <ScalarProperty Name="bracing_couplers_remark" ColumnName="bracing_couplers_remark" />
+                <ScalarProperty Name="bracing_couplers_poor" ColumnName="bracing_couplers_poor" />
+                <ScalarProperty Name="bracing_couplers_good" ColumnName="bracing_couplers_good" />
+                <ScalarProperty Name="bracing_pins_remark" ColumnName="bracing_pins_remark" />
+                <ScalarProperty Name="bracing_pins_poor" ColumnName="bracing_pins_poor" />
+                <ScalarProperty Name="bracing_pins_good" ColumnName="bracing_pins_good" />
+                <ScalarProperty Name="bracing_length_remark" ColumnName="bracing_length_remark" />
+                <ScalarProperty Name="bracing_length_poor" ColumnName="bracing_length_poor" />
+                <ScalarProperty Name="bracing_length_good" ColumnName="bracing_length_good" />
+                <ScalarProperty Name="bracing_diameter_remark" ColumnName="bracing_diameter_remark" />
+                <ScalarProperty Name="bracing_diameter_poor" ColumnName="bracing_diameter_poor" />
+                <ScalarProperty Name="bracing_diameter_good" ColumnName="bracing_diameter_good" />
+                <ScalarProperty Name="putlog_leveling_remark" ColumnName="putlog_leveling_remark" />
+                <ScalarProperty Name="putlog_leveling_poor" ColumnName="putlog_leveling_poor" />
+                <ScalarProperty Name="putlog_leveling_good" ColumnName="putlog_leveling_good" />
+                <ScalarProperty Name="putlog_length_remark" ColumnName="putlog_length_remark" />
+                <ScalarProperty Name="putlog_length_poor" ColumnName="putlog_length_poor" />
+                <ScalarProperty Name="putlog_length_good" ColumnName="putlog_length_good" />
+                <ScalarProperty Name="putlog_diameter_remark" ColumnName="putlog_diameter_remark" />
+                <ScalarProperty Name="putlog_diameter_poor" ColumnName="putlog_diameter_poor" />
+                <ScalarProperty Name="putlog_diameter_good" ColumnName="putlog_diameter_good" />
+                <ScalarProperty Name="transom_sleeve_couplers_remark" ColumnName="transom_sleeve_couplers_remark" />
+                <ScalarProperty Name="transom_sleeve_couplers_poor" ColumnName="transom_sleeve_couplers_poor" />
+                <ScalarProperty Name="transom_sleeve_couplers_good" ColumnName="transom_sleeve_couplers_good" />
+                <ScalarProperty Name="transom_couplers_remark" ColumnName="transom_couplers_remark" />
+                <ScalarProperty Name="transom_couplers_poor" ColumnName="transom_couplers_poor" />
+                <ScalarProperty Name="transom_couplers_good" ColumnName="transom_couplers_good" />
+                <ScalarProperty Name="transom_leveling_remark" ColumnName="transom_leveling_remark" />
+                <ScalarProperty Name="transom_leveling_poor" ColumnName="transom_leveling_poor" />
+                <ScalarProperty Name="transom_leveling_good" ColumnName="transom_leveling_good" />
+                <ScalarProperty Name="transom_length_remark" ColumnName="transom_length_remark" />
+                <ScalarProperty Name="transom_length_poor" ColumnName="transom_length_poor" />
+                <ScalarProperty Name="transom_length_good" ColumnName="transom_length_good" />
+                <ScalarProperty Name="transom_diameter_remark" ColumnName="transom_diameter_remark" />
+                <ScalarProperty Name="transom_diameter_poor" ColumnName="transom_diameter_poor" />
+                <ScalarProperty Name="transom_diameter_good" ColumnName="transom_diameter_good" />
+                <ScalarProperty Name="ledger_sleeve_couplers_remark" ColumnName="ledger_sleeve_couplers_remark" />
+                <ScalarProperty Name="ledger_sleeve_couplers_poor" ColumnName="ledger_sleeve_couplers_poor" />
+                <ScalarProperty Name="ledger_sleeve_couplers_good" ColumnName="ledger_sleeve_couplers_good" />
+                <ScalarProperty Name="ledger_couplers_remark" ColumnName="ledger_couplers_remark" />
+                <ScalarProperty Name="ledger_couplers_poor" ColumnName="ledger_couplers_poor" />
+                <ScalarProperty Name="ledger_couplers_good" ColumnName="ledger_couplers_good" />
+                <ScalarProperty Name="ledger_leveling_remark" ColumnName="ledger_leveling_remark" />
+                <ScalarProperty Name="ledger_leveling_poor" ColumnName="ledger_leveling_poor" />
+                <ScalarProperty Name="ledger_leveling_good" ColumnName="ledger_leveling_good" />
+                <ScalarProperty Name="ledger_length_remark" ColumnName="ledger_length_remark" />
+                <ScalarProperty Name="ledger_length_poor" ColumnName="ledger_length_poor" />
+                <ScalarProperty Name="ledger_length_good" ColumnName="ledger_length_good" />
+                <ScalarProperty Name="ledger_diameter_remark" ColumnName="ledger_diameter_remark" />
+                <ScalarProperty Name="ledger_diameter_poor" ColumnName="ledger_diameter_poor" />
+                <ScalarProperty Name="ledger_diameter_good" ColumnName="ledger_diameter_good" />
+                <ScalarProperty Name="standard_pin_remark" ColumnName="standard_pin_remark" />
+                <ScalarProperty Name="standard_pin_poor" ColumnName="standard_pin_poor" />
+                <ScalarProperty Name="standard_pin_good" ColumnName="standard_pin_good" />
+                <ScalarProperty Name="standard_couplers_remark" ColumnName="standard_couplers_remark" />
+                <ScalarProperty Name="standard_couplers_poor" ColumnName="standard_couplers_poor" />
+                <ScalarProperty Name="standard_couplers_good" ColumnName="standard_couplers_good" />
+                <ScalarProperty Name="standard_leveling_remark" ColumnName="standard_leveling_remark" />
+                <ScalarProperty Name="standard_leveling_poor" ColumnName="standard_leveling_poor" />
+                <ScalarProperty Name="standard_leveling_good" ColumnName="standard_leveling_good" />
+                <ScalarProperty Name="standard_length_remark" ColumnName="standard_length_remark" />
+                <ScalarProperty Name="standard_length_poor" ColumnName="standard_length_poor" />
+                <ScalarProperty Name="standard_length_good" ColumnName="standard_length_good" />
+                <ScalarProperty Name="standard_diameter_remark" ColumnName="standard_diameter_remark" />
+                <ScalarProperty Name="standard_diameter_poor" ColumnName="standard_diameter_poor" />
+                <ScalarProperty Name="standard_diameter_good" ColumnName="standard_diameter_good" />
+                <ScalarProperty Name="base_adj_sole_plate_remark" ColumnName="base_adj_sole_plate_remark" />
+                <ScalarProperty Name="base_adj_sole_plate_poor" ColumnName="base_adj_sole_plate_poor" />
+                <ScalarProperty Name="base_adj_sole_plate_good" ColumnName="base_adj_sole_plate_good" />
+                <ScalarProperty Name="base_base_plate_remark" ColumnName="base_base_plate_remark" />
+                <ScalarProperty Name="base_base_plate_poor" ColumnName="base_base_plate_poor" />
+                <ScalarProperty Name="base_base_plate_good" ColumnName="base_base_plate_good" />
+                <ScalarProperty Name="base_sole_plate_remark" ColumnName="base_sole_plate_remark" />
+                <ScalarProperty Name="base_sole_plate_poor" ColumnName="base_sole_plate_poor" />
+                <ScalarProperty Name="base_sole_plate_good" ColumnName="base_sole_plate_good" />
+                <ScalarProperty Name="base_concrete_remark" ColumnName="base_concrete_remark" />
+                <ScalarProperty Name="base_concrete_poor" ColumnName="base_concrete_poor" />
+                <ScalarProperty Name="base_concrete_good" ColumnName="base_concrete_good" />
+                <ScalarProperty Name="base_ground_remark" ColumnName="base_ground_remark" />
+                <ScalarProperty Name="base_ground_poor" ColumnName="base_ground_poor" />
+                <ScalarProperty Name="base_ground_good" ColumnName="base_ground_good" />
+                <ScalarProperty Name="name_scaffolder" ColumnName="name_scaffolder" />
+                <ScalarProperty Name="location" ColumnName="location" />
+                <ScalarProperty Name="pupose_scaffold" ColumnName="pupose_scaffold" />
+                <ScalarProperty Name="duties_scaffold" ColumnName="duties_scaffold" />
+                <ScalarProperty Name="type_scaffold" ColumnName="type_scaffold" />
+                <ScalarProperty Name="date_inspection" ColumnName="date_inspection" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="mst_facility_owner">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.mst_facility_owner">
+              <MappingFragment StoreEntitySet="mst_facility_owner">
+                <ScalarProperty Name="fo_name" ColumnName="fo_name" />
+                <ScalarProperty Name="fo_code" ColumnName="fo_code" />
+                <ScalarProperty Name="id_employee" ColumnName="id_employee" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="mst_area_code">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.mst_area_code">
+              <MappingFragment StoreEntitySet="mst_area_code">
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="area_code" ColumnName="area_code" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="loto_coming_holder">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.loto_coming_holder">
+              <MappingFragment StoreEntitySet="loto_coming_holder">
+                <ScalarProperty Name="holder" ColumnName="holder" />
+                <ScalarProperty Name="holder_sign_delegate_cancellation" ColumnName="holder_sign_delegate_cancellation" />
+                <ScalarProperty Name="holder_date_cancellation" ColumnName="holder_date_cancellation" />
+                <ScalarProperty Name="holder_sign_cancellation" ColumnName="holder_sign_cancellation" />
+                <ScalarProperty Name="holder_sign_delegate_approval" ColumnName="holder_sign_delegate_approval" />
+                <ScalarProperty Name="holder_date_approval" ColumnName="holder_date_approval" />
+                <ScalarProperty Name="holder_sign_approval" ColumnName="holder_sign_approval" />
+                <ScalarProperty Name="no_holder" ColumnName="no_holder" />
+                <ScalarProperty Name="holder_spv" ColumnName="holder_spv" />
+                <ScalarProperty Name="id_loto" ColumnName="id_loto" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="permit_to_work">
             <EntityTypeMapping TypeName="star_energy_ptwModel.permit_to_work">
               <MappingFragment StoreEntitySet="permit_to_work">
+                <ScalarProperty Name="requested_no" ColumnName="requested_no" />
+                <ScalarProperty Name="guest_holder_no" ColumnName="guest_holder_no" />
+                <ScalarProperty Name="is_guest" ColumnName="is_guest" />
+                <ScalarProperty Name="can_notes_ass_fo" ColumnName="can_notes_ass_fo" />
+                <ScalarProperty Name="acc_notes_ass_fo" ColumnName="acc_notes_ass_fo" />
+                <ScalarProperty Name="acc_notes_fo_ass" ColumnName="acc_notes_fo_ass" />
+                <ScalarProperty Name="hira_docs" ColumnName="hira_docs" />
                 <ScalarProperty Name="status" ColumnName="status" />
                 <ScalarProperty Name="id_parent_ptw" ColumnName="id_parent_ptw" />
                 <ScalarProperty Name="can_fo_approve" ColumnName="can_fo_approve" />
@@ -3140,116 +4624,39 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="radiographies">
-            <EntityTypeMapping TypeName="star_energy_ptwModel.radiography">
-              <MappingFragment StoreEntitySet="radiography">
-                <ScalarProperty Name="can_remark" ColumnName="can_remark" />
-                <ScalarProperty Name="work_location" ColumnName="work_location" />
-                <ScalarProperty Name="operator" ColumnName="operator" />
-                <ScalarProperty Name="status" ColumnName="status" />
-                <ScalarProperty Name="can_fo_delegate" ColumnName="can_fo_delegate" />
-                <ScalarProperty Name="can_fo_signature" ColumnName="can_fo_signature" />
-                <ScalarProperty Name="can_safety_officer_delegate" ColumnName="can_safety_officer_delegate" />
-                <ScalarProperty Name="can_safety_officer_signature" ColumnName="can_safety_officer_signature" />
-                <ScalarProperty Name="can_supervisor_delegate" ColumnName="can_supervisor_delegate" />
-                <ScalarProperty Name="can_supervisor_signature" ColumnName="can_supervisor_signature" />
-                <ScalarProperty Name="can_radiographer_2_delegate" ColumnName="can_radiographer_2_delegate" />
-                <ScalarProperty Name="can_radiographer_2_signature" ColumnName="can_radiographer_2_signature" />
-                <ScalarProperty Name="can_operator_delegate" ColumnName="can_operator_delegate" />
-                <ScalarProperty Name="can_operator_signature" ColumnName="can_operator_signature" />
-                <ScalarProperty Name="can_screening_fo" ColumnName="can_screening_fo" />
-                <ScalarProperty Name="can_screening_rad" ColumnName="can_screening_rad" />
-                <ScalarProperty Name="can_screening_spv" ColumnName="can_screening_spv" />
-                <ScalarProperty Name="pre_remark" ColumnName="pre_remark" />
-                <ScalarProperty Name="facility_owner_delegate" ColumnName="facility_owner_delegate" />
-                <ScalarProperty Name="facility_owner_signature" ColumnName="facility_owner_signature" />
-                <ScalarProperty Name="facility_owner" ColumnName="facility_owner" />
-                <ScalarProperty Name="safety_officer_delegate" ColumnName="safety_officer_delegate" />
-                <ScalarProperty Name="safety_officer_signature" ColumnName="safety_officer_signature" />
-                <ScalarProperty Name="safety_officer" ColumnName="safety_officer" />
-                <ScalarProperty Name="supervisor_delegate" ColumnName="supervisor_delegate" />
-                <ScalarProperty Name="supervisor_signature" ColumnName="supervisor_signature" />
-                <ScalarProperty Name="radiographer_2_delegate" ColumnName="radiographer_2_delegate" />
-                <ScalarProperty Name="radiographer_2_signature" ColumnName="radiographer_2_signature" />
-                <ScalarProperty Name="operator_delegate" ColumnName="operator_delegate" />
-                <ScalarProperty Name="operator_signature" ColumnName="operator_signature" />
-                <ScalarProperty Name="pre_screening_fo" ColumnName="pre_screening_fo" />
-                <ScalarProperty Name="pre_screening_rad" ColumnName="pre_screening_rad" />
-                <ScalarProperty Name="pre_screening_spv" ColumnName="pre_screening_spv" />
-                <ScalarProperty Name="estimate_time_end" ColumnName="estimate_time_end" />
-                <ScalarProperty Name="estimate_time_start" ColumnName="estimate_time_start" />
-                <ScalarProperty Name="radiographic_source" ColumnName="radiographic_source" />
-                <ScalarProperty Name="supervisor" ColumnName="supervisor" />
-                <ScalarProperty Name="total_crew" ColumnName="total_crew" />
-                <ScalarProperty Name="potential_area_affected" ColumnName="potential_area_affected" />
-                <ScalarProperty Name="radiation_protection_officer_license_number" ColumnName="radiation_protection_officer_license_number" />
-                <ScalarProperty Name="radiation_protection_officer" ColumnName="radiation_protection_officer" />
-                <ScalarProperty Name="radiographer_1_license_number" ColumnName="radiographer_1_license_number" />
-                <ScalarProperty Name="radiographer_2_license_number" ColumnName="radiographer_2_license_number" />
-                <ScalarProperty Name="radiographer_1" ColumnName="radiographer_1" />
-                <ScalarProperty Name="radiographer_2" ColumnName="radiographer_2" />
-                <ScalarProperty Name="purpose" ColumnName="purpose" />
-                <ScalarProperty Name="rg_no" ColumnName="rg_no" />
-                <ScalarProperty Name="id_ptw" ColumnName="id_ptw" />
+          <EntitySetMapping Name="email_error">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.email_error">
+              <MappingFragment StoreEntitySet="email_error">
+                <ScalarProperty Name="exception" ColumnName="exception" />
+                <ScalarProperty Name="subject" ColumnName="subject" />
+                <ScalarProperty Name="content" ColumnName="content" />
+                <ScalarProperty Name="emails" ColumnName="emails" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="working_height">
-            <EntityTypeMapping TypeName="star_energy_ptwModel.working_height">
-              <MappingFragment StoreEntitySet="working_height">
-                <ScalarProperty Name="pre_screening_note" ColumnName="pre_screening_note" />
-                <ScalarProperty Name="status" ColumnName="status" />
-                <ScalarProperty Name="can_facility_owner_signature_date" ColumnName="can_facility_owner_signature_date" />
-                <ScalarProperty Name="can_facility_owner_delegate" ColumnName="can_facility_owner_delegate" />
-                <ScalarProperty Name="can_facility_owner_signature" ColumnName="can_facility_owner_signature" />
-                <ScalarProperty Name="can_supervisor_signature_date" ColumnName="can_supervisor_signature_date" />
-                <ScalarProperty Name="can_supervisor_delegate" ColumnName="can_supervisor_delegate" />
-                <ScalarProperty Name="can_supervisor_signature" ColumnName="can_supervisor_signature" />
-                <ScalarProperty Name="can_requestor_signature_date" ColumnName="can_requestor_signature_date" />
-                <ScalarProperty Name="can_requestor_delegate" ColumnName="can_requestor_delegate" />
+          <EntitySetMapping Name="mst_delegate_fo">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.mst_delegate_fo">
+              <MappingFragment StoreEntitySet="mst_delegate_fo">
+                <ScalarProperty Name="user_delegate_id" ColumnName="user_delegate_id" />
+                <ScalarProperty Name="id_mst_fo" ColumnName="id_mst_fo" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="loto_suspension">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.loto_suspension">
+              <MappingFragment StoreEntitySet="loto_suspension">
+                <ScalarProperty Name="fo_delegate" ColumnName="fo_delegate" />
                 <ScalarProperty Name="can_requestor_signature" ColumnName="can_requestor_signature" />
-                <ScalarProperty Name="can_screening_fo" ColumnName="can_screening_fo" />
-                <ScalarProperty Name="can_screening_req" ColumnName="can_screening_req" />
-                <ScalarProperty Name="facility_owner_signature_date" ColumnName="facility_owner_signature_date" />
-                <ScalarProperty Name="facility_owner_delegate" ColumnName="facility_owner_delegate" />
-                <ScalarProperty Name="facility_owner_signature" ColumnName="facility_owner_signature" />
-                <ScalarProperty Name="facility_owner" ColumnName="facility_owner" />
-                <ScalarProperty Name="supervisor_signature_date" ColumnName="supervisor_signature_date" />
-                <ScalarProperty Name="supervisor_delegate" ColumnName="supervisor_delegate" />
-                <ScalarProperty Name="supervisor_signature" ColumnName="supervisor_signature" />
-                <ScalarProperty Name="supervisor" ColumnName="supervisor" />
-                <ScalarProperty Name="requestor_signature_date" ColumnName="requestor_signature_date" />
-                <ScalarProperty Name="requestor_delegate" ColumnName="requestor_delegate" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="notes" ColumnName="notes" />
+                <ScalarProperty Name="suspend_no" ColumnName="suspend_no" />
+                <ScalarProperty Name="fo_signature" ColumnName="fo_signature" />
                 <ScalarProperty Name="requestor_signature" ColumnName="requestor_signature" />
-                <ScalarProperty Name="pre_screening_fo" ColumnName="pre_screening_fo" />
-                <ScalarProperty Name="pre_screening_req" ColumnName="pre_screening_req" />
-                <ScalarProperty Name="fall_prevention_assess" ColumnName="fall_prevention_assess" />
-                <ScalarProperty Name="mandatory_fall_prevention" ColumnName="mandatory_fall_prevention" />
-                <ScalarProperty Name="inspector_sign_date" ColumnName="inspector_sign_date" />
-                <ScalarProperty Name="inspector_signature" ColumnName="inspector_signature" />
-                <ScalarProperty Name="utilization_valid_date" ColumnName="utilization_valid_date" />
-                <ScalarProperty Name="inspector_certify_no" ColumnName="inspector_certify_no" />
-                <ScalarProperty Name="inspector" ColumnName="inspector" />
-                <ScalarProperty Name="scaffold_access" ColumnName="scaffold_access" />
-                <ScalarProperty Name="erector_valid_date" ColumnName="erector_valid_date" />
-                <ScalarProperty Name="erector_certificate_no" ColumnName="erector_certificate_no" />
-                <ScalarProperty Name="erector" ColumnName="erector" />
-                <ScalarProperty Name="no_person" ColumnName="no_person" />
-                <ScalarProperty Name="load_capacity" ColumnName="load_capacity" />
-                <ScalarProperty Name="scaffolding" ColumnName="scaffolding" />
-                <ScalarProperty Name="elevated_access" ColumnName="elevated_access" />
-                <ScalarProperty Name="ladder_access" ColumnName="ladder_access" />
-                <ScalarProperty Name="workbox_access" ColumnName="workbox_access" />
-                <ScalarProperty Name="access" ColumnName="access" />
-                <ScalarProperty Name="total_crew" ColumnName="total_crew" />
-                <ScalarProperty Name="until" ColumnName="until" />
-                <ScalarProperty Name="from" ColumnName="from" />
+                <ScalarProperty Name="facility_owner" ColumnName="facility_owner" />
                 <ScalarProperty Name="requestor" ColumnName="requestor" />
-                <ScalarProperty Name="work_location" ColumnName="work_location" />
-                <ScalarProperty Name="description" ColumnName="description" />
-                <ScalarProperty Name="wh_no" ColumnName="wh_no" />
-                <ScalarProperty Name="id_ptw" ColumnName="id_ptw" />
+                <ScalarProperty Name="id_loto" ColumnName="id_loto" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -3323,11 +4730,20 @@
                 <ScalarProperty Name="supervisor" ColumnName="supervisor" />
                 <ScalarProperty Name="requestor" ColumnName="requestor" />
                 <ScalarProperty Name="loto_no" ColumnName="loto_no" />
+                <ScalarProperty Name="id_glarf" ColumnName="id_glarf" />
                 <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-        </EntityContainerMapping>
+          <AssociationSetMapping Name="loto_permit_to_work" TypeName="star_energy_ptwModel.loto_permit_to_work" StoreEntitySet="loto_permit_to_work">
+            <EndProperty Name="permit_to_work">
+              <ScalarProperty Name="id" ColumnName="id_permit" />
+            </EndProperty>
+            <EndProperty Name="loto_permit">
+              <ScalarProperty Name="id" ColumnName="id_loto" />
+            </EndProperty>
+          </AssociationSetMapping>
+          </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>

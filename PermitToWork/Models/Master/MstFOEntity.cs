@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PermitToWork.Models.User;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -11,14 +12,31 @@ namespace PermitToWork.Models.Master
         public int id { get; set; }
         public Nullable<int> id_employee { get; set; }
         public string fo_code { get; set; }
+        public string fo_name { get; set; }
         private star_energy_ptwEntities db;
+
+        public UserEntity user { get; set; }
 
         public MstFOEntity()
         {
             this.db = new star_energy_ptwEntities();
         }
 
-        public MstFOEntity(int id)
+        public MstFOEntity(UserEntity user) : this()
+        {
+            mst_facility_owner fac_owner = this.db.mst_facility_owner.Where(p => p.id_employee == user.id).FirstOrDefault();
+
+            if (fac_owner != null)
+            {
+                this.id = fac_owner.id;
+                this.id_employee = fac_owner.id_employee;
+                this.fo_code = fac_owner.fo_code;
+                this.fo_name = fac_owner.fo_name;
+                this.user = new UserEntity(this.id_employee.Value, user.token, user);
+            }
+        }
+
+        public MstFOEntity(int id, UserEntity user)
         {
             this.db = new star_energy_ptwEntities();
             mst_facility_owner fac_owner = this.db.mst_facility_owner.Find(id);
@@ -26,6 +44,23 @@ namespace PermitToWork.Models.Master
             this.id = fac_owner.id;
             this.id_employee = fac_owner.id_employee;
             this.fo_code = fac_owner.fo_code;
+            this.fo_name = fac_owner.fo_name;
+            this.user = new UserEntity(this.id_employee.Value, user.token, user);
+        }
+
+        public MstFOEntity(string fo_code, UserEntity user)
+        {
+            this.db = new star_energy_ptwEntities();
+            mst_facility_owner fac_owner = this.db.mst_facility_owner.Where(p => p.fo_code == fo_code).FirstOrDefault();
+
+            if (fac_owner != null)
+            {
+                this.id = fac_owner.id;
+                this.id_employee = fac_owner.id_employee;
+                this.fo_code = fac_owner.fo_code;
+                this.fo_name = fac_owner.fo_name;
+                this.user = new UserEntity(this.id_employee.Value, user.token, user);
+            }
         }
 
         public MstFOEntity(mst_facility_owner fac_owner)
@@ -35,6 +70,7 @@ namespace PermitToWork.Models.Master
             this.id = fac_owner.id;
             this.id_employee = fac_owner.id_employee;
             this.fo_code = fac_owner.fo_code;
+            this.fo_name = fac_owner.fo_name;
         }
 
         public List<MstFOEntity> getListMstFO()
@@ -42,12 +78,35 @@ namespace PermitToWork.Models.Master
             var list = from a in db.mst_facility_owner
                        select new MstFOEntity
                        {
-                           id = a.id,
-                           id_employee = a.id_employee,
-                           fo_code = a.fo_code
+                           fo_code = a.fo_code,
+                            fo_name = a.fo_name
                        };
 
-            return list.ToList();
+            return list.Distinct().ToList();
+        }
+
+        public List<MstFOEntity> getListMstFO(UserEntity user)
+        {
+            List<int> listId = this.db.mst_facility_owner.Select(p => p.id).ToList();
+            var result = new List<MstFOEntity>();
+            foreach (int i in listId)
+            {
+                result.Add(new MstFOEntity(i, user));
+            }
+
+            return result;
+        }
+
+        public List<MstFOEntity> getListMstFOByDept(string fo_code, UserEntity user)
+        {
+            List<int> listId = this.db.mst_facility_owner.Where(p => p.fo_code == fo_code).Select(p => p.id).ToList();
+            var result = new List<MstFOEntity>();
+            foreach (int i in listId)
+            {
+                result.Add(new MstFOEntity(i, user));
+            }
+
+            return result;
         }
 
         public int addFO()
@@ -55,7 +114,8 @@ namespace PermitToWork.Models.Master
             mst_facility_owner fac_owner = new mst_facility_owner
             {
                 id_employee = this.id_employee,
-                fo_code = this.fo_code
+                fo_code = this.fo_code,
+                fo_name = this.fo_name
             };
 
             this.db.mst_facility_owner.Add(fac_owner);
@@ -71,6 +131,7 @@ namespace PermitToWork.Models.Master
             mst_facility_owner fac_owner = this.db.mst_facility_owner.Find(id);
             fac_owner.id_employee = this.id_employee;
             fac_owner.fo_code = this.fo_code;
+            fac_owner.fo_name = this.fo_name;
 
             this.db.Entry(fac_owner).State = EntityState.Modified;
             return this.db.SaveChanges();

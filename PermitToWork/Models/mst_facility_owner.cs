@@ -14,8 +14,16 @@ namespace PermitToWork.Models
     
     public partial class mst_facility_owner
     {
+        public mst_facility_owner()
+        {
+            this.mst_delegate_fo = new HashSet<mst_delegate_fo>();
+        }
+    
         public int id { get; set; }
         public Nullable<int> id_employee { get; set; }
         public string fo_code { get; set; }
+        public string fo_name { get; set; }
+    
+        public virtual ICollection<mst_delegate_fo> mst_delegate_fo { get; set; }
     }
 }

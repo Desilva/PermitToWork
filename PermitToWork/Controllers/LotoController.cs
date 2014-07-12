@@ -1,11 +1,13 @@
 ﻿using PermitToWork.Models;
 using PermitToWork.Models.ClearancePermit;
 using PermitToWork.Models.Master;
+using PermitToWork.Models.Ptw;
 using PermitToWork.Models.User;
 using PermitToWork.Utilities;
 using PermitToWork.WWUserService;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -20,8 +22,10 @@ namespace PermitToWork.Controllers
         public ActionResult Index(int id)
         {
             UserEntity user = Session["user"] as UserEntity;
-            LotoGlarfEntity entity = new LotoGlarfEntity(id, user);
-            ViewBag.isCanCancel = entity.isCanCancel(user);
+            PtwEntity entity = new PtwEntity(id, user);
+            ViewBag.isCanAddLoto = entity.isAccSupervisor(user) && entity.loto_status < 1;
+            ViewBag.isAddNewLoto = entity.lotoPermit.Where(p => p.requestor == entity.acc_ptw_requestor).Count() == 0;
+            ViewBag.isCanCancel = entity.status == (int)PtwEntity.statusPtw.ACCFO;
             return PartialView(entity);
         }
 
@@ -40,25 +44,28 @@ namespace PermitToWork.Controllers
             UserEntity user = Session["user"] as UserEntity;
             LotoGlarfEntity glarf = new LotoGlarfEntity(id, user);
 
-            bool[] isCanEdit = new bool[12];
+            bool[] isCanEdit = new bool[3];
 
             isCanEdit[0] = glarf.isCanEditForm(user);
-            isCanEdit[1] = glarf.isCanSign(user);
-            isCanEdit[2] = glarf.requestorCanSign(user);
-            isCanEdit[3] = glarf.supervisorCanSign(user);
-            isCanEdit[4] = glarf.isCanSignCancel(user);
+            isCanEdit[1] = glarf.isCanUploadCancel(user);
 
             ViewBag.isCanEdit = isCanEdit;
 
             return PartialView(glarf);
         }
 
-        public ActionResult Edit(int id)
+        public ActionResult LotoPoint()
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            return PartialView();
+        }
+
+        public ActionResult Edit(int id, int? id_loto)
         {
             UserEntity user = Session["user"] as UserEntity;
             LotoEntity entity = new LotoEntity(id, user);
 
-            bool[] isCanEdit = new bool[16];
+            bool[] isCanEdit = new bool[27];
 
             isCanEdit[0] = entity.isCanEditFirstRequestor(user);
             isCanEdit[1] = entity.isCanAgreedApplied(user);
@@ -76,14 +83,65 @@ namespace PermitToWork.Controllers
             isCanEdit[13] = entity.isCanCancel(user);
             isCanEdit[14] = entity.isCanCancelSpv(user);
             isCanEdit[15] = entity.isCanCancelFO(user);
+            isCanEdit[16] = entity.isCanSuspend(user);
+            isCanEdit[17] = entity.isCanEditOnSuspension(user);
+            isCanEdit[18] = entity.isCanApproveChangeSuspension(user);
+            isCanEdit[19] = entity.isCanSetAgreedRemovedFO(user);
+            isCanEdit[20] = entity.isCanInspectChangeHolder(user);
+            isCanEdit[21] = entity.isCanApproveFOSuspension(user);
+            isCanEdit[22] = entity.isCanCompleteSuspension(user);
+            isCanEdit[23] = entity.isCanAddPointOnCompleteSuspension(user);
+            isCanEdit[24] = entity.isCanAgreedNewLotoPointCompleteSuspension(user);
+            isCanEdit[25] = entity.isCanSetAppliedCompleteSuspension(user);
+            isCanEdit[26] = entity.isCanInspectHolderCompleteSuspension(user);
 
 
             ViewBag.isCanEdit = isCanEdit;
+
+            ViewBag.id_loto = id_loto;
 
             ViewBag.listLotoPoint = new star_energy_ptwEntities().mst_loto_point.ToList();
             ViewBag.listUser = new ListUser(user.token, user.id).listUser;
 
             return PartialView("Create2", entity);
+        }
+
+        [HttpPost]
+        public JsonResult CreateNewLoto(int id_ptw)
+        {
+            UserEntity userLogin = Session["user"] as UserEntity;
+            PtwEntity ptw = new PtwEntity(id_ptw, userLogin);
+            ListUser listUser = new ListUser(userLogin.token, userLogin.id);
+
+            LotoGlarfEntity glarf = new LotoGlarfEntity(ptw.acc_ptw_requestor, ptw.acc_supervisor);
+            glarf.create();
+
+            MstFOEntity foProd = new MstFOEntity("PROD", userLogin);
+            LotoEntity loto = new LotoEntity(ptw.acc_ptw_requestor, ptw.work_location, glarf.id, ptw.acc_supervisor, foProd.user.id.ToString());
+            //List<UserEntity> listHWFO = listUser.GetHotWorkFO();
+            loto.generateNumber(ptw.ptw_no);
+            loto.create();
+            //loto.sendEmailFO(listHWFO, fullUrl(), userLogin.token, userLogin, 0);
+
+            ptw.addLoto(loto);
+
+            glarf.assignLotoForm(loto.id, loto.loto_no);
+
+            return Json(new { status = "200", id = loto.id });
+        }
+
+        [HttpPost]
+        public JsonResult FromPreviousLoto(int id, int id_prev_loto)
+        {
+            UserEntity userLogin = Session["user"] as UserEntity;
+            PtwEntity ptw = new PtwEntity(id, userLogin);
+            LotoEntity prevLoto = new LotoEntity(id_prev_loto, userLogin);
+            ListUser listUser = new ListUser(userLogin.token, userLogin.id);
+
+            prevLoto.addNewHolder(ptw.acc_ptw_requestor, ptw.acc_supervisor);
+            ptw.addLoto(prevLoto);
+
+            return Json(new { status = "200", id = prevLoto.id });
         }
 
         [HttpPost]
@@ -159,7 +217,16 @@ namespace PermitToWork.Controllers
             int retVal = loto.edit();
             retVal &= loto.sendToFO();
             loto = new LotoEntity(loto.id, user);
-            loto.sendEmailFOAgreed(fullUrl(), user);
+            if (loto.approval_facility_owner == null)
+            {
+                ListUser listUser = new ListUser(user.token, user.id);
+                List<UserEntity> listHWFO = listUser.GetHotWorkFO();
+                loto.sendEmailFO(listHWFO, fullUrl(), user.token, user, 0);
+            }
+            else
+            {
+                loto.sendEmailFOAgreed(fullUrl(), user);
+            }
             return Json(new { status = retVal > 0 ? "200" : "404" });
         }
 
@@ -167,6 +234,7 @@ namespace PermitToWork.Controllers
         public JsonResult SaveAndInspect(LotoEntity loto)
         {
             UserEntity user = Session["user"] as UserEntity;
+            loto.edit();
             int retVal = loto.sendToInspect();
             loto = new LotoEntity(loto.id, user);
             loto.sendEmailInspected(fullUrl(), user);
@@ -215,105 +283,239 @@ namespace PermitToWork.Controllers
         }
 
         [HttpPost]
-        public JsonResult requestLotoChange(int id)
+        public JsonResult requestSuspension(int id)
         {
             UserEntity user = Session["user"] as UserEntity;
             LotoEntity loto = new LotoEntity(id, user);
             int retVal = 1;
-
-            retVal &= loto.requestChange();
-            loto.sendEmailComingHolderRequestChange(fullUrl(), user);
+            retVal &= loto.suspendLoto(user);
             return Json(new { status = retVal > 0 ? "200" : "404" });
         }
 
         [HttpPost]
-        public JsonResult saveChangeApprove(int id)
+        public JsonResult SendApprovalSuspension(int id, string notes)
         {
             UserEntity user = Session["user"] as UserEntity;
             LotoEntity loto = new LotoEntity(id, user);
             int retVal = 1;
-            retVal &= loto.edit();
-            retVal &= loto.sendToApproveOtherHolder();
-            loto.sendEmailOnComingHolderApprove(fullUrl(), user);
+            retVal &= loto.sendAgreePointSuspension(user, notes);
+            loto.sendEmailAgreeSuspension(fullUrl(), user);
             return Json(new { status = retVal > 0 ? "200" : "404" });
         }
 
         [HttpPost]
-        public JsonResult holderApproveChange(int id)
+        public JsonResult agreeSuspension(int id)
         {
             UserEntity user = Session["user"] as UserEntity;
             LotoEntity loto = new LotoEntity(id, user);
             int retVal = 1;
-            retVal &= loto.otherHolderApprove(user);
-            loto.isAllOtherHolderApprove();
-            loto.sendEmailOtherHolderApproveChange(fullUrl(), user);
+            retVal &= loto.agreeSuspension(user);
+            loto.sendEmailHolderAgreedSuspension(fullUrl(), user);
             return Json(new { status = retVal > 0 ? "200" : "404" });
         }
 
         [HttpPost]
-        public JsonResult SaveAndInspectChange(LotoEntity loto)
-        {
-            UserEntity user = Session["user"] as UserEntity;
-            int retVal = loto.sendToInspectChange();
-            loto.sendEmailInspectionChange(fullUrl(), user);
-            return Json(new { status = retVal > 0 ? "200" : "404" });
-        }
-        [HttpPost]
-        public JsonResult SaveApproveChange(int id, int who, string approval_notes)
+        public JsonResult rejectSuspension(int id, string notes, string comment)
         {
             UserEntity user = Session["user"] as UserEntity;
             LotoEntity loto = new LotoEntity(id, user);
             int retVal = 1;
-            loto.approval_notes = approval_notes;
-            if (who == 1)
-            {
-                retVal &= loto.approvalSupervisorChange(user);
-                loto.sendEmailFOChangeApproval(fullUrl(), user);
-            }
-            else if (who == 2)
-            {
-                retVal &= loto.approvalFacilityOwnerChange(user);
-                loto.sendEmailOncomingHolderChangeApproval(fullUrl(), user);
-            }
-            else if (who == 3)
-            {
-                retVal &= loto.approvalOncomingHolder(user);
-            }
+            // retVal &= loto.saveAppliedFOSuspension(user, notes);
             return Json(new { status = retVal > 0 ? "200" : "404" });
         }
 
+        
+
         [HttpPost]
-        public JsonResult HolderCancelLoto(int id, string cancellation_notes)
+        public JsonResult saveApprovalFOSuspension(int id, string notes)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            LotoEntity loto = new LotoEntity(id, user);
+            int retVal = 1;
+            retVal &= loto.saveAppliedFOSuspension(user, notes);
+            loto.sendEmailFoAppliedSuspension(fullUrl(), user);
+            return Json(new { status = retVal > 0 ? "200" : "404" });
+        }
+
+        public JsonResult approveSuspension(int id, string notes)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            LotoEntity loto = new LotoEntity(id, user);
+            int retVal = 1;
+            retVal &= loto.saveApprovedInspected(user, notes);
+            loto.sendEmailCompleteInspectedSuspension(fullUrl(), user);
+            return Json(new { status = retVal > 0 ? "200" : "404" });
+        }
+
+        public JsonResult approveFOSuspension(int id, string notes)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            LotoEntity loto = new LotoEntity(id, user);
+            int retVal = 1;
+            retVal &= loto.foApproveSuspension(user, notes);
+            loto.sendEmailFoApprovedSuspension(fullUrl(), user);
+            return Json(new { status = retVal > 0 ? "200" : "404" });
+        }
+
+        public JsonResult completeSuspension(int id, string notes)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            LotoEntity loto = new LotoEntity(id, user);
+            int retVal = 1;
+            retVal &= loto.suspensionCompletion(user);
+            return Json(new { status = retVal > 0 ? "200" : "404" });
+        }
+
+        public JsonResult sendCompleteSuspension(int id, string notes)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            LotoEntity loto = new LotoEntity(id, user);
+            int retVal = 1;
+            retVal &= loto.suspensionCompletionSend(user);
+            loto.sendEmailAgreeCompletionSuspension(fullUrl(), user);
+            return Json(new { status = retVal > 0 ? "200" : "404" });
+        }
+
+        public JsonResult agreeCompleteSuspension(int id, string notes)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            LotoEntity loto = new LotoEntity(id, user);
+            int retVal = 1;
+            retVal &= loto.agreeCompleteSuspension(user);
+            loto.sendEmailHolderAgreedCompletionSuspension(fullUrl(), user);
+            return Json(new { status = retVal > 0 ? "200" : "404" });
+        }
+
+        public JsonResult sendInspectCompleteSuspension(int id, string notes)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            LotoEntity loto = new LotoEntity(id, user);
+            int retVal = 1;
+            retVal &= loto.saveAppliedFOCompleteSuspension(user);
+            loto.sendEmailFoAppliedCompletionSuspension(fullUrl(), user);
+            return Json(new { status = retVal > 0 ? "200" : "404" });
+        }
+
+        public JsonResult inspectCompleteSuspension(int id, string notes)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            LotoEntity loto = new LotoEntity(id, user);
+            int retVal = 1;
+            retVal &= loto.saveApprovedInspectedCompleteSuspension(user);
+            loto.sendEmailCompleteInspectedCompletionSuspension(fullUrl(), user);
+            return Json(new { status = retVal > 0 ? "200" : "404" });
+        }
+
+        //[HttpPost]
+        //public JsonResult requestLotoChange(int id)
+        //{
+        //    UserEntity user = Session["user"] as UserEntity;
+        //    LotoEntity loto = new LotoEntity(id, user);
+        //    int retVal = 1;
+
+        //    retVal &= loto.requestChange();
+        //    loto.sendEmailComingHolderRequestChange(fullUrl(), user);
+        //    return Json(new { status = retVal > 0 ? "200" : "404" });
+        //}
+
+        //[HttpPost]
+        //public JsonResult saveChangeApprove(int id)
+        //{
+        //    UserEntity user = Session["user"] as UserEntity;
+        //    LotoEntity loto = new LotoEntity(id, user);
+        //    int retVal = 1;
+        //    retVal &= loto.edit();
+        //    retVal &= loto.sendToApproveOtherHolder();
+        //    loto.sendEmailOnComingHolderApprove(fullUrl(), user);
+        //    return Json(new { status = retVal > 0 ? "200" : "404" });
+        //}
+
+        //[HttpPost]
+        //public JsonResult holderApproveChange(int id)
+        //{
+        //    UserEntity user = Session["user"] as UserEntity;
+        //    LotoEntity loto = new LotoEntity(id, user);
+        //    int retVal = 1;
+        //    retVal &= loto.otherHolderApprove(user);
+        //    loto.isAllOtherHolderApprove();
+        //    loto.sendEmailOtherHolderApproveChange(fullUrl(), user);
+        //    return Json(new { status = retVal > 0 ? "200" : "404" });
+        //}
+
+        //[HttpPost]
+        //public JsonResult SaveAndInspectChange(LotoEntity loto)
+        //{
+        //    UserEntity user = Session["user"] as UserEntity;
+        //    int retVal = loto.sendToInspectChange();
+        //    loto.sendEmailInspectionChange(fullUrl(), user);
+        //    return Json(new { status = retVal > 0 ? "200" : "404" });
+        //}
+        //[HttpPost]
+        //public JsonResult SaveApproveChange(int id, int who, string approval_notes)
+        //{
+        //    UserEntity user = Session["user"] as UserEntity;
+        //    LotoEntity loto = new LotoEntity(id, user);
+        //    int retVal = 1;
+        //    loto.approval_notes = approval_notes;
+        //    if (who == 1)
+        //    {
+        //        retVal &= loto.approvalSupervisorChange(user);
+        //        loto.sendEmailFOChangeApproval(fullUrl(), user);
+        //    }
+        //    else if (who == 2)
+        //    {
+        //        retVal &= loto.approvalFacilityOwnerChange(user);
+        //        loto.sendEmailOncomingHolderChangeApproval(fullUrl(), user);
+        //    }
+        //    else if (who == 3)
+        //    {
+        //        retVal &= loto.approvalOncomingHolder(user);
+        //    }
+        //    return Json(new { status = retVal > 0 ? "200" : "404" });
+        //}
+
+        [HttpPost]
+        public JsonResult cancelLoto(int id)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            LotoEntity loto = new LotoEntity(id, user);
+            int retVal = 1;
+            retVal = loto.lotoCancel(user);
+            return Json(new { status = retVal == 2 ? "202" : (retVal > 0 ? "200" : "404"), id_glarf = loto.id_glarf });
+        }
+
+        [HttpPost]
+        public JsonResult HolderCancelLoto(int id, string cancellation_notes, int id_loto)
         {
             UserEntity user = Session["user"] as UserEntity;
             LotoEntity loto = new LotoEntity(id, user);
             int retVal = 1;
             loto.cancellation_notes = cancellation_notes;
-            retVal &= loto.holderCancel(user);
-            loto.sendEmailLotoCancelByOncomingHolder(fullUrl(), user);
+            retVal &= loto.holderCancel(user, id_loto);
+            loto.sendEmailFOCancellation(fullUrl(), user);
             return Json(new { status = retVal > 0 ? "200" : "404" });
         }
 
         [HttpPost]
-        public JsonResult SpvCancelLoto(int id, string cancellation_notes)
+        public JsonResult SpvCancelLoto(int id, string cancellation_notes, int id_loto)
         {
             UserEntity user = Session["user"] as UserEntity;
             LotoEntity loto = new LotoEntity(id, user);
             int retVal = 1;
             loto.cancellation_notes = cancellation_notes;
-            retVal &= loto.spvCancel(user);
-
+            retVal &= loto.spvCancel(user, id_loto);
+            loto.sendEmailFOCancellation(fullUrl(), user);
             return Json(new { status = retVal > 0 ? "200" : "404" });
         }
 
         [HttpPost]
-        public JsonResult FOCancelLoto(int id, string cancellation_notes)
+        public JsonResult FOCancelLoto(int id, string cancellation_notes, int id_loto)
         {
             UserEntity user = Session["user"] as UserEntity;
             LotoEntity loto = new LotoEntity(id, user);
             int retVal = 1;
             loto.cancellation_notes = cancellation_notes;
-            retVal &= loto.FOCancel(user);
+            retVal &= loto.FOCancel(user, id_loto);
 
             return Json(new { status = retVal > 0 ? "200" : "404" });
         }
@@ -422,6 +624,22 @@ namespace PermitToWork.Controllers
             return Json(true);
         }
 
+        [HttpPost]
+        public JsonResult RequestRemoval(LotoPointEntity lotoPoint)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            lotoPoint.requestRemoval();
+            return Json(true);
+        }
+
+        [HttpPost]
+        public JsonResult RemovePoint(LotoPointEntity lotoPoint)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            lotoPoint.removeLotoPoint();
+            return Json(true);
+        }
+
         //[HttpPost]
         //public JsonResult EditProjectTeam(ProjectTeamModel team)
         //{
@@ -451,6 +669,28 @@ namespace PermitToWork.Controllers
             UserEntity user = Session["user"] as UserEntity;
             List<LotoGlarfUserEntity> result = new LotoGlarfUserEntity().listUserGlarf(id_loto, user);
             return Json(result);
+        }
+
+        [HttpPost]
+        public JsonResult SaveGlarfUser(int id, string user, int glarf_id)
+        {
+            UserEntity userLogin = Session["user"] as UserEntity;
+            if (id == 0)
+            {
+                LotoGlarfUserEntity glarf = new LotoGlarfUserEntity();
+                glarf.user = user;
+                glarf.id_glarf = glarf_id;
+                glarf.can_edit = 1;
+                glarf.create();
+            }
+            else
+            {
+                LotoGlarfUserEntity glarf = new LotoGlarfUserEntity(id, userLogin);
+                glarf.user = user;
+                glarf.can_edit = 1;
+                glarf.edit();
+            }
+            return Json(true);
         }
 
         [HttpPost]
@@ -535,6 +775,56 @@ namespace PermitToWork.Controllers
             return Json(true);
         }
 
+        public JsonResult CancellationGlarf(int id)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            LotoGlarfEntity glarf = new LotoGlarfEntity(id, user);
+            int retVal = glarf.saveCancellation(user);
+            return Json(new { status = retVal == -1 ? "403" : (retVal == 0 ? "404" : "200") });
+        }
+
+        public ActionResult saveAttachment(IEnumerable<HttpPostedFileBase> files, int? id)
+        {
+            var dPath = "\\Upload\\Loto\\Glarf\\" + id;
+            var pPath = "~/Upload/Loto/Glarf/" + id;
+
+            foreach (var file in files)
+            {
+                // Some browsers send file names with full path. This needs to be stripped.
+                var fileName = Path.GetFileName(file.FileName);
+                var dummyPath = Path.Combine(dPath, fileName);
+                //var physicalPath = Path.Combine(Server.MapPath("~/App_Data"), fileName);
+                var physicalPath = Path.Combine(Server.MapPath(pPath), fileName);
+
+                // save file
+                file.SaveAs(physicalPath);
+            }
+
+            // Return an empty string to signify success
+            return Content("");
+        }
+
+        public ActionResult removeAttachment(string[] fileNames, int id)
+        {
+            var pPath = "~/Upload/Loto/Glarf/" + id;
+            // The Name of the Upload component is "attachments" 
+            // The parameter of the Remove action must be called "fileNames"
+            foreach (var fullName in fileNames)
+            {
+                var fileName = Path.GetFileName(fullName);
+                var physicalPath = Path.Combine(Server.MapPath(pPath), fileName);
+
+                // TODO: Verify user permissions
+                if (System.IO.File.Exists(physicalPath))
+                {
+                    //remove file
+                    System.IO.File.Delete(physicalPath);
+                }
+            }
+            // Return an empty string to signify success
+            return Content("");
+        }
+
         #endregion
 
         private string fullUrl()
@@ -545,6 +835,22 @@ namespace PermitToWork.Controllers
             string fullUrl = "http://" + url + applicationPath;
 
             return fullUrl;
+        }
+
+        [HttpPost]
+        public JsonResult BindingListLoto()
+        {
+            UserEntity userLogin = Session["user"] as UserEntity;
+            List<LotoEntity> listLoto = new LotoEntity().listLoto(userLogin);
+            return Json(listLoto);
+        }
+
+        [HttpPost]
+        public JsonResult BindingPointRemove()
+        {
+            UserEntity userLogin = Session["user"] as UserEntity;
+            List<LotoEntity> listLoto = new LotoEntity().listLotoRemove(userLogin);
+            return Json(listLoto);
         }
     }
 }
