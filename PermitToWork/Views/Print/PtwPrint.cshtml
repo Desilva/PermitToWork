@@ -62,7 +62,7 @@
                     <tr>
                         <td><b>Dept. of Requestor :</b> @Model.department.department</td>
                         <td colspan="2"><b>Section / total number of crew :</b> @Model.section1.section / @Model.total_crew</td>
-                        <td><b>Requestor's PTW holder no. :</b> @Model.ptw_holder_no.ptw_holder_no</td>
+                        <td><b>Requestor's PTW holder no. :</b> @(Model.is_guest == 1 ? Model.guest_holder_no : Model.ptw_holder_no.ptw_holder_no)</td>
                     </tr>
                     <tr>
                         <td colspan="4">
@@ -212,12 +212,12 @@
                                 string hiras = "";
                                 foreach (string s in hiraDocs) {
                                     if (s != "") {
-                                        hiras += Path.GetFileName(s).Split('.').First() + ", ";
+                                        hiras += Server.UrlDecode(Path.GetFileName(s).Split('.').First()) + "<br/>";
                                     }
                                 }
                                 if (hiras.Length > 0) {
-                                    hiras = hiras.Substring(0, hiras.Length - 2);
-                                    <text>@hiras</text>
+                                    hiras = hiras.Substring(0, hiras.Length - 5);
+                                    <text>@Html.Raw(hiras)</text>
                                 }
                             }
                         </td>

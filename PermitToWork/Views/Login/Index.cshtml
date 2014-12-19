@@ -65,7 +65,7 @@
                     $.post("@Url.Action("ValidateLogin","Login")", { username: $('#username').val(), password: $('#password').val() }, function (resp) {
                         if (resp.status == "200") {
                             $('#success').show(300);
-                            setTimeout(function () { window.location = "@Url.Action("Index","Home", new { p = ViewBag.returnUrl })"; }, 2000);
+                            setTimeout(function () { window.location = "@Url.Action("Index","Home", new { p = ViewBag.p })"; }, 2000);
                         } else if (resp.status == "500") {
                             $('#errorMessage').html(resp.message);
                             $('#fail').show(300);

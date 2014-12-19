@@ -39,6 +39,7 @@ namespace PermitToWork.Utilities
                                 controller = "Login",
                                 action = "Index",
                                 returnUrl = url,
+                                p = filterContext.HttpContext.Request.Params["p"],
                                 e = filterContext.HttpContext.Request.Params["e"]
                             })
                         );

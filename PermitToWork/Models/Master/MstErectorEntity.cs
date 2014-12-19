@@ -27,6 +27,15 @@ namespace PermitToWork.Models.Master
             this.user = new UserEntity(this.id_employee.Value, user.token, user);
         }
 
+        public MstErectorEntity(int id, UserEntity user, ListUser listUser)
+            : this()
+        {
+            mst_erector erector = this.db.mst_erector.Find(id);
+            ModelUtilization.Clone(erector, this);
+
+            this.user = listUser.listUser.Find(p => p.id == this.id_employee.Value);
+        }
+
         public MstErectorEntity(mst_erector erector, UserEntity user)
             : this()
         {

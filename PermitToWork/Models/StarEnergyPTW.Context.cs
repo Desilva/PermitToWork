@@ -49,7 +49,6 @@ namespace PermitToWork.Models
         public DbSet<permit_log> permit_log { get; set; }
         public DbSet<radiography> radiographies { get; set; }
         public DbSet<loto_suspension_holder> loto_suspension_holder { get; set; }
-        public DbSet<working_height> working_height { get; set; }
         public DbSet<safety_briefing_user> safety_briefing_user { get; set; }
         public DbSet<safety_briefing> safety_briefing { get; set; }
         public DbSet<mst_inspector> mst_inspector { get; set; }
@@ -63,5 +62,6 @@ namespace PermitToWork.Models
         public DbSet<mst_delegate_fo> mst_delegate_fo { get; set; }
         public DbSet<loto_suspension> loto_suspension { get; set; }
         public DbSet<loto_permit> loto_permit { get; set; }
+        public DbSet<working_height> working_height { get; set; }
     }
 }

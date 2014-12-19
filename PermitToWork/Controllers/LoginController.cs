@@ -15,7 +15,7 @@ namespace PermitToWork.Controllers
         //
         // GET: /Login/
 
-        public ActionResult Index(string returnUrl, string e)
+        public ActionResult Index(string returnUrl, string e, string p)
         {
             ViewBag.returnUrl = returnUrl;
 
@@ -33,6 +33,11 @@ namespace PermitToWork.Controllers
                         ViewBag.m = "Something wrong with your link. Maybe you have try something?";
                         break;
                 };
+            }
+
+            if (p != null)
+            {
+                ViewBag.p = p;
             }
             return PartialView();
         }

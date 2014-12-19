@@ -164,7 +164,7 @@ namespace PermitToWork.Controllers
         public ActionResult GetTemplate()
         {
             UserEntity user = Session["user"] as UserEntity;
-            List<UserEntity> users = new ListUser(user.token, user.id).listUser;
+            List<UserEntity> users = new ListUser(user.token, user.id).listUser.ToList();
             List<MstPtwHolderNoEntity> ptwHolders = new MstPtwHolderNoEntity().getListMstPtwHolderNo(user);
             List<PtwHolderExcelModel> result = new List<PtwHolderExcelModel>();
             MstPtwHolderNoEntity ptwHolder = new MstPtwHolderNoEntity();

@@ -39,7 +39,8 @@
         $('#back').click(function () {
             var history = $(this).data('url');
             history = history.toLowerCase();
-            if (history.indexOf('home') >= 0) {
+            console.log(history);
+            if (history.indexOf('home') >= 0 || history == "/") {
                 window.location = history;
             } else {
                 $('#content').load(history);

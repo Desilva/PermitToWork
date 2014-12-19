@@ -16,9 +16,9 @@ namespace PermitToWork.Models.User
             WWUserService.UserServiceClient client = new WWUserService.UserServiceClient();
             int count = 0;
             List<UserEntity> listUser = new List<UserEntity>();
-            WWUserService.ResponseModel response = client.listUser(token, curLoginId, 50, 250);
+            WWUserService.ResponseModel response = client.listUser(token, curLoginId, 50, 1000);
 
-            while (response.status && count < response.results.count)
+            while (response.status && count < response.results.count + 50)
             {
                 foreach (WWUserService.UserModel us in response.results.listUserModel)
                 {
@@ -30,6 +30,7 @@ namespace PermitToWork.Models.User
             }
 
             client.Close();
+            //this.listUser = new HashSet<UserEntity>(listUser.OrderBy(p => p.alpha_name));
             this.listUser = listUser.OrderBy(p => p.alpha_name).ToList();
         }
 
@@ -43,38 +44,53 @@ namespace PermitToWork.Models.User
                 return listSpv;
             }
 
-            // get one level up
-            UserEntity userLevelOne = listUser.Where(p => p.id == requestor.employee_boss).FirstOrDefault();
+            UserEntity spv = listUser.Where(p => p.id == requestor.employee_boss).FirstOrDefault();
+            bool found = false;
+            while (spv != null && !found)
+            {
+                if (spv.approval_level == 1)
+                {
+                    found = true;
+                    listSpv.Add(spv);
+                }
+                else
+                {
+                    spv = listUser.Where(p => p.id == spv.employee_boss).FirstOrDefault();
+                }
+            }
 
-            // check if exist one level up again
-            if (userLevelOne.employee_boss == null)
-            {
-                employee_dept ed = db.employees.Find(userLevelOne.id).employee_dept1;
-                foreach (employee e in ed.employees)
-                {
-                    listSpv.Add(listUser.Where(p => p.id == e.id).FirstOrDefault());
-                }
-                return listSpv;
-            }
+            //// get one level up
+            //UserEntity userLevelOne = listUser.Where(p => p.id == requestor.employee_boss).FirstOrDefault();
 
-            // get one level up
-            UserEntity userLevelTwo = listUser.Where(p => p.id == userLevelOne.employee_boss).FirstOrDefault();
-            if (userLevelTwo.employee_boss == null)
-            {
-                employee_dept ed = db.employees.Find(userLevelTwo.id).employee_dept1;
-                foreach (employee e in ed.employees)
-                {
-                    listSpv.Add(listUser.Where(p => p.id == e.id).FirstOrDefault());
-                }
-            }
-            else
-            {
-                employee ed = db.employees.Find(userLevelTwo.id).employee2;
-                foreach (employee e in ed.employee1)
-                {
-                    listSpv.Add(listUser.Where(p => p.id == e.id).FirstOrDefault());
-                }
-            }
+            //// check if exist one level up again
+            //if (userLevelOne.employee_boss == null)
+            //{
+            //    employee_dept ed = db.employees.Find(userLevelOne.id).employee_dept1;
+            //    foreach (employee e in ed.employees)
+            //    {
+            //        listSpv.Add(listUser.Where(p => p.id == e.id).FirstOrDefault());
+            //    }
+            //    return listSpv;
+            //}
+
+            //// get one level up
+            //UserEntity userLevelTwo = listUser.Where(p => p.id == userLevelOne.employee_boss).FirstOrDefault();
+            //if (userLevelTwo.employee_boss == null)
+            //{
+            //    employee_dept ed = db.employees.Find(userLevelTwo.id).employee_dept1;
+            //    foreach (employee e in ed.employees)
+            //    {
+            //        listSpv.Add(listUser.Where(p => p.id == e.id).FirstOrDefault());
+            //    }
+            //}
+            //else
+            //{
+            //    employee ed = db.employees.Find(userLevelTwo.id).employee2;
+            //    foreach (employee e in ed.employee1)
+            //    {
+            //        listSpv.Add(listUser.Where(p => p.id == e.id).FirstOrDefault());
+            //    }
+            //}
             // return the user
             return listSpv;
         }
@@ -92,6 +108,7 @@ namespace PermitToWork.Models.User
             }
 
             client.Close();
+            // this.listUser = new HashSet<UserEntity>(listUser.OrderBy(p => p.alpha_name));
             this.listUser = listUser.OrderBy(p => p.alpha_name).ToList();
             return this.listUser;
         }

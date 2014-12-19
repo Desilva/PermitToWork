@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Web;
+using System.IO;
 
 namespace PermitToWork.Models.Hw
 {
@@ -186,6 +187,8 @@ namespace PermitToWork.Models.Hw
         public string statusText { get; set; }
 
         public bool is_guest { get; set; }
+        public bool isUser { get; set; }
+        public Dictionary<string, List<string>> listDocumentUploaded { get; set; }
 
         public enum statusHW
         {
@@ -275,6 +278,7 @@ namespace PermitToWork.Models.Hw
                 this.db = db;
             }
             hot_work hw = this.db.hot_work.Find(id);
+            this.listDocumentUploaded = new Dictionary<string, List<string>>();
             this.id = hw.id;
             this.hw_no = hw.hw_no;
             this.fire_watch = hw.fire_watch;
@@ -434,7 +438,170 @@ namespace PermitToWork.Models.Hw
 
             this.statusText = getStatus();
 
+            string path = HttpContext.Current.Server.MapPath("~/Upload/HotWork/" + this.id + "");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            DirectoryInfo d = new DirectoryInfo(path);//Assuming Test is your Folder
+            FileInfo[] Files = d.GetFiles(); //Getting Text files
+
+            this.listDocumentUploaded.Add("ATTACHMENT", Files.Select(p => p.Name).ToList());
+
             this.hira_document = new ListHira(this.id_ptw.Value,this.db).listHira;
+        }
+
+        public HwEntity(hot_work hw)
+        {
+            this.id = hw.id;
+            this.hw_no = hw.hw_no;
+            this.fire_watch = hw.fire_watch;
+            this.purpose = hw.purpose;
+            this.work_leader = hw.work_leader;
+            this.validity_period_start = hw.validity_period_start;
+            this.validity_period_end = hw.validity_period_end;
+            this.id_ptw = hw.id_ptw;
+            this.notes = hw.notes;
+            this.methane_result = hw.methane_result;
+            this.o2_result = hw.o2_result;
+            this.h2s_result = hw.h2s_result;
+            this.co_result = hw.co_result;
+            this.other_gas = hw.other_gas;
+            this.other_result = hw.other_result;
+            this.acc_work_leader_approve = hw.acc_work_leader_approve;
+            this.acc_supervisor_approve = hw.acc_supervisor_approve;
+            this.acc_supervisor = hw.acc_supervisor;
+            this.acc_supervisor_delegate = hw.acc_supervisor_delegate;
+            this.acc_fire_watch = hw.acc_fire_watch;
+            this.acc_fire_watch_delegate = hw.acc_fire_watch_delegate;
+            this.acc_fire_watch_approve = hw.acc_fire_watch_approve;
+            this.acc_fo = hw.acc_fo;
+            this.acc_fo_delegate = hw.acc_fo_delegate;
+            this.acc_fo_approve = hw.acc_fo_approve;
+            this.acc_gas_tester = hw.acc_gas_tester;
+            this.acc_gas_tester_approve = hw.acc_gas_tester_approve;
+            this.acc_work_representative_approve = hw.acc_work_representative_approve;
+            this.can_work_leader_approve = hw.can_work_leader_approve;
+            this.can_supervisor_approve = hw.can_supervisor_approve;
+            this.can_supervisor = hw.can_supervisor;
+            this.can_supervisor_delegate = hw.can_supervisor_delegate;
+            this.can_fire_watch = hw.can_fire_watch;
+            this.can_fire_watch_delegate = hw.can_fire_watch_delegate;
+            this.can_fire_watch_approve = hw.can_fire_watch_approve;
+            this.can_fo = hw.can_fo;
+            this.can_fo_delegate = hw.can_fo_delegate;
+            this.can_fo_approve = hw.can_fo_approve;
+            this.ext_datetime_1 = hw.ext_datetime_1;
+            this.ext_lel_1 = hw.ext_lel_1;
+            this.ext_o2_1 = hw.ext_o2_1;
+            this.ext_h2s_1 = hw.ext_h2s_1;
+            this.ext_co_1 = hw.ext_co_1;
+            this.ext_other_1 = hw.ext_other_1;
+            this.ext_gas_tester_1 = hw.ext_gas_tester_1;
+            this.ext_gas_tester_approve_1 = hw.ext_gas_tester_approve_1;
+            this.ext_work_leader_1 = hw.ext_work_leader_1;
+            this.ext_work_leader_approve_1 = hw.ext_work_leader_approve_1;
+            this.ext_fo_1 = hw.ext_fo_1;
+            this.ext_fo_delegate_1 = hw.ext_fo_delegate_1;
+            this.ext_fo_approve_1 = hw.ext_fo_approve_1;
+            this.ext_new_validity_1 = hw.ext_new_validity_1;
+            this.ext_remark_1 = hw.ext_remark_1;
+            this.ext_datetime_2 = hw.ext_datetime_2;
+            this.ext_lel_2 = hw.ext_lel_2;
+            this.ext_o2_2 = hw.ext_o2_2;
+            this.ext_h2s_2 = hw.ext_h2s_2;
+            this.ext_co_2 = hw.ext_co_2;
+            this.ext_other_2 = hw.ext_other_2;
+            this.ext_gas_tester_2 = hw.ext_gas_tester_2;
+            this.ext_gas_tester_approve_2 = hw.ext_gas_tester_approve_2;
+            this.ext_work_leader_2 = hw.ext_work_leader_2;
+            this.ext_work_leader_approve_2 = hw.ext_work_leader_approve_2;
+            this.ext_fo_2 = hw.ext_fo_2;
+            this.ext_fo_delegate_2 = hw.ext_fo_delegate_2;
+            this.ext_fo_approve_2 = hw.ext_fo_approve_2;
+            this.ext_new_validity_2 = hw.ext_new_validity_2;
+            this.ext_remark_2 = hw.ext_remark_2;
+            this.ext_datetime_3 = hw.ext_datetime_3;
+            this.ext_lel_3 = hw.ext_lel_3;
+            this.ext_o2_3 = hw.ext_o2_3;
+            this.ext_h2s_3 = hw.ext_h2s_3;
+            this.ext_co_3 = hw.ext_co_3;
+            this.ext_other_3 = hw.ext_other_3;
+            this.ext_gas_tester_3 = hw.ext_gas_tester_3;
+            this.ext_gas_tester_approve_3 = hw.ext_gas_tester_approve_3;
+            this.ext_work_leader_3 = hw.ext_work_leader_3;
+            this.ext_work_leader_approve_3 = hw.ext_work_leader_approve_3;
+            this.ext_fo_3 = hw.ext_fo_3;
+            this.ext_fo_delegate_3 = hw.ext_fo_delegate_3;
+            this.ext_fo_approve_3 = hw.ext_fo_approve_3;
+            this.ext_new_validity_3 = hw.ext_new_validity_3;
+            this.ext_remark_3 = hw.ext_remark_3;
+            this.ext_datetime_4 = hw.ext_datetime_4;
+            this.ext_lel_4 = hw.ext_lel_4;
+            this.ext_o2_4 = hw.ext_o2_4;
+            this.ext_h2s_4 = hw.ext_h2s_4;
+            this.ext_co_4 = hw.ext_co_4;
+            this.ext_other_4 = hw.ext_other_4;
+            this.ext_gas_tester_4 = hw.ext_gas_tester_4;
+            this.ext_gas_tester_approve_4 = hw.ext_gas_tester_approve_4;
+            this.ext_work_leader_4 = hw.ext_work_leader_4;
+            this.ext_work_leader_approve_4 = hw.ext_work_leader_approve_4;
+            this.ext_fo_4 = hw.ext_fo_4;
+            this.ext_fo_delegate_4 = hw.ext_fo_delegate_4;
+            this.ext_fo_approve_4 = hw.ext_fo_approve_4;
+            this.ext_new_validity_4 = hw.ext_new_validity_4;
+            this.ext_remark_4 = hw.ext_remark_4;
+            this.ext_datetime_5 = hw.ext_datetime_5;
+            this.ext_lel_5 = hw.ext_lel_5;
+            this.ext_o2_5 = hw.ext_o2_5;
+            this.ext_h2s_5 = hw.ext_h2s_5;
+            this.ext_co_5 = hw.ext_co_5;
+            this.ext_other_5 = hw.ext_other_5;
+            this.ext_gas_tester_5 = hw.ext_gas_tester_5;
+            this.ext_gas_tester_approve_5 = hw.ext_gas_tester_approve_5;
+            this.ext_work_leader_5 = hw.ext_work_leader_5;
+            this.ext_work_leader_approve_5 = hw.ext_work_leader_approve_5;
+            this.ext_fo_5 = hw.ext_fo_5;
+            this.ext_fo_delegate_5 = hw.ext_fo_delegate_5;
+            this.ext_fo_approve_5 = hw.ext_fo_approve_5;
+            this.ext_new_validity_5 = hw.ext_new_validity_5;
+            this.ext_remark_5 = hw.ext_remark_5;
+            this.ext_datetime_6 = hw.ext_datetime_6;
+            this.ext_lel_6 = hw.ext_lel_6;
+            this.ext_o2_6 = hw.ext_o2_6;
+            this.ext_h2s_6 = hw.ext_h2s_6;
+            this.ext_co_6 = hw.ext_co_6;
+            this.ext_other_6 = hw.ext_other_6;
+            this.ext_gas_tester_6 = hw.ext_gas_tester_6;
+            this.ext_gas_tester_approve_6 = hw.ext_gas_tester_approve_6;
+            this.ext_work_leader_6 = hw.ext_work_leader_6;
+            this.ext_work_leader_approve_6 = hw.ext_work_leader_approve_6;
+            this.ext_fo_6 = hw.ext_fo_6;
+            this.ext_fo_delegate_6 = hw.ext_fo_delegate_6;
+            this.ext_fo_approve_6 = hw.ext_fo_approve_6;
+            this.ext_new_validity_6 = hw.ext_new_validity_6;
+            this.ext_remark_6 = hw.ext_remark_6;
+            this.ext_datetime_7 = hw.ext_datetime_7;
+            this.ext_lel_7 = hw.ext_lel_7;
+            this.ext_o2_7 = hw.ext_o2_7;
+            this.ext_h2s_7 = hw.ext_h2s_7;
+            this.ext_co_7 = hw.ext_co_7;
+            this.ext_other_7 = hw.ext_other_7;
+            this.ext_gas_tester_7 = hw.ext_gas_tester_7;
+            this.ext_gas_tester_approve_7 = hw.ext_gas_tester_approve_7;
+            this.ext_work_leader_7 = hw.ext_work_leader_7;
+            this.ext_work_leader_approve_7 = hw.ext_work_leader_approve_7;
+            this.ext_fo_7 = hw.ext_fo_7;
+            this.ext_fo_delegate_7 = hw.ext_fo_delegate_7;
+            this.ext_fo_approve_7 = hw.ext_fo_approve_7;
+            this.ext_new_validity_7 = hw.ext_new_validity_7;
+            this.ext_remark_7 = hw.ext_remark_7;
+            this.status = hw.status;
+            this.random_pin = hw.random_pin;
+
+            this.is_guest = hw.permit_to_work.is_guest == 1;
+
+            this.statusText = getStatus();
         }
 
         public int create()
@@ -468,6 +635,12 @@ namespace PermitToWork.Models.Hw
             db.hot_work.Add(hw);
             int retVal = this.db.SaveChanges();
             this.id = hw.id;
+
+            string path = HttpContext.Current.Server.MapPath("~/Upload/HotWork/" + this.id);
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
             return retVal;
         }
 
@@ -532,13 +705,13 @@ namespace PermitToWork.Models.Hw
             return retVal;
         }
 
-        public bool isAccSupervisor(UserEntity user)
+        public bool isAccSupervisor(UserEntity user, ListUser listUser = null)
         {
             var retVal = false;
             string user_id = user.id.ToString();
             int foId = 0;
             Int32.TryParse(this.acc_supervisor, out foId);
-            UserEntity fo = new UserEntity(foId, user.token, user);
+            UserEntity fo = listUser == null ? new UserEntity(foId, user.token, user) : listUser.listUser.Find(p => p.id == foId);
             if ((this.acc_supervisor == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
             {
                 retVal = true;
@@ -547,13 +720,13 @@ namespace PermitToWork.Models.Hw
             return retVal;
         }
 
-        public bool isAccFireWatch(UserEntity user)
+        public bool isAccFireWatch(UserEntity user, ListUser listUser = null)
         {
             var retVal = false;
             string user_id = user.id.ToString();
             int foId = 0;
             Int32.TryParse(this.acc_fire_watch, out foId);
-            UserEntity fo = new UserEntity(foId, user.token, user);
+            UserEntity fo = listUser == null ? new UserEntity(foId, user.token, user) : listUser.listUser.Find(p => p.id == foId);
             if ((this.acc_fire_watch == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
             {
                 retVal = true;
@@ -562,12 +735,12 @@ namespace PermitToWork.Models.Hw
             return retVal;
         }
 
-        public bool isAccFO(UserEntity user)
+        public bool isAccFO(UserEntity user, ListUser listUser = null)
         {
             var retVal = false;
             int foId = 0;
             Int32.TryParse(this.acc_fo, out foId);
-            UserEntity fo = new UserEntity(foId, user.token, user);
+            UserEntity fo = listUser == null ? new UserEntity(foId, user.token, user) : listUser.listUser.Find(p => p.id == foId);
             string user_id = user.id.ToString();
             List<UserEntity> listDel = fo.GetDelegateFO(user);
             if ((this.acc_fo == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
@@ -588,56 +761,6 @@ namespace PermitToWork.Models.Hw
             if (this.acc_gas_tester == user_id)
             {
                 retVal = true;
-            }
-
-            return retVal;
-        }
-
-        public bool isCanSupervisor(UserEntity user)
-        {
-            var retVal = false;
-            string user_id = user.id.ToString();
-            int foId = 0;
-            Int32.TryParse(this.can_supervisor, out foId);
-            UserEntity fo = new UserEntity(foId, user.token, user);
-            if ((this.can_supervisor == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
-            {
-                retVal = true;
-            }
-
-            return retVal;
-        }
-
-        public bool isCanFireWatch(UserEntity user)
-        {
-            var retVal = false;
-            string user_id = user.id.ToString();
-            int foId = 0;
-            Int32.TryParse(this.can_fire_watch, out foId);
-            UserEntity fo = new UserEntity(foId, user.token, user);
-            if ((this.can_fire_watch == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
-            {
-                retVal = true;
-            }
-
-            return retVal;
-        }
-
-        public bool isCanFO(UserEntity user)
-        {
-            var retVal = false;
-            int foId = 0;
-            Int32.TryParse(this.can_fo, out foId);
-            UserEntity fo = new UserEntity(foId, user.token, user);
-            string user_id = user.id.ToString();
-            List<UserEntity> listDel = fo.GetDelegateFO(user);
-            if ((this.can_fo == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
-            {
-                retVal = true;
-            }
-            else if (listDel.Exists(p => p.id == user.id))
-            {
-                return true;
             }
 
             return retVal;
@@ -1405,12 +1528,10 @@ namespace PermitToWork.Models.Hw
             }
         }
 
-        public bool isUserInHw(UserEntity user) {
-            return (isWorkLeader(user) || isAccSupervisor(user) || isAccFireWatch(user) || isAccFO(user) || isAccGasTester(user)
+        public bool isUserInHw(UserEntity user, ListUser listUser) {
+            return (isAccGasTester(user)
                 || isExtGasTester(user, 1) || isExtGasTester(user, 2) || isExtGasTester(user, 3) || isExtGasTester(user, 4)
-                || isExtGasTester(user, 5) || isExtGasTester(user, 6) || isExtGasTester(user, 7) || isExtFO(user, 1)
-                || isExtFO(user, 2) || isExtFO(user, 3) || isExtFO(user, 4) || isExtFO(user, 5) || isExtFO(user, 6)
-                || isExtFO(user, 7) || isCanSupervisor(user) || isCanFO(user) || isCanFireWatch(user));
+                || isExtGasTester(user, 5) || isExtGasTester(user, 6) || isExtGasTester(user, 7));
         }
 
         #endregion
@@ -1497,6 +1618,7 @@ namespace PermitToWork.Models.Hw
             {
                 hot_work hw = this.db.hot_work.Find(this.id);
                 this.status = (int)statusHW.CANCEL;
+                hw.can_supervisor = hw.acc_supervisor;
 
                 hw.status = this.status;
                 this.db.Entry(hw).State = EntityState.Modified;

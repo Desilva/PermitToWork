@@ -222,6 +222,44 @@
             }
             values.who = $(this).data('who');
             values = getScreeningValue(values, values.who);
+
+            var r = true;
+            if (values.who == "3") {
+                if (values.pre_screening_req.indexOf("2") < 0 && values.pre_screening_req.indexOf("1") < 0) {
+                    r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                }
+                if (r) {
+                    if (values.pre_screening_req.indexOf("2") >= 0) {
+                        if (values.pre_screening_note.indexOf("Req:") < 0) {
+                            alert('Screening contains one or more \'no\'. Please add Notes start with \'Req:\'');
+                            $('#screening_remark_required').show();
+                            $('#screening_remark_required').html('Notes must be added. Start with \'Req:\'');
+
+                            return;
+                        }
+                    }
+                } else {
+                    return;
+                }
+            } else if (values.who == "5") {
+                if (values.pre_screening_fo.indexOf("2") < 0 && values.pre_screening_fo.indexOf("1") < 0) {
+                    r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                }
+                if (r) {
+                    if (values.pre_screening_fo.indexOf("2") >= 0) {
+                        if (values.pre_screening_note.indexOf("FO:") < 0) {
+                            alert('Screening contains one or more \'no\'. Please add Notes start with \'FO:\'');
+                            $('#screening_remark_required').show();
+                            $('#screening_remark_required').html('Notes must be added. Start with \'FO:\'');
+
+                            return;
+                        }
+                    }
+                } else {
+                    return;
+                }
+            }
+
             $('#loading_gif').show();
             $.post('@Url.Action("SaveAndSend","WorkingHeight")', values, function (resp) {
                 $('#loading_gif').hide();
@@ -277,6 +315,44 @@
             var values = getValues();
             values.who = $(this).data('who');
             values = getCancelScreeningValue(values, values.who);
+
+            var r = true;
+            if (values.who == "2") {
+                if (values.can_screening_req.indexOf("2") < 0 && values.can_screening_req.indexOf("1") < 0) {
+                    r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                }
+                if (r) {
+                    //if (values.pre_screening_req.indexOf("2") >= 0) {
+                    //    if (values.pre_screening_note.indexOf("Req:") < 0) {
+                    //        alert('Screening contains one or more \'no\'. Please add Notes start with \'Req:\'');
+                    //        $('#screening_remark_required').show();
+                    //        $('#screening_remark_required').html('Notes must be added. Start with \'Req:\'');
+
+                    //        return;
+                    //    }
+                    //}
+                } else {
+                    return;
+                }
+            } else if (values.who == "4") {
+                if (values.can_screening_fo.indexOf("2") < 0 && values.can_screening_fo.indexOf("1") < 0) {
+                    r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                }
+                if (r) {
+                    //if (values.pre_screening_fo.indexOf("2") >= 0) {
+                    //    if (values.pre_screening_note.indexOf("FO:") < 0) {
+                    //        alert('Screening contains one or more \'no\'. Please add Notes start with \'FO:\'');
+                    //        $('#screening_remark_required').show();
+                    //        $('#screening_remark_required').html('Notes must be added. Start with \'FO:\'');
+
+                    //        return;
+                    //    }
+                    //}
+                } else {
+                    return;
+                }
+            }
+
             $('#loading_gif').show();
             $.post('@Url.Action("SaveAndSendCancel","WorkingHeight")', values, function (resp) {
                 $('#loading_gif').hide();
@@ -366,8 +442,14 @@
             values.from = $('#datetimepickerFrom').val();
             values.until = $('#datetimepickerUntil').val();
             values.total_crew = $('#total-crew').val();
-            values.access = $('input[name="access-location"]:checked').val();
-            if (values.access == "1") {
+            $access = $('input[name="access-location"]:checked');
+            values.access = "";
+            console.log($access[0]);
+            for (var i = 0; i < $access.length; i++) {
+                values.access += $($access[i]).val() + "#";
+            }
+            console.log(values.access);
+            if (values.access.indexOf("1") >= 0) {
                 var a = [];
                 var s = "";
                 $('.workbox-access').each(function () {
@@ -379,7 +461,9 @@
                     s += a[i] + "#";
                 }
                 values.workbox_access = s.length > 0 ? s.substring(0, s.length - 1) : "";
-            } else if (values.access == "2") {
+            }
+
+            if (values.access.indexOf("2") >= 0) {
                 var a = [];
                 var s = "";
                 $('.ladder-access').each(function () {
@@ -391,7 +475,9 @@
                     s += a[i] + "#";
                 }
                 values.ladder_access = s.length > 0 ? s.substring(0, s.length - 1) : "";
-            } else if (values.access == "3") {
+            }
+
+            if (values.access.indexOf("3") >= 0) {
                 var a = [];
                 var s = "";
                 $('.elevated-access').each(function () {
@@ -403,7 +489,9 @@
                     s += a[i] + "#";
                 }
                 values.elevated_access = s.length > 0 ? s.substring(0, s.length - 1) : "";
-            } else if (values.access == "4") {
+            }
+
+            if (values.access.indexOf("4") >= 0) {
                 values.load_capacity = $('#load-capacity').val();
                 values.no_person = $('#no-person').val();
                 values.scaffolding = $('input[name="scaffolding-option"]:checked').val();
@@ -623,13 +711,13 @@
                         <div class="accordion" id="access-location">
                             <div class="accordion-group">
                                 <div class="accordion-heading">
-                                    <div class="radio">
+                                    <div class="checkbox">
                                         <label>
-                                            <input type="radio" id="work-box-opt" value="1" class="accordion-toggle" name="access-location" data-parent="#access-location" data-toggle="collapse" data-target="#work-box" @(Model.access == 1 ? "checked" : "") @(isCanEdit[0] ? "" : "disabled")> WORK BOX
+                                            <input type="checkbox" id="work-box-opt" value="1" class="accordion-toggle" name="access-location" data-toggle="collapse" data-target="#work-box" @(Model.access.Contains('1') ? "checked" : "") @(isCanEdit[0] ? "" : "disabled")> WORK BOX
                                         </label>
                                     </div>
                                 </div>
-                                <div id="work-box" class="accordion-body collapse @(Model.access == 1 ? "in" : "")">
+                                <div id="work-box" class="accordion-body collapse @(Model.access.Contains('1') ? "in" : "")">
                                     <div class="accordion-inner">
                                         <table class="table table-bordered">
                                             <tbody>
@@ -684,13 +772,13 @@
                             </div>
                             <div class="accordion-group">
                                 <div class="accordion-heading">
-                                    <div class="radio">
+                                    <div class="checkbox">
                                         <label>
-                                            <input type="radio" id="ladder-opt" value="2" class="accordion-toggle" name="access-location" data-parent="#access-location" data-toggle="collapse" data-target="#ladder" @(Model.access == 2 ? "checked" : "") @(isCanEdit[0] ? "" : "disabled")> LADDER <small>(portable ladder)</small>
+                                            <input type="checkbox" id="ladder-opt" value="2" class="accordion-toggle" name="access-location" data-toggle="collapse" data-target="#ladder" @(Model.access.Contains('2') ? "checked" : "") @(isCanEdit[0] ? "" : "disabled")> LADDER <small>(portable ladder)</small>
                                         </label>
                                     </div>
                                 </div>
-                                <div id="ladder" class="accordion-body collapse @(Model.access == 2 ? "in" : "")">
+                                <div id="ladder" class="accordion-body collapse @(Model.access.Contains('2') ? "in" : "")">
                                     <div class="accordion-inner">
                                         <table class="table table-bordered">
                                             <tbody>
@@ -745,13 +833,13 @@
                             </div>
                             <div class="accordion-group">
                                 <div class="accordion-heading">
-                                    <div class="radio">
+                                    <div class="checkbox">
                                         <label>
-                                            <input type="radio" id="elevated-platform-opt" value="3" class="accordion-toggle" name="access-location" data-parent="#access-location" data-toggle="collapse" data-target="#elevated-platform" @(Model.access == 3 ? "checked" : "") @(isCanEdit[0] ? "" : "disabled")> ELEVATED WORK PLATFORM <small>(movable work platform equipped by mechanical adjustment for operation)</small>
+                                            <input type="checkbox" id="elevated-platform-opt" value="3" class="accordion-toggle" name="access-location" data-toggle="collapse" data-target="#elevated-platform" @(Model.access.Contains('3') ? "checked" : "") @(isCanEdit[0] ? "" : "disabled")> ELEVATED WORK PLATFORM <small>(movable work platform equipped by mechanical adjustment for operation)</small>
                                         </label>
                                     </div>
                                 </div>
-                                <div id="elevated-platform" class="accordion-body collapse @(Model.access == 3 ? "in" : "")">
+                                <div id="elevated-platform" class="accordion-body collapse @(Model.access.Contains('3') ? "in" : "")">
                                     <div class="accordion-inner">
                                         <table class="table table-bordered">
                                             <tbody>
@@ -795,13 +883,13 @@
                             </div>
                             <div class="accordion-group">
                                 <div class="accordion-heading">
-                                    <div class="radio">
+                                    <div class="checkbox">
                                         <label>
-                                            <input type="radio" id="scaffolding-opt" value="4" class="accordion-toggle" name="access-location" data-parent="#access-location" data-toggle="collapse" data-target="#scaffolding" @(Model.access == 4 ? "checked" : "") @(isCanEdit[0] ? "" : "disabled")> SCAFFOLDING <small>(for install and dismantle erector must be as permit holder)</small>
+                                            <input type="checkbox" id="scaffolding-opt" value="4" class="accordion-toggle" name="access-location" data-toggle="collapse" data-target="#scaffolding" @(Model.access.Contains('4') ? "checked" : "") @(isCanEdit[0] ? "" : "disabled")> SCAFFOLDING <small>(for install and dismantle erector must be as permit holder)</small>
                                         </label>
                                     </div>
                                 </div>
-                                <div id="scaffolding" class="accordion-body collapse @(Model.access == 4 ? "in" : "")">
+                                <div id="scaffolding" class="accordion-body collapse @(Model.access.Contains('4') ? "in" : "")">
                                     <div class="row-fluid">
                                         <form class="form-horizontal">
                                             <div class="span6">
@@ -1231,7 +1319,8 @@
                         <i><u>Requestor / Erector</u></i><br />
                         @if ((Model.requestor_signature == null && isCanEdit[2]))
                         {
-                            if (Model.access == 4 && (Model.scaffolding == 1 || Model.scaffolding == 3)) {
+                            if (Model.access.Contains('4') && (Model.scaffolding == 1 || Model.scaffolding == 3))
+                            {
                                 if (requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.ERECTOR.ToString()].id) {
                             <text>@requestor.alpha_name<br />a/n </text>
                                 }
@@ -1246,7 +1335,7 @@
                             
                             <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.REQUESTORDELEGATE.ToString()].alpha_name<br />a/n </text>
                         }
-                        @if (Model.access == 4 && (Model.scaffolding == 1 || Model.scaffolding == 3))
+                        @if (Model.access.Contains('4') && (Model.scaffolding == 1 || Model.scaffolding == 3))
                         {
                             <text>@(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.ERECTOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.ERECTOR.ToString()].alpha_name : "")</text>
                         }
@@ -1389,7 +1478,8 @@
                         <i><u>Requestor / Erector</u></i><br />
                         @if ((Model.can_requestor_signature == null && isCanEdit[10]))
                         {
-                            if (Model.access == 4 && (Model.scaffolding == 1 || Model.scaffolding == 3)) {
+                            if (Model.access.Contains('4') && (Model.scaffolding == 1 || Model.scaffolding == 3))
+                            {
                                 if(requestor.id != Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.ERECTOR.ToString()].id) {
                             <text>@requestor.alpha_name<br />a/n </text>
                                 }
@@ -1404,7 +1494,7 @@
                             
                             <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.CANREQUESTORDELEGATE.ToString()].alpha_name<br />a/n </text>
                         }
-                        @if (Model.access == 4 && (Model.scaffolding == 1 || Model.scaffolding == 3))
+                        @if (Model.access.Contains('4') && (Model.scaffolding == 1 || Model.scaffolding == 3))
                         {
                             <text>@(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.ERECTOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.ERECTOR.ToString()].alpha_name : "")</text>
                         }

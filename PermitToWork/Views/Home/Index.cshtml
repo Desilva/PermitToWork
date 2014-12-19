@@ -1,6 +1,7 @@
 ﻿@{
     string p = ViewBag.p as string;
     bool isRedirect = p != null;
+    PermitToWork.Models.User.UserEntity user = Session["user"] as PermitToWork.Models.User.UserEntity;
 }
 <script>
     $(document).ready(function () {
@@ -21,8 +22,24 @@
 <div id="content-hazard">
     <div class="container-fluid">
         <div class="row-fluid">
-            <div class="span12">
-                <input class="btn" type="button" value="Add New Permit To Work" onclick="createPtw();" /><br />
+            <div class="span9">
+                <input class="btn" type="button" value="Add New Permit To Work" onclick="createPtw();" />
+                @if (user.roles.Exists(x => x == (int)PermitToWork.Models.User.UserEntity.role.ADMINMASTERSHE)) {
+                <a href="@Url.Action("ExportExcel","Home", new { area = "" })" class="btn btn-info">Export Excel</a>
+                }
+                <span id="loading" style="display:none"><img src="@Url.Content("~/Content/Images/loading.gif")" alt="loading" width="24" height="24" /> Loading..</span><br />
+                <br />
+            </div>
+            <div class="span3 text-right">
+                <div class="btn-group">
+                    @if (user.roles.Exists(x => x == (int)PermitToWork.Models.User.UserEntity.role.ADMINMASTERSHE))
+                    {
+                    <input class="btn permit-filter" id="see-my-permit" type="button" value="Mine" onclick="seeMyPermit();" />
+                    }
+                    <input class="btn permit-filter active" id="see-active-permit" type="button" value="Active" onclick="seeActivePermit();" />
+                    <input class="btn permit-filter" id="see-overdue-permit" type="button" value="Overdue" onclick="seeOverduePermit();" />
+                    <input class="btn permit-filter" id="see-all-permit" type="button" value="All" onclick="seeAllPermit();" />
+                </div>
             </div>
         </div>
         <div class="row-fluid">
@@ -42,17 +59,39 @@
         </div>
     </div>
 </div>
+
+<!-- Modal -->
+<div id="warning-popup" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="Reject" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="comment_assessorLabel">Warning</h3>
+  </div>
+  <div class="modal-body">
+      <input type="hidden" id="extend-ptw-id" value="0" />
+    <p>If extension need new clearance permit or same as before? If need new clearance permit, then this permit must be cancelled first, and open a new one.</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-warning" data-dismiss="modal" aria-hidden="true">Yes, I need</button>
+    <button class="btn btn-primary" id="extend-ptw" onclick="extendPtw()">No, I don't</button>
+  </div>
+</div>
+
 <script type="text/x-kendo-template" id="extend-template">
     <input type="button" class="btn btn-primary" value="Edit" onclick="editPtw(#= id #)"/>
-    #if (status == 6 && new Date() <= validity_period_end && !has_extend) {#
-    <input type="button" class="btn btn-warning" value="Extend" onclick="extendPtw(#= id #)"/>
+    #if (status == 6 && new Date() <= validity_period_end.setDate(validity_period_end.getDate() + 1) && !has_extend && ('@user.id' == acc_ptw_requestor || '@user.id' == acc_supervisor)) {#
+    <input type="button" class="btn btn-warning" value="Extend" onclick="extend(#= id #)"/>
 
     #}#
     #if (status >= 6) {#
-    <a class="btn btn-success" href="@Url.Action("Index","Print")?id=#= id #&type=0&no=#= ptw_no #">Print</a>
+    <a class="btn btn-success" href="@Url.Action("Index", "Print")?id=#= id #&type=0&no=#= ptw_no #">Print</a>
     #}#
     <input type="button" class="btn btn-success" value="Log" onclick="logPtw(#= id #)"/>
     
+</script>
+<script type="text/x-kendo-template" id="warning-template">
+    # if (will_overdue) { #
+        <img width="20" height="20" src="@Url.Content("~/Img/warning.gif")" />
+    # } #
 </script>
 <script type="text/x-kendo-template" id="template">
     <div class='employee-details'>
@@ -73,6 +112,8 @@
 </script>
 <script>
     var isNeedClose = "";
+    var day = new Date();
+    day.setDate(day.getDate() + 1);
     $(document).ready(function () {
         var crudServiceBaseUrl = "Home",
             dataSourceIn = new kendo.data.DataSource({
@@ -80,6 +121,8 @@
                     read: {
                         url: crudServiceBaseUrl + "/Binding",
                         type: "POST",
+                        data: { type: "1" },
+                        dataType: "json",
                         complete: function (e) {
                             var resp = JSON.parse(e.responseText);
                             console.log(resp);
@@ -90,11 +133,11 @@
                             }
                         }
                     },
-                    parameterMap: function (options, operation) {
-                        if (operation !== "read" && options.models) {
-                            return { models: kendo.stringify(options.models) };
-                        }
-                    }
+                    //parameterMap: function (options, operation) {
+                    //    if (operation !== "read" && options.models) {
+                    //        return { models: kendo.stringify(options.models) };
+                    //    }
+                    //}
                 },
                 batch: true,
                 pageSize: 30,
@@ -122,7 +165,9 @@
 
         $("#grid-ptw").kendoGrid({
             dataSource: dataSourceIn,
-            pageable: true,
+            pageable: {
+                refresh: true,
+            },
             sortable: true,
             filterable: true,
             detailTemplate: kendo.template($("#template").html()),
@@ -130,6 +175,7 @@
             dataBound: onDataBound,
             columns: [
                 { field: "ptw_no", title: "PTW Number", type: "string", width: 250 },
+                { field: "will_overdue", title: "Stat", template: kendo.template($("#warning-template").html()), filterable : false, width: 45 },
                 { field: "work_description", title: "Description", type: "string" },
                 { field: "ptw_status", title: "PTW Status", type: "string" },
                 { title: "Command", template: kendo.template($("#extend-template").html()), width: 180 },
@@ -143,7 +189,7 @@
                 //            template: kendo.template($("#extend-template").html()),
                 //            name: "Extend",
                 //            click: extendPtw
-                //        },
+                //        },s
                 //    ],
                 //    editable: {
                 //        destroy: false
@@ -167,7 +213,7 @@
                     $("#grid-ptw tbody").find("tr[data-uid=" + uid + "]").css("background-color", "lightblue");
                 }
 
-                if (dataView[i].status == 10) {
+                if (dataView[i].status == 11) {
                     var uid = dataView[i].uid;
                     var uid1 = dataView[i].bomc;
                     $("#grid-ptw tbody").find("tr[data-uid=" + uid + "]").css("background-color", "pink");
@@ -185,78 +231,129 @@
     function editPtw(e) {
         //var data = this.dataItem(getDataRowGrid(e));
         var data = e;
-        $('#content').load('Ptw/Edit/', { id: e });
+        window.open('@Url.Action("Page","Home")?p=' + '@Url.Action("Edit","Ptw")/' + e, '_blank');
+        // $('#content').load('Ptw/Edit/', { id: e });
     }
 
-    function extendPtw(e) {
-        var r = confirm('Are you sure want to extend this Permit To Work?');
-        if (r == true) {
+    function extend(e) {
+        $('#extend-ptw-id').val(e);
+        $('#warning-popup').modal('show');
+    }
+
+    function extendPtw() {
+        //var r = confirm('Are you sure want to extend this Permit To Work?');
             //var data = this.dataItem(getDataRowGrid(e));
-            var data = e;
-            $.post('Ptw/Extends', { id: data }, function (resp) {
-                if (resp.status == "401" || resp.status == "402" || resp.status == "403") {
+        var data = $('#extend-ptw-id').val();
 
-                } else {
-                    $('#content').load('Ptw/Extend/' + data);
-                }
-            });
-        } else {
+        $.post('Ptw/Extends', { id: data }, function (resp) {
+            if (resp.status == "401" || resp.status == "402" || resp.status == "403") {
 
-        }
+            } else {
+                $('#warning-popup').modal('hide');
+                // window.open('@Url.Action("Page","Home")?p=' + '@Url.Action("Extend","Ptw")/' + data, '_blank');
+                $('#content').load('@Url.Action("Extend","Ptw")/' + data);
+            }
+        });
     }
 
     function logPtw(id) {
-        $('#history').val('@Url.Action("Index","Home")');
-        $('#content').load('@Url.Action("Log","Log")?id=' + id + '&permitType=' + 0 + '&backPath=' + '@Url.Action("Index","Home")');
+        $('#history').val('@Url.Action("Index", "Home")');
+        window.open('@Url.Action("Page","Home")?p=' + '@Url.Action("Log","Log")?id=' + id + '&permitType=' + 0 + '&backPath=' + '@Url.Action("Index", "Home")', '_blank');
+        // $('#content').load('@Url.Action("Log", "Log")?id=' + id + '&permitType=' + 0 + '&backPath=' + '@Url.Action("Index", "Home")');
     }
 
     function createPtw() {
-        if (isNeedClose == "") {
-            $('#content').load('@Url.Action("Create","Ptw")');
-        } else {
-            isNeedClose = isNeedClose.substr(0, isNeedClose.length - 2);
-            alert("You must close existing Permit. Existing Overdue Permit: " + isNeedClose);
-        }
+        $('#loading').show();
+        $.post('@Url.Action("BindingOwnRequest","Home")', { type: '2' }, function (resp) {
+            var resp = resp;
+            console.log(resp);
+            isNeedClose = "";
+            for (var i in resp) {
+                if (resp[i].isNeedClose) {
+                    isNeedClose += resp[i].ptw_no + ", ";
+                }
+            }
+
+            $('#loading').hide();
+            if (isNeedClose == "") {
+                $('#history').val('@Url.Action("Index", "Home")');
+                $('#content').load('@Url.Action("Create", "Ptw")');
+            } else {
+                isNeedClose = isNeedClose.substr(0, isNeedClose.length - 2);
+                alert("You must close existing Permit. Existing Overdue Permit: " + isNeedClose);
+            }
+        });
     }
 
     function goToHotWork(id) {
-        $('#history').val('@Url.Action("Index","Home")');
-        $('#content').load('@Url.Action("Edit","Hw")/' + id);
+        $('#history').val('@Url.Action("Index", "Home")');
+        // $('#content').load('@Url.Action("Edit", "Hw")/' + id);
+        window.open('@Url.Action("Page","Home")?p=' + '@Url.Action("Edit", "Hw")/' + id, '_blank');
     }
 
     function goToFireImpairment(id) {
-        $('#history').val('@Url.Action("Index","Home")');
-        $('#content').load('@Url.Action("Edit","Fi")/' + id);
+        $('#history').val('@Url.Action("Index", "Home")');
+        // $('#content').load('@Url.Action("Edit", "Fi")/' + id);
+        window.open('@Url.Action("Page","Home")?p=' + '@Url.Action("Edit", "Fi")/' + id, '_blank');
     }
 
     function goToRadiography(id) {
-        $('#history').val('@Url.Action("Index","Home")');
-        $('#content').load('@Url.Action("Edit","Radiography")/' + id);
+        $('#history').val('@Url.Action("Index", "Home")');
+        // $('#content').load('@Url.Action("Edit", "Radiography")/' + id);
+        window.open('@Url.Action("Page","Home")?p=' + '@Url.Action("Edit", "Radiography")/' + id, '_blank');
     }
 
     function goToCsep(id) {
-        $('#history').val('@Url.Action("Index","Home")');
-        $('#content').load('@Url.Action("Edit","Csep")/' + id);
+        $('#history').val('@Url.Action("Index", "Home")');
+        // $('#content').load('@Url.Action("Edit", "Csep")/' + id);
+        window.open('@Url.Action("Page","Home")?p=' + '@Url.Action("Edit", "Csep")/' + id, '_blank');
     }
 
     function goToExcavation(id) {
-        $('#history').val('@Url.Action("Index","Home")');
-        $('#content').load('@Url.Action("Edit","Excavation")/' + id);
+        $('#history').val('@Url.Action("Index", "Home")');
+        // $('#content').load('@Url.Action("Edit", "Excavation")/' + id);
+        window.open('@Url.Action("Page","Home")?p=' + '@Url.Action("Edit", "Excavation")/' + id, '_blank');
     }
 
     function goToWorkingHeight(id) {
-        $('#history').val('@Url.Action("Index","Home")');
-        $('#content').load('@Url.Action("Edit","WorkingHeight")/' + id);
+        $('#history').val('@Url.Action("Index", "Home")');
+        // $('#content').load('@Url.Action("Edit", "WorkingHeight")/' + id);
+        window.open('@Url.Action("Page","Home")?p=' + '@Url.Action("Edit", "WorkingHeight")/' + id, '_blank');
     }
 
     function goToLoto(id) {
-        $('#history').val('@Url.Action("Index","Home")');
-        $('#content').load('@Url.Action("Index","Loto")/' + id);
+        $('#history').val('@Url.Action("Index", "Home")');
+        $('#content').load('@Url.Action("Index", "Loto")/' + id);
     }
 
     function goToLog(id, permitType) {
-        $('#history').val('@Url.Action("Index","Home")');
-        $('#content').load('@Url.Action("Log","Log")?id=' + id + '&permitType=' + permitType + '&backPath=' + '@Url.Action("Index","Home")');
+        $('#history').val('@Url.Action("Index", "Home")');
+        // $('#content').load('@Url.Action("Log", "Log")?id=' + id + '&permitType=' + permitType + '&backPath=' + '@Url.Action("Index","Home")');
+        window.open('@Url.Action("Page","Home")?p=' + '@Url.Action("Log", "Log")?id=' + id + '&permitType=' + permitType + '&backPath=' + '@Url.Action("Index","Home")', '_blank');
+    }
+
+    function seeMyPermit() {
+        $('.permit-filter').removeClass('active');
+        $('#see-my-permit').addClass('active');
+        $("#grid-ptw").data('kendoGrid').dataSource.read({ type: "3" });
+    }
+
+    function seeActivePermit() {
+        $('.permit-filter').removeClass('active');
+        $('#see-active-permit').addClass('active');
+        $("#grid-ptw").data('kendoGrid').dataSource.read({ type : "1" });
+    }
+
+    function seeOverduePermit() {
+        $('.permit-filter').removeClass('active');
+        $('#see-overdue-permit').addClass('active');
+        $("#grid-ptw").data("kendoGrid").dataSource.read({ type: "2" });
+    }
+
+    function seeAllPermit() {
+        $('.permit-filter').removeClass('active');
+        $('#see-all-permit').addClass('active');
+        $("#grid-ptw").data("kendoGrid").dataSource.read({ type: "0" });
     }
 </script>
 

@@ -60,7 +60,10 @@ namespace PermitToWork.Models.SafetyBriefing
             }
 
             string path = HttpContext.Current.Server.MapPath("~/Upload/SafetyBriefing/" + this.id);
-
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
             DirectoryInfo d = new DirectoryInfo(path);//Assuming Test is your Folder
             FileInfo[] Files = d.GetFiles(); //Getting Text files
 
@@ -80,7 +83,7 @@ namespace PermitToWork.Models.SafetyBriefing
             this.status = (int)SafetyBriefingStatus.CREATE;
         }
 
-        public int create()
+        public int create(UserEntity user)
         {
             int retVal = 0;
 
@@ -91,10 +94,23 @@ namespace PermitToWork.Models.SafetyBriefing
 
             this.id = safetyBriefing.id;
             retVal = this.id;
+            int spvId = 0;
+            UserEntity spv = new UserEntity{ employee_no = "" };
+            if (Int32.TryParse(this.supervisor, out spvId))
+            {
+                spv = new UserEntity(spvId, user.token, user);
+            }
 
-            SafetyBriefingUserEntity glarfSpv = new SafetyBriefingUserEntity(this.id, this.supervisor, "");
+            SafetyBriefingUserEntity glarfSpv = new SafetyBriefingUserEntity(this.id, this.supervisor, spv.employee_no);
             glarfSpv.create();
-            glarfSpv = new SafetyBriefingUserEntity(this.id, this.requestor, "");
+
+            spvId = 0;
+            spv = new UserEntity { employee_no = "" };
+            if (Int32.TryParse(this.requestor, out spvId))
+            {
+                spv = new UserEntity(spvId, user.token, user);
+            }
+            glarfSpv = new SafetyBriefingUserEntity(this.id, this.requestor, spv.employee_no);
             glarfSpv.create();
 
             string path = HttpContext.Current.Server.MapPath("~/Upload/SafetyBriefing/" + this.id);

@@ -33,7 +33,8 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             PtwEntity entity = new PtwEntity();
             ViewBag.position = "Create";
-            ViewBag.listUser = new ListUser(userLogin.token, userLogin.id);
+            ListUser listUser = new ListUser(userLogin.token, userLogin.id);
+            ViewBag.listUser = listUser;
             ListPtw listPtw = new ListPtw();
             ViewBag.listFO = new MstFOEntity().getListMstFO();
             ViewBag.listAssessor = new MstAssessorEntity().getListAssessor();
@@ -45,11 +46,16 @@ namespace PermitToWork.Controllers
                 {
                     Text = dept.department,
                     Value = dept.id.ToString(),
+                    Selected = userLogin.department == dept.department
                 });
             }
             ViewBag.listDepartment = listDepartment;
 
-            ViewBag.listSpv = GetSpvLists(listDept.FirstOrDefault().id, null);
+            SelectListItem spvSelectItem = listDepartment.Where(p => p.Selected == true).FirstOrDefault();
+
+            ViewBag.supervisor = listUser.GetSupervisor(userLogin);
+
+            ViewBag.listSpv = GetSpvLists(spvSelectItem != null ? Int32.Parse(spvSelectItem.Value) : listDept.FirstOrDefault().id, null);
 
             var listSection = new List<SelectListItem>();
             var listSect = new MstSectionEntity().getListMstSection();
@@ -122,7 +128,7 @@ namespace PermitToWork.Controllers
             ViewBag.position = "Edit";
             ViewBag.listUser = new ListUser(user.token, user.id);
             ViewBag.listFO = new MstFOEntity().getListMstFO();
-            ViewBag.listAssessor = new MstAssessorEntity().getListAssessor();
+            ViewBag.listAssessor = new MstAssessorEntity().getListAssessor(user.id);
 
             ViewBag.listSpv = GetSpvLists(entity.dept_requestor.Value, entity.is_guest != 1 ? Int32.Parse(entity.acc_ptw_requestor) : 0);
 
@@ -245,7 +251,7 @@ namespace PermitToWork.Controllers
             MstSectionEntity sec = new MstSectionEntity(ptw.section.Value);
 
             SafetyBriefingEntity sb = new SafetyBriefingEntity(ptw.acc_ptw_requestor, sec.section, ptw.area, ptw.proposed_period_start.Value, ptw.work_description, ptw.id, ptw.acc_supervisor);
-            int idSafetyBriefing = sb.create();
+            int idSafetyBriefing = sb.create(user);
 
             ListHira listHira = new ListHira();
             //if (hiras != null)
@@ -335,15 +341,6 @@ namespace PermitToWork.Controllers
             //    fo = listFo.Find(p => p.id_employee == fo_id);
             //}
 
-            if (fo_code != null && fo_code != "PROD")
-            {
-                MstFOEntity foEntity = new MstFOEntity(fo_code, user);
-                if (foEntity.user != null)
-                {
-                    ptw.assignFO(foEntity.user);
-                }
-            }
-
             // set Supervisor
             if (ptw.acc_supervisor != null)
             {
@@ -352,6 +349,16 @@ namespace PermitToWork.Controllers
             }
 
             PtwEntity ptw_new = new PtwEntity(ptw.id, user);
+
+            if (fo_code != null && ptw_new.acc_fo == null)
+            {
+                MstFOEntity foEntity = new MstFOEntity(fo_code, user);
+                if (foEntity.user != null)
+                {
+                    ptw.assignFO(foEntity.user);
+                }
+            }
+
             if (ptw_new.status == (int)PtwEntity.statusPtw.ACCSPV)
             {
                 //if (fo_code != null && fo_code == "PROD" && ptw_new.acc_fo == null)
@@ -434,9 +441,14 @@ namespace PermitToWork.Controllers
             //    ptw.setClearancePermit(null, null, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
             //}
 
-            if (ptw.loto_need == 1)
+            if (ptw.loto_need == 1 && (ptw_new.loto_status == null || ptw_new.loto_status == (int)PtwEntity.statusClearance.NOTCOMPLETE))
             {
                 ptw.setClearancePermit(null, (int)PtwEntity.statusClearance.NOTCOMPLETE, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
+            }
+            else if (ptw.loto_need == 0)
+            {
+
+                ptw.setClearancePermit(null, null, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
             }
 
             if (ret == 1)
@@ -516,6 +528,15 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             PtwEntity ptw = new PtwEntity(id, userLogin);
             ptw.sendEmailRequestNo(userLogin);
+            return Json(true);
+        }
+
+        [HttpPost]
+        public JsonResult ChangeCanAssessor(int id, int assessorId)
+        {
+            UserEntity userLogin = Session["user"] as UserEntity;
+            PtwEntity ptw = new PtwEntity(id, userLogin);
+            ptw.changeCanAssessor(assessorId, userLogin);
             return Json(true);
         }
 
@@ -604,8 +625,8 @@ namespace PermitToWork.Controllers
         {
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
-            PtwEntity ptw = new PtwEntity(id, user);
-            string retVal = ptw.fOAccApproval(user);
+            PtwEntity ptw = new PtwEntity(id, userLogin);
+            string retVal = ptw.fOAccApproval(userLogin);
             ptw.sendEmailRequestorPermitCompleted(fullUrl(), userLogin.token, userLogin, 1);
             return Json(new { status = retVal });
         }
@@ -615,8 +636,8 @@ namespace PermitToWork.Controllers
         {
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
-            PtwEntity ptw = new PtwEntity(id, user);
-            string retVal = ptw.fOAccReject(user, comment);
+            PtwEntity ptw = new PtwEntity(id, userLogin);
+            string retVal = ptw.fOAccReject(userLogin, comment);
             ptw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 0, 1, comment);
             return Json(new { status = retVal });
         }
@@ -700,13 +721,13 @@ namespace PermitToWork.Controllers
         {
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
-            PtwEntity ptw = new PtwEntity(id, user);
+            PtwEntity ptw = new PtwEntity(id, userLogin);
             //ptw.acc_assessor = fo_id.ToString();
             //ptw.can_assessor = fo_id.ToString();
             //ptw.acc_assessor_delegate = fo.employee_delegate.ToString();
             //ptw.can_assessor_delegate = fo.employee_delegate.ToString();
-            
-            string retVal = ptw.fOCanApproval(user);
+
+            string retVal = ptw.fOCanApproval(userLogin);
             ptw.sendEmailRequestorPermitCompleted(fullUrl(), userLogin.token, userLogin, 2);
             return Json(new { status = retVal });
         }
@@ -716,12 +737,22 @@ namespace PermitToWork.Controllers
         {
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
-            PtwEntity ptw = new PtwEntity(id, user);
-            string retVal = ptw.fOCanReject(user, comment);
+            PtwEntity ptw = new PtwEntity(id, userLogin);
+            string retVal = ptw.fOCanReject(userLogin, comment);
             ptw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, 1, comment);
             return Json(new { status = retVal });
         }
 
+        [HttpPost]
+        public JsonResult PtwCancelled(int id)
+        {
+            UserEntity userLogin = Session["user"] as UserEntity;
+            PtwEntity ptw = new PtwEntity(id, userLogin);
+
+            string retVal = ptw.CancelPTWRequest(userLogin);
+            ptw.sendEmailRequestorPermitCompleted(fullUrl(), userLogin.token, userLogin, 2);
+            return Json(new { status = retVal });
+        }
         #endregion
 
 
@@ -761,6 +792,59 @@ namespace PermitToWork.Controllers
             PtwEntity ptw = new PtwEntity();
             ViewBag.listUser = new ListUser(user.token, user.id);
             ptw.extendPtw(entity);
+            MstSectionEntity sec = new MstSectionEntity(ptw.section.Value);
+            SafetyBriefingEntity sb = new SafetyBriefingEntity(ptw.acc_ptw_requestor, sec.section, ptw.area, ptw.proposed_period_start.Value, ptw.work_description, ptw.id, ptw.acc_supervisor);
+            int idSafetyBriefing = sb.create(user);
+
+            ListHira listHira = new ListHira();
+            //if (hiras != null)
+            //{
+            //    listHira.changeIdPtw(hiras.ToList(), ptw.id);
+            //}
+
+            if (entity.hw_id != null)
+            {
+                HwEntity hw = (HwEntity)addClearancePermit(ptw.id, PtwEntity.clearancePermit.HOTWORK.ToString(), user);
+                ptw.setClearancePermit(hw.id, (int)PtwEntity.statusClearance.NOTCOMPLETE, PtwEntity.clearancePermit.HOTWORK.ToString());
+            }
+
+            if (entity.fi_id != null)
+            {
+                FIEntity fi = (FIEntity)addClearancePermit(ptw.id, PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString(), user);
+                //fi.sendEmailAssign(fullUrl(), user);
+                ptw.setClearancePermit(fi.id, (int)PtwEntity.statusClearance.NOTCOMPLETE, PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString());
+            }
+
+            if (entity.rad_id != null)
+            {
+                RadEntity radiography = (RadEntity)addClearancePermit(ptw.id, PtwEntity.clearancePermit.RADIOGRAPHY.ToString(), user);
+                //radiography.sendEmailAssign(fullUrl(), user);
+                ptw.setClearancePermit(radiography.id, (int)PtwEntity.statusClearance.NOTCOMPLETE, PtwEntity.clearancePermit.RADIOGRAPHY.ToString());
+            }
+
+            if (entity.wh_id != null)
+            {
+                WorkingHeightEntity wh = (WorkingHeightEntity)addClearancePermit(ptw.id, PtwEntity.clearancePermit.WORKINGHEIGHT.ToString(), user);
+                //radiography.sendEmailAssign(fullUrl(), user);
+                ptw.setClearancePermit(wh.id, (int)PtwEntity.statusClearance.NOTCOMPLETE, PtwEntity.clearancePermit.WORKINGHEIGHT.ToString());
+            }
+
+            if (entity.ex_id != null)
+            {
+                ExcavationEntity ex = (ExcavationEntity)addClearancePermit(ptw.id, PtwEntity.clearancePermit.EXCAVATION.ToString(), user);
+                ptw.setClearancePermit(ex.id, (int)PtwEntity.statusClearance.NOTCOMPLETE, PtwEntity.clearancePermit.EXCAVATION.ToString());
+            }
+
+            if (entity.csep_id != null)
+            {
+                CsepEntity csep = (CsepEntity)addClearancePermit(ptw.id, PtwEntity.clearancePermit.CONFINEDSPACE.ToString(), user);
+                ptw.setClearancePermit(csep.id, (int)PtwEntity.statusClearance.NOTCOMPLETE, PtwEntity.clearancePermit.CONFINEDSPACE.ToString());
+            }
+
+            if (ptw.loto_need == 1)
+            {
+                ptw.setClearancePermit(null, (int)PtwEntity.statusClearance.NOTCOMPLETE, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
+            }
 
             //UserEntity user = Session["user"] as UserEntity;
             //ViewBag.isRequestor = ptw.isRequestor(user);
@@ -997,7 +1081,7 @@ namespace PermitToWork.Controllers
             }
             else if (typePermit == PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString())
             {
-                permit = new FIEntity(ptw.id, ptw.acc_ptw_requestor, ptw.work_description, foProd.user.id.ToString(), ptw.acc_supervisor);
+                permit = new FIEntity(ptw.id, ptw.acc_ptw_requestor, ptw.work_description, ptw.acc_fo, ptw.acc_supervisor);
             }
             else if (typePermit == PtwEntity.clearancePermit.RADIOGRAPHY.ToString())
             {
@@ -1064,7 +1148,7 @@ namespace PermitToWork.Controllers
             LotoGlarfEntity glarf = new LotoGlarfEntity(ptw.acc_ptw_requestor, ptw.acc_supervisor);
             glarf.create();
             glarf.assignLotoForm(loto.id, loto.loto_no);
-            loto.addNewHolder(userLogin.id.ToString(), ptw.acc_supervisor);
+            loto.addNewHolder(userLogin.id.ToString(), ptw.acc_supervisor, 0);
 
             List<LotoGlarfEntity> listGlarf = new LotoGlarfEntity().listLotoGlarfWithSameLotoPermit(prevLoto.id, userLogin);
             foreach (LotoGlarfEntity gl in listGlarf)

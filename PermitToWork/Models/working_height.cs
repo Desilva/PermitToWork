@@ -23,7 +23,7 @@ namespace PermitToWork.Models
         public Nullable<System.DateTime> from { get; set; }
         public Nullable<System.DateTime> until { get; set; }
         public Nullable<int> total_crew { get; set; }
-        public Nullable<int> access { get; set; }
+        public string access { get; set; }
         public string workbox_access { get; set; }
         public string ladder_access { get; set; }
         public string elevated_access { get; set; }

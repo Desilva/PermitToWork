@@ -1,0 +1,11 @@
+﻿@{
+    ViewBag.Title = "Page";
+}
+<div class="loading" style="width:100%;">
+    <span style="width:100%;margin: 0 auto;text-align:center;display:inline-block"><img src="/Content/Images/loading.gif" alt="loading" width="50" height="50"/><br />Loading...</span>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#content').load('@ViewBag.p');
+    });
+</script>

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.IO;
 
 namespace PermitToWork.Controllers
 {
@@ -159,7 +160,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             CsepEntity csep = new CsepEntity(id, user);
             string retVal = csep.closeCsep(user);
-            sendEmailFO(csep);
+            // sendEmailFO(csep);
             return Json(new { status = retVal, message = "There is error when saving data to database. Please check again your data." });
         }
 
@@ -370,6 +371,13 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             CsepEntity csep = new CsepEntity(id, userLogin);
             string retVal = csep.supervisorCan(user);
+            PtwEntity ptw = new PtwEntity(csep.id_ptw.Value, user);
+            ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.REQUESTORCANCELLED, PtwEntity.clearancePermit.CONFINEDSPACE.ToString());
+            ptw.sendEmailRequestorClearance(fullUrl(), userLogin.token, userLogin, (int)PtwEntity.clearancePermit.CONFINEDSPACE, (int)PtwEntity.statusClearance.REQUESTORCANCELLED);
+            if (ptw.isAllClearanceClose())
+            {
+                ptw.sendEmailRequestorClearanceCompleted(fullUrl(), userLogin.token, userLogin, (int)PtwEntity.statusClearance.REQUESTORCANCELLED);
+            }
             csep.sendEmailFOCan(fullUrl(), userLogin.token, userLogin);
             return Json(new { status = retVal });
         }
@@ -418,8 +426,8 @@ namespace PermitToWork.Controllers
             CsepEntity csep = new CsepEntity(id, userLogin);
             string retVal = csep.fOCanApproval(user);
             PtwEntity ptw = new PtwEntity(csep.id_ptw.Value, user);
-            ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.CLOSE, PtwEntity.clearancePermit.HOTWORK.ToString());
-            ptw.sendEmailRequestorClearance(fullUrl(), userLogin.token, userLogin, (int)PtwEntity.clearancePermit.HOTWORK, (int)PtwEntity.statusClearance.CLOSE);
+            ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.CLOSE, PtwEntity.clearancePermit.CONFINEDSPACE.ToString());
+            ptw.sendEmailRequestorClearance(fullUrl(), userLogin.token, userLogin, (int)PtwEntity.clearancePermit.CONFINEDSPACE, (int)PtwEntity.statusClearance.CLOSE);
             if (ptw.isAllClearanceClose())
             {
                 ptw.sendEmailRequestorClearanceCompleted(fullUrl(), userLogin.token, userLogin, (int)PtwEntity.statusClearance.CLOSE);
@@ -676,6 +684,52 @@ namespace PermitToWork.Controllers
             {
                 return Json(new { status = "400", message = "There is error when saving data to database. Please check again your data." });
             }
+        }
+
+        #endregion
+
+        #region document attachment
+
+        public ActionResult saveAttachment(IEnumerable<HttpPostedFileBase> files, int? id)
+        {
+            var dPath = "\\Upload\\ConfinedSpace\\" + id + "";
+            var pPath = "~/Upload/ConfinedSpace/" + id + "";
+
+            foreach (var file in files)
+            {
+                // Some browsers send file names with full path. This needs to be stripped.
+                var fileName = Path.GetFileName(file.FileName);
+                var dummyPath = Path.Combine(dPath, fileName);
+                //var physicalPath = Path.Combine(Server.MapPath("~/App_Data"), fileName);
+                var physicalPath = Path.Combine(Server.MapPath(pPath), fileName);
+
+                // save file
+                file.SaveAs(physicalPath);
+            }
+
+            // Return an empty string to signify success
+            return Content("");
+        }
+
+        public ActionResult removeAttachment(string[] fileNames, int id)
+        {
+            var pPath = "~/Upload/ConfinedSpace/" + id + "";
+            // The Name of the Upload component is "attachments" 
+            // The parameter of the Remove action must be called "fileNames"
+            foreach (var fullName in fileNames)
+            {
+                var fileName = Path.GetFileName(fullName);
+                var physicalPath = Path.Combine(Server.MapPath(pPath), fileName);
+
+                // TODO: Verify user permissions
+                if (System.IO.File.Exists(physicalPath))
+                {
+                    //remove file
+                    System.IO.File.Delete(physicalPath);
+                }
+            }
+            // Return an empty string to signify success
+            return Content("");
         }
 
         #endregion

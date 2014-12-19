@@ -68,7 +68,8 @@
                     <table style="width:100%">
                         <tr>
                             <th style="width:10%">
-                                @if (Model.access == 1) {
+                                @if (Model.access.Contains("1"))
+                                {
                                     <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
                                 } else {
                                     <img src="@Url.Content("~/Img/box.png")" width="20" />
@@ -131,7 +132,8 @@
                     <table style="width:100%">
                         <tr>
                             <th style="width:10%">
-                                @if (Model.access == 2) {
+                                @if (Model.access.Contains("2"))
+                                {
                                     <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
                                 } else {
                                     <img src="@Url.Content("~/Img/box.png")" width="20" />
@@ -194,7 +196,8 @@
                     <table style="width:100%">
                         <tr>
                             <th style="width:10%">
-                                @if (Model.access == 3) {
+                                @if (Model.access.Contains("3"))
+                                {
                                     <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
                                 } else {
                                     <img src="@Url.Content("~/Img/box.png")" width="20" />
@@ -248,7 +251,7 @@
                     <table style="width:100%">
                         <tr>
                             <th style="width:10%">
-                                @if (Model.access == 4) {
+                                @if (Model.access.Contains("4")) {
                                     <img src="@Url.Content("~/Img/box-c.png")" width="20"/>
                                 } else {
                                     <img src="@Url.Content("~/Img/box.png")" width="20" />
@@ -593,7 +596,7 @@
                             
                                 <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.REQUESTORDELEGATE.ToString()].alpha_name<br />a/n </text>
                             }
-                            @if (Model.access == 4 && (Model.scaffolding == 1 || Model.scaffolding == 3))
+                            @if (Model.access.Contains("4") && (Model.scaffolding == 1 || Model.scaffolding == 3))
                             {
                                 <text>@(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.ERECTOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.ERECTOR.ToString()].alpha_name : "")</text>
                             }
@@ -706,7 +709,7 @@
                             
                                 <text>@Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.CANREQUESTORDELEGATE.ToString()].alpha_name<br />a/n </text>
                             }
-                            @if (Model.access == 4 && (Model.scaffolding == 1 || Model.scaffolding == 3))
+                            @if (Model.access.Contains("4") && (Model.scaffolding == 1 || Model.scaffolding == 3))
                             {
                                 <text>@(Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.ERECTOR.ToString()] != null ? Model.userInWorkingHeight[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.UserInWorkingHeight.ERECTOR.ToString()].alpha_name : "")</text>
                             }

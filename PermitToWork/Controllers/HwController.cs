@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.IO;
 
 namespace PermitToWork.Controllers
 {
@@ -44,9 +45,9 @@ namespace PermitToWork.Controllers
             else
             {
                 ViewBag.isCancel = true;
-                ViewBag.isCanSupervisor = entity.isCanSupervisor(user);
-                ViewBag.isCanFireWatch = entity.isCanFireWatch(user);
-                ViewBag.isCanFO = entity.isCanFO(user);
+                ViewBag.isCanSupervisor = entity.isAccSupervisor(user);
+                ViewBag.isCanFireWatch = entity.isAccFireWatch(user);
+                ViewBag.isCanFO = entity.isAccFO(user);
             }
 
             if (entity.status >= (int)HwEntity.statusHW.ACCFO && entity.status <= (int)HwEntity.statusHW.EXTACCFO7)
@@ -367,6 +368,13 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.supervisorCan(user);
+            PtwEntity ptw = new PtwEntity(hw.id_ptw.Value, user);
+            ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.REQUESTORCANCELLED, PtwEntity.clearancePermit.HOTWORK.ToString());
+            ptw.sendEmailRequestorClearance(fullUrl(), userLogin.token, userLogin, (int)PtwEntity.clearancePermit.HOTWORK, (int)PtwEntity.statusClearance.REQUESTORCANCELLED);
+            if (ptw.isAllClearanceClose())
+            {
+                ptw.sendEmailRequestorClearanceCompleted(fullUrl(), userLogin.token, userLogin, (int)PtwEntity.statusClearance.REQUESTORCANCELLED);
+            }
             hw.sendEmailFOCan(fullUrl(), userLogin.token, userLogin);
             return Json(new { status = retVal });
         }
@@ -680,11 +688,57 @@ namespace PermitToWork.Controllers
 
         #endregion
 
+        #region document attachment
+
+        public ActionResult saveAttachment(IEnumerable<HttpPostedFileBase> files, int? id)
+        {
+            var dPath = "\\Upload\\HotWork\\" + id + "";
+            var pPath = "~/Upload/HotWork/" + id + "";
+
+            foreach (var file in files)
+            {
+                // Some browsers send file names with full path. This needs to be stripped.
+                var fileName = Path.GetFileName(file.FileName);
+                var dummyPath = Path.Combine(dPath, fileName);
+                //var physicalPath = Path.Combine(Server.MapPath("~/App_Data"), fileName);
+                var physicalPath = Path.Combine(Server.MapPath(pPath), fileName);
+
+                // save file
+                file.SaveAs(physicalPath);
+            }
+
+            // Return an empty string to signify success
+            return Content("");
+        }
+
+        public ActionResult removeAttachment(string[] fileNames, int id)
+        {
+            var pPath = "~/Upload/HotWork/" + id + "";
+            // The Name of the Upload component is "attachments" 
+            // The parameter of the Remove action must be called "fileNames"
+            foreach (var fullName in fileNames)
+            {
+                var fileName = Path.GetFileName(fullName);
+                var physicalPath = Path.Combine(Server.MapPath(pPath), fileName);
+
+                // TODO: Verify user permissions
+                if (System.IO.File.Exists(physicalPath))
+                {
+                    //remove file
+                    System.IO.File.Delete(physicalPath);
+                }
+            }
+            // Return an empty string to signify success
+            return Content("");
+        }
+
+        #endregion
+
         public ActionResult Print(int id)
         {
             HwEntity hw = new HwEntity(id);
             UserEntity user = Session["user"] as UserEntity;
-            List<UserEntity> listUser = new ListUser(user.token, user.id).listUser;
+            List<UserEntity> listUser = new ListUser(user.token, user.id).listUser.ToList();
             ViewBag.listUser = listUser;
             int a = Int32.Parse(hw.fire_watch);
             hw.fire_watch = listUser.Find(p => p.id == a).alpha_name;

@@ -132,10 +132,49 @@ namespace PermitToWork.Models.ClearancePermit
             return retVal;
         }
 
-        public int sendToSign()
+        public int sendToSign(UserEntity user)
         {
             int retVal = 0;
             loto_glarf glarf = this.db.loto_glarf.Find(this.id);
+            loto_permit loto = this.db.loto_permit.Find(this.id_loto_permit.Value);
+            LotoEntity lotoPermit = new LotoEntity(this.id_loto_permit.Value, user);
+            bool isComplete = true;
+            if (lotoPermit.id_glarf == this.id)
+            {
+                foreach (permit_to_work ptw in loto.permit_to_work)
+                {
+                    if (ptw.acc_supervisor == lotoPermit.supervisor)
+                    {
+                        PtwEntity ptwE = new PtwEntity(ptw.id, user);
+                        isComplete = isComplete && lotoPermit.approval_fo_signature != null;
+
+                        if (isComplete)
+                        {
+                            ptwE.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
+                        }
+                    }
+                }
+            }
+            else
+            {
+                foreach (permit_to_work ptw in loto.permit_to_work)
+                {
+                    foreach (LotoComingHolderEntity comingHolder in lotoPermit.lotoComingHolder)
+                    {
+                        if (ptw.acc_supervisor == comingHolder.holder_spv)
+                        {
+                            PtwEntity ptwE = new PtwEntity(ptw.id, user);
+                            isComplete = isComplete && comingHolder.isApprove();
+
+                            if (isComplete)
+                            {
+                                ptwE.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
+                            }
+                        }
+                    }
+                }
+            }
+
             if (glarf != null)
             {
                 glarf.status = (int)GlarfStatus.SIGNING;
@@ -235,11 +274,41 @@ namespace PermitToWork.Models.ClearancePermit
         {
             int retVal = 0;
             loto_glarf glarf = this.db.loto_glarf.Find(this.id);
+            loto_permit loto = this.db.loto_permit.Find(this.id_loto_permit.Value);
+            LotoEntity lotoPermit = new LotoEntity(this.id_loto_permit.Value, user);
+            bool isComplete = true;
+            
             if (glarf != null)
             {
                 if (this.listDocumentUploaded.Count > 0)
                 {
                     glarf.status = (int)GlarfStatus.CANCELLATIONSIGNCOMPLETE;
+
+                    if (lotoPermit.id_glarf == this.id)
+                    {
+                        foreach (permit_to_work ptw in loto.permit_to_work)
+                        {
+                            if (ptw.acc_supervisor == lotoPermit.supervisor)
+                            {
+                                PtwEntity ptwE = new PtwEntity(ptw.id, user);
+                                ptwE.checkLotoCancellationComplete(user);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (permit_to_work ptw in loto.permit_to_work)
+                        {
+                            foreach (LotoComingHolderEntity comingHolder in lotoPermit.lotoComingHolder)
+                            {
+                                if (ptw.acc_supervisor == comingHolder.holder_spv)
+                                {
+                                    PtwEntity ptwE = new PtwEntity(ptw.id, user);
+                                    ptwE.checkLotoCancellationComplete(user);
+                                }
+                            }
+                        }
+                    }
 
                     this.db.Entry(glarf).State = EntityState.Modified;
                     retVal = this.db.SaveChanges();

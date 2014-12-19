@@ -451,7 +451,10 @@ namespace PermitToWork.Utilities
                 }
                 else
                 {
-                    db.mst_ptw_holder_no.Remove(ptwHolderNo);
+                    ptwHolderNo.ptw_holder_no = null;
+                    ptwHolderNo.activated_date_until = null;
+
+                    db.Entry(ptwHolderNo).State = EntityState.Modified;
                     db.SaveChanges();
                 }
             }

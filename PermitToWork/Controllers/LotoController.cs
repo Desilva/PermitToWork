@@ -23,9 +23,9 @@ namespace PermitToWork.Controllers
         {
             UserEntity user = Session["user"] as UserEntity;
             PtwEntity entity = new PtwEntity(id, user);
-            ViewBag.isCanAddLoto = entity.isAccSupervisor(user) && entity.loto_status < 1;
+            ViewBag.isCanAddLoto = entity.isAccSupervisor(user) && (entity.loto_status == null || entity.loto_status < 1);
             ViewBag.isAddNewLoto = entity.lotoPermit.Where(p => p.requestor == entity.acc_ptw_requestor).Count() == 0;
-            ViewBag.isCanCancel = entity.status == (int)PtwEntity.statusPtw.ACCFO;
+            ViewBag.isCanCancel = entity.status == (int)PtwEntity.statusPtw.ACCFO && entity.isAccSupervisor(user);
             return PartialView(entity);
         }
 
@@ -120,7 +120,7 @@ namespace PermitToWork.Controllers
             LotoEntity loto = new LotoEntity(ptw.acc_ptw_requestor, ptw.work_location, glarf.id, ptw.acc_supervisor, foProd.user.id.ToString());
             //List<UserEntity> listHWFO = listUser.GetHotWorkFO();
             loto.generateNumber(ptw.ptw_no);
-            loto.create();
+            loto.create(glarf.id);
             //loto.sendEmailFO(listHWFO, fullUrl(), userLogin.token, userLogin, 0);
 
             ptw.addLoto(loto);
@@ -138,8 +138,13 @@ namespace PermitToWork.Controllers
             LotoEntity prevLoto = new LotoEntity(id_prev_loto, userLogin);
             ListUser listUser = new ListUser(userLogin.token, userLogin.id);
 
-            prevLoto.addNewHolder(ptw.acc_ptw_requestor, ptw.acc_supervisor);
+            LotoGlarfEntity glarf = new LotoGlarfEntity(ptw.acc_ptw_requestor, ptw.acc_supervisor);
+            glarf.create();
+
+            prevLoto.addNewHolder(ptw.acc_ptw_requestor, ptw.acc_supervisor, glarf.id);
             ptw.addLoto(prevLoto);
+
+            glarf.assignLotoForm(prevLoto.id, prevLoto.loto_no);
 
             return Json(new { status = "200", id = prevLoto.id });
         }
@@ -164,6 +169,13 @@ namespace PermitToWork.Controllers
             return Json(listUser, JsonRequestBehavior.AllowGet);
         }
 
+        public JsonResult ListingEmployee2()
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            List<UserEntity> listUser = new ListUser(user.token, user.id).GetListEmployeeInDepartment("Production");
+            return Json(listUser, JsonRequestBehavior.AllowGet);
+        }
+
         [HttpPost]
         public JsonResult FindLotoPoint(string code)
         {
@@ -177,7 +189,7 @@ namespace PermitToWork.Controllers
         {
             UserEntity user = Session["user"] as UserEntity;
             string name = "";
-            if (employee_id != "")
+            if (employee_id != "" && employee_id != "null")
             {
                 UserEntity userEmployee = new UserEntity(Int32.Parse(employee_id), user.token, user);
                 name = userEmployee.alpha_name;
@@ -227,6 +239,16 @@ namespace PermitToWork.Controllers
             {
                 loto.sendEmailFOAgreed(fullUrl(), user);
             }
+            return Json(new { status = retVal > 0 ? "200" : "404" });
+        }
+
+        [HttpPost]
+        public JsonResult RejectToSupervisor(LotoEntity loto, string comment)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            int retVal = loto.rejectToSupervisor();
+            loto = new LotoEntity(loto.id, user);
+            loto.sendEmailRejectSpv(fullUrl(), user, comment);
             return Json(new { status = retVal > 0 ? "200" : "404" });
         }
 
@@ -283,12 +305,14 @@ namespace PermitToWork.Controllers
         }
 
         [HttpPost]
-        public JsonResult requestSuspension(int id)
+        public JsonResult requestSuspension(int id, string comment)
         {
             UserEntity user = Session["user"] as UserEntity;
             LotoEntity loto = new LotoEntity(id, user);
             int retVal = 1;
             retVal &= loto.suspendLoto(user);
+
+            // send email for comment on request
             return Json(new { status = retVal > 0 ? "200" : "404" });
         }
 
@@ -480,8 +504,9 @@ namespace PermitToWork.Controllers
             UserEntity user = Session["user"] as UserEntity;
             LotoEntity loto = new LotoEntity(id, user);
             int retVal = 1;
-            retVal = loto.lotoCancel(user);
-            return Json(new { status = retVal == 2 ? "202" : (retVal > 0 ? "200" : "404"), id_glarf = loto.id_glarf });
+            int loto_glarf = 0;
+            retVal = loto.lotoCancel(user, out loto_glarf);
+            return Json(new { status = retVal == 2 ? "202" : (retVal > 0 ? "200" : "404"), id_glarf = loto_glarf });
         }
 
         [HttpPost]
@@ -722,7 +747,7 @@ namespace PermitToWork.Controllers
         {
             UserEntity user = Session["user"] as UserEntity;
             LotoGlarfEntity glarf = new LotoGlarfEntity(id, user);
-            glarf.sendToSign();
+            glarf.sendToSign(user);
             return Json(true);
         }
 
@@ -807,6 +832,48 @@ namespace PermitToWork.Controllers
         public ActionResult removeAttachment(string[] fileNames, int id)
         {
             var pPath = "~/Upload/Loto/Glarf/" + id;
+            // The Name of the Upload component is "attachments" 
+            // The parameter of the Remove action must be called "fileNames"
+            foreach (var fullName in fileNames)
+            {
+                var fileName = Path.GetFileName(fullName);
+                var physicalPath = Path.Combine(Server.MapPath(pPath), fileName);
+
+                // TODO: Verify user permissions
+                if (System.IO.File.Exists(physicalPath))
+                {
+                    //remove file
+                    System.IO.File.Delete(physicalPath);
+                }
+            }
+            // Return an empty string to signify success
+            return Content("");
+        }
+
+        public ActionResult saveAttachmentLoto(IEnumerable<HttpPostedFileBase> files, int? id)
+        {
+            var dPath = "\\Upload\\Loto\\Attachment\\" + id + "";
+            var pPath = "~/Upload/Loto/Attachment/" + id + "";
+
+            foreach (var file in files)
+            {
+                // Some browsers send file names with full path. This needs to be stripped.
+                var fileName = Path.GetFileName(file.FileName);
+                var dummyPath = Path.Combine(dPath, fileName);
+                //var physicalPath = Path.Combine(Server.MapPath("~/App_Data"), fileName);
+                var physicalPath = Path.Combine(Server.MapPath(pPath), fileName);
+
+                // save file
+                file.SaveAs(physicalPath);
+            }
+
+            // Return an empty string to signify success
+            return Content("");
+        }
+
+        public ActionResult removeAttachmentLoto(string[] fileNames, int id)
+        {
+            var pPath = "~/Upload/Loto/Attachment/" + id + "";
             // The Name of the Upload component is "attachments" 
             // The parameter of the Remove action must be called "fileNames"
             foreach (var fullName in fileNames)

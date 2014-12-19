@@ -27,6 +27,15 @@ namespace PermitToWork.Models.Master
             this.user = new UserEntity(this.id_employee.Value, user.token, user);
         }
 
+        public MstEIEntity(int id, UserEntity user, ListUser listUser)
+            : this()
+        {
+            mst_ei ei = this.db.mst_ei.Find(id);
+            ModelUtilization.Clone(ei, this);
+
+            this.user = listUser.listUser.Find(p => p.id == this.id_employee.Value);
+        }
+
         public MstEIEntity(mst_ei ei, UserEntity user)
             : this()
         {

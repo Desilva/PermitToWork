@@ -31,7 +31,7 @@ namespace PermitToWork.Controllers
         public JsonResult Binding()
         {
             UserEntity user = Session["user"] as UserEntity;
-            var result = new MstNoInspectionEntity().getListMstNoInspection(user);
+            var result = new MstNoInspectionEntity().getListMstNoInspectionByUser(user);
             return Json(result);
         }
 

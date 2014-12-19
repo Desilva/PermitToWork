@@ -129,7 +129,7 @@
         function userEditor(container, options) {
             $('<input data-text-field="alpha_name" data-value-field="id" data-bind="value:' + options.field + '"/>')
                 .appendTo(container)
-                .kendoDropDownList({
+                .kendoComboBox({
                     autoBind: true,
                     dataSource: {
                         transport: {

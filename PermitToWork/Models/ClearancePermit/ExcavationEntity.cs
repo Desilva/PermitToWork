@@ -40,6 +40,7 @@ namespace PermitToWork.Models.ClearancePermit
         public string rad_status { get; set; }
 
         public bool is_guest { get; set; }
+        public bool isUser { get; set; }
 
         private star_energy_ptwEntities db;
 
@@ -123,6 +124,31 @@ namespace PermitToWork.Models.ClearancePermit
             this.statusText = getStatus();
 
             this.hira_document = new ListHira(this.id_ptw.Value, this.db).listHira;
+        }
+
+        public ExcavationEntity(excavation ex, ListUser listUser, UserEntity user)
+            : this()
+        {
+            // this.ptw = new PtwEntity(fi.id_ptw.Value);
+            ModelUtilization.Clone(ex, this);
+
+            this.is_guest = ex.permit_to_work.is_guest == 1;
+            this.isUser = false;
+            int userId = 0;
+
+            if (Int32.TryParse(this.facilities, out userId))
+            {
+                facilitiesUser = new MstFacilitiesEntity(userId, user, listUser);
+            }
+
+            if (Int32.TryParse(this.ei, out userId))
+            {
+                eiUser = new MstEIEntity(userId, user, listUser);
+            }
+
+            generateUserInExcavation(ex, user, listUser);
+
+            this.statusText = getStatus();
         }
 
         private string getStatus()
@@ -211,8 +237,7 @@ namespace PermitToWork.Models.ClearancePermit
 
         public int delete()
         {
-            excavation ex = new excavation();
-            ModelUtilization.Clone(this, ex);
+            excavation ex = this.db.excavations.Find(this.id);
             this.db.excavations.Remove(ex);
             int retVal = this.db.SaveChanges();
             return retVal;
@@ -1019,6 +1044,9 @@ namespace PermitToWork.Models.ClearancePermit
                         }
                         ex.can_supervisor_signature_date = DateTime.Now;
                         ex.status = (int)ExStatus.CANSPVAPPROVE;
+
+                        this.ptw = new PtwEntity(ex.id_ptw.Value, user);
+                        this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.REQUESTORCANCELLED, PtwEntity.clearancePermit.EXCAVATION.ToString());
                         break;
                     case 3 /* Facilities */:
                         userEx = this.userInExcavation[UserInExcavation.FACILITIES.ToString()];
@@ -1463,9 +1491,9 @@ namespace PermitToWork.Models.ClearancePermit
 
         #region internal function
 
-        private void generateUserInExcavation(excavation ex,UserEntity user)
+        private void generateUserInExcavation(excavation ex,UserEntity user, ListUser listUsers = null)
         {
- 	        ListUser listUser = new ListUser(user.token, user.id);
+ 	        ListUser listUser = listUsers != null ? listUsers : new ListUser(user.token, user.id);
             int userId = 0;
 
             if (this.is_guest)
@@ -1477,98 +1505,118 @@ namespace PermitToWork.Models.ClearancePermit
             else
             {
                 Int32.TryParse(this.requestor, out userId);
+                this.isUser = this.isUser || userId == user.id;
                 this.userInExcavation.Add(UserInExcavation.REQUESTOR.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
             userId = 0;
             Int32.TryParse(this.supervisor, out userId);
+            this.isUser = this.isUser || userId == user.id;
             this.userInExcavation.Add(UserInExcavation.SUPERVISOR.ToString(), listUser.listUser.Find(p => p.id == userId));
 
-            if (facilitiesUser != null) {
+            if (facilitiesUser != null)
+            {
+                this.isUser = this.isUser || facilitiesUser.user.id == user.id;
                 this.userInExcavation.Add(UserInExcavation.FACILITIES.ToString(), facilitiesUser.user);
             }
 
-            if (eiUser != null) {
+            if (eiUser != null)
+            {
+                this.isUser = this.isUser || eiUser.user.id == user.id;
                 this.userInExcavation.Add(UserInExcavation.EI.ToString(), eiUser.user);
             }
 
             userId = 0;
             Int32.TryParse(this.safety_officer, out userId);
+            this.isUser = this.isUser || userId == user.id;
             this.userInExcavation.Add(UserInExcavation.SAFETYOFFICER.ToString(), listUser.listUser.Find(p => p.id == userId));
 
             userId = 0;
             Int32.TryParse(this.facility_owner, out userId);
+            this.isUser = this.isUser || userId == user.id;
             this.userInExcavation.Add(UserInExcavation.FACILITYOWNER.ToString(), listUser.listUser.Find(p => p.id == userId));
 
             if (this.supervisor_delegate != null) {
                 userId = 0;
                 Int32.TryParse(this.supervisor_delegate, out userId);
+                this.isUser = this.isUser || userId == user.id;
                 this.userInExcavation.Add(UserInExcavation.SUPERVISORDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
             if (this.safety_officer_delegate != null) {
                 userId = 0;
                 Int32.TryParse(this.safety_officer_delegate, out userId);
+                this.isUser = this.isUser || userId == user.id;
                 this.userInExcavation.Add(UserInExcavation.SAFETYOFFICERDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
             if (this.facilities_delegate != null) {
                 userId = 0;
                 Int32.TryParse(this.facilities_delegate, out userId);
+                this.isUser = this.isUser || userId == user.id;
                 this.userInExcavation.Add(UserInExcavation.FACILITIESDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
             if (this.ei_delegate != null) {
                 userId = 0;
                 Int32.TryParse(this.ei_delegate, out userId);
+                this.isUser = this.isUser || userId == user.id;
                 this.userInExcavation.Add(UserInExcavation.EIDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
             if (this.requestor_delegate != null) {
                 userId = 0;
                 Int32.TryParse(this.requestor_delegate, out userId);
+                this.isUser = this.isUser || userId == user.id;
                 this.userInExcavation.Add(UserInExcavation.REQUESTORDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
             if (this.facility_owner_delegate != null) {
                 userId = 0;
                 Int32.TryParse(this.facility_owner_delegate, out userId);
+                this.isUser = this.isUser || userId == user.id;
                 this.userInExcavation.Add(UserInExcavation.FACILITYOWNERDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
             if (this.can_supervisor_delegate != null) {
                 userId = 0;
                 Int32.TryParse(this.can_supervisor_delegate, out userId);
+                this.isUser = this.isUser || userId == user.id;
                 this.userInExcavation.Add(UserInExcavation.CANSUPERVISORDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
             if (this.can_safety_officer_delegate != null) {
                 userId = 0;
                 Int32.TryParse(this.can_safety_officer_delegate, out userId);
+                this.isUser = this.isUser || userId == user.id;
                 this.userInExcavation.Add(UserInExcavation.CANSAFETYOFFICERDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
             if (this.can_facilities_delegate != null) {
                 userId = 0;
                 Int32.TryParse(this.can_facilities_delegate, out userId);
+                this.isUser = this.isUser || userId == user.id;
                 this.userInExcavation.Add(UserInExcavation.CANFACILITIESDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
             if (this.can_ei_delegate != null) {
                 userId = 0;
                 Int32.TryParse(this.can_ei_delegate, out userId);
+                this.isUser = this.isUser || userId == user.id;
                 this.userInExcavation.Add(UserInExcavation.CANEIDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
             if (this.can_requestor_delegate != null) {
                 userId = 0;
                 Int32.TryParse(this.can_requestor_delegate, out userId);
+                this.isUser = this.isUser || userId == user.id;
                 this.userInExcavation.Add(UserInExcavation.CANREQUESTORDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
             if (this.can_facility_owner_delegate != null) {
                 userId = 0;
                 Int32.TryParse(this.can_facility_owner_delegate, out userId);
+                this.isUser = this.isUser || userId == user.id;
                 this.userInExcavation.Add(UserInExcavation.CANFACILITYOWNERDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
         }
@@ -1891,7 +1939,7 @@ namespace PermitToWork.Models.ClearancePermit
                 retVal = this.db.SaveChanges();
 
                 // sending email
-                MstFacilitiesEntity fac = new MstFacilitiesEntity(Int32.Parse(this.ei), user);
+                MstEIEntity fac = new MstEIEntity(Int32.Parse(this.ei), user);
                 List<string> email = new List<string>();
                 email.Add(fac.user.email);
                 // email.Add("septujamasoka@gmail.com");
@@ -1938,15 +1986,10 @@ namespace PermitToWork.Models.ClearancePermit
             foreach (KeyValuePair<string, UserEntity> entry in userInExcavation)
             {
                 UserEntity us = entry.Value;
-                if (entry.Key == UserInExcavation.FACILITYOWNER.ToString())
+                if (entry.Key == UserInExcavation.FACILITYOWNER.ToString() || entry.Key == UserInExcavation.SUPERVISOR.ToString() || entry.Key == UserInExcavation.FACILITYOWNER.ToString())
                 {
-                    List<UserEntity> listDel = us.GetDelegateFO(user);
-                    if (listDel.Exists(p => p.id == user.id))
-                    {
-                        return true;
-                    }
                 }
-                if (us != null && (user.id == us.id || user.id == us.employee_delegate))
+                else if (us != null && (user.id == us.id || user.id == us.employee_delegate))
                 {
                     return true;
                 }

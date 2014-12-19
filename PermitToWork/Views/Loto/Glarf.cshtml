@@ -283,7 +283,7 @@
         });
 
         $('#user-from')
-            .kendoDropDownList({
+            .kendoComboBox({
                 dataTextField: "alpha_name",
                 dataValueField: "id",
                 autoBind: true,
@@ -299,7 +299,7 @@
         function userEditor(container, options) {
             $('<input data-text-field="alpha_name" data-value-field="id" data-bind="value:' + options.field + '" />')
                 .appendTo(container)
-                .kendoDropDownList({
+                .kendoComboBox({
                     dataTextField: "ProductName",
                     dataValueField: "ProductID",
                     autoBind: true,

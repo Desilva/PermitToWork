@@ -132,10 +132,7 @@
             {
                 <input type="button" class="btn btn-danger" value="Save for Cancellation" id="cancellation" />
             }
-            @if (isCanEdit[2])
-            {
-                <a class="btn btn-primary" href="@Url.Action("Index", "Print", new { id = Model.id, type = 1, no = "" })">Print</a>
-            }
+            <a class="btn btn-primary" href="@Url.Action("Index", "Print", new { id = Model.id, type = 1, no = "" })">Print</a>
             <input type="button" class="btn btn-default" value="Back" id="back" />
         </div>
     </div>

@@ -61,6 +61,9 @@ namespace PermitToWork.Models.Ptw
         public int? safety_briefing_status { get; set; }
         public bool isNeedClose { get; set; }
 
+        public bool isUserPtw { get; set; }
+        public bool will_overdue { get; set; }
+
         public List<FIEntity> fireImpairments { get; set; }
 
         public MstDepartmentEntity department { get; set; }
@@ -90,14 +93,16 @@ namespace PermitToWork.Models.Ptw
             CANREQ,
             CANSPV,
             CANASS,
-            CANFO
+            CANFO,
+            CANCELLED
         };
 
         public enum statusClearance
         {
             NOTCOMPLETE,
             COMPLETE,
-            CLOSE
+            CLOSE,
+            REQUESTORCANCELLED
         };
 
         public enum clearancePermit
@@ -233,7 +238,7 @@ namespace PermitToWork.Models.Ptw
                 this.lotoPermit = new List<LotoEntity>();
                 foreach (loto_permit loto in ptw.loto_permit)
                 {
-                    this.lotoPermit.Add(new LotoEntity(loto.id, user));
+                    this.lotoPermit.Add(new LotoEntity(loto.id, user, this.acc_ptw_requestor));
                 }
                 this.loto_no = "";
                 this.loto_statusText = this.loto_status == 0 ? "LOTO Permit is being edited by Requestor" : (this.loto_status == 1 ? "LOTO Permit is Approved" : (this.loto_status == 2 ? "LOTO Permit is Cancelled" : ""));
@@ -254,6 +259,160 @@ namespace PermitToWork.Models.Ptw
             }
 
             // this.hira_document = new ListHira(this.id,this.db).listHira;
+        }
+
+        public PtwEntity(permit_to_work ptw, UserEntity user, ListUser listUser, bool isProd = false)
+            : this()
+        {
+            // ModelUtilization.Clone(ptw, this);
+            this.id = ptw.id;
+            this.work_description = ptw.work_description;
+            this.ptw_no = ptw.ptw_no;
+            this.hw_id = ptw.hw_id;
+            this.csep_id = ptw.csep_id;
+            this.fi_id = ptw.fi_id;
+            this.wh_id = ptw.wh_id;
+            this.ex_id = ptw.ex_id;
+            this.rad_id = ptw.rad_id;
+            this.loto_need = ptw.loto_need;
+            this.acc_ptw_requestor = ptw.acc_ptw_requestor;
+            this.acc_assessor = ptw.acc_assessor;
+            this.acc_supervisor = ptw.acc_supervisor;
+            this.acc_fo = ptw.acc_fo;
+            this.can_assessor = ptw.can_assessor;
+            this.proposed_period_end = ptw.proposed_period_end;
+            this.validity_period_end = ptw.validity_period_end;
+            this.acc_supervisor_delegate = ptw.acc_supervisor_delegate;
+            this.acc_assessor_delegate = ptw.acc_assessor_delegate;
+            this.acc_fo_delegate = ptw.acc_fo_delegate;
+            this.can_assessor_delegate = ptw.can_assessor_delegate;
+            this.status = ptw.status;
+            this.department = new MstDepartmentEntity(ptw.mst_department);
+            this.is_extend = (byte)(ptw.id_parent_ptw != null ? 1 : 0);
+            this.has_extend = ptw.permit_to_work1.Count > 0;
+            Debug.WriteLine("d = " + DateTime.Now.TimeOfDay.TotalMilliseconds);
+            this.isUserPtw = false;
+
+            if (this.hw_id != null)
+            {
+                IClearancePermitEntity hw = (IClearancePermitEntity)new HwEntity(ptw.hot_work.ElementAt(0));
+                hw.ids = this.hw_id.Value;
+                hw.statusText = ((HwEntity)hw).getStatus();
+                this.cPermit.Add(clearancePermit.HOTWORK.ToString(), hw);
+                this.hw_no = ptw.hot_work.ElementAt(0).hw_no;
+                this.has_clearance = true;
+            }
+
+            if (this.fi_id != null)
+            {
+                IClearancePermitEntity fi = (IClearancePermitEntity)new FIEntity(ptw.fire_impairment.ElementAt(0), listUser, user);
+                fi.ids = this.fi_id.Value;
+                this.isUserPtw = this.isUserPtw || fi.isUser;
+                fi.statusText = ((FIEntity)fi).getStatus();
+                this.cPermit.Add(clearancePermit.FIREIMPAIRMENT.ToString(), fi);
+                this.fi_no = ptw.fire_impairment.ElementAt(0).fi_no;
+                this.has_clearance = true;
+            }
+
+            if (this.rad_id != null)
+            {
+                IClearancePermitEntity rad = (IClearancePermitEntity)new RadEntity(ptw.radiographies.ElementAt(0), listUser, user);
+                rad.ids = this.rad_id.Value;
+                this.isUserPtw = this.isUserPtw || rad.isUser;
+                this.cPermit.Add(clearancePermit.RADIOGRAPHY.ToString(), rad);
+                this.rad_no = ptw.radiographies.ElementAt(0).rg_no;
+                this.has_clearance = true;
+            }
+
+            if (this.wh_id != null)
+            {
+                IClearancePermitEntity wh = (IClearancePermitEntity)new WorkingHeightEntity(ptw.working_height.ElementAt(0), listUser, user);
+                wh.ids = this.wh_id.Value;
+                this.isUserPtw = this.isUserPtw || wh.isUser;
+                this.cPermit.Add(clearancePermit.WORKINGHEIGHT.ToString(), wh);
+                this.wh_no = ptw.working_height.ElementAt(0).wh_no;
+                this.has_clearance = true;
+            }
+
+            if (this.ex_id != null)
+            {
+                IClearancePermitEntity ex = (IClearancePermitEntity)new ExcavationEntity(ptw.excavations.ElementAt(0), listUser, user);
+                ex.ids = this.ex_id.Value;
+                this.isUserPtw = this.isUserPtw || ex.isUser;
+                this.cPermit.Add(clearancePermit.EXCAVATION.ToString(), ex);
+                this.ex_no = ptw.excavations.ElementAt(0).ex_no;
+                this.has_clearance = true;
+            }
+
+            if (this.csep_id != null)
+            {
+                IClearancePermitEntity csep = (IClearancePermitEntity)new CsepEntity(ptw.confined_space.ElementAt(0), user);
+                csep.ids = this.csep_id.Value;
+                this.cPermit.Add(clearancePermit.CONFINEDSPACE.ToString(), csep);
+                this.csep_no = ptw.confined_space.ElementAt(0).csep_no;
+                this.has_clearance = true;
+            }
+
+            if (this.loto_need != null && this.loto_need != 0)
+            {
+                //this.lotoPermit = new List<LotoEntity>();
+                //foreach (loto_permit loto in ptw.loto_permit)
+                //{
+                //    this.lotoPermit.Add(new LotoEntity(loto, user, this.acc_ptw_requestor, listUser));
+                //}
+                //this.loto_no = "";
+                //this.loto_statusText = this.loto_status == 0 ? "LOTO Permit is being edited by Requestor" : (this.loto_status == 1 ? "LOTO Permit is Approved" : (this.loto_status == 2 ? "LOTO Permit is Cancelled" : ""));
+                //this.has_clearance = true;
+            }
+
+            this.ptw_status = getPtwStatus();
+            if (this.acc_ptw_requestor != null || this.acc_supervisor != null)
+            {
+                var ptwRequestor = ptw.is_guest != 1 ? listUser.listUser.Find(p => p.id == Int32.Parse(this.acc_ptw_requestor)) : listUser.listUser.Find(p => p.id == Int32.Parse(this.acc_supervisor));
+                // this.isNeedClose = this.status == (int)statusPtw.ACCFO && ptw.validity_period_end != null && ptw.validity_period_end.Value.CompareTo(DateTime.Now) < 0 && ptw.id_parent_ptw != null && (ptwRequestor.id == user.id || ptwRequestor.employee_delegate == user.id) ? true : false;
+            }
+            this.will_overdue = !this.has_extend && this.validity_period_end != null && this.validity_period_end.Value.Subtract(DateTime.Today).TotalDays < 2 && this.status >= (int)statusPtw.ACCFO && this.status < (int)statusPtw.CANFO;
+            Debug.WriteLine(this.will_overdue);
+            Debug.WriteLine("e = " + DateTime.Now.TimeOfDay.TotalMilliseconds);
+        }
+
+        /// <summary>
+        /// for checking if need to be closed first
+        /// </summary>
+        /// <param name="ptw"></param>
+        /// <param name="user"></param>
+        /// <param name="isCheck"></param>
+        /// <param name="listUser"></param>
+        public PtwEntity(permit_to_work ptw, UserEntity user, bool isCheck, ListUser listUser)
+            : this()
+        {
+            // ModelUtilization.Clone(ptw, this);
+            this.id = ptw.id;
+            this.work_description = ptw.work_description;
+            this.ptw_no = ptw.ptw_no;
+            this.acc_ptw_requestor = ptw.acc_ptw_requestor;
+            this.acc_assessor = ptw.acc_assessor;
+            this.acc_supervisor = ptw.acc_supervisor;
+            this.acc_fo = ptw.acc_fo;
+            this.can_assessor = ptw.can_assessor;
+            this.proposed_period_end = ptw.proposed_period_end;
+            this.validity_period_end = ptw.validity_period_end;
+            this.acc_supervisor_delegate = ptw.acc_supervisor_delegate;
+            this.acc_assessor_delegate = ptw.acc_assessor_delegate;
+            this.acc_fo_delegate = ptw.acc_fo_delegate;
+            this.can_assessor_delegate = ptw.can_assessor_delegate;
+            this.status = ptw.status;
+            this.department = new MstDepartmentEntity(ptw.mst_department);
+            this.is_extend = (byte)(ptw.id_parent_ptw != null ? 1 : 0);
+            this.has_extend = ptw.permit_to_work1.Count > 0;
+           
+
+            this.ptw_status = getPtwStatus();
+            if (this.acc_ptw_requestor != null || this.acc_supervisor != null)
+            {
+                var ptwRequestor = ptw.is_guest != 1 ? listUser.listUser.Find(p => p.id == Int32.Parse(this.acc_ptw_requestor)) : listUser.listUser.Find(p => p.id == Int32.Parse(this.acc_supervisor));
+                this.isNeedClose = this.status == (int)statusPtw.ACCFO && ptw.validity_period_end != null && ptw.validity_period_end.Value.CompareTo(DateTime.Now) < 0 && !this.has_extend && (ptwRequestor.id == user.id || ptwRequestor.employee_delegate == user.id) ? true : false;
+            }
         }
 
         public int addPtw(int stat = 0)
@@ -482,7 +641,7 @@ namespace PermitToWork.Models.Ptw
 
             if (this.status == (int)statusPtw.CREATE && this.has_clearance && !isAllClearanceComplete()) {
                 retVal = "Waiting Clearance Permit Completed";
-            } else if (this.status == (int)statusPtw.CREATE && this.has_clearance && !isAllClearanceComplete()) {
+            } else if (this.status == (int)statusPtw.CREATE && this.has_clearance && isAllClearanceComplete()) {
                 retVal = "Waiting Approval by Requestor";
             } else if (this.status == (int)statusPtw.CREATE && !this.has_clearance) {
                 retVal = "Waiting Approval by Requestor";
@@ -507,6 +666,10 @@ namespace PermitToWork.Models.Ptw
             } else if (this.status == (int)statusPtw.CANFO) {
                 retVal = "Cancelled. Permit has been approved to cancel by Facility Owner";
             }
+            else if (this.status == (int)statusPtw.CANCELLED)
+            {
+                retVal = "Permit Request Cancelled. This Permit will not be used.";
+            }
 
             return retVal;            
         }
@@ -525,6 +688,16 @@ namespace PermitToWork.Models.Ptw
             permit_to_work ptw = this.db.permit_to_work.Find(this.id);
 
             ptw.guest_holder_no = guest_holder_no;
+            this.db.Entry(ptw).State = EntityState.Modified;
+            return this.db.SaveChanges();
+        }
+
+        public int changeCanAssessor(int id, UserEntity user)
+        {
+            permit_to_work ptw = this.db.permit_to_work.Find(this.id);
+            UserEntity assessor = new UserEntity(id, user.token, user);
+            ptw.can_assessor = id.ToString();
+            ptw.can_assessor_delegate = assessor.employee_delegate != null ? assessor.employee_delegate.ToString() : null;
             this.db.Entry(ptw).State = EntityState.Modified;
             return this.db.SaveChanges();
         }
@@ -636,14 +809,16 @@ namespace PermitToWork.Models.Ptw
             return retVal;
         }
 
-        public bool isAccFO(UserEntity user)
+        public bool isAccFO(UserEntity user, ListUser listUser = null)
         {
             var retVal = false;
             string user_id = user.id.ToString();
             int foid = 0;
             Int32.TryParse(this.acc_fo, out foid);
-            List<MstDelegateFOEntity> delegates = new MstDelegateFOEntity().getListByFO(foid, user);
-            if (this.acc_fo == user_id)
+            int assId = 0;
+            Int32.TryParse(this.acc_assessor, out assId);
+            List<MstDelegateFOEntity> delegates = new MstDelegateFOEntity().getListByFO(foid, user, listUser);
+            if (this.acc_fo == user_id || user_id == this.acc_fo_delegate)
             {
                 retVal = true;
             }
@@ -653,7 +828,7 @@ namespace PermitToWork.Models.Ptw
                 while (e.MoveNext() && !retVal)
                 {
                     MstDelegateFOEntity del = e.Current;
-                    if (del.user_delegate_id.ToString() == user_id)
+                    if (del.user_delegate_id.ToString() == user_id && del.user_delegate_id != assId)
                     {
                         retVal = true;
                     }
@@ -693,8 +868,10 @@ namespace PermitToWork.Models.Ptw
             string user_id = user.id.ToString();
             int foid = 0;
             Int32.TryParse(this.can_fo, out foid);
+            int assId = 0;
+            Int32.TryParse(this.can_assessor, out assId);
             List<MstDelegateFOEntity> delegates = new MstDelegateFOEntity().getListByFO(foid, user);
-            if (this.can_fo == user_id)
+            if (this.can_fo == user_id || user_id == this.can_fo_delegate)
             {
                 retVal = true;
             }
@@ -704,7 +881,7 @@ namespace PermitToWork.Models.Ptw
                 while (e.MoveNext() && !retVal)
                 {
                     MstDelegateFOEntity del = e.Current;
-                    if (del.user_delegate_id.ToString() == user_id)
+                    if (del.user_delegate_id.ToString() == user_id && del.user_delegate_id != assId)
                     {
                         retVal = true;
                     }
@@ -842,10 +1019,9 @@ namespace PermitToWork.Models.Ptw
             return this.db.SaveChanges();
         }
 
-        public bool isUserInPtw(UserEntity user)
+        public bool isUserInPtw(UserEntity user, ListUser listUser)
         {
-            return (isRequestor(user) || isAccSupervisor(user) || isAccAssessor(user) || isAccFO(user) ||
-                    isCanSupervisor(user) || isAccAssessor(user) || isCanFO(user));
+            return (isRequestor(user) || isAccSupervisor(user) || isAccAssessor(user) || isAccFO(user, listUser) || isCanAssessor(user));
         }
 
         #endregion
@@ -906,43 +1082,43 @@ namespace PermitToWork.Models.Ptw
             var isClose = true;
 
             // check if LOTO
-            if (this.loto_need != null && this.loto_need != 0 && this.loto_status != (int)statusClearance.CLOSE)
+            if (this.loto_need != null && this.loto_need != 0 && this.loto_status < (int)statusClearance.CLOSE)
             {
                 isClose = false;
             }
 
             // check CSEP
-            if (this.csep_id != null && this.csep_status != (int)statusClearance.CLOSE)
+            if (this.csep_id != null && this.csep_status < (int)statusClearance.CLOSE)
             {
                 isClose = false;
             }
 
             // check HW
-            if (this.hw_id != null && this.hw_status != (int)statusClearance.CLOSE)
+            if (this.hw_id != null && this.hw_status < (int)statusClearance.CLOSE)
             {
                 isClose = false;
             }
 
             // check FI
-            if (this.fi_id != null && this.fi_status != (int)statusClearance.CLOSE)
+            if (this.fi_id != null && this.fi_status < (int)statusClearance.CLOSE)
             {
                 isClose = false;
             }
 
             // check Ex
-            if (this.ex_id != null && this.ex_status != (int)statusClearance.CLOSE)
+            if (this.ex_id != null && this.ex_status < (int)statusClearance.CLOSE)
             {
                 isClose = false;
             }
 
             // check WH
-            if (this.wh_id != null && this.wh_status != (int)statusClearance.CLOSE)
+            if (this.wh_id != null && this.wh_status < (int)statusClearance.CLOSE)
             {
                 isClose = false;
             }
 
             // check Rad
-            if (this.rad_id != null && this.rad_status != (int)statusClearance.CLOSE)
+            if (this.rad_id != null && this.rad_status < (int)statusClearance.CLOSE)
             {
                 isClose = false;
             }
@@ -1015,6 +1191,7 @@ namespace PermitToWork.Models.Ptw
                 //ptw.acc_assessor_delegate = this.acc_assessor_delegate;
                 //ptw.can_assessor = this.can_assessor;
                 //ptw.can_assessor_delegate = this.can_assessor_delegate;
+                ptw.acc_supervisor_delegate = this.acc_supervisor_delegate;
                 ptw.acc_supervisor_approve = "d" + user.signature;
                 if (ptw.acc_assessor != null)
                 {
@@ -1167,7 +1344,7 @@ namespace PermitToWork.Models.Ptw
             else
             {
                 //ptw.acc_fo = this.acc_fo;
-                ptw.acc_fo_delegate = this.acc_fo_delegate;
+                ptw.acc_fo_delegate = user.id.ToString();
                 //ptw.can_fo = this.acc_fo;
                 //ptw.can_fo_delegate = this.acc_fo_delegate;
                 ptw.acc_fo_approve = "d" + user.signature;
@@ -1175,7 +1352,7 @@ namespace PermitToWork.Models.Ptw
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
 
-                return "201";
+                return "200";
             }
         }
 
@@ -1185,21 +1362,14 @@ namespace PermitToWork.Models.Ptw
             // return code - 200 {ok}
             //               400 {not the user}
 
-            if (user.id.ToString() == this.acc_fo || user.id.ToString() == this.acc_fo_delegate)
-            {
-                permit_to_work ptw = this.db.permit_to_work.Find(this.id);
-                ptw.acc_supervisor_approve = null;
-                ptw.acc_assessor_approve = null;
-                ptw.status = (int)statusPtw.CLEARANCECOMPLETE;
-                this.db.Entry(ptw).State = EntityState.Modified;
-                this.db.SaveChanges();
+            permit_to_work ptw = this.db.permit_to_work.Find(this.id);
+            ptw.acc_supervisor_approve = null;
+            ptw.acc_assessor_approve = null;
+            ptw.status = (int)statusPtw.CLEARANCECOMPLETE;
+            this.db.Entry(ptw).State = EntityState.Modified;
+            this.db.SaveChanges();
 
-                return "200";
-            }
-            else
-            {
-                return "400";
-            }
+            return "200";
         }
 
         public string requestorCanApproval(UserEntity user)
@@ -1261,6 +1431,7 @@ namespace PermitToWork.Models.Ptw
                 //ptw.acc_assessor_delegate = this.acc_assessor_delegate;
                 //ptw.can_assessor = this.can_assessor;
                 //ptw.can_assessor_delegate = this.can_assessor_delegate;
+                ptw.can_supervisor_delegate = this.can_supervisor_delegate;
                 ptw.can_supervisor_approve = "d" + user.signature;
                 ptw.status = (int)statusPtw.CANSPV;
                 this.db.Entry(ptw).State = EntityState.Modified;
@@ -1411,12 +1582,12 @@ namespace PermitToWork.Models.Ptw
                 }
                 return "200";
             }
-            else if (user.id.ToString() == this.can_fo_delegate)
+            else
             {
                 //ptw.acc_fo = this.acc_fo;
                 //ptw.acc_fo_delegate = this.acc_fo_delegate;
                 //ptw.can_fo = this.acc_fo;
-                //ptw.can_fo_delegate = this.acc_fo_delegate;
+                ptw.can_fo_delegate = user.id.ToString();
                 ptw.can_fo_approve = "d" + user.signature;
                 ptw.status = (int)statusPtw.CANFO;
                 this.db.Entry(ptw).State = EntityState.Modified;
@@ -1427,10 +1598,6 @@ namespace PermitToWork.Models.Ptw
                     pt.fOCanApproval(user);
                 }
                 return "201";
-            }
-            else
-            {
-                return "400";
             }
         }
 
@@ -1461,6 +1628,16 @@ namespace PermitToWork.Models.Ptw
             {
                 return "400";
             }
+        }
+
+        public string CancelPTWRequest(UserEntity user)
+        {
+            permit_to_work ptw = this.db.permit_to_work.Find(this.id);
+
+            ptw.status = (int)statusPtw.CANCELLED;
+            this.db.Entry(ptw).State = EntityState.Modified;
+            this.db.SaveChanges();
+            return "200";
         }
 
         #endregion
@@ -1759,6 +1936,20 @@ namespace PermitToWork.Models.Ptw
                         break;
                 }
             }
+            else if (status == 3)
+            {
+                switch (clearance_permit)
+                {
+                    case (int)clearancePermit.HOTWORK:
+                        message = "Hot Work Permit has approved to close by supervisor.<br />" + serverUrl + "Home?p=Hw/edit/" + this.hw_id;
+                        subject = "Hot Work Permit Number " + hw_no + " Has Been Cancelled by Supervisor";
+                        break;
+                    case (int)clearancePermit.CONFINEDSPACE:
+                        message = "Confined Space Entry Permit has approved to close by supervisor.<br />" + serverUrl + "Home?p=Csep/edit/" + this.hw_id;
+                        subject = "Confined Space Entry Permit Number " + csep_no + " Has Been Cancelled by Supervisor";
+                        break;
+                }
+            }
 
             sendEmail.Send(s, message, subject);
             //}
@@ -1788,6 +1979,11 @@ namespace PermitToWork.Models.Ptw
             {
                 message = "All clearance permit has been closed, you may continue by cancelling this Permit to Work.<br />" + serverUrl + "Home?p=Ptw/edit/" + this.id;
                 subject = "All Clearance Permit Closed";
+            }
+            else if (status == 3)
+            {
+                message = "All clearance permit has been cancelled by supervisor, you may continue by cancelling this Permit to Work.<br />" + serverUrl + "Home?p=Ptw/edit/" + this.id;
+                subject = "All Clearance Permit Cancelled by Supervisor";
             }
 
             sendEmail.Send(s, message, subject);
@@ -1962,6 +2158,7 @@ namespace PermitToWork.Models.Ptw
                     case (int)statusClearance.NOTCOMPLETE: retVal = "<span class='label'>Not Completed</span>"; break;
                     case (int)statusClearance.COMPLETE: retVal = "<span class='label label-success'>Completed</span>"; break;
                     case (int)statusClearance.CLOSE: retVal = "<span class='label label-danger'>Closed</span>"; break;
+                    case (int)statusClearance.REQUESTORCANCELLED: retVal = "<span class='label label-warning'>Requestor's Cancelled</span>"; break;
                 };
             }
             else if (typeClerancePermit == clearancePermit.FIREIMPAIRMENT.ToString())
@@ -1971,6 +2168,7 @@ namespace PermitToWork.Models.Ptw
                     case (int)statusClearance.NOTCOMPLETE: retVal = "<span class='label'>Not Completed</span>"; break;
                     case (int)statusClearance.COMPLETE: retVal = "<span class='label label-success'>Completed</span>"; break;
                     case (int)statusClearance.CLOSE: retVal = "<span class='label label-danger'>Closed</span>"; break;
+                    case (int)statusClearance.REQUESTORCANCELLED: retVal = "<span class='label label-warning'>Requestor's Cancelled</span>"; break;
                 };
             }
             else if (typeClerancePermit == clearancePermit.RADIOGRAPHY.ToString())
@@ -1980,6 +2178,7 @@ namespace PermitToWork.Models.Ptw
                     case (int)statusClearance.NOTCOMPLETE: retVal = "<span class='label'>Not Completed</span>"; break;
                     case (int)statusClearance.COMPLETE: retVal = "<span class='label label-success'>Completed</span>"; break;
                     case (int)statusClearance.CLOSE: retVal = "<span class='label label-danger'>Closed</span>"; break;
+                    case (int)statusClearance.REQUESTORCANCELLED: retVal = "<span class='label label-warning'>Requestor's Cancelled</span>"; break;
                 };
             }
             else if (typeClerancePermit == clearancePermit.WORKINGHEIGHT.ToString())
@@ -1989,6 +2188,7 @@ namespace PermitToWork.Models.Ptw
                     case (int)statusClearance.NOTCOMPLETE: retVal = "<span class='label'>Not Completed</span>"; break;
                     case (int)statusClearance.COMPLETE: retVal = "<span class='label label-success'>Completed</span>"; break;
                     case (int)statusClearance.CLOSE: retVal = "<span class='label label-danger'>Closed</span>"; break;
+                    case (int)statusClearance.REQUESTORCANCELLED: retVal = "<span class='label label-warning'>Requestor's Cancelled</span>"; break;
                 };
             }
             else if (typeClerancePermit == clearancePermit.EXCAVATION.ToString())
@@ -1998,6 +2198,7 @@ namespace PermitToWork.Models.Ptw
                     case (int)statusClearance.NOTCOMPLETE: retVal = "<span class='label'>Not Completed</span>"; break;
                     case (int)statusClearance.COMPLETE: retVal = "<span class='label label-success'>Completed</span>"; break;
                     case (int)statusClearance.CLOSE: retVal = "<span class='label label-danger'>Closed</span>"; break;
+                    case (int)statusClearance.REQUESTORCANCELLED: retVal = "<span class='label label-warning'>Requestor's Cancelled</span>"; break;
                 };
             }
             else if (typeClerancePermit == clearancePermit.CONFINEDSPACE.ToString())
@@ -2007,6 +2208,7 @@ namespace PermitToWork.Models.Ptw
                     case (int)statusClearance.NOTCOMPLETE: retVal = "<span class='label'>Not Completed</span>"; break;
                     case (int)statusClearance.COMPLETE: retVal = "<span class='label label-success'>Completed</span>"; break;
                     case (int)statusClearance.CLOSE: retVal = "<span class='label label-danger'>Closed</span>"; break;
+                    case (int)statusClearance.REQUESTORCANCELLED: retVal = "<span class='label label-warning'>Requestor's Cancelled</span>"; break;
                 };
             }
             else if (typeClerancePermit == clearancePermit.LOCKOUTTAGOUT.ToString())
@@ -2016,6 +2218,7 @@ namespace PermitToWork.Models.Ptw
                     case (int)statusClearance.NOTCOMPLETE: retVal = "<span class='label'>Not Completed</span>"; break;
                     case (int)statusClearance.COMPLETE: retVal = "<span class='label label-success'>Completed</span>"; break;
                     case (int)statusClearance.CLOSE: retVal = "<span class='label label-danger'>Closed</span>"; break;
+                    case (int)statusClearance.REQUESTORCANCELLED: retVal = "<span class='label label-warning'>Requestor's Cancelled</span>"; break;
                 };
             }
 
@@ -2078,7 +2281,7 @@ namespace PermitToWork.Models.Ptw
                 {
                     if (loto.cancellation_supervisor_signature != null)
                     {
-                        complete = complete && loto.status != (int)LotoEntity.LOTOStatus.CANCELSPV;
+                        complete = complete && true; //  && loto.status != (int)LotoEntity.LOTOStatus.CANCELSPV;
                     }
                     else
                     {

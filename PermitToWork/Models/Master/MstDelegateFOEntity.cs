@@ -28,6 +28,24 @@ namespace PermitToWork.Models.Master
             ModelUtilization.Clone(delegateFo, this);
         }
 
+        public MstDelegateFOEntity(int id, UserEntity user, ListUser listUser)
+            : this()
+        {
+            mst_delegate_fo delegateFo = this.db.mst_delegate_fo.Find(id);
+            mst_fo = new MstFOEntity(delegateFo.id_mst_fo.Value, user, listUser);
+            this.user =  listUser.listUser.Find(p => p.id == delegateFo.user_delegate_id.Value);
+            ModelUtilization.Clone(delegateFo, this);
+        }
+
+        public MstDelegateFOEntity(int id, UserEntity user, ListUser listUser, MstFOEntity mstFo)
+            : this()
+        {
+            mst_delegate_fo delegateFo = this.db.mst_delegate_fo.Find(id);
+            mst_fo = mstFo;
+            this.user = listUser.listUser.Find(p => p.id == delegateFo.user_delegate_id.Value);
+            ModelUtilization.Clone(delegateFo, this);
+        }
+
         //public MstDelegateFOEntity(string areaCode)
         //    : this()
         //{
@@ -40,6 +58,22 @@ namespace PermitToWork.Models.Master
         {
             mst_fo = new MstFOEntity(delegateFo.id_mst_fo.Value, user);
             this.user = new UserEntity(delegateFo.user_delegate_id.Value, user.token, user);
+            ModelUtilization.Clone(delegateFo, this);
+        }
+
+        public MstDelegateFOEntity(mst_delegate_fo delegateFo, UserEntity user, ListUser listUser)
+            : this()
+        {
+            mst_fo = new MstFOEntity(delegateFo.id_mst_fo.Value, user, listUser);
+            this.user = listUser.listUser.Find(p => p.id == delegateFo.user_delegate_id.Value);
+            ModelUtilization.Clone(delegateFo, this);
+        }
+
+        public MstDelegateFOEntity(mst_delegate_fo delegateFo, UserEntity user, ListUser listUser, MstFOEntity mstFo)
+            : this()
+        {
+            mst_fo = new MstFOEntity(delegateFo.id_mst_fo.Value, user, listUser);
+            this.user = listUser.listUser.Find(p => p.id == delegateFo.user_delegate_id.Value);
             ModelUtilization.Clone(delegateFo, this);
         }
 
@@ -63,6 +97,35 @@ namespace PermitToWork.Models.Master
             {
                 MstDelegateFOEntity mstDelFo = new MstDelegateFOEntity(i, user);
                 if (mstDelFo.mst_fo.id_employee == fo_id)
+                {
+                    ret.Add(mstDelFo);
+                }
+            }
+
+            return ret;
+        }
+
+        public List<MstDelegateFOEntity> getListByFO(int fo_id, UserEntity user, ListUser listUser)
+        {
+            var list = this.db.mst_delegate_fo.Where(p => p.mst_facility_owner.id_employee == fo_id).ToList();
+            List<MstDelegateFOEntity> ret = new List<MstDelegateFOEntity>();
+            foreach (mst_delegate_fo i in list)
+            {
+                MstDelegateFOEntity mstDelFo = listUser == null ? new MstDelegateFOEntity(i, user) : new MstDelegateFOEntity(i, user, listUser);
+                ret.Add(mstDelFo);
+            }
+
+            return ret;
+        }
+
+        public List<MstDelegateFOEntity> getListByFO(MstFOEntity fo, UserEntity user, ListUser listUser = null)
+        {
+            var list = this.db.mst_delegate_fo.ToList();
+            List<MstDelegateFOEntity> ret = new List<MstDelegateFOEntity>();
+            foreach (mst_delegate_fo i in list)
+            {
+                MstDelegateFOEntity mstDelFo = new MstDelegateFOEntity(i, user, listUser, fo);
+                if (mstDelFo.mst_fo.id_employee == fo.id_employee)
                 {
                     ret.Add(mstDelFo);
                 }

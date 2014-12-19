@@ -710,6 +710,13 @@
           <Property Name="cancellation_fo_signature_delegate" Type="varchar" MaxLength="50" />
           <Property Name="cancellation_notes" Type="text" />
           <Property Name="cancellation_facility_owner" Type="varchar" MaxLength="50" />
+          <Property Name="holder_1_glarf" Type="int" />
+          <Property Name="holder_2_glarf" Type="int" />
+          <Property Name="holder_3_glarf" Type="int" />
+          <Property Name="holder_4_glarf" Type="int" />
+          <Property Name="holder_5_glarf" Type="int" />
+          <Property Name="holder_6_glarf" Type="int" />
+          <Property Name="holder_7_glarf" Type="int" />
         </EntityType>
         <EntityType Name="loto_permit_to_work">
           <Key>
@@ -1357,7 +1364,7 @@
           <Property Name="from" Type="datetime" />
           <Property Name="until" Type="datetime" />
           <Property Name="total_crew" Type="int" />
-          <Property Name="access" Type="int" />
+          <Property Name="access" Type="varchar" MaxLength="50" />
           <Property Name="workbox_access" Type="varchar" MaxLength="50" />
           <Property Name="ladder_access" Type="varchar" MaxLength="50" />
           <Property Name="elevated_access" Type="varchar" MaxLength="50" />
@@ -1748,7 +1755,6 @@
             <End Role="loto_glarf_user" EntitySet="loto_glarf_user" />
           </AssociationSet>
           <EntitySet Name="loto_suspension_holder" EntityType="star_energy_ptwModel.loto_suspension_holder" />
-          <EntitySet Name="working_height" EntityType="star_energy_ptwModel.working_height" />
           <EntitySet Name="safety_briefing_user" EntityType="star_energy_ptwModel.safety_briefing_user" />
           <EntitySet Name="safety_briefing" EntityType="star_energy_ptwModel.safety_briefing" />
           <AssociationSet Name="FK_safety_briefing_user_safety_briefing" Association="star_energy_ptwModel.FK_safety_briefing_user_safety_briefing">
@@ -1814,10 +1820,6 @@
             <End Role="permit_to_work" EntitySet="permit_to_work" />
             <End Role="safety_briefing" EntitySet="safety_briefing" />
           </AssociationSet>
-          <AssociationSet Name="FK_working_height_permit_to_work" Association="star_energy_ptwModel.FK_working_height_permit_to_work">
-            <End Role="permit_to_work" EntitySet="permit_to_work" />
-            <End Role="working_height" EntitySet="working_height" />
-          </AssociationSet>
           <EntitySet Name="email_error" EntityType="star_energy_ptwModel.email_error" />
           <EntitySet Name="mst_delegate_fo" EntityType="star_energy_ptwModel.mst_delegate_fo" />
           <AssociationSet Name="FK_mst_delegate_fo_mst_facility_owner" Association="star_energy_ptwModel.FK_mst_delegate_fo_mst_facility_owner">
@@ -1849,6 +1851,11 @@
           <AssociationSet Name="loto_permit_to_work" Association="star_energy_ptwModel.loto_permit_to_work">
             <End Role="loto_permit" EntitySet="loto_permit" />
             <End Role="permit_to_work" EntitySet="permit_to_work" />
+          </AssociationSet>
+          <EntitySet Name="working_height" EntityType="star_energy_ptwModel.working_height" />
+          <AssociationSet Name="FK_working_height_permit_to_work" Association="star_energy_ptwModel.FK_working_height_permit_to_work">
+            <End Role="permit_to_work" EntitySet="permit_to_work" />
+            <End Role="working_height" EntitySet="working_height" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="confined_space">
@@ -2561,66 +2568,6 @@
           <Property Type="Int32" Name="is_agree" />
           <NavigationProperty Name="loto_suspension" Relationship="star_energy_ptwModel.FK_Table_1_loto_suspension" FromRole="loto_suspension_holder" ToRole="loto_suspension" />
         </EntityType>
-        <EntityType Name="working_height">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Int32" Name="id_ptw" />
-          <Property Type="String" Name="wh_no" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="description" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="work_location" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="requestor" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="from" Precision="3" />
-          <Property Type="DateTime" Name="until" Precision="3" />
-          <Property Type="Int32" Name="total_crew" />
-          <Property Type="Int32" Name="access" />
-          <Property Type="String" Name="workbox_access" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="ladder_access" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="elevated_access" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="Int32" Name="scaffolding" />
-          <Property Type="String" Name="load_capacity" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="no_person" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="Int32" Name="erector" />
-          <Property Type="String" Name="erector_certificate_no" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="erector_valid_date" Precision="3" />
-          <Property Type="String" Name="scaffold_access" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="Int32" Name="inspector" />
-          <Property Type="String" Name="inspector_certify_no" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="utilization_valid_date" Precision="3" />
-          <Property Type="String" Name="inspector_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="inspector_sign_date" Precision="3" />
-          <Property Type="String" Name="mandatory_fall_prevention" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="fall_prevention_assess" MaxLength="25" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="pre_screening_req" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="pre_screening_fo" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="requestor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="requestor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="requestor_signature_date" Precision="3" />
-          <Property Type="String" Name="supervisor" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="supervisor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="supervisor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="supervisor_signature_date" Precision="3" />
-          <Property Type="String" Name="facility_owner" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="facility_owner_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="facility_owner_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="facility_owner_signature_date" Precision="3" />
-          <Property Type="String" Name="can_screening_req" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_screening_fo" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_requestor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_requestor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="can_requestor_signature_date" Precision="3" />
-          <Property Type="String" Name="can_supervisor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_supervisor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="can_supervisor_signature_date" Precision="3" />
-          <Property Type="String" Name="can_facility_owner_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="can_facility_owner_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="can_facility_owner_signature_date" Precision="3" />
-          <Property Type="Int32" Name="status" />
-          <Property Type="String" Name="pre_screening_note" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="no_inspection" MaxLength="50" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="permit_to_work" Relationship="star_energy_ptwModel.FK_working_height_permit_to_work" FromRole="working_height" ToRole="permit_to_work" />
-        </EntityType>
         <EntityType Name="safety_briefing_user">
           <Key>
             <PropertyRef Name="id" />
@@ -3072,8 +3019,8 @@
           <NavigationProperty Name="permit_to_work2" Relationship="star_energy_ptwModel.FK_permit_to_work_permit_to_work" FromRole="permit_to_work1" ToRole="permit_to_work" />
           <NavigationProperty Name="radiographies" Relationship="star_energy_ptwModel.FK_radiography_permit_to_work" FromRole="permit_to_work" ToRole="radiography" />
           <NavigationProperty Name="safety_briefing" Relationship="star_energy_ptwModel.FK_safety_briefing_permit_to_work" FromRole="permit_to_work" ToRole="safety_briefing" />
-          <NavigationProperty Name="working_height" Relationship="star_energy_ptwModel.FK_working_height_permit_to_work" FromRole="permit_to_work" ToRole="working_height" />
           <NavigationProperty Name="loto_permit" Relationship="star_energy_ptwModel.loto_permit_to_work" FromRole="permit_to_work" ToRole="loto_permit" />
+          <NavigationProperty Name="working_height" Relationship="star_energy_ptwModel.FK_working_height_permit_to_work" FromRole="permit_to_work" ToRole="working_height" />
         </EntityType>
         <Association Name="FK_confined_space_permit_to_work">
           <End Type="star_energy_ptwModel.permit_to_work" Role="permit_to_work" Multiplicity="0..1" />
@@ -3227,18 +3174,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_working_height_permit_to_work">
-          <End Type="star_energy_ptwModel.permit_to_work" Role="permit_to_work" Multiplicity="0..1" />
-          <End Type="star_energy_ptwModel.working_height" Role="working_height" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="permit_to_work">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="working_height">
-              <PropertyRef Name="id_ptw" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="email_error">
           <Key>
             <PropertyRef Name="id" />
@@ -3374,6 +3309,13 @@
           <Property Type="String" Name="cancellation_fo_signature_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="cancellation_notes" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Type="String" Name="cancellation_facility_owner" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="holder_1_glarf" />
+          <Property Type="Int32" Name="holder_2_glarf" />
+          <Property Type="Int32" Name="holder_3_glarf" />
+          <Property Type="Int32" Name="holder_4_glarf" />
+          <Property Type="Int32" Name="holder_5_glarf" />
+          <Property Type="Int32" Name="holder_6_glarf" />
+          <Property Type="Int32" Name="holder_7_glarf" />
           <NavigationProperty Name="loto_coming_holder" Relationship="star_energy_ptwModel.FK_loto_coming_holder_loto_permit" FromRole="loto_permit" ToRole="loto_coming_holder" />
           <NavigationProperty Name="loto_glarf" Relationship="star_energy_ptwModel.FK_loto_permit_loto_glarf" FromRole="loto_permit" ToRole="loto_glarf" />
           <NavigationProperty Name="loto_point" Relationship="star_energy_ptwModel.FK_loto_point_loto_permit" FromRole="loto_permit" ToRole="loto_point" />
@@ -3437,6 +3379,78 @@
         <Association Name="loto_permit_to_work">
           <End Type="star_energy_ptwModel.loto_permit" Role="loto_permit" Multiplicity="*" />
           <End Type="star_energy_ptwModel.permit_to_work" Role="permit_to_work" Multiplicity="*" />
+        </Association>
+        <EntityType Name="working_height">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="id_ptw" />
+          <Property Type="String" Name="wh_no" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="description" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="work_location" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="requestor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="from" Precision="3" />
+          <Property Type="DateTime" Name="until" Precision="3" />
+          <Property Type="Int32" Name="total_crew" />
+          <Property Type="String" Name="access" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="workbox_access" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="ladder_access" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="elevated_access" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="scaffolding" />
+          <Property Type="String" Name="load_capacity" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="no_person" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="erector" />
+          <Property Type="String" Name="erector_certificate_no" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="erector_valid_date" Precision="3" />
+          <Property Type="String" Name="scaffold_access" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="inspector" />
+          <Property Type="String" Name="inspector_certify_no" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="utilization_valid_date" Precision="3" />
+          <Property Type="String" Name="inspector_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="inspector_sign_date" Precision="3" />
+          <Property Type="String" Name="mandatory_fall_prevention" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="fall_prevention_assess" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="pre_screening_req" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="pre_screening_fo" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="requestor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="requestor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="requestor_signature_date" Precision="3" />
+          <Property Type="String" Name="supervisor" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="supervisor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="supervisor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="supervisor_signature_date" Precision="3" />
+          <Property Type="String" Name="facility_owner" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="facility_owner_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="facility_owner_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="facility_owner_signature_date" Precision="3" />
+          <Property Type="String" Name="can_screening_req" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_screening_fo" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_requestor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_requestor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="can_requestor_signature_date" Precision="3" />
+          <Property Type="String" Name="can_supervisor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_supervisor_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="can_supervisor_signature_date" Precision="3" />
+          <Property Type="String" Name="can_facility_owner_signature" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="can_facility_owner_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="DateTime" Name="can_facility_owner_signature_date" Precision="3" />
+          <Property Type="Int32" Name="status" />
+          <Property Type="String" Name="pre_screening_note" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="no_inspection" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="permit_to_work" Relationship="star_energy_ptwModel.FK_working_height_permit_to_work" FromRole="working_height" ToRole="permit_to_work" />
+        </EntityType>
+        <Association Name="FK_working_height_permit_to_work">
+          <End Type="star_energy_ptwModel.permit_to_work" Role="permit_to_work" Multiplicity="0..1" />
+          <End Type="star_energy_ptwModel.working_height" Role="working_height" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="permit_to_work">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="working_height">
+              <PropertyRef Name="id_ptw" />
+            </Dependent>
+          </ReferentialConstraint>
         </Association>
         </Schema>
     </edmx:ConceptualModels>
@@ -4149,66 +4163,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="working_height">
-            <EntityTypeMapping TypeName="star_energy_ptwModel.working_height">
-              <MappingFragment StoreEntitySet="working_height">
-                <ScalarProperty Name="no_inspection" ColumnName="no_inspection" />
-                <ScalarProperty Name="pre_screening_note" ColumnName="pre_screening_note" />
-                <ScalarProperty Name="status" ColumnName="status" />
-                <ScalarProperty Name="can_facility_owner_signature_date" ColumnName="can_facility_owner_signature_date" />
-                <ScalarProperty Name="can_facility_owner_delegate" ColumnName="can_facility_owner_delegate" />
-                <ScalarProperty Name="can_facility_owner_signature" ColumnName="can_facility_owner_signature" />
-                <ScalarProperty Name="can_supervisor_signature_date" ColumnName="can_supervisor_signature_date" />
-                <ScalarProperty Name="can_supervisor_delegate" ColumnName="can_supervisor_delegate" />
-                <ScalarProperty Name="can_supervisor_signature" ColumnName="can_supervisor_signature" />
-                <ScalarProperty Name="can_requestor_signature_date" ColumnName="can_requestor_signature_date" />
-                <ScalarProperty Name="can_requestor_delegate" ColumnName="can_requestor_delegate" />
-                <ScalarProperty Name="can_requestor_signature" ColumnName="can_requestor_signature" />
-                <ScalarProperty Name="can_screening_fo" ColumnName="can_screening_fo" />
-                <ScalarProperty Name="can_screening_req" ColumnName="can_screening_req" />
-                <ScalarProperty Name="facility_owner_signature_date" ColumnName="facility_owner_signature_date" />
-                <ScalarProperty Name="facility_owner_delegate" ColumnName="facility_owner_delegate" />
-                <ScalarProperty Name="facility_owner_signature" ColumnName="facility_owner_signature" />
-                <ScalarProperty Name="facility_owner" ColumnName="facility_owner" />
-                <ScalarProperty Name="supervisor_signature_date" ColumnName="supervisor_signature_date" />
-                <ScalarProperty Name="supervisor_delegate" ColumnName="supervisor_delegate" />
-                <ScalarProperty Name="supervisor_signature" ColumnName="supervisor_signature" />
-                <ScalarProperty Name="supervisor" ColumnName="supervisor" />
-                <ScalarProperty Name="requestor_signature_date" ColumnName="requestor_signature_date" />
-                <ScalarProperty Name="requestor_delegate" ColumnName="requestor_delegate" />
-                <ScalarProperty Name="requestor_signature" ColumnName="requestor_signature" />
-                <ScalarProperty Name="pre_screening_fo" ColumnName="pre_screening_fo" />
-                <ScalarProperty Name="pre_screening_req" ColumnName="pre_screening_req" />
-                <ScalarProperty Name="fall_prevention_assess" ColumnName="fall_prevention_assess" />
-                <ScalarProperty Name="mandatory_fall_prevention" ColumnName="mandatory_fall_prevention" />
-                <ScalarProperty Name="inspector_sign_date" ColumnName="inspector_sign_date" />
-                <ScalarProperty Name="inspector_signature" ColumnName="inspector_signature" />
-                <ScalarProperty Name="utilization_valid_date" ColumnName="utilization_valid_date" />
-                <ScalarProperty Name="inspector_certify_no" ColumnName="inspector_certify_no" />
-                <ScalarProperty Name="inspector" ColumnName="inspector" />
-                <ScalarProperty Name="scaffold_access" ColumnName="scaffold_access" />
-                <ScalarProperty Name="erector_valid_date" ColumnName="erector_valid_date" />
-                <ScalarProperty Name="erector_certificate_no" ColumnName="erector_certificate_no" />
-                <ScalarProperty Name="erector" ColumnName="erector" />
-                <ScalarProperty Name="no_person" ColumnName="no_person" />
-                <ScalarProperty Name="load_capacity" ColumnName="load_capacity" />
-                <ScalarProperty Name="scaffolding" ColumnName="scaffolding" />
-                <ScalarProperty Name="elevated_access" ColumnName="elevated_access" />
-                <ScalarProperty Name="ladder_access" ColumnName="ladder_access" />
-                <ScalarProperty Name="workbox_access" ColumnName="workbox_access" />
-                <ScalarProperty Name="access" ColumnName="access" />
-                <ScalarProperty Name="total_crew" ColumnName="total_crew" />
-                <ScalarProperty Name="until" ColumnName="until" />
-                <ScalarProperty Name="from" ColumnName="from" />
-                <ScalarProperty Name="requestor" ColumnName="requestor" />
-                <ScalarProperty Name="work_location" ColumnName="work_location" />
-                <ScalarProperty Name="description" ColumnName="description" />
-                <ScalarProperty Name="wh_no" ColumnName="wh_no" />
-                <ScalarProperty Name="id_ptw" ColumnName="id_ptw" />
-                <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="safety_briefing_user">
             <EntityTypeMapping TypeName="star_energy_ptwModel.safety_briefing_user">
               <MappingFragment StoreEntitySet="safety_briefing_user">
@@ -4664,6 +4618,13 @@
           <EntitySetMapping Name="loto_permit">
             <EntityTypeMapping TypeName="star_energy_ptwModel.loto_permit">
               <MappingFragment StoreEntitySet="loto_permit">
+                <ScalarProperty Name="holder_7_glarf" ColumnName="holder_7_glarf" />
+                <ScalarProperty Name="holder_6_glarf" ColumnName="holder_6_glarf" />
+                <ScalarProperty Name="holder_5_glarf" ColumnName="holder_5_glarf" />
+                <ScalarProperty Name="holder_4_glarf" ColumnName="holder_4_glarf" />
+                <ScalarProperty Name="holder_3_glarf" ColumnName="holder_3_glarf" />
+                <ScalarProperty Name="holder_2_glarf" ColumnName="holder_2_glarf" />
+                <ScalarProperty Name="holder_1_glarf" ColumnName="holder_1_glarf" />
                 <ScalarProperty Name="cancellation_facility_owner" ColumnName="cancellation_facility_owner" />
                 <ScalarProperty Name="cancellation_notes" ColumnName="cancellation_notes" />
                 <ScalarProperty Name="cancellation_fo_signature_delegate" ColumnName="cancellation_fo_signature_delegate" />
@@ -4743,6 +4704,66 @@
               <ScalarProperty Name="id" ColumnName="id_loto" />
             </EndProperty>
           </AssociationSetMapping>
+          <EntitySetMapping Name="working_height">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.working_height">
+              <MappingFragment StoreEntitySet="working_height">
+                <ScalarProperty Name="no_inspection" ColumnName="no_inspection" />
+                <ScalarProperty Name="pre_screening_note" ColumnName="pre_screening_note" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="can_facility_owner_signature_date" ColumnName="can_facility_owner_signature_date" />
+                <ScalarProperty Name="can_facility_owner_delegate" ColumnName="can_facility_owner_delegate" />
+                <ScalarProperty Name="can_facility_owner_signature" ColumnName="can_facility_owner_signature" />
+                <ScalarProperty Name="can_supervisor_signature_date" ColumnName="can_supervisor_signature_date" />
+                <ScalarProperty Name="can_supervisor_delegate" ColumnName="can_supervisor_delegate" />
+                <ScalarProperty Name="can_supervisor_signature" ColumnName="can_supervisor_signature" />
+                <ScalarProperty Name="can_requestor_signature_date" ColumnName="can_requestor_signature_date" />
+                <ScalarProperty Name="can_requestor_delegate" ColumnName="can_requestor_delegate" />
+                <ScalarProperty Name="can_requestor_signature" ColumnName="can_requestor_signature" />
+                <ScalarProperty Name="can_screening_fo" ColumnName="can_screening_fo" />
+                <ScalarProperty Name="can_screening_req" ColumnName="can_screening_req" />
+                <ScalarProperty Name="facility_owner_signature_date" ColumnName="facility_owner_signature_date" />
+                <ScalarProperty Name="facility_owner_delegate" ColumnName="facility_owner_delegate" />
+                <ScalarProperty Name="facility_owner_signature" ColumnName="facility_owner_signature" />
+                <ScalarProperty Name="facility_owner" ColumnName="facility_owner" />
+                <ScalarProperty Name="supervisor_signature_date" ColumnName="supervisor_signature_date" />
+                <ScalarProperty Name="supervisor_delegate" ColumnName="supervisor_delegate" />
+                <ScalarProperty Name="supervisor_signature" ColumnName="supervisor_signature" />
+                <ScalarProperty Name="supervisor" ColumnName="supervisor" />
+                <ScalarProperty Name="requestor_signature_date" ColumnName="requestor_signature_date" />
+                <ScalarProperty Name="requestor_delegate" ColumnName="requestor_delegate" />
+                <ScalarProperty Name="requestor_signature" ColumnName="requestor_signature" />
+                <ScalarProperty Name="pre_screening_fo" ColumnName="pre_screening_fo" />
+                <ScalarProperty Name="pre_screening_req" ColumnName="pre_screening_req" />
+                <ScalarProperty Name="fall_prevention_assess" ColumnName="fall_prevention_assess" />
+                <ScalarProperty Name="mandatory_fall_prevention" ColumnName="mandatory_fall_prevention" />
+                <ScalarProperty Name="inspector_sign_date" ColumnName="inspector_sign_date" />
+                <ScalarProperty Name="inspector_signature" ColumnName="inspector_signature" />
+                <ScalarProperty Name="utilization_valid_date" ColumnName="utilization_valid_date" />
+                <ScalarProperty Name="inspector_certify_no" ColumnName="inspector_certify_no" />
+                <ScalarProperty Name="inspector" ColumnName="inspector" />
+                <ScalarProperty Name="scaffold_access" ColumnName="scaffold_access" />
+                <ScalarProperty Name="erector_valid_date" ColumnName="erector_valid_date" />
+                <ScalarProperty Name="erector_certificate_no" ColumnName="erector_certificate_no" />
+                <ScalarProperty Name="erector" ColumnName="erector" />
+                <ScalarProperty Name="no_person" ColumnName="no_person" />
+                <ScalarProperty Name="load_capacity" ColumnName="load_capacity" />
+                <ScalarProperty Name="scaffolding" ColumnName="scaffolding" />
+                <ScalarProperty Name="elevated_access" ColumnName="elevated_access" />
+                <ScalarProperty Name="ladder_access" ColumnName="ladder_access" />
+                <ScalarProperty Name="workbox_access" ColumnName="workbox_access" />
+                <ScalarProperty Name="access" ColumnName="access" />
+                <ScalarProperty Name="total_crew" ColumnName="total_crew" />
+                <ScalarProperty Name="until" ColumnName="until" />
+                <ScalarProperty Name="from" ColumnName="from" />
+                <ScalarProperty Name="requestor" ColumnName="requestor" />
+                <ScalarProperty Name="work_location" ColumnName="work_location" />
+                <ScalarProperty Name="description" ColumnName="description" />
+                <ScalarProperty Name="wh_no" ColumnName="wh_no" />
+                <ScalarProperty Name="id_ptw" ColumnName="id_ptw" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

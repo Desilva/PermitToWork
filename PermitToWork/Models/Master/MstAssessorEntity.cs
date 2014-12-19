@@ -55,6 +55,20 @@ namespace PermitToWork.Models.Master
             return list.ToList();
         }
 
+        public List<MstAssessorEntity> getListAssessor(int id)
+        {
+            var list = from a in db.mst_assessor
+                       where a.id_employee != id
+                       select new MstAssessorEntity
+                       {
+                           id = a.id,
+                           id_employee = a.id_employee,
+                           assessor_code = a.assessor_code
+                       };
+            var l = list.ToList();
+            return l;
+        }
+
         public List<MstAssessorEntity> getListAssessor(UserEntity user)
         {
             List<int> listId = this.db.mst_assessor.Select(p => p.id).ToList();

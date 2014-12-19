@@ -21,10 +21,11 @@ namespace PermitToWork.Models.User
         public int? employee_dept { get; set; }
         public string department { get; set; }
         public string employee_no { get; set; }
+        public int? approval_level { get; set; }
 
         public string token { get; set; }
 
-        // public List<user_per_role> roles { get; set; }
+        public List<int> roles { get; set; }
 
         // public star_energi_geoEntities db = new star_energi_geoEntities();
 
@@ -48,7 +49,10 @@ namespace PermitToWork.Models.User
             DAILYLOGLEADER,
             DAILYLOGSUPERVISOR,
             SHEOBSERVATION,
-            ENVIRONMENTAL
+            ENVIRONMENTAL,
+            ADMINFSR,
+            IIRVIEW,
+            ADMINPTW,
         };
 
         public UserEntity() { }
@@ -71,7 +75,7 @@ namespace PermitToWork.Models.User
                 this.employee_dept = response.result.employee_dept;
                 this.department = response.result.department;
                 this.employee_no = response.result.employee_no;
-                // this.roles = response.result.;
+                this.approval_level = response.result.approval_level;
             }
 
             client.Close();
@@ -97,7 +101,8 @@ namespace PermitToWork.Models.User
                 this.employee_dept = response.result.employee_dept;
                 this.department = response.result.department;
                 this.employee_no = response.result.employee_no;
-                // this.roles = response.result.;
+                this.roles = response.result.role.ToList();
+                this.approval_level = response.result.approval_level;
 
                 this.token = response.message;
             }
@@ -128,6 +133,7 @@ namespace PermitToWork.Models.User
                 this.department = response.result.department;
                 this.employee_no = response.result.employee_no;
                 this.token = token;
+                this.approval_level = response.result.approval_level;
                 // this.roles = response.result.;
             }
 
@@ -145,6 +151,7 @@ namespace PermitToWork.Models.User
             this.employee_boss = cloningUser.employee_boss;
             this.department = cloningUser.department;
             this.employee_no = cloningUser.employee_no;
+            this.approval_level = cloningUser.approval_level;
             // this.approval_level = cloningUser.approval_level;
             // this.department = cloningUser.department;
 

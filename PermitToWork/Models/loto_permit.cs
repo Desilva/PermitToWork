@@ -90,6 +90,13 @@ namespace PermitToWork.Models
         public string cancellation_fo_signature_delegate { get; set; }
         public string cancellation_notes { get; set; }
         public string cancellation_facility_owner { get; set; }
+        public Nullable<int> holder_1_glarf { get; set; }
+        public Nullable<int> holder_2_glarf { get; set; }
+        public Nullable<int> holder_3_glarf { get; set; }
+        public Nullable<int> holder_4_glarf { get; set; }
+        public Nullable<int> holder_5_glarf { get; set; }
+        public Nullable<int> holder_6_glarf { get; set; }
+        public Nullable<int> holder_7_glarf { get; set; }
     
         public virtual ICollection<loto_coming_holder> loto_coming_holder { get; set; }
         public virtual loto_glarf loto_glarf { get; set; }

@@ -27,6 +27,15 @@ namespace PermitToWork.Models.Master
             this.user = new UserEntity(Int32.Parse(this.employee), user.token, user);
         }
 
+        public MstRadiographerEntity(int id, UserEntity user, ListUser listUser)
+            : this()
+        {
+            mst_radiographer radiographer = this.db.mst_radiographer.Find(id);
+            ModelUtilization.Clone(radiographer, this);
+
+            this.user = listUser.listUser.Find(p => p.id == Int32.Parse(this.employee));
+        }
+
         public MstRadiographerEntity(mst_radiographer radiographer, UserEntity user)
             : this()
         {

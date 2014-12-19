@@ -59,36 +59,58 @@
                         $('#screening_spv_3').val() + "#" + $('#screening_spv_4').val() + "#" +
                         $('#screening_spv_5').val() + "#" + $('#screening_spv_6').val();
 
+            var r = true;
             if (values.who == "2") {
-                if (values.screening_spv.indexOf("2") >= 0) {
-                    if (values.screening_remark.indexOf("Spv:") < 0) {
-                        alert('Screening contains one or more \'no\'. Please add Notes start with \'Spv:\'');
-                        $('#screening_remark_required').show();
-                        $('#screening_remark_required').html('Notes must be added. Start with \'Spv:\'');
+                if (values.screening_spv.indexOf("2") < 0 && values.screening_spv.indexOf("1") < 0) {
+                    r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                }
+                if (r) {
+                    if (values.screening_spv.indexOf("2") >= 0) {
+                        if (values.screening_remark.indexOf("Spv:") < 0) {
+                            alert('Screening contains one or more \'no\'. Please add Notes start with \'Spv:\'');
+                            $('#screening_remark_required').show();
+                            $('#screening_remark_required').html('Notes must be added. Start with \'Spv:\'');
 
-                        return;
+                            return;
+                        }
                     }
+                } else {
+                    return;
                 }
             } else if (values.who == "3") {
-                if (values.screening_so.indexOf("2") >= 0) {
-                    console.log(values.pre_remark);
-                    if (values.screening_remark.indexOf("SO:") < 0) {
-                        alert('Screening contains one or more \'no\'. Please add Notes start with \'SO:\'');
-                        $('#screening_remark_required').show();
-                        $('#screening_remark_required').html('Notes must be added. Start with \'SO:\'');
+                if (values.screening_so.indexOf("2") < 0 && values.screening_so.indexOf("1") < 0) {
+                    r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                }
+                if (r) {
+                    if (values.screening_so.indexOf("2") >= 0) {
+                        console.log(values.pre_remark);
+                        if (values.screening_remark.indexOf("SO:") < 0) {
+                            alert('Screening contains one or more \'no\'. Please add Notes start with \'SO:\'');
+                            $('#screening_remark_required').show();
+                            $('#screening_remark_required').html('Notes must be added. Start with \'SO:\'');
 
-                        return;
+                            return;
+                        }
                     }
+                } else {
+                    return;
                 }
             } else if (values.who == "4") {
-                if (values.screening_fo.indexOf("2") >= 0) {
-                    if (values.screening_remark.indexOf("FO:") < 0) {
-                        alert('Screening contains one or more \'no\'. Please add Notes start with \'FO:\'');
-                        $('#screening_remark_required').show();
-                        $('#screening_remark_required').html('Notes must be added. Start with \'FO:\'');
+                if (values.screening_fo.indexOf("2") < 0 && values.screening_fo.indexOf("1") < 0) {
+                    r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                }
+                if (r) {
+                    if (values.screening_fo.indexOf("2") >= 0) {
+                        if (values.screening_remark.indexOf("FO:") < 0) {
+                            alert('Screening contains one or more \'no\'. Please add Notes start with \'FO:\'');
+                            $('#screening_remark_required').show();
+                            $('#screening_remark_required').html('Notes must be added. Start with \'FO:\'');
 
-                        return;
+                            return;
+                        }
                     }
+                } else {
+                    return;
                 }
             }
 

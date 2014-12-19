@@ -109,7 +109,7 @@ namespace PermitToWork.Controllers
         public JsonResult ListingEmployee()
         {
             UserEntity user = Session["user"] as UserEntity;
-            List<UserEntity> listUser = new ListUser(user.token, user.id).listUser;
+            List<UserEntity> listUser = new ListUser(user.token, user.id).listUser.ToList();
             return Json(listUser, JsonRequestBehavior.AllowGet);
         }
 

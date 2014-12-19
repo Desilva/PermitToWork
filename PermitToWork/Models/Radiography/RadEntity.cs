@@ -38,6 +38,7 @@ namespace PermitToWork.Models.Radiography
         public string statusText { get; set; }
 
         public bool is_guest { get; set; }
+        public bool isUser { get; set; }
 
         // HIRA Document related
         // public List<HiraEntity> hira_document { get; set; }
@@ -136,28 +137,40 @@ namespace PermitToWork.Models.Radiography
             }
 
             string path = HttpContext.Current.Server.MapPath("~/Upload/Radiography/" + this.id + "/LicenseNumber1");
-
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
             DirectoryInfo d = new DirectoryInfo(path);//Assuming Test is your Folder
             FileInfo[] Files = d.GetFiles(); //Getting Text files
 
             this.listDocumentUploaded.Add(DocumentUploaded.RADIOGRAPHER1LICENSENUMBER.ToString(),Files.Select(p => p.Name).ToList());
 
             path = HttpContext.Current.Server.MapPath("~/Upload/Radiography/" + this.id + "/LicenseNumber2");
-
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
             d = new DirectoryInfo(path);//Assuming Test is your Folder
             Files = d.GetFiles(); //Getting Text files
 
             this.listDocumentUploaded.Add(DocumentUploaded.RADIOGRAPHER2LICENSENUMBER.ToString(), Files.Select(p => p.Name).ToList());
 
             path = HttpContext.Current.Server.MapPath("~/Upload/Radiography/" + this.id + "/LicenseNumberRPO");
-
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
             d = new DirectoryInfo(path);//Assuming Test is your Folder
             Files = d.GetFiles(); //Getting Text files
 
             this.listDocumentUploaded.Add(DocumentUploaded.RADIATIONPOLICENSENUMBER.ToString(), Files.Select(p => p.Name).ToList());
 
             path = HttpContext.Current.Server.MapPath("~/Upload/Radiography/" + this.id + "/Attachment");
-
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
             d = new DirectoryInfo(path);//Assuming Test is your Folder
             Files = d.GetFiles(); //Getting Text files
 
@@ -165,7 +178,39 @@ namespace PermitToWork.Models.Radiography
 
             this.statusText = getStatus();
 
-            generateUserInRadiography(rad, user);
+            generateUserInRadiography(rad, user, null);
+
+            // this.hira_document = new ListHira(this.id_ptw.Value, this.db).listHira;
+        }
+
+        public RadEntity(radiography rad, ListUser listUser, UserEntity user)
+            : this()
+        {
+            // this.ptw = new PtwEntity(fi.id_ptw.Value);
+            ModelUtilization.Clone(rad, this);
+
+            this.is_guest = rad.permit_to_work.is_guest == 1;
+            this.isUser = false;
+
+            int radiographerId = 0;
+
+            if (Int32.TryParse(this.radiographer_1, out radiographerId))
+            {
+                this.radiographer1 = new MstRadiographerEntity(radiographerId, user, listUser);
+            }
+
+            if (Int32.TryParse(this.radiographer_2, out radiographerId))
+            {
+                this.radiographer2 = new MstRadiographerEntity(radiographerId, user, listUser);
+            }
+
+            if (Int32.TryParse(this.radiation_protection_officer, out radiographerId))
+            {
+                this.radiationPO = new MstRadiationPOEntity(radiographerId, user, listUser);
+            }
+            this.statusText = getStatus();
+
+            generateUserInRadiography(rad, user, listUser);
 
             // this.hira_document = new ListHira(this.id_ptw.Value, this.db).listHira;
         }
@@ -288,8 +333,7 @@ namespace PermitToWork.Models.Radiography
 
         public int delete()
         {
-            radiography rad = new radiography();
-            ModelUtilization.Clone(this, rad);
+            radiography rad = this.db.radiographies.Find(this.id);
             this.db.radiographies.Remove(rad);
             int retVal = this.db.SaveChanges();
             return retVal;
@@ -1224,6 +1268,9 @@ namespace PermitToWork.Models.Radiography
                         }
 
                         rad.status = (int)RadStatus.CANSPVAPPROVE;
+
+                        this.ptw = new PtwEntity(rad.id_ptw.Value, user);
+                        this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.REQUESTORCANCELLED, PtwEntity.clearancePermit.RADIOGRAPHY.ToString());
                         break;
                     case 5 /* SHE Officer */:
                         userRad = this.userInRadiography[UserInRadiography.SAFETYOFFICER.ToString()];
@@ -2193,40 +2240,47 @@ namespace PermitToWork.Models.Radiography
 
         #region internal function
 
-        private void generateUserInRadiography(radiography rad, UserEntity user)
+        private void generateUserInRadiography(radiography rad, UserEntity user, ListUser listUsers)
         {
-            ListUser listUser = new ListUser(user.token, user.id);
+            ListUser listUser = listUsers != null ? listUsers : new ListUser(user.token, user.id);
             int userId = 0;
 
             Int32.TryParse(this.@operator, out userId);
+            this.isUser = this.isUser || user.id == userId;
             this.userInRadiography.Add(UserInRadiography.REQUESTOR.ToString(), listUser.listUser.Find(p => p.id == userId));
 
             userId = 0;
             if (this.radiographer1 != null)
             {
+                this.isUser = this.isUser || user.id == this.radiographer1.user.id;
                 this.userInRadiography.Add(UserInRadiography.RADIOGRAPHER1.ToString(), this.radiographer1.user);
             }
 
             if (this.radiographer2 != null)
             {
+                this.isUser = this.isUser || user.id == this.radiographer2.user.id;
                 this.userInRadiography.Add(UserInRadiography.RADIOGRAPHER2.ToString(), this.radiographer2.user);
             }
 
             Int32.TryParse(this.supervisor, out userId);
+            this.isUser = this.isUser || user.id == userId;
             this.userInRadiography.Add(UserInRadiography.SUPERVISOR.ToString(), listUser.listUser.Find(p => p.id == userId));
 
             userId = 0;
             Int32.TryParse(this.safety_officer, out userId);
+            this.isUser = this.isUser || user.id == userId;
             this.userInRadiography.Add(UserInRadiography.SAFETYOFFICER.ToString(), listUser.listUser.Find(p => p.id == userId));
 
             userId = 0;
             Int32.TryParse(this.facility_owner, out userId);
+            this.isUser = this.isUser || user.id == userId;
             this.userInRadiography.Add(UserInRadiography.FACILITYOWNER.ToString(), listUser.listUser.Find(p => p.id == userId));
 
             userId = 0;
             Int32.TryParse(this.operator_delegate, out userId);
             if (userId != 0)
             {
+                this.isUser = this.isUser || user.id == userId;
                 this.userInRadiography.Add(UserInRadiography.RADIOGRAPHER1DELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
@@ -2234,6 +2288,7 @@ namespace PermitToWork.Models.Radiography
             Int32.TryParse(this.radiographer_2_delegate, out userId);
             if (userId != 0)
             {
+                this.isUser = this.isUser || user.id == userId;
                 this.userInRadiography.Add(UserInRadiography.RADIOGRAPHER2DELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
@@ -2241,6 +2296,7 @@ namespace PermitToWork.Models.Radiography
             Int32.TryParse(this.supervisor_delegate, out userId);
             if (userId != 0)
             {
+                this.isUser = this.isUser || user.id == userId;
                 this.userInRadiography.Add(UserInRadiography.SUPERVISORDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
@@ -2248,6 +2304,7 @@ namespace PermitToWork.Models.Radiography
             Int32.TryParse(this.safety_officer_delegate, out userId);
             if (userId != 0)
             {
+                this.isUser = this.isUser || user.id == userId;
                 this.userInRadiography.Add(UserInRadiography.SAFETYOFFICERDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
@@ -2255,6 +2312,7 @@ namespace PermitToWork.Models.Radiography
             Int32.TryParse(this.facility_owner_delegate, out userId);
             if (userId != 0)
             {
+                this.isUser = this.isUser || user.id == userId;
                 this.userInRadiography.Add(UserInRadiography.FACILITYOWNERDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
@@ -2262,6 +2320,7 @@ namespace PermitToWork.Models.Radiography
             Int32.TryParse(this.can_operator_delegate, out userId);
             if (userId != 0)
             {
+                this.isUser = this.isUser || user.id == userId;
                 this.userInRadiography.Add(UserInRadiography.CANRADIOGRAPHER1DELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
@@ -2269,6 +2328,7 @@ namespace PermitToWork.Models.Radiography
             Int32.TryParse(this.can_radiographer_2_delegate, out userId);
             if (userId != 0)
             {
+                this.isUser = this.isUser || user.id == userId;
                 this.userInRadiography.Add(UserInRadiography.CANRADIOGRAPHER2DELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
@@ -2276,6 +2336,7 @@ namespace PermitToWork.Models.Radiography
             Int32.TryParse(this.can_supervisor_delegate, out userId);
             if (userId != 0)
             {
+                this.isUser = this.isUser || user.id == userId;
                 this.userInRadiography.Add(UserInRadiography.CANSUPERVISORDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
@@ -2283,6 +2344,7 @@ namespace PermitToWork.Models.Radiography
             Int32.TryParse(this.can_safety_officer_delegate, out userId);
             if (userId != 0)
             {
+                this.isUser = this.isUser || user.id == userId;
                 this.userInRadiography.Add(UserInRadiography.CANSAFETYOFFICERDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
@@ -2290,6 +2352,7 @@ namespace PermitToWork.Models.Radiography
             Int32.TryParse(this.can_fo_delegate, out userId);
             if (userId != 0)
             {
+                this.isUser = this.isUser || user.id == userId;
                 this.userInRadiography.Add(UserInRadiography.CANFACILITYOWNERDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
         }
@@ -2370,15 +2433,9 @@ namespace PermitToWork.Models.Radiography
             foreach (KeyValuePair<string, UserEntity> entry in userInRadiography)
             {
                 UserEntity us = entry.Value;
-                if (entry.Key == UserInRadiography.FACILITYOWNER.ToString())
-                {
-                    List<UserEntity> listDel = us.GetDelegateFO(user);
-                    if (listDel.Exists(p => p.id == user.id))
-                    {
-                        return true;
-                    }
-                }
-                if (us != null && (user.id == us.id || user.id == us.employee_delegate))
+                if (entry.Key == UserInRadiography.FACILITYOWNER.ToString() || entry.Key == UserInRadiography.REQUESTOR.ToString() || entry.Key == UserInRadiography.SUPERVISOR.ToString())
+                {  
+                } else if (us != null && (user.id == us.id || user.id == us.employee_delegate))
                 {
                     return true;
                 }

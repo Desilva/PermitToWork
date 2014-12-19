@@ -1,6 +1,8 @@
 ﻿@{
     bool? inspector = ViewBag.inspector as bool?;
     bool? isFo = ViewBag.isFo as bool?;
+    bool? isProd = ViewBag.isProd as bool?;
+    PermitToWork.Models.User.UserEntity user = Session["user"] as PermitToWork.Models.User.UserEntity;
 }
 <!DOCTYPE html>
 <html>
@@ -42,16 +44,20 @@
 		<div id="user-nav" class="navbar navbar-inverse">
             <ul class="nav btn-group">
                 <li class="btn btn-inverse" ><a title="" href="#" class="disabled"><i class="icon icon-user"></i> <span class="text">@((Session["user"] as PermitToWork.Models.User.UserEntity).alpha_name)</span></a></li>
-                <li class="btn btn-inverse"><a title="" href="Login/Logout" id="logout"><i class="icon icon-share-alt"></i> <span class="text">Logout</span></a></li>
+                <li class="btn btn-inverse"><a title="" href="@Url.Action("Logout","Login")" id="logout"><i class="icon icon-share-alt"></i> <span class="text">Logout</span></a></li>
             </ul>
         </div>
             
 		<div id="sidebar">
 			<a href="#" class="visible-phone"><i class="icon icon-home"></i> Dashboard</a>
 			<ul>
+                @if (user.roles.Exists(p => p == (int)PermitToWork.Models.User.UserEntity.role.ADMINMASTERSHE || p == (int)PermitToWork.Models.User.UserEntity.role.ADMINPTW))
+                {
                 <li class="submenu" id="master-data">
 					<a href="#"><i class="icon icon-th-list"></i> <span>Master Data</span></a>
                     <ul>
+                        @if (user.roles.Exists(p => p == (int)PermitToWork.Models.User.UserEntity.role.ADMINMASTERSHE))
+                        {
                         <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "Hira")');">HIRA Management</a></li>
                         <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterPtwHolderNo")');">PTW Holder No</a></li>
                         <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterRequestedPtwNo")');">Requested PTW Holder No</a></li>
@@ -66,17 +72,23 @@
                         <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterDepartment")');">Department</a></li>
                         <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterSection")');">Section</a></li>
                         <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterAreaCode")');">Area Code</a></li>
-                        <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterLockBox")');">Lock Box</a></li>
                         <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterRadiationPO")');">Radiation Protection Officer</a></li>
                         <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterRadiographer")');">Radiographer</a></li>
+                        }
+                        <li><a href="#" onclick="$('#sidebar li').removeClass('active');$('#master-data').addClass('active');$('#content').load('@Url.Action("Index", "MasterLockBox")');">Lock Box</a></li>
 					</ul>
 				</li>
+                }
 				<li id="home" class="active home"><a href="#"><i class="icon icon-home"></i> <span>Dashboard</span></a></li>
                 @if (inspector == true) {
                 <li id="scaffold-inspection" class="" data-url="@Url.Action("Index","InspectionNo")"><a href="#"><i class="icon icon-th-list"></i> <span>Scaffolding Inspection</span></a></li>
                 }
+                @if (isProd == true) {
                 <li id="loto-point" class="" data-url="@Url.Action("LotoPoint","Loto")"><a href="#"><i class="icon icon-th-list"></i> <span>Remove LOTO Point</span></a></li>
+                }
+                @if (isFo == true) {
                 <li id="delegate-fo" class="" data-url="@Url.Action("Index","MasterDelegateFO")"><a href="#"><i class="icon icon-th-list"></i> <span>Delegation FO</span></a></li>
+                }
 			</ul>	
 		</div>
         <div id="content">

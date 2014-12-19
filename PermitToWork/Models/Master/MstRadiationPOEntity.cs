@@ -27,6 +27,15 @@ namespace PermitToWork.Models.Master
             this.user = new UserEntity(Int32.Parse(this.employee), user.token, user);
         }
 
+        public MstRadiationPOEntity(int id, UserEntity user, ListUser listUser)
+            : this()
+        {
+            mst_radiation_po radiationPO = this.db.mst_radiation_po.Find(id);
+            ModelUtilization.Clone(radiationPO, this);
+
+            this.user = listUser.listUser.Find(p => p.id == Int32.Parse(this.employee));
+        }
+
         public MstRadiationPOEntity(mst_radiation_po radiationPO, UserEntity user)
             : this()
         {

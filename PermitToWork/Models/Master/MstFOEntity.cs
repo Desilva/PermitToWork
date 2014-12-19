@@ -48,6 +48,18 @@ namespace PermitToWork.Models.Master
             this.user = new UserEntity(this.id_employee.Value, user.token, user);
         }
 
+        public MstFOEntity(int id, UserEntity user, ListUser listUser)
+        {
+            this.db = new star_energy_ptwEntities();
+            mst_facility_owner fac_owner = this.db.mst_facility_owner.Find(id);
+
+            this.id = fac_owner.id;
+            this.id_employee = fac_owner.id_employee;
+            this.fo_code = fac_owner.fo_code;
+            this.fo_name = fac_owner.fo_name;
+            this.user = listUser.listUser.Find(p => p.id == this.id_employee.Value);
+        }
+
         public MstFOEntity(string fo_code, UserEntity user)
         {
             this.db = new star_energy_ptwEntities();

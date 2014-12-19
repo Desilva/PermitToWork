@@ -259,6 +259,73 @@
             $('#rejection').modal('show');
         });
 
+        $("#file-attachment").kendoUpload({
+            async: {
+                saveUrl: "@Url.Action("saveAttachment", "Hw")",
+                removeUrl: "@Url.Action("removeAttachment", "Hw")",
+                autoUpload: true,
+            },
+            upload: onUpload,
+            remove: onRemove,
+            success: onSuccessAttachment,
+        });
+
+        $fileList = $("#existing-files-attachment");
+
+        if ($fileList.length > 0) {
+            $("#file-attachment").parent().parent().parent('div.k-upload').append($fileList);
+            $files = $(".k-file");
+            _fn = function (item) {
+                var $item, fileId, filenames;
+                $item = $(item);
+                fileId = $item.data("att-id");
+                filenames = [
+                  {
+                      name: fileId
+                  }
+                ];
+                return $item.data("fileNames", filenames);
+            };
+            for (_i = 0, _len = $files.length; _i < _len; _i++) {
+                item = $files[_i];
+                _fn(item);
+            }
+            $fileList.show();
+        }
+
+        function onUpload(e) {
+            // Array with information about the uploaded files
+            var files = e.files;
+
+            // Check the extension of each file and abort the upload if it is not .pdf
+            $.each(files, function () {
+                if (this.extension != ".pdf") {
+                    //alert("Only .pdf files can be uploaded.")
+                    //e.preventDefault();
+                }
+            });
+            e.data = { id: '@Model.id' };
+        }
+
+        function onRemove(e) {
+            e.data = { id: '@Model.id' };
+        }
+
+        function onSuccessAttachment(e) {
+            var files = e.files;
+            // Check the extension of each file and abort the upload if it is not .jpg
+            $.each(files, function () {
+                $('.k-filename[title="' + this.name + '"]').html('<a href="@Url.Content("~/Upload/HotWork/" + Model.id)' + this.name + '">' + this.name + '</a>');
+            });
+        }
+
+        @if (!(((Model.is_guest && user_hw[1] == true) || user_hw[0] == true) && Model.status >= (int)HwEntity.statusHW.ACCFO && Model.status <= (int)HwEntity.statusHW.CANCEL && ptwStatus >= (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.ACCFO))
+        {
+        <text>
+        $('#file-attachment').data('kendoUpload').disable();
+        </text>
+        }
+
         $('#reject_button').click(function () {
             var type = $('#type_reject').val();
             var url = '';
@@ -709,54 +776,61 @@
                 screening_7_db += '#' + $('#screening_7_' + i).val();
             }
 
-            if ((screening_spv_db.indexOf("2") < 0 || $('#notes').val().indexOf("Spv:") >= 0) &&
-                (screening_fo_db.indexOf("2") < 0 || $('#notes').val().indexOf("FO:") >= 0)) {
-                var values = {
-                    fire_watch: $('#fire_watch').val(),
-                    purpose: $('#purpose').val(),
-                    validity_period_start: $('#validity_period_start').val(),
-                    validity_period_end: $('#validity_period_end').val(),
-                    screening_spv_db: screening_spv_db,
-                    screening_fo_db: screening_fo_db,
-                    screening_1_db: screening_1_db,
-                    screening_2_db: screening_2_db,
-                    screening_3_db: screening_3_db,
-                    screening_4_db: screening_4_db,
-                    screening_5_db: screening_5_db,
-                    screening_6_db: screening_6_db,
-                    screening_7_db: screening_7_db,
-                    notes: $('#notes').val(),
-                    methane_result: $('#methane_result').val(),
-                    o2_result: $('#o2_result').val(),
-                    h2s_result: $('#h2s_result').val(),
-                    co_result: $('#co_result').val(),
-                    other_gas: $('#other_gas').val(),
-                    other_result: $('#other_result').val(),
-                    acc_gas_tester: $('#acc_gas_tester').val(),
-                    acc_fire_watch: $('#acc_fire_watch').val()
+            var r = true;
+            if ('@(Model.status == (int)PermitToWork.Models.Hw.HwEntity.statusHW.SPVSCREENING)' == 'True' && screening_fo_db.indexOf("2") < 0 && screening_fo_db.indexOf("1") < 0) {
+                r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+            }
 
-                };
+            if (r) {
+                if ((screening_spv_db.indexOf("2") < 0 || $('#notes').val().indexOf("Spv:") >= 0) &&
+                    (screening_fo_db.indexOf("2") < 0 || $('#notes').val().indexOf("FO:") >= 0)) {
+                    var values = {
+                        fire_watch: $('#fire_watch').val(),
+                        purpose: $('#purpose').val(),
+                        validity_period_start: $('#validity_period_start').val(),
+                        validity_period_end: $('#validity_period_end').val(),
+                        screening_spv_db: screening_spv_db,
+                        screening_fo_db: screening_fo_db,
+                        screening_1_db: screening_1_db,
+                        screening_2_db: screening_2_db,
+                        screening_3_db: screening_3_db,
+                        screening_4_db: screening_4_db,
+                        screening_5_db: screening_5_db,
+                        screening_6_db: screening_6_db,
+                        screening_7_db: screening_7_db,
+                        notes: $('#notes').val(),
+                        methane_result: $('#methane_result').val(),
+                        o2_result: $('#o2_result').val(),
+                        h2s_result: $('#h2s_result').val(),
+                        co_result: $('#co_result').val(),
+                        other_gas: $('#other_gas').val(),
+                        other_result: $('#other_result').val(),
+                        acc_gas_tester: $('#acc_gas_tester').val(),
+                        acc_fire_watch: $('#acc_fire_watch').val()
 
-                values.id = '@Model.id';
-                $('#loading').css('display', 'inline-block');
-                $.post("@Url.Action("EditHw","Hw")", values, function (resp) {
-                    $('#loading').css('display', 'none');
-                    if (resp.status == "200") {
-                        alert("Hot Work Permit save successful!");
-                        $('#content').load('@Url.Action("Edit", "Hw", new { id = Model.id })');
-                    } else if (resp.status == "400")
-                        alert("Hot Work Permit failed to save\nMessage : " + resp.message);
-                });
-            } else {
-                $('#notes_required').show();
-                var a = "";
-                if ('@(Model.status == (int)PermitToWork.Models.Hw.HwEntity.statusHW.SPVSCREENING)' == 'True') {
-                    a = "FO";
+                    };
+
+                    values.id = '@Model.id';
+                    $('#loading').css('display', 'inline-block');
+                    $.post("@Url.Action("EditHw","Hw")", values, function (resp) {
+                        $('#loading').css('display', 'none');
+                        if (resp.status == "200") {
+                            alert("Hot Work Permit save successful!");
+                            $('#content').load('@Url.Action("Edit", "Hw", new { id = Model.id })');
+                        } else if (resp.status == "400")
+                            alert("Hot Work Permit failed to save\nMessage : " + resp.message);
+                    });
                 } else {
-                    a = "Spv";
+                    $('#notes_required').show();
+                    var a = "";
+                    if ('@(Model.status == (int)PermitToWork.Models.Hw.HwEntity.statusHW.SPVSCREENING)' == 'True') {
+                        a = "FO";
+                    } else {
+                        a = "Spv";
+                    }
+                    $('#notes_required').html('Notes must be added. Start with \'' + a + ':\'');
+                    alert('Screening contains one or more \'no\'. Please add Notes start with \'' + a + ':\'');
                 }
-                $('#notes_required').html('Notes must be added. Start with \'' + a + ':\'');
-                alert('Screening contains one or more \'no\'. Please add Notes start with \'' + a + ':\'');
             }
         }
     }
@@ -2129,7 +2203,30 @@
     </table>
 }
     <br />
+    <div class="row-fluid">
+        <div class="span12">
+            Attachment(s)
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span12">
+            <input name="files" id="file-attachment" type="file" class="radiography-file" />
+            <ul id="existing-files-attachment" class="k-upload-files k-reset" style="display: none;">
+                @foreach (string file in Model.listDocumentUploaded[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.DocumentUploaded.ATTACHMENT.ToString()])
+                {
+                <li class="k-file" data-att-id="@(file)">
+                    <span class="k-icon k-success">uploaded</span>
+                    <span class="k-filename" title="@(file)"><a href="@Url.Content("~/Upload/HotWork/" + Model.id + "/" + file)" target="_blank">@file</a><span class="k-progress"><span class="k-state-selected k-progress-status" style="width: 100%;"></span></span></span>
+                    <button type="button" class="k-button k-button-icontext k-upload-action" @((((Model.is_guest && user_hw[1] == true) || user_hw[0] == true) && Model.status >= (int)HwEntity.statusHW.ACCFO && Model.status <= (int)HwEntity.statusHW.CANCEL && ptwStatus >= (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.ACCFO) ? "" : "disabled")><span class="k-icon k-delete"></span>Remove</button>
+                </li>
+                }
+            </ul>
+        </div>
 
+    </div>
+    <div class="row-fluid">
+        <div class="span12"></div>
+    </div>
     <button class="btn" onclick="back()">Back</button>  
     @if (isCanEdit[0] == true)
     {

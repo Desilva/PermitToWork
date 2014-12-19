@@ -35,7 +35,7 @@ namespace PermitToWork.Models.Master
             : this()
         {
             ModelUtilization.Clone(mst_no_inspection, this);
-            if (mst_no_inspection.id_inspection != null)
+            if (mst_no_inspection.id_inspection != null && mst_no_inspection.id_inspection != 0)
             {
                 s = new ScaffoldingInspectionModel(mst_no_inspection.id_inspection.Value);
             }

@@ -75,6 +75,27 @@
                 </div>
             </div>
             <div class="row-fluid">
+                <div class="span12">
+                    Attachment(s)
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span12">
+                    <input name="files" id="file-attachment" type="file" class="radiography-file" />
+                    <ul id="existing-files-attachment" class="k-upload-files k-reset" style="display: none;">
+                        @foreach (string file in Model.listDocumentUploaded[PermitToWork.Models.WorkingHeight.WorkingHeightEntity.DocumentUploaded.ATTACHMENT.ToString()])
+                        {
+                        <li class="k-file" data-att-id="@(file)">
+                            <span class="k-icon k-success">uploaded</span>
+                            <span class="k-filename" title="@(file)"><a href="@Url.Content("~/Upload/Loto/Attachment/" + Model.id + "/" + file)" target="_blank">@file</a><span class="k-progress"><span class="k-state-selected k-progress-status" style="width: 100%;"></span></span></span>
+                            <button type="button" class="k-button k-button-icontext k-upload-action" @(isCanEdit[0] || isCanEdit[6]) ? "" : "disabled")><span class="k-icon k-delete"></span>Remove</button>
+                        </li>
+                        }
+                    </ul>
+                </div>
+
+            </div>
+            <div class="row-fluid">
                 <table class="table">
                     <tr>
                         <td style="width:30%">
@@ -203,61 +224,6 @@
                             </tr>
                                     }
                                 }
-                                @*<td class="text-center">2</td>
-                                <td class="text-center">
-                                    @if (Model.approval_holder_2_signature != null)
-                                    {
-                                        <img width="25" height="25" src="@Model.approval_holder_2_signature" /><br />
-                                    }
-                                    @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER2.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER2.ToString()].alpha_name : "")
-                                </td>
-                                <td class="text-center">@(Model.approval_holder_2_datetime != null ? Model.approval_holder_2_datetime.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
-                            </tr>*@
-                            @*<tr>
-                                <td class="text-center">3</td>
-                                <td class="text-center">@if (Model.approval_holder_3_signature != null)
-                                                        {
-                                        <img width="25" height="25" src="@Model.approval_holder_3_signature" /><br />
-                                                        }
-                                    @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER3.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER3.ToString()].alpha_name : "")</td>
-                                <td class="text-center">@(Model.approval_holder_3_datetime != null ? Model.approval_holder_3_datetime.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">4</td>
-                                <td class="text-center">@if (Model.approval_holder_4_signature != null)
-                                                        {
-                                        <img width="25" height="25" src="@Model.approval_holder_4_signature" /><br />
-                                                        }
-                                    @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER4.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER4.ToString()].alpha_name : "")</td>
-                                <td class="text-center">@(Model.approval_holder_4_datetime != null ? Model.approval_holder_4_datetime.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">5</td>
-                                <td class="text-center">@if (Model.approval_holder_5_signature != null)
-                                                        {
-                                        <img width="25" height="25" src="@Model.approval_holder_5_signature" /><br />
-                                                        }
-                                    @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER5.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER5.ToString()].alpha_name : "")</td>
-                                <td class="text-center">@(Model.approval_holder_5_datetime != null ? Model.approval_holder_5_datetime.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">6</td>
-                                <td class="text-center">@if (Model.approval_holder_6_signature != null)
-                                                        {
-                                        <img width="25" height="25" src="@Model.approval_holder_6_signature" /><br />
-                                                        }
-                                    @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER6.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER6.ToString()].alpha_name : "")</td>
-                                <td class="text-center">@(Model.approval_holder_6_datetime != null ? Model.approval_holder_6_datetime.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">7</td>
-                                <td class="text-center">@if (Model.approval_holder_7_signature != null)
-                                                        {
-                                        <img width="25" height="25" src="@Model.approval_holder_7_signature" /><br />
-                                                        }
-                                    @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER7.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER7.ToString()].alpha_name : "")</td>
-                                <td class="text-center">@(Model.approval_holder_7_datetime != null ? Model.approval_holder_7_datetime.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
-                            </tr>*@
                             <tr>
                                 <td colspan="5">
                                     Note:
@@ -494,6 +460,10 @@
                                     {
                                     <img src="@Model.cancellation_fo_signature" width="100" height="100" /><br />
                                     }
+                                    @if (Model.cancellation_fo_signature != null && Model.cancellation_fo_signature.Substring(0, 1) == "d")
+                                    {
+                                        <text>@Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.CANCELLATIONFACILITYOWNERDELEGATE.ToString()].alpha_name<br />a/n </text>
+                                    }
                                     @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.CANCELLATIONFACILITYOWNER.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.CANCELLATIONFACILITYOWNER.ToString()].alpha_name : "")<br />
                                     Facility Owner</td>
                                 <td>No</td>
@@ -554,51 +524,6 @@
                             </tr>
                                     }
                                 }
-                            @*<tr>
-                                <td class="text-center">3</td>
-                                <td class="text-center">@if (Model.cancellation_holder_3_signature != null)
-                                                        {
-                                        <img width="25" height="25" src="@Model.cancellation_holder_3_signature" /><br />
-                                                        }
-                                    @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER3.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER3.ToString()].alpha_name : "")</td>
-                                <td class="text-center">@(Model.cancellation_holder_3_signature_date != null ? Model.cancellation_holder_3_signature_date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">4</td>
-                                <td class="text-center">@if (Model.cancellation_holder_4_signature != null)
-                                                        {
-                                        <img width="25" height="25" src="@Model.cancellation_holder_4_signature" /><br />
-                                                        }
-                                    @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER4.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER4.ToString()].alpha_name : "")</td>
-                                <td class="text-center">@(Model.cancellation_holder_4_signature_date != null ? Model.cancellation_holder_4_signature_date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">5</td>
-                                <td class="text-center">@if (Model.cancellation_holder_5_signature != null)
-                                                        {
-                                        <img width="25" height="25" src="@Model.cancellation_holder_5_signature" /><br />
-                                                        }
-                                    @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER5.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER5.ToString()].alpha_name : "")</td>
-                                <td class="text-center">@(Model.cancellation_holder_5_signature_date != null ? Model.cancellation_holder_5_signature_date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">6</td>
-                                <td class="text-center">@if (Model.cancellation_holder_6_signature != null)
-                                                        {
-                                        <img width="25" height="25" src="@Model.cancellation_holder_6_signature" /><br />
-                                                        }
-                                    @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER6.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER6.ToString()].alpha_name : "")</td>
-                                <td class="text-center">@(Model.cancellation_holder_6_signature_date != null ? Model.cancellation_holder_6_signature_date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">7</td>
-                                <td class="text-center">@if (Model.cancellation_holder_7_signature != null)
-                                                        {
-                                        <img width="25" height="25" src="@Model.cancellation_holder_7_signature" /><br />
-                                                        }
-                                    @(Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER7.ToString()] != null ? Model.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER7.ToString()].alpha_name : "")</td>
-                                <td class="text-center">@(Model.cancellation_holder_7_signature_date != null ? Model.cancellation_holder_7_signature_date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
-                            </tr>*@
                             <tr>
                                 <td colspan="5">
                                     Note:
@@ -620,6 +545,7 @@
                     @if (isCanEdit[1])
                     {
                         <input type="button" class="btn btn-success" value="Save and Send to Inspect" id="save-inspect" />
+                        <input type="button" class="btn btn-danger" value="Reject To Supervisor" id="reject-spv" />
                         <input type="button" class="btn btn-default" value="Save as Draft" id="save-draft-2" data-state="@(isCanEdit[6] ? 1 : 0)" />
                     }
                     @if (isCanEdit[7])
@@ -733,6 +659,51 @@
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
     <button class="btn btn-primary" id="save-remove">Save</button>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="suspension-comment-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="Add" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="request-suspension-modal-title">Suspension's Comment</h3>
+  </div>
+  <div class="modal-body">
+    <form class="form-horizontal">
+        <div class="control-group">
+            <label class="control-label" for="removed-by">Comment: </label>
+            <div class="controls">
+                <textarea id="comment-suspension" row="5" />
+            </div>
+        </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="save-comment-suspension">Save</button>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="reject-spv-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="Add" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="reject-spv-modal-title">Reject Comment</h3>
+  </div>
+  <div class="modal-body">
+    <form class="form-horizontal">
+        <div class="control-group">
+            <label class="control-label" for="removed-by">Comment: </label>
+            <div class="controls">
+                <textarea id="comment-reject-spv" row="5" />
+            </div>
+        </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary" id="save-reject-spv">Save</button>
+    <span id="reject-spv-loading" style="display:none"><img src="@Url.Content("~/Content/Images/loading.gif")" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span>      
   </div>
 </div>
 
@@ -878,6 +849,91 @@
             pageSize: 10
         });
 
+        $('#reject-spv').click(function () {
+            $('#reject-spv-modal').modal('show');
+        });
+
+        $('#save-reject-spv').click(function () {
+            var val = {
+                id: '@Model.id',
+                comment: $('#comment-reject-spv').val(),
+            };
+            $('#reject-spv-loading').css('display', 'inline-block');
+            $.post('@Url.Action("RejectToSupervisor", "Loto")', val, function (resp) {
+                $('#reject-spv-modal').modal('hide');
+                $('#reject-spv-loading').hide();
+                alert('LOTO Permit is rejected. Supervisor has been informed.');
+                $('#content').load('@Url.Action("Edit", "Loto", new { id = Model.id })');
+            });
+        });
+
+        $("#file-attachment").kendoUpload({
+            async: {
+                saveUrl: "@Url.Action("saveAttachmentLoto", "Loto")",
+                removeUrl: "@Url.Action("removeAttachmentLoto", "Loto")",
+                autoUpload: true,
+            },
+            upload: onUpload,
+            remove: onRemove,
+            success: onSuccessAttachment,
+        });
+
+        $fileList = $("#existing-files-attachment");
+
+        if ($fileList.length > 0) {
+            $("#file-attachment").parent().parent().parent('div.k-upload').append($fileList);
+            $files = $(".k-file");
+            _fn = function (item) {
+                var $item, fileId, filenames;
+                $item = $(item);
+                fileId = $item.data("att-id");
+                filenames = [
+                  {
+                      name: fileId
+                  }
+                ];
+                return $item.data("fileNames", filenames);
+            };
+            for (_i = 0, _len = $files.length; _i < _len; _i++) {
+                item = $files[_i];
+                _fn(item);
+            }
+            $fileList.show();
+        }
+
+        function onUpload(e) {
+            // Array with information about the uploaded files
+            var files = e.files;
+
+            // Check the extension of each file and abort the upload if it is not .pdf
+            $.each(files, function () {
+                if (this.extension != ".pdf") {
+                    //alert("Only .pdf files can be uploaded.")
+                    //e.preventDefault();
+                }
+            });
+            e.data = { id: '@Model.id' };
+        }
+
+        function onRemove(e) {
+            e.data = { id: '@Model.id' };
+        }
+
+        function onSuccessAttachment(e) {
+            var files = e.files;
+            // Check the extension of each file and abort the upload if it is not .jpg
+            $.each(files, function () {
+                $('.k-filename[title="' + this.name + '"]').html('<a href="@Url.Content("~/Upload/Loto/Attachment/" + Model.id)' + this.name + '">' + this.name + '</a>');
+            });
+        }
+
+        @if (!(isCanEdit[0] || isCanEdit[6]))
+        {
+        <text>
+        $('#file-attachment').data('kendoUpload').disable();
+        </text>
+        }
+
         $("#grid-loto-point").kendoGrid({
             dataSource: dataSourceIn,
             pageable: true,
@@ -968,12 +1024,12 @@
         function appliedEditor(container, options) {
             $('<input data-text-field="alpha_name" data-value-field="id" data-bind="value:' + options.field + '" @(isCanEdit[1] || isCanEdit[8] || isCanEdit[19] || isCanEdit[25] ? "" : "disabled") />')
                 .appendTo(container)
-                .kendoDropDownList({
+                .kendoComboBox({
                     autoBind: true,
                     dataSource: {
                         transport: {
                             dataType: "json",
-                            read: '@Url.Action("ListingEmployee", "Loto")'
+                            read: '@Url.Action("ListingEmployee2", "Loto")'
                         }
                     },
                     optionLabel: "--Select One--",
@@ -998,7 +1054,7 @@
                     dataSource: {
                         transport: {
                             dataType: "json",
-                            read: '@Url.Action("ListingEmployee", "Loto")'
+                            read: '@Url.Action("ListingEmployee2", "Loto")'
                         }
                     },
                     optionLabel: "--Select One--",
@@ -1128,6 +1184,10 @@
                 initial_pad_lock: $('#initial-pad-lock').val(),
                 qty_pad_lock_usage: $('#pad-lock-usage').val(),
                 balance: $('#balance').val(),
+            }
+            if ($('.k-grid-edit-row').length > 0) {
+                alert('You have some point that hasn\'t been saved yet. Please click "Update" to save that point');
+                return;
             }
             $('#loading').show();
             if ($(this).data('state') == 1) {
@@ -1278,11 +1338,18 @@
         });
 
         $('#request-suspension').click(function () {
+            $('#comment-suspension').val('');
+            $('#suspension-comment-modal').modal('show');
+        });
+
+        $('#save-comment-suspension').click(function () {
             var values = {
                 id: '@Model.id',
+                comment: $('#comment-suspension').val()
             }
             $.post('@Url.Action("RequestSuspension", "Loto")', values, function (resp) {
                 alert('Suspension is requested. You may make changes on the LOTO Point then send for approval.');
+                $('#suspension-comment-modal').modal('hide');
                 $('#content').load('@Url.Action("Edit", "Loto")');
                 $('#grid-loto-point').focus();
             });
@@ -1531,7 +1598,7 @@
     function getLOTOPoint(a) {
         var res = "";
         if (a != null) {
-            
+            if (typeof (a) != typeof("a")) a = a.code;
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("FindLotoPoint", "Loto")',
@@ -1548,6 +1615,8 @@
     function getAppliedName(a) {
         var res = "";
         if (a != null) {
+            console.log(a);
+            if (typeof (a) != typeof ("243")) a = a.id;
             $.ajax({
                 type: "POST",
                 url: '@Url.Action("FindEmployee", "Loto")',

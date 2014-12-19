@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Web;
+using System.IO;
 
 namespace PermitToWork.Models.ClearancePermit
 {
@@ -36,9 +37,11 @@ namespace PermitToWork.Models.ClearancePermit
         public string statusText { get; set; }
 
         public bool is_guest { get; set; }
+        public bool isUser { get; set; }
 
 
         public Dictionary<string, UserEntity> userInCSEP { get; set; }
+        public Dictionary<string, List<string>> listDocumentUploaded { get; set; }
 
         public enum CsepStatus
         {
@@ -95,6 +98,7 @@ namespace PermitToWork.Models.ClearancePermit
         public CsepEntity() : base()
         {
             this.db = new star_energy_ptwEntities();
+            this.listDocumentUploaded = new Dictionary<string, List<string>>();
         }
 
         // constructor with id to get object from database
@@ -120,7 +124,29 @@ namespace PermitToWork.Models.ClearancePermit
 
             this.statusText = getStatus();
 
+            string path = HttpContext.Current.Server.MapPath("~/Upload/ConfinedSpace/" + this.id + "");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            DirectoryInfo d = new DirectoryInfo(path);//Assuming Test is your Folder
+            FileInfo[] Files = d.GetFiles(); //Getting Text files
+
+            this.listDocumentUploaded.Add("ATTACHMENT", Files.Select(p => p.Name).ToList());
+
             this.hira_document = new ListHira(this.id_ptw.Value, this.db).listHira;
+        }
+
+        public CsepEntity(confined_space csep, UserEntity user)
+            : this()
+        {
+            // this.ptw = new PtwEntity(fi.id_ptw.Value);
+            ModelUtilization.Clone(csep, this);
+
+            this.is_guest = csep.permit_to_work.is_guest == 1;
+
+            this.statusText = getStatus();
         }
 
         public CsepEntity(int id_ptw, string work_leader, string purpose, string acc_spv = null, string acc_spv_del = null, string acc_fo = null)
@@ -156,6 +182,12 @@ namespace PermitToWork.Models.ClearancePermit
             this.db.confined_space.Add(csep);
             int retVal = this.db.SaveChanges();
             this.id = csep.id;
+
+            string path = HttpContext.Current.Server.MapPath("~/Upload/ConfinedSpace/" + this.id);
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
             return retVal;
         }
 
@@ -1094,11 +1126,9 @@ namespace PermitToWork.Models.ClearancePermit
 
         public bool isUserInCSEP(UserEntity user)
         {
-            return (isWorkLeader(user) || isAccSupervisor(user) || isAccFireWatch(user) || isAccFO(user) || isAccGasTester(user)
+            return (isAccGasTester(user)
                 || isExtGasTester(user, 1) || isExtGasTester(user, 2) || isExtGasTester(user, 3) || isExtGasTester(user, 4)
-                || isExtGasTester(user, 5) || isExtGasTester(user, 6) || isExtGasTester(user, 7) || isExtFO(user, 1)
-                || isExtFO(user, 2) || isExtFO(user, 3) || isExtFO(user, 4) || isExtFO(user, 5) || isExtFO(user, 6)
-                || isExtFO(user, 7) || isCanSupervisor(user) || isCanFO(user) || isCanFireWatch(user));
+                || isExtGasTester(user, 5) || isExtGasTester(user, 6) || isExtGasTester(user, 7));
         }
 
         #endregion

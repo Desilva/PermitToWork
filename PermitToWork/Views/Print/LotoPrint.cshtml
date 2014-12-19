@@ -3,6 +3,7 @@
 @{
     Layout = null;
     var listUser = ViewBag.listUser as List<PermitToWork.Models.User.UserEntity>;
+    int userId = 0;
 }
 <!DOCTYPE html>
 <html>
@@ -87,58 +88,58 @@
                     @foreach(LotoPointEntity lotoPoint in Model.lotoPoint) {
                     <tr>
                         <td class="td-centre">@i</td>
-                        <td>@(lotoPoint.is_set_empty != 1 ? lotoPoint.tag_id : "--------------")</td>
-                        <td>@(lotoPoint.is_set_empty != 1 ? lotoPoint.description : "--------------")</td>
-                        <td>@(lotoPoint.is_set_empty != 1 ? lotoPoint.drawing_number : "--------------")</td>
-                        <td>@(lotoPoint.is_set_empty != 1 ? lotoPoint.loto_point_proposed : "--------------")</td>
-                        <td>@(lotoPoint.is_set_empty != 1 ? lotoPoint.loto_point_agreed : "--------------")</td>
-                        <td>@(lotoPoint.is_set_empty != 1 ? (lotoPoint.applied_by != null ? listUser.Find(p => p.id == lotoPoint.applied_by.AsInt()).alpha_name : "") : "--------------")</td>
-                        <td>@(lotoPoint.applied_by_time != null ? lotoPoint.applied_by_time.Value.ToString("dd MMM yyyy hh:mm tt") : (lotoPoint.is_set_empty != 1 ? "" : "--------------"))</td>
+                        <td @(lotoPoint.is_removed == 1 ? "style='text-decoration:line-through;'" : "")>@(lotoPoint.is_set_empty != 1 ? lotoPoint.tag_id : "--------------")</td>
+                        <td @(lotoPoint.is_removed == 1 ? "style='text-decoration:line-through;'" : "")>@(lotoPoint.is_set_empty != 1 ? lotoPoint.description : "--------------")</td>
+                        <td @(lotoPoint.is_removed == 1 ? "style='text-decoration:line-through;'" : "")>@(lotoPoint.is_set_empty != 1 ? lotoPoint.drawing_number : "--------------")</td>
+                        <td @(lotoPoint.is_removed == 1 ? "style='text-decoration:line-through;'" : "")>@(lotoPoint.is_set_empty != 1 ? lotoPoint.loto_point_proposed : "--------------")</td>
+                        <td @(lotoPoint.is_removed == 1 ? "style='text-decoration:line-through;'" : "")>@(lotoPoint.is_set_empty != 1 ? lotoPoint.loto_point_agreed : "--------------")</td>
+                        <td @(lotoPoint.is_removed == 1 ? "style='text-decoration:line-through;'" : "")>@(lotoPoint.is_set_empty != 1 ? (lotoPoint.applied_by != null && lotoPoint.applied_by != "null" && Int32.TryParse(lotoPoint.applied_by, out userId) ? listUser.Find(p => p.id == lotoPoint.applied_by.AsInt()).alpha_name : "") : "--------------")</td>
+                        <td @(lotoPoint.is_removed == 1 ? "style='text-decoration:line-through;'" : "")>@(lotoPoint.applied_by_time != null ? lotoPoint.applied_by_time.Value.ToString("dd MMM yyyy hh:mm tt") : (lotoPoint.is_set_empty != 1 ? "" : "--------------"))</td>
                         <td>
                             @if (lotoPoint.inspected_1 != null)
                             {
-                            <img src="@lotoPoint.inspected_1" height="25" />
+                            <img src="@lotoPoint.inspected_1" height="25" width="25" />
                             }
                         </td>
                         <td>
                             @if (lotoPoint.inspected_2 != null)
                             {
-                            <img src="@lotoPoint.inspected_2" height="25" />
+                            <img src="@lotoPoint.inspected_2" height="25" width="25" />
                             }
                         </td>
                         <td>
                             @if (lotoPoint.inspected_3 != null)
                             {
-                            <img src="@lotoPoint.inspected_3" height="25" />
+                            <img src="@lotoPoint.inspected_3" height="25" width="25" />
                             }
                         </td>
                         <td>
                             @if (lotoPoint.inspected_4 != null)
                             {
-                            <img src="@lotoPoint.inspected_4" height="25" />
+                            <img src="@lotoPoint.inspected_4" height="25" width="25" />
                             }
                         </td>
                         <td>
                             @if (lotoPoint.inspected_5 != null)
                             {
-                            <img src="@lotoPoint.inspected_5" height="25" />
+                            <img src="@lotoPoint.inspected_5" height="25" width="25" />
                             }
                         </td>
                         <td>
                             @if (lotoPoint.inspected_6 != null)
                             {
-                            <img src="@lotoPoint.inspected_6" height="25" />
+                            <img src="@lotoPoint.inspected_6" height="25" width="25" />
                             }
                         </td>
                         <td>
                             @if (lotoPoint.inspected_7 != null)
                             {
-                            <img src="@lotoPoint.inspected_7" height="25" />
+                            <img src="@lotoPoint.inspected_7" height="25" width="25" />
                             }
                         </td>
-                        <td>@(lotoPoint.is_set_empty != 1 ? (lotoPoint.removed_by != null ? listUser.Find(p => p.id == lotoPoint.removed_by.AsInt()).alpha_name : "") : "--------------")</td>
-                        <td>@(lotoPoint.removed_by_time != null ? lotoPoint.removed_by_time.Value.ToString("dd MMM yyyy hh:mm tt") : (lotoPoint.is_set_empty != 1 ? "" : "--------------"))</td>
-                        <td>@(lotoPoint.is_set_empty != 1 ? lotoPoint.remarks : "--------------")</td>
+                        <td @(lotoPoint.is_removed == 1 ? "style='text-decoration:line-through;'" : "")>@(lotoPoint.is_set_empty != 1 ? (lotoPoint.removed_by != null ? listUser.Find(p => p.id == lotoPoint.removed_by.AsInt()).alpha_name : "") : "--------------")</td>
+                        <td @(lotoPoint.is_removed == 1 ? "style='text-decoration:line-through;'" : "")>@(lotoPoint.removed_by_time != null ? lotoPoint.removed_by_time.Value.ToString("dd MMM yyyy hh:mm tt") : (lotoPoint.is_set_empty != 1 ? "" : "--------------"))</td>
+                        <td @(lotoPoint.is_removed == 1 ? "style='text-decoration:line-through;'" : "")>@(lotoPoint.is_set_empty != 1 ? lotoPoint.remarks : "--------------")</td>
                     </tr>
                         i++;
                     }

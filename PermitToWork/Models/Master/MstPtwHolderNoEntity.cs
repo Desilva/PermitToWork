@@ -31,7 +31,7 @@ namespace PermitToWork.Models.Master
             this.id_employee = holderNo.id_employee;
             this.ptw_holder_no = holderNo.ptw_holder_no;
             this.activated_date_until = holderNo.activated_date_until;
-            this.user = new UserEntity(this.id_employee.Value, user.token, user);
+            this.user = new UserEntity(this.id_employee != null ? this.id_employee.Value : 0, user.token, user);
         }
 
         public MstPtwHolderNoEntity(int user_id, int a)
@@ -46,7 +46,7 @@ namespace PermitToWork.Models.Master
                 this.ptw_holder_no = "";
                 this.activated_date_until = null;
             }
-            else
+            else if (holderNo.activated_date_until != null && holderNo.activated_date_until.Value.CompareTo(DateTime.Today) >= 0)
             {
                 this.id = holderNo.id;
                 this.id_employee = holderNo.id_employee;

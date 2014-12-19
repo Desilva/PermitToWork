@@ -10,6 +10,7 @@ namespace PermitToWork.Models.Ptw
     {
         string statusText { get; set; }
         int ids { get; set; }
+        bool isUser { get; set; }
         int create();
         int edit();
         int delete();
