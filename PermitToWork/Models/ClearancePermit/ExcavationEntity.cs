@@ -524,6 +524,7 @@ namespace PermitToWork.Models.ClearancePermit
             SendEmail sendEmail = new SendEmail();
             string message = "";
             string title = "";
+            List<int> userIds = new List<int>();
             if (ex != null)
             {
 #if DEBUG
@@ -538,14 +539,17 @@ namespace PermitToWork.Models.ClearancePermit
                             if (this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()] != null)
                             {
                                 listEmail.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].email);
+                                userIds.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].id);
                                 if ((userId = this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].employee_delegate) != null)
                                 {
                                     userEx = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userEx.email);
+                                    userIds.Add(userEx.id);
                                 }
 
                                 title = "Excavation Clearance Permit (" + this.ex_no + ") Need Review and Approval from Supervisor";
                                 message = serverUrl + "Home?p=Excavation/edit/" + this.id;
+                                sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Please approve Excavation Permit No. " + this.ex_no, serverUrl + "Home?p=Excavation/edit/" + this.id);
                             }
                             else
                             {
@@ -558,25 +562,31 @@ namespace PermitToWork.Models.ClearancePermit
                     case 2:
                         if (stat == 1)
                         {
-                            if (this.userInExcavation.Keys.ToList().Exists(p => p == UserInExcavation.FACILITIES.ToString() && p == UserInExcavation.EI.ToString()))
+                            if (this.userInExcavation.Keys.ToList().Exists(p => p == UserInExcavation.FACILITIES.ToString()) && this.userInExcavation.Keys.ToList().Exists(p => p == UserInExcavation.EI.ToString()))
+                            //if (this.userInExcavation.Keys.ToList().Exists(p => p == UserInExcavation.FACILITIES.ToString() && p == UserInExcavation.EI.ToString()))
                             {
 #if !DEBUG
                                 listEmail.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].email);
+                                userIds.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].id);
                                 if ((userId = this.userInExcavation[UserInExcavation.FACILITIES.ToString()].employee_delegate) != null)
                                 {
                                     userEx = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userEx.email);
+                                    userIds.Add(userEx.id);
                                 }
 
                                 listEmail.Add(this.userInExcavation[UserInExcavation.EI.ToString()].email);
+                                userIds.Add(this.userInExcavation[UserInExcavation.EI.ToString()].id);
                                 if ((userId = this.userInExcavation[UserInExcavation.EI.ToString()].employee_delegate) != null)
                                 {
                                     userEx = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userEx.email);
+                                    userIds.Add(userEx.id);
                                 }
 #endif
                                 title = "Excavation Clearance Permit (" + this.ex_no + ") Need Review and Approval from E&I and Civil";
                                 message = serverUrl + "Home?p=Excavation/edit/" + this.id;
+                                sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Please approve Excavation Permit No. " + this.ex_no, serverUrl + "Home?p=Excavation/edit/" + this.id);
                             }
                             else
                             {
@@ -584,20 +594,24 @@ namespace PermitToWork.Models.ClearancePermit
                                 if (this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()] != null)
                                 {
                                     listEmail.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].id);
                                     if ((userId = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].employee_delegate) != null)
                                     {
                                         userEx = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
                                     }
                                     List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user);
                                     foreach (UserEntity u in listDel)
                                     {
                                         listEmail.Add(u.email);
+                                        userIds.Add(u.id);
                                     }
                                 }
 #endif
                                 title = "[URGENT] Excavation Clearance Permit (" + this.ex_no + ") E&I and Civil hasn't been Chosen";
                                 message = serverUrl + "Home?p=Excavation/edit/" + this.id;
+                                //sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Please choose E&I and Civil for Excavation Permit No. " + this.ex_no, serverUrl + "Home?p=Excavation/edit/" + this.id);
                             }
                         }
                         else if (stat == 2)
@@ -608,10 +622,12 @@ namespace PermitToWork.Models.ClearancePermit
                                 if (this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()] != null)
                                 {
                                     listEmail.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].id);
                                     if ((userId = this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].employee_delegate) != null)
                                     {
                                         userEx = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
                                     }
                                 }
                             }
@@ -620,16 +636,19 @@ namespace PermitToWork.Models.ClearancePermit
                                 if (this.userInExcavation[UserInExcavation.REQUESTOR.ToString()] != null)
                                 {
                                     listEmail.Add(this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].id);
                                     if ((userId = this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].employee_delegate) != null)
                                     {
                                         userEx = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
                                     }
                                 }
                             }
 #endif
                             title = "Excavation Clearance Permit (" + this.ex_no + ") Rejected from Supervisor";
                             message = serverUrl + "Home?p=Excavation/edit/" + this.id + "<br />Comment: " + comment;
+                            sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Excavation Permit No. " + this.ex_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Excavation/edit/" + this.id);
                         }
                         retVal = 1;
                         break;
@@ -640,21 +659,26 @@ namespace PermitToWork.Models.ClearancePermit
                             {
 #if !DEBUG
                                 listEmail.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].email);
+                                userIds.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].id);
                                 if ((userId = this.userInExcavation[UserInExcavation.FACILITIES.ToString()].employee_delegate) != null)
                                 {
                                     userEx = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userEx.email);
+                                    userIds.Add(userEx.id);
                                 }
 
                                 listEmail.Add(this.userInExcavation[UserInExcavation.EI.ToString()].email);
+                                userIds.Add(this.userInExcavation[UserInExcavation.EI.ToString()].id);
                                 if ((userId = this.userInExcavation[UserInExcavation.EI.ToString()].employee_delegate) != null)
                                 {
                                     userEx = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userEx.email);
+                                    userIds.Add(userEx.id);
                                 }
 #endif
                                 title = "Excavation Clearance Permit (" + this.ex_no + ") Need Review and Approval from E&I and Civil";
                                 message = serverUrl + "Home?p=Excavation/edit/" + this.id;
+                                sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Please approve Excavation Permit No. " + this.ex_no, serverUrl + "Home?p=Excavation/edit/" + this.id);
                             }
                             else
                             {
@@ -662,20 +686,24 @@ namespace PermitToWork.Models.ClearancePermit
                                 if (this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()] != null)
                                 {
                                     listEmail.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].id);
                                     if ((userId = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].employee_delegate) != null)
                                     {
                                         userEx = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
                                     }
                                     List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user);
                                     foreach (UserEntity u in listDel)
                                     {
                                         listEmail.Add(u.email);
+                                        userIds.Add(u.id);
                                     }
                                 }
 #endif
                                 title = "[URGENT] Excavation Clearance Permit (" + this.ex_no + ") E&I and Civil hasn't been Chosen";
                                 message = serverUrl + "Home?p=Excavation/edit/" + this.id;
+                                sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Please choose E&I and Civil for Excavation Permit No. " + this.ex_no, serverUrl + "Home?p=Excavation/edit/" + this.id);
                             }
                         }
                         else if (stat == 2)
@@ -684,15 +712,18 @@ namespace PermitToWork.Models.ClearancePermit
                             if (this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()] != null)
                             {
                                 listEmail.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].email);
+                                userIds.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].id);
                                 if ((userId = this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].employee_delegate) != null)
                                 {
                                     userEx = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userEx.email);
+                                    userIds.Add(userEx.id);
                                 }
                             }
 #endif
                             title = "Excavation Clearance Permit (" + this.ex_no + ") Rejected from SHE";
                             message = serverUrl + "Home?p=Excavation/edit/" + this.id + "<br />Comment: " + comment;
+                            sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Excavation Permit No. " + this.ex_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Excavation/edit/" + this.id);
                         }
                         retVal = 1;
                         break;
@@ -707,10 +738,12 @@ namespace PermitToWork.Models.ClearancePermit
                                     if (this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()] != null)
                                     {
                                         listEmail.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].email);
+                                        userIds.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].id);
                                         if ((userId = this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].employee_delegate) != null)
                                         {
                                             userEx = new UserEntity(userId.Value, user.token, user);
                                             listEmail.Add(userEx.email);
+                                            userIds.Add(userEx.id);
                                         }
                                     }
                                 }
@@ -719,16 +752,19 @@ namespace PermitToWork.Models.ClearancePermit
                                     if (this.userInExcavation[UserInExcavation.REQUESTOR.ToString()] != null)
                                     {
                                         listEmail.Add(this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].email);
+                                        userIds.Add(this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].id);
                                         if ((userId = this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].employee_delegate) != null)
                                         {
                                             userEx = new UserEntity(userId.Value, user.token, user);
                                             listEmail.Add(userEx.email);
+                                            userIds.Add(userEx.id);
                                         }
                                     }
                                 }
 #endif
                                 title = "Excavation Clearance Permit (" + this.ex_no + ") Need Review and Approval from Requestor";
                                 message = serverUrl + "Home?p=Excavation/edit/" + this.id;
+                                sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Please approve Excavation Permit No. " + this.ex_no, serverUrl + "Home?p=Excavation/edit/" + this.id);
                             }
                             else
                             {
@@ -736,14 +772,17 @@ namespace PermitToWork.Models.ClearancePermit
                                 {
 #if !DEBUG
                                     listEmail.Add(this.userInExcavation[UserInExcavation.EI.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.EI.ToString()].id);
                                     if ((userId = this.userInExcavation[UserInExcavation.EI.ToString()].employee_delegate) != null)
                                     {
                                         userEx = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
                                     }
 #endif
                                     title = "Excavation Clearance Permit (" + this.ex_no + ") Need Review and Approval from E&I";
                                     message = serverUrl + "Home?p=Excavation/edit/" + this.id;
+                                    sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Please approve Excavation Permit No. " + this.ex_no, serverUrl + "Home?p=Excavation/edit/" + this.id);
                                 }
                                 else
                                 {
@@ -751,20 +790,24 @@ namespace PermitToWork.Models.ClearancePermit
                                     if (this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()] != null)
                                     {
                                         listEmail.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].email);
+                                        userIds.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].id);
                                         if ((userId = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].employee_delegate) != null)
                                         {
                                             userEx = new UserEntity(userId.Value, user.token, user);
                                             listEmail.Add(userEx.email);
+                                            userIds.Add(userEx.id);
                                         }
                                         List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user);
                                         foreach (UserEntity u in listDel)
                                         {
                                             listEmail.Add(u.email);
+                                            userIds.Add(u.id);
                                         }
                                     }
 #endif
                                     title = "[URGENT] Excavation Clearance Permit (" + this.ex_no + ") E&I hasn't been Chosen";
                                     message = serverUrl + "Home?p=Excavation/edit/" + this.id;
+                                    sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Please choose E&I for Excavation Permit No. " + this.ex_no, serverUrl + "Home?p=Excavation/edit/" + this.id);
                                 }
                             }
                         }
@@ -774,15 +817,18 @@ namespace PermitToWork.Models.ClearancePermit
                             if (this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()] != null)
                             {
                                 listEmail.Add(this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()].email);
+                                userIds.Add(this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()].id);
                                 if ((userId = this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()].employee_delegate) != null)
                                 {
                                     userEx = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userEx.email);
+                                    userIds.Add(userEx.id);
                                 }
                             }
 #endif
                             title = "Excavation Clearance Permit (" + this.ex_no + ") Rejected from Civil";
                             message = serverUrl + "Home?p=Excavation/edit/" + this.id + "<br />Comment: " + comment;
+                            sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Excavation Permit No. " + this.ex_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Excavation/edit/" + this.id);
                         }
                         retVal = 1;
                         break;
@@ -797,10 +843,12 @@ namespace PermitToWork.Models.ClearancePermit
                                     if (this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()] != null)
                                     {
                                         listEmail.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].email);
+                                        userIds.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].id);
                                         if ((userId = this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].employee_delegate) != null)
                                         {
                                             userEx = new UserEntity(userId.Value, user.token, user);
                                             listEmail.Add(userEx.email);
+                                            userIds.Add(userEx.id);
                                         }
                                     }
                                 }
@@ -809,16 +857,19 @@ namespace PermitToWork.Models.ClearancePermit
                                     if (this.userInExcavation[UserInExcavation.REQUESTOR.ToString()] != null)
                                     {
                                         listEmail.Add(this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].email);
+                                        userIds.Add(this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].id);
                                         if ((userId = this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].employee_delegate) != null)
                                         {
                                             userEx = new UserEntity(userId.Value, user.token, user);
                                             listEmail.Add(userEx.email);
+                                            userIds.Add(userEx.id);
                                         }
                                     }
                                 }
 #endif
                                 title = "Excavation Clearance Permit (" + this.ex_no + ") Need Review and Approval from Requestor";
                                 message = serverUrl + "Home?p=Excavation/edit/" + this.id;
+                                sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Please approve Excavation Permit No. " + this.ex_no, serverUrl + "Home?p=Excavation/edit/" + this.id);
                             }
                             else
                             {
@@ -826,14 +877,17 @@ namespace PermitToWork.Models.ClearancePermit
                                 {
 #if !DEBUG
                                     listEmail.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].id);
                                     if ((userId = this.userInExcavation[UserInExcavation.FACILITIES.ToString()].employee_delegate) != null)
                                     {
                                         userEx = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
                                     }
 #endif
                                     title = "Excavation Clearance Permit (" + this.ex_no + ") Need Review and Approval from Civil";
                                     message = serverUrl + "Home?p=Excavation/edit/" + this.id;
+                                    sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Please approve Excavation Permit No. " + this.ex_no, serverUrl + "Home?p=Excavation/edit/" + this.id);
                                 }
                                 else
                                 {
@@ -841,20 +895,24 @@ namespace PermitToWork.Models.ClearancePermit
                                     if (this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()] != null)
                                     {
                                         listEmail.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].email);
+                                        userIds.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].id);
                                         if ((userId = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].employee_delegate) != null)
                                         {
                                             userEx = new UserEntity(userId.Value, user.token, user);
                                             listEmail.Add(userEx.email);
+                                            userIds.Add(userEx.id);
                                         }
                                     }
                                     List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user);
                                     foreach (UserEntity u in listDel)
                                     {
                                         listEmail.Add(u.email);
+                                        userIds.Add(u.id);
                                     }
 #endif
                                     title = "[URGENT] Excavation Clearance Permit (" + this.ex_no + ") Civil hasn't been Chosen";
                                     message = serverUrl + "Home?p=Excavation/edit/" + this.id;
+                                    sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Please choose Civil for Excavation Permit No. " + this.ex_no, serverUrl + "Home?p=Excavation/edit/" + this.id);
                                 }
                             }
                         }
@@ -864,15 +922,18 @@ namespace PermitToWork.Models.ClearancePermit
                             if (this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()] != null)
                             {
                                 listEmail.Add(this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()].email);
+                                userIds.Add(this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()].id);
                                 if ((userId = this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()].employee_delegate) != null)
                                 {
                                     userEx = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userEx.email);
+                                    userIds.Add(userEx.id);
                                 }
                             }
 #endif
                             title = "Excavation Clearance Permit (" + this.ex_no + ") Rejected from E&I";
                             message = serverUrl + "Home?p=Excavation/edit/" + this.id + "<br />Comment: " + comment;
+                            sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Excavation Permit No. " + this.ex_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Excavation/edit/" + this.id);
                         }
                         retVal = 1;
                         break;
@@ -883,20 +944,24 @@ namespace PermitToWork.Models.ClearancePermit
                                 if (this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()] != null)
                                 {
                                     listEmail.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].id);
                                     if ((userId = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].employee_delegate) != null)
                                     {
                                         userEx = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
                                     }
                                 }
                                 List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user);
                                 foreach (UserEntity u in listDel)
                                 {
                                     listEmail.Add(u.email);
+                                    userIds.Add(u.id);
                                 }
 #endif
                                 title = "Excavation Clearance Permit (" + this.ex_no + ") Need Review and Approval from Facility Owner";
                                 message = serverUrl + "Home?p=Excavation/edit/" + this.id;
+                                sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Please approve Excavation Permit No. " + this.ex_no, serverUrl + "Home?p=Excavation/edit/" + this.id);
                         }
                         else if (stat == 2)
                         {
@@ -904,21 +969,26 @@ namespace PermitToWork.Models.ClearancePermit
                             if (this.userInExcavation[UserInExcavation.FACILITIES.ToString()] != null)
                             {
                                 listEmail.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].email);
+                                userIds.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].id);
                                 if ((userId = this.userInExcavation[UserInExcavation.FACILITIES.ToString()].employee_delegate) != null)
                                 {
                                     userEx = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userEx.email);
+                                    userIds.Add(userEx.id);
                                 }
                                 listEmail.Add(this.userInExcavation[UserInExcavation.EI.ToString()].email);
+                                userIds.Add(this.userInExcavation[UserInExcavation.EI.ToString()].id);
                                 if ((userId = this.userInExcavation[UserInExcavation.EI.ToString()].employee_delegate) != null)
                                 {
                                     userEx = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userEx.email);
+                                    userIds.Add(userEx.id);
                                 }
                             }
 #endif
                             title = "Excavation Clearance Permit (" + this.ex_no + ") Rejected from Requestor";
                             message = serverUrl + "Home?p=Excavation/edit/" + this.id + "<br />Comment: " + comment;
+                            sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Excavation Permit No. " + this.ex_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Excavation/edit/" + this.id);
 
                         }
                         retVal = 1;
@@ -932,10 +1002,12 @@ namespace PermitToWork.Models.ClearancePermit
                                 if (this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()] != null)
                                 {
                                     listEmail.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].id);
                                     if ((userId = this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].employee_delegate) != null)
                                     {
                                         userEx = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
                                     }
                                 }
                             }
@@ -944,16 +1016,19 @@ namespace PermitToWork.Models.ClearancePermit
                                 if (this.userInExcavation[UserInExcavation.REQUESTOR.ToString()] != null)
                                 {
                                     listEmail.Add(this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].id);
                                     if ((userId = this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].employee_delegate) != null)
                                     {
                                         userEx = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
                                     }
                                 }
                             }
 #endif
                             title = "Excavation Clearance Permit (" + this.ex_no + ") Completed and Approved";
                             message = serverUrl + "Home?p=Excavation/edit/" + this.id;
+                            sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Please approve Excavation Permit No. " + this.ex_no, serverUrl + "Home?p=Excavation/edit/" + this.id);
                         }
                         else if (stat == 2)
                         {
@@ -963,10 +1038,12 @@ namespace PermitToWork.Models.ClearancePermit
                                 if (this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()] != null)
                                 {
                                     listEmail.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].id);
                                     if ((userId = this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].employee_delegate) != null)
                                     {
                                         userEx = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
                                     }
                                 }
                             }
@@ -975,16 +1052,19 @@ namespace PermitToWork.Models.ClearancePermit
                                 if (this.userInExcavation[UserInExcavation.REQUESTOR.ToString()] != null)
                                 {
                                     listEmail.Add(this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].id);
                                     if ((userId = this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].employee_delegate) != null)
                                     {
                                         userEx = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
                                     }
                                 }
                             }
 #endif
                             title = "Excavation Clearance Permit (" + this.ex_no + ") Rejected from Facility Owner";
                             message = serverUrl + "Home?p=Excavation/edit/" + this.id + "<br />Comment: " + comment;
+                            sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Excavation Permit No. " + this.ex_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Excavation/edit/" + this.id);
                         }
                         retVal = 1;
                         break;
@@ -1178,6 +1258,7 @@ namespace PermitToWork.Models.ClearancePermit
             SendEmail sendEmail = new SendEmail();
             string message = "";
             string title = "";
+            List<int> userIds = new List<int>();
             if (ex != null)
             {
 #if DEBUG
@@ -1192,14 +1273,17 @@ namespace PermitToWork.Models.ClearancePermit
                             if (this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()] != null)
                             {
                                 listEmail.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].email);
+                                userIds.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].id);
                                 if ((userId = this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].employee_delegate) != null)
                                 {
                                     userEx = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userEx.email);
+                                    userIds.Add(userEx.id);
                                 }
 
                                 title = "Excavation Clearance Permit (" + this.ex_no + ") Need Review and Approval from Supervisor";
                                 message = serverUrl + "Home?p=Excavation/edit/" + this.id;
+                                sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Please approve cancellation of Excavation Permit No. " + this.ex_no, serverUrl + "Home?p=Excavation/edit/" + this.id);
                             }
                             else
                             {
@@ -1216,21 +1300,26 @@ namespace PermitToWork.Models.ClearancePermit
                             {
 #if !DEBUG
                                 listEmail.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].email);
+                                userIds.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].id);
                                 if ((userId = this.userInExcavation[UserInExcavation.FACILITIES.ToString()].employee_delegate) != null)
                                 {
                                     userEx = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userEx.email);
+                                    userIds.Add(userEx.id);
                                 }
 
                                 listEmail.Add(this.userInExcavation[UserInExcavation.EI.ToString()].email);
+                                userIds.Add(this.userInExcavation[UserInExcavation.EI.ToString()].id);
                                 if ((userId = this.userInExcavation[UserInExcavation.EI.ToString()].employee_delegate) != null)
                                 {
                                     userEx = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userEx.email);
+                                    userIds.Add(userEx.id);
                                 }
 #endif
                                 title = "Excavation Clearance Permit (" + this.ex_no + ") Cancellation Need Review and Approval from E&I and Civil";
                                 message = serverUrl + "Home?p=Excavation/edit/" + this.id;
+                                sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Please approve cancellation of Excavation Permit No. " + this.ex_no, serverUrl + "Home?p=Excavation/edit/" + this.id);
                             }
                         }
                         else if (stat == 2)
@@ -1241,10 +1330,12 @@ namespace PermitToWork.Models.ClearancePermit
                                 if (this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()] != null)
                                 {
                                     listEmail.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].id);
                                     if ((userId = this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].employee_delegate) != null)
                                     {
                                         userEx = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
                                     }
                                 }
                             }
@@ -1253,16 +1344,19 @@ namespace PermitToWork.Models.ClearancePermit
                                 if (this.userInExcavation[UserInExcavation.REQUESTOR.ToString()] != null)
                                 {
                                     listEmail.Add(this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].id);
                                     if ((userId = this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].employee_delegate) != null)
                                     {
                                         userEx = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
                                     }
                                 }
                             }
 #endif
                             title = "Excavation Clearance Permit (" + this.ex_no + ") Cancellation Rejected from Supervisor";
                             message = serverUrl + "Home?p=Excavation/edit/" + this.id + "<br />Comment: " + comment;
+                            sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Cancellation of Excavation Permit No. " + this.ex_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Excavation/edit/" + this.id);
                         }
                         retVal = 1;
                         break;
@@ -1275,10 +1369,12 @@ namespace PermitToWork.Models.ClearancePermit
                                 if (this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()] != null)
                                 {
                                     listEmail.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].id);
                                     if ((userId = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].employee_delegate) != null)
                                     {
                                         userEx = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
                                     }
                                 }
                                 List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user);
@@ -1289,6 +1385,7 @@ namespace PermitToWork.Models.ClearancePermit
 #endif
                                 title = "Excavation Clearance Permit (" + this.ex_no + ") Cancellation Need Review and Approval from Facility Owner";
                                 message = serverUrl + "Home?p=Excavation/edit/" + this.id;
+                                sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Please approve cancellation of Excavation Permit No. " + this.ex_no, serverUrl + "Home?p=Excavation/edit/" + this.id);
                             }
                             else
                             {
@@ -1296,14 +1393,17 @@ namespace PermitToWork.Models.ClearancePermit
                                 {
 #if !DEBUG
                                     listEmail.Add(this.userInExcavation[UserInExcavation.EI.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.EI.ToString()].id);
                                     if ((userId = this.userInExcavation[UserInExcavation.EI.ToString()].employee_delegate) != null)
                                     {
                                         userEx = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
                                     }
 #endif
                                     title = "Excavation Clearance Permit (" + this.ex_no + ") Cancellation Need Review and Approval from E&I";
                                     message = serverUrl + "Home?p=Excavation/edit/" + this.id;
+                                    sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Please approve cancellation of Excavation Permit No. " + this.ex_no, serverUrl + "Home?p=Excavation/edit/" + this.id);
                                 }
                             }
                         }
@@ -1313,15 +1413,18 @@ namespace PermitToWork.Models.ClearancePermit
                             if (this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()] != null)
                             {
                                 listEmail.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].email);
+                                userIds.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].id);
                                 if ((userId = this.userInExcavation[UserInExcavation.SUPERVISORDELEGATE.ToString()].employee_delegate) != null)
                                 {
                                     userEx = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userEx.email);
+                                    userIds.Add(userEx.id);
                                 }
                             }
 #endif
                             title = "Excavation Clearance Permit (" + this.ex_no + ") Cancellation Rejected from Civil";
                             message = serverUrl + "Home?p=Excavation/edit/" + this.id + "<br />Comment: " + comment;
+                            sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Cancellation of Excavation Permit No. " + this.ex_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Excavation/edit/" + this.id);
                         }
                         retVal = 1;
                         break;
@@ -1334,20 +1437,24 @@ namespace PermitToWork.Models.ClearancePermit
                                 if (this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()] != null)
                                 {
                                     listEmail.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].id);
                                     if ((userId = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].employee_delegate) != null)
                                     {
                                         userEx = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
                                     }
                                 }
                                 List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user);
                                 foreach (UserEntity u in listDel)
                                 {
                                     listEmail.Add(u.email);
+                                    userIds.Add(u.id);
                                 }
 #endif
                                 title = "Excavation Clearance Permit (" + this.ex_no + ") Cancellation Need Review and Approval from Facility Owner";
                                 message = serverUrl + "Home?p=Excavation/edit/" + this.id;
+                                sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Please approve cancellation of Excavation Permit No. " + this.ex_no, serverUrl + "Home?p=Excavation/edit/" + this.id);
                             }
                             else
                             {
@@ -1355,14 +1462,17 @@ namespace PermitToWork.Models.ClearancePermit
                                 {
 #if !DEBUG
                                     listEmail.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].id);
                                     if ((userId = this.userInExcavation[UserInExcavation.FACILITIES.ToString()].employee_delegate) != null)
                                     {
                                         userEx = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
                                     }
 #endif
                                     title = "Excavation Clearance Permit (" + this.ex_no + ") Cancellation Need Review and Approval from Civil";
                                     message = serverUrl + "Home?p=Excavation/edit/" + this.id;
+                                    sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Please approve cancellation of Excavation Permit No. " + this.ex_no, serverUrl + "Home?p=Excavation/edit/" + this.id);
                                 }
                             }
                         }
@@ -1372,15 +1482,18 @@ namespace PermitToWork.Models.ClearancePermit
                             if (this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()] != null)
                             {
                                 listEmail.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].email);
+                                userIds.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].id);
                                 if ((userId = this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].employee_delegate) != null)
                                 {
                                     userEx = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userEx.email);
+                                    userIds.Add(userEx.id);
                                 }
                             }
 #endif
                             title = "Excavation Clearance Permit (" + this.ex_no + ") Cancellation Rejected from E&I";
                             message = serverUrl + "Home?p=Excavation/edit/" + this.id + "<br />Comment: " + comment;
+                            sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Cancellation of Excavation Permit No. " + this.ex_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Excavation/edit/" + this.id);
                         }
                         retVal = 1;
                         break;
@@ -1391,20 +1504,24 @@ namespace PermitToWork.Models.ClearancePermit
                                 if (this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()] != null)
                                 {
                                     listEmail.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].id);
                                     if ((userId = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].employee_delegate) != null)
                                     {
                                         userEx = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
                                     }
                                 }
                                 List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user);
                                 foreach (UserEntity u in listDel)
                                 {
                                     listEmail.Add(u.email);
+                                    userIds.Add(u.id);
                                 }
 #endif
                             title = "Excavation Clearance Permit (" + this.ex_no + ") Cancellation Need Review and Approval from Facility Owner";
                             message = serverUrl + "Home?p=Excavation/edit/" + this.id;
+                            sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Please approve cancellation of Excavation Permit No. " + this.ex_no, serverUrl + "Home?p=Excavation/edit/" + this.id);
                         }
                         else if (stat == 2)
                         {
@@ -1412,21 +1529,26 @@ namespace PermitToWork.Models.ClearancePermit
                             if (this.userInExcavation[UserInExcavation.FACILITIES.ToString()] != null)
                             {
                                 listEmail.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].email);
+                                userIds.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].id);
                                 if ((userId = this.userInExcavation[UserInExcavation.FACILITIES.ToString()].employee_delegate) != null)
                                 {
                                     userEx = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userEx.email);
+                                    userIds.Add(userEx.id);
                                 }
                                 listEmail.Add(this.userInExcavation[UserInExcavation.EI.ToString()].email);
+                                userIds.Add(this.userInExcavation[UserInExcavation.EI.ToString()].id);
                                 if ((userId = this.userInExcavation[UserInExcavation.EI.ToString()].employee_delegate) != null)
                                 {
                                     userEx = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userEx.email);
+                                    userIds.Add(userEx.id);
                                 }
                             }
 #endif
                             title = "Excavation Clearance Permit (" + this.ex_no + ") Rejected from SHE Official";
                             message = serverUrl + "Home?p=Excavation/edit/" + this.id + "<br />Comment: " + comment;
+                            sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Cancellation of Excavation Permit No. " + this.ex_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Excavation/edit/" + this.id);
 
                         }
                         retVal = 1;
@@ -1440,10 +1562,12 @@ namespace PermitToWork.Models.ClearancePermit
                                 if (this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()] != null)
                                 {
                                     listEmail.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].id);
                                     if ((userId = this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].employee_delegate) != null)
                                     {
                                         userEx = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
                                     }
                                 }
                             }
@@ -1452,32 +1576,38 @@ namespace PermitToWork.Models.ClearancePermit
                                 if (this.userInExcavation[UserInExcavation.REQUESTOR.ToString()] != null)
                                 {
                                     listEmail.Add(this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].id);
                                     if ((userId = this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].employee_delegate) != null)
                                     {
                                         userEx = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
                                     }
                                 }
                             }
 #endif
                             title = "Excavation Clearance Permit (" + this.ex_no + ") Cancellation Completed and Approved";
                             message = serverUrl + "Home?p=Excavation/edit/" + this.id;
+                            sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Cancellation of Excavation Permit No. " + this.ex_no + " has been completed.", serverUrl + "Home?p=Excavation/edit/" + this.id);
                         }
                         else if (stat == 2)
                         {
 #if !DEBUG
-                            if (this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()] != null)
+                            if (this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()] != null)
                             {
-                                listEmail.Add(this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()].email);
-                                if ((userId = this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()].employee_delegate) != null)
+                                listEmail.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].email);
+                                userIds.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].id);
+                                if ((userId = this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].employee_delegate) != null)
                                 {
                                     userEx = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userEx.email);
+                                    userIds.Add(userEx.id);
                                 }
                             }
 #endif
                             title = "Excavation Clearance Permit (" + this.ex_no + ") Rejected from Facility Owner";
                             message = serverUrl + "Home?p=Excavation/edit/" + this.id + "<br />Comment: " + comment;
+                            sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Cancellation of Excavation Permit No. " + this.ex_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Excavation/edit/" + this.id);
                         }
                         retVal = 1;
                         break;

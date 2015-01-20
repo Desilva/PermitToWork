@@ -63,5 +63,13 @@ namespace PermitToWork.Utilities
             return "200";
         }
 
+        public void SendToNotificationCenter(List<int> id, string report, string remarks, string url)
+        {
+            WWUserService.UserServiceClient client = new WWUserService.UserServiceClient();
+
+            WWUserService.ResponseModel response = client.CreateNotificationList(Base64.MD5Seal("starenergyww"), id.ToArray(), "PTW", report, remarks, url);
+
+            client.Close();
+        }
     }
 }

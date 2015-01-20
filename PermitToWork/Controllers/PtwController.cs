@@ -527,7 +527,7 @@ namespace PermitToWork.Controllers
         {
             UserEntity userLogin = Session["user"] as UserEntity;
             PtwEntity ptw = new PtwEntity(id, userLogin);
-            ptw.sendEmailRequestNo(userLogin);
+            ptw.sendEmailRequestNo(userLogin, fullUrl());
             return Json(true);
         }
 
@@ -572,7 +572,7 @@ namespace PermitToWork.Controllers
             }
             else
             {
-                ptw.sendEmailFo(fullUrl(), userLogin.token, userLogin, 1);
+                ptw.sendEmailFo(fullUrl(), userLogin.token, userLogin, 1, 2);
             }
             return Json(new { status = retVal });
         }

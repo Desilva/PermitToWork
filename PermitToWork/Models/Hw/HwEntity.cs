@@ -1734,121 +1734,143 @@ namespace PermitToWork.Models.Hw
                 UserEntity gasTester = new UserEntity(Int32.Parse(this.acc_gas_tester), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
+                List<int> userId = new List<int>();
 #if (!DEBUG)
                 s.Add(gasTester.email);
 #else
                 s.Add("septu.jamasoka@gmail.com");
 #endif
-
+                userId.Add(gasTester.id);
                 string message = serverUrl + "Home?p=Hw/edit/" + this.id;
 
                 sendEmail.Send(s, message, "Assigned as Hot Work (" + this.hw_no + ") Gas Tester");
+                sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please gas test and submit the result for Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
             }
             else if (extension == 1)
             {
                 UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_1), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
-
+                List<int> userId = new List<int>();
 #if (!DEBUG)
                 s.Add(gasTester.email);
 #else
                 s.Add("septu.jamasoka@gmail.com");
 #endif
+                userId.Add(gasTester.id);
 
                 string message = serverUrl + "Home?p=Hw/edit/" + this.id;
 
                 sendEmail.Send(s, message, "Assigned as Hot Work (" + this.hw_no + ") Gas Tester");
+                sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please gas test and submit the result for Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
             }
             else if (extension == 2)
             {
                 UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_2), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
+                List<int> userId = new List<int>();
 #if (!DEBUG)
                 s.Add(gasTester.email);
 #else
                 s.Add("septu.jamasoka@gmail.com");
 #endif
+                userId.Add(gasTester.id);
 
                 string message = serverUrl + "Home?p=Hw/edit/" + this.id;
 
                 sendEmail.Send(s, message, "Assigned as Hot Work (" + this.hw_no + ") Gas Tester");
+                sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please gas test and submit the result for Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
             }
             else if (extension == 3)
             {
                 UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_3), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
+                List<int> userId = new List<int>();
 #if (!DEBUG)
                 s.Add(gasTester.email);
 #else
                 s.Add("septu.jamasoka@gmail.com");
 #endif
+                userId.Add(gasTester.id);
 
                 string message = serverUrl + "Home?p=Hw/edit/" + this.id;
 
                 sendEmail.Send(s, message, "Assigned as Hot Work (" + this.hw_no + ") Gas Tester");
+                sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please gas test and submit the result for Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
             }
             else if (extension == 4)
             {
                 UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_4), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
+                List<int> userId = new List<int>();
 #if (!DEBUG)
                 s.Add(gasTester.email);
 #else
                 s.Add("septu.jamasoka@gmail.com");
 #endif
+                userId.Add(gasTester.id);
 
                 string message = serverUrl + "Home?p=Hw/edit/" + this.id;
 
                 sendEmail.Send(s, message, "Assigned as Hot Work (" + this.hw_no + ") Gas Tester");
+                sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please gas test and submit the result for Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
             }
             else if (extension == 5)
             {
                 UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_5), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
+                List<int> userId = new List<int>();
 #if (!DEBUG)
                 s.Add(gasTester.email);
 #else
                 s.Add("septu.jamasoka@gmail.com");
 #endif
+                userId.Add(gasTester.id);
 
                 string message = serverUrl + "Home?p=Hw/edit/" + this.id;
 
                 sendEmail.Send(s, message, "Assigned as Hot Work (" + this.hw_no + ") Gas Tester");
+                sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please gas test and submit the result for Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
             }
             else if (extension == 6)
             {
                 UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_6), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
+                List<int> userId = new List<int>();
 #if (!DEBUG)
                 s.Add(gasTester.email);
 #else
                 s.Add("septu.jamasoka@gmail.com");
 #endif
+                userId.Add(gasTester.id);
 
                 string message = serverUrl + "Home?p=Hw/edit/" + this.id;
 
                 sendEmail.Send(s, message, "Assigned as Hot Work (" + this.hw_no + ") Gas Tester");
+                sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please gas test and submit the result for Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
             }
             else if (extension == 7)
             {
                 UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_7), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
+                List<int> userId = new List<int>();
 #if (!DEBUG)
                 s.Add(gasTester.email);
 #else
                 s.Add("septu.jamasoka@gmail.com");
 #endif
+                userId.Add(gasTester.id);
 
                 string message = serverUrl + "Home?p=Hw/edit/" + this.id;
 
                 sendEmail.Send(s, message, "Assigned as Hot Work (" + this.hw_no + ") Gas Tester");
+                sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please gas test and submit the result for Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
             }
 
             return "200";
@@ -1863,15 +1885,19 @@ namespace PermitToWork.Models.Hw
             UserEntity spv = new UserEntity(Int32.Parse(this.acc_supervisor), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
+            List<int> userId = new List<int>();
             //s.Add(requestor.email);
             //s.Add(spv.email);
 #if (!DEBUG)
             if (!is_guest) {
                 s.Add(requestor.email);
+                userId.Add(requestor.id);
             }
             s.Add(spv.email);
+            userId.Add(spv.id);
 #else
             s.Add("septu.jamasoka@gmail.com");
+            userId.Add(requestor.id);
 #endif
 
             string message = "";
@@ -1880,11 +1906,13 @@ namespace PermitToWork.Models.Hw
             {
                 message = serverUrl + "Home?p=Hw/edit/" + this.id;
                 subject = "Hot Work Requestor Approve";
+                sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please Approve Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
             }
             else if (stat == 1)
             {
                 message = serverUrl + "Home?p=Hw/edit/" + this.id + "<br />" + comment;
                 subject = "Hot Work Approval Rejection";
+                sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Hot Work Permit No. " + this.hw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Hw/edit/" + this.id);
             }
 
             sendEmail.Send(s, message, subject);
@@ -1898,11 +1926,13 @@ namespace PermitToWork.Models.Hw
             UserEntity supervisor = new UserEntity(Int32.Parse(this.acc_supervisor), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
+            List<int> userId = new List<int>();
 #if (!DEBUG)
             s.Add(supervisor.email);
 #else
             s.Add("septu.jamasoka@gmail.com");
 #endif
+            userId.Add(supervisor.id);
 
             if (supervisor.employee_delegate != null)
             {
@@ -1912,6 +1942,7 @@ namespace PermitToWork.Models.Hw
 #else
                 s.Add("septu.jamasoka@gmail.com");
 #endif
+                userId.Add(del.id);
             }
 
             string message = "";
@@ -1920,14 +1951,93 @@ namespace PermitToWork.Models.Hw
             {
                 message = serverUrl + "Home?p=Hw/edit/" + this.id;
                 subject = "Hot Work Supervisor Approve";
+                sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please Approve Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
             }
             else if (stat == 1)
             {
                 message = serverUrl + "Home?p=Hw/edit/" + this.id + "<br />" + comment;
                 subject = "Hot Work Approval Rejection";
+                sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Hot Work Permit No. " + this.hw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Hw/edit/" + this.id);
             }
 
             sendEmail.Send(s, message, subject);
+
+            return "200";
+        }
+
+        public string sendEmailSupervisorScreening(string serverUrl, string token, UserEntity user)
+        {
+            UserEntity supervisor = new UserEntity(Int32.Parse(this.acc_supervisor), token, user);
+            SendEmail sendEmail = new SendEmail();
+            List<string> s = new List<string>();
+            List<int> userId = new List<int>();
+#if (!DEBUG)
+            s.Add(supervisor.email);
+#else
+            s.Add("septu.jamasoka@gmail.com");
+#endif
+            userId.Add(supervisor.id);
+
+            if (supervisor.employee_delegate != null)
+            {
+                UserEntity del = new UserEntity(supervisor.employee_delegate.Value, token, user);
+#if (!DEBUG)
+                s.Add(del.email);
+#else
+                s.Add("septu.jamasoka@gmail.com");
+#endif
+                userId.Add(del.id);
+            }
+
+            string message = "";
+            string subject = "";
+            message = serverUrl + "Home?p=Hw/edit/" + this.id;
+            subject = "Hot Work Supervisor Screening";
+            sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please Screening Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
+
+            sendEmail.Send(s, message, subject);
+
+            return "200";
+        }
+
+        public string sendEmailFOScreening(string serverUrl, string token, UserEntity user)
+        {
+            UserEntity fOAcc = new UserEntity(Int32.Parse(this.acc_fo), token, user);
+            SendEmail sendEmail = new SendEmail();
+            List<string> s = new List<string>();
+            List<int> userId = new List<int>();
+#if (!DEBUG)
+            s.Add(fOAcc.email);
+#else
+            s.Add("septu.jamasoka@gmail.com");
+#endif
+            userId.Add(fOAcc.id);
+
+            if (fOAcc.employee_delegate != null)
+            {
+                UserEntity del = new UserEntity(fOAcc.employee_delegate.Value, token, user);
+#if (!DEBUG)
+                s.Add(del.email);
+#else
+                s.Add("septu.jamasoka@gmail.com");
+#endif
+                userId.Add(del.id);
+            }
+            List<UserEntity> listDel = fOAcc.GetDelegateFO(user);
+            foreach (UserEntity u in listDel)
+            {
+#if (!DEBUG)
+                s.Add(u.email);
+#else
+                s.Add("septu.jamasoka@gmail.com");
+#endif
+                userId.Add(u.id);
+            }
+
+            string message = serverUrl + "Home?p=Hw/edit/" + this.id;
+
+            sendEmail.Send(s, message, "Hot Work Facility Owner Screening");
+            sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please Screening Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
 
             return "200";
         }
@@ -1937,11 +2047,13 @@ namespace PermitToWork.Models.Hw
             UserEntity fireWatch = new UserEntity(Int32.Parse(this.acc_fire_watch), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
+            List<int> userId = new List<int>();
 #if (!DEBUG)
             s.Add(fireWatch.email);
 #else
             s.Add("septu.jamasoka@gmail.com");
 #endif
+            userId.Add(fireWatch.id);
 
             if (fireWatch.employee_delegate != null)
             {
@@ -1951,6 +2063,7 @@ namespace PermitToWork.Models.Hw
 #else
                 s.Add("septu.jamasoka@gmail.com");
 #endif
+                userId.Add(del.id);
             }
 
             string message = "";
@@ -1959,11 +2072,13 @@ namespace PermitToWork.Models.Hw
             {
                 message = serverUrl + "Home?p=Hw/edit/" + this.id;
                 subject = "Hot Work Fire Watch Approve Approve";
+                sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please Approve Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
             }
             else if (stat == 1)
             {
                 message = serverUrl + "Home?p=Hw/edit/" + this.id + "<br />" + comment;
                 subject = "Hot Work Approval Rejection";
+                sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Hot Work Permit No. " + this.hw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Hw/edit/" + this.id);
             }
 
             sendEmail.Send(s, message, subject);
@@ -1976,11 +2091,13 @@ namespace PermitToWork.Models.Hw
             UserEntity fOAcc = new UserEntity(Int32.Parse(this.acc_fo), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
+            List<int> userId = new List<int>();
 #if (!DEBUG)
             s.Add(fOAcc.email);
 #else
             s.Add("septu.jamasoka@gmail.com");
 #endif
+            userId.Add(fOAcc.id);
 
             if (fOAcc.employee_delegate != null)
             {
@@ -1990,6 +2107,7 @@ namespace PermitToWork.Models.Hw
 #else
                 s.Add("septu.jamasoka@gmail.com");
 #endif
+                userId.Add(del.id);
             }
             List<UserEntity> listDel = fOAcc.GetDelegateFO(user);
             foreach (UserEntity u in listDel)
@@ -1999,11 +2117,13 @@ namespace PermitToWork.Models.Hw
 #else
                 s.Add("septu.jamasoka@gmail.com");
 #endif
+                userId.Add(u.id);
             }
 
             string message = serverUrl + "Home?p=Hw/edit/" + this.id;
 
             sendEmail.Send(s, message, "Hot Work Facility Owner Approve");
+            sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please Approve Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
 
             return "200";
         }
@@ -2038,11 +2158,13 @@ namespace PermitToWork.Models.Hw
             UserEntity fOAcc = new UserEntity(fo_id, token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
+            List<int> userId = new List<int>();
 #if (!DEBUG)
             s.Add(fOAcc.email);
 #else
             s.Add("septu.jamasoka@gmail.com");
 #endif
+            userId.Add(fOAcc.id);
 
             if (fOAcc.employee_delegate != null)
             {
@@ -2052,6 +2174,7 @@ namespace PermitToWork.Models.Hw
 #else
                 s.Add("septu.jamasoka@gmail.com");
 #endif
+                userId.Add(del.id);
             }
             List<UserEntity> listDel = fOAcc.GetDelegateFO(user);
             foreach (UserEntity u in listDel)
@@ -2061,11 +2184,13 @@ namespace PermitToWork.Models.Hw
 #else
                 s.Add("septu.jamasoka@gmail.com");
 #endif
+                userId.Add(u.id);
             }
 
             string message = serverUrl + "Home?p=Hw/edit/" + this.id;
 
             sendEmail.Send(s, message, "Hot Work Facility Owner Approve");
+            sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please Approve Extension of Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
 
             return "200";
         }
@@ -2075,11 +2200,13 @@ namespace PermitToWork.Models.Hw
             UserEntity fOCan = new UserEntity(Int32.Parse(this.can_fo), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
+            List<int> userId = new List<int>();
 #if (!DEBUG)
             s.Add(fOCan.email);
 #else
             s.Add("septu.jamasoka@gmail.com");
 #endif
+            userId.Add(fOCan.id);
 
             if (fOCan.employee_delegate != null)
             {
@@ -2089,6 +2216,7 @@ namespace PermitToWork.Models.Hw
 #else
                 s.Add("septu.jamasoka@gmail.com");
 #endif
+                userId.Add(del.id);
             }
             List<UserEntity> listDel = fOCan.GetDelegateFO(user);
             foreach (UserEntity u in listDel)
@@ -2098,11 +2226,13 @@ namespace PermitToWork.Models.Hw
 #else
                 s.Add("septu.jamasoka@gmail.com");
 #endif
+                userId.Add(u.id);
             }
 
             string message = serverUrl + "Home?p=Hw/edit/" + this.id;
 
             sendEmail.Send(s, message, "hot work Facility Owner Closing");
+            sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please Approve Cancellation of Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
 
             return "200";
         }

@@ -2447,12 +2447,15 @@ namespace PermitToWork.Models.ClearancePermit
             SendEmail sendEmail = new SendEmail();
 
             List<string> s = new List<string>();
+            List<int> userIds = new List<int>();
 #if (!DEBUG)
             s.Add(userFo.email);
+            userIds.Add(userFo.id);
             List<UserEntity> listDel = userFo.GetDelegateFO(user);
             foreach (UserEntity u in listDel)
             {
                 s.Add(u.email);
+                userIds.Add(u.id);
             }
 #else
             s.Add("septu.jamasoka@gmail.com"); // email FO
@@ -2460,6 +2463,7 @@ namespace PermitToWork.Models.ClearancePermit
             string message = url + "Home?p=Loto/edit/" + this.id;
 
             sendEmail.Send(s, message, "LOTO Permit Facility Owner Set Agreed LOTO Point and Applied");
+            sendEmail.SendToNotificationCenter(userIds, "LOTO Permit", "Please set agreed LOTO Point of LOTO Permit No. " + this.loto_no, url + "Home?p=LOTO/edit/" + this.id);
 
             return retVal;
         }
@@ -2472,14 +2476,17 @@ namespace PermitToWork.Models.ClearancePermit
             SendEmail sendEmail = new SendEmail();
 
             List<string> s = new List<string>();
+            List<int> userIds = new List<int>();
 #if (!DEBUG)
             s.Add(userFo.email);
+            userIds.Add(userFo.id);
 #else
             s.Add("septu.jamasoka@gmail.com"); // email FO
 #endif
             string message = url + "Home?p=Loto/edit/" + this.id + "<br />Comment: " + comment;
 
             sendEmail.Send(s, message, "LOTO Permit Rejected by Facility Owner");
+            sendEmail.SendToNotificationCenter(userIds, "LOTO Permit", "LOTO Permit No. " + this.loto_no + " is rejected by Facility Owner with comment: " + comment, url + "Home?p=LOTO/edit/" + this.id);
 
             return retVal;
         }
@@ -2492,14 +2499,17 @@ namespace PermitToWork.Models.ClearancePermit
             SendEmail sendEmail = new SendEmail();
 
             List<string> s = new List<string>();
+            List<int> userIds = new List<int>();
 #if (!DEBUG)
             s.Add(userFo.email);
+            userIds.Add(userFo.id);
 #else
             s.Add("septu.jamasoka@gmail.com"); // email FO
 #endif
             string message = url + "Home?p=Loto/edit/" + this.id;
 
             sendEmail.Send(s, message, "LOTO Permit Inspection and Verification");
+            sendEmail.SendToNotificationCenter(userIds, "LOTO Permit", "Please inspect and verify LOTO Point of LOTO Permit No. " + this.loto_no, url + "Home?p=LOTO/edit/" + this.id);
 
             return retVal;
         }
@@ -2512,14 +2522,17 @@ namespace PermitToWork.Models.ClearancePermit
             SendEmail sendEmail = new SendEmail();
 
             List<string> s = new List<string>();
+            List<int> userIds = new List<int>();
 #if (!DEBUG)
             s.Add(userFo.email);
+            userIds.Add(userFo.id);
 #else
             s.Add("septu.jamasoka@gmail.com"); // email FO
 #endif
             string message = url + "Home?p=Loto/edit/" + this.id;
 
             sendEmail.Send(s, message, "LOTO Permit Supervisor Approval");
+            sendEmail.SendToNotificationCenter(userIds, "LOTO Permit", "Please approve LOTO Permit No. " + this.loto_no, url + "Home?p=LOTO/edit/" + this.id);
 
             return retVal;
         }
@@ -2532,12 +2545,15 @@ namespace PermitToWork.Models.ClearancePermit
             SendEmail sendEmail = new SendEmail();
 
             List<string> s = new List<string>();
+            List<int> userIds = new List<int>();
 #if (!DEBUG)
             s.Add(userFo.email);
+            userIds.Add(userFo.id);
             List<UserEntity> listDel = userFo.GetDelegateFO(user);
             foreach (UserEntity u in listDel)
             {
                 s.Add(u.email);
+                userIds.Add(u.id);
             }
 #else
             s.Add("septu.jamasoka@gmail.com"); // email FO
@@ -2545,6 +2561,7 @@ namespace PermitToWork.Models.ClearancePermit
             string message = url + "Home?p=Loto/edit/" + this.id;
 
             sendEmail.Send(s, message, "LOTO Permit Facility Owner Approval");
+            sendEmail.SendToNotificationCenter(userIds, "LOTO Permit", "Please approve LOTO Permit No. " + this.loto_no, url + "Home?p=LOTO/edit/" + this.id);
 
             return retVal;
         }
@@ -2556,10 +2573,11 @@ namespace PermitToWork.Models.ClearancePermit
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
             //s.Add(fo.email);
-            s.Add("septu.jamasoka@gmail.com"); // email FO
+            //s.Add("septu.jamasoka@gmail.com"); // email FO
             string message = url + "Home?p=Loto/edit/" + this.id;
 
             sendEmail.Send(s, message, "LOTO Permit Onccoming Holder Approved");
+            //sendEmail.SendToNotificationCenter(userIds, "LOTO Permit", "Please approve LOTO Permit No. " + this.loto_no, url + "Home?p=LOTO/edit/" + this.id);
 
             return retVal;
         }
@@ -2570,6 +2588,7 @@ namespace PermitToWork.Models.ClearancePermit
             SendEmail sendEmail = new SendEmail();
 
             List<string> s = new List<string>();
+            List<int> userIds = new List<int>();
 #if (!DEBUG)
             LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
             if (suspension != null && suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.EDITANDSEND)
@@ -2577,15 +2596,18 @@ namespace PermitToWork.Models.ClearancePermit
                 foreach (LotoSuspensionHolderEntity suspensionHolder in suspension.suspensionHolder)
                 {
                     s.Add(suspensionHolder.userEntity.email);
+                    userIds.Add(suspensionHolder.userEntity.id);
                 }
             }
             else if (suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONAPPROVE)
             {
                 s.Add(suspension.foUser.email);
+                userIds.Add(suspension.foUser.id);
                 List<UserEntity> listDel = suspension.foUser.GetDelegateFO(user);
                 foreach (UserEntity u in listDel)
                 {
                     s.Add(u.email);
+                    userIds.Add(u.id);
                 }
             }
 #else
@@ -2594,6 +2616,7 @@ namespace PermitToWork.Models.ClearancePermit
             string message = url + "Home?p=Loto/edit/" + this.id;
 
             sendEmail.Send(s, message, "LOTO Permit Suspension Need To Be Agreed");
+            sendEmail.SendToNotificationCenter(userIds, "LOTO Permit", "LOTO Permit No. " + this.loto_no + " is requested to be suspended. Please follow up the request.", url + "Home?p=LOTO/edit/" + this.id);
 
             return retVal;
         }
@@ -2604,19 +2627,23 @@ namespace PermitToWork.Models.ClearancePermit
             SendEmail sendEmail = new SendEmail();
 
             List<string> s = new List<string>();
+            List<int> userIds = new List<int>();
 #if (!DEBUG)
             LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
             if (suspension != null && suspension.status != (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONAPPROVE)
             {
                 s.Add(suspension.requestorUser.email);
+                userIds.Add(suspension.requestorUser.id);
             }
             else
             {
                 s.Add(suspension.foUser.email);
+                userIds.Add(suspension.foUser.id);
                 List<UserEntity> listDel = suspension.foUser.GetDelegateFO(user);
                 foreach (UserEntity u in listDel)
                 {
                     s.Add(u.email);
+                    userIds.Add(u.id);
                 }
             }
 #else
@@ -2635,14 +2662,17 @@ namespace PermitToWork.Models.ClearancePermit
             SendEmail sendEmail = new SendEmail();
 
             List<string> s = new List<string>();
+            List<int> userIds = new List<int>();
 #if (!DEBUG)
             LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
             if (suspension != null)
             {
                 s.Add(suspension.requestorUser.email);
+                userIds.Add(suspension.requestorUser.id);
                 foreach (LotoSuspensionHolderEntity suspensionHolder in suspension.suspensionHolder)
                 {
                     s.Add(suspensionHolder.userEntity.email);
+                    userIds.Add(suspensionHolder.userEntity.id);
                 }
             }
 #else
@@ -2651,6 +2681,7 @@ namespace PermitToWork.Models.ClearancePermit
             string message = url + "Home?p=Loto/edit/" + this.id;
 
             sendEmail.Send(s, message, "LOTO Permit Suspension Point Agreed and Applied by Facility Owner");
+            sendEmail.SendToNotificationCenter(userIds, "LOTO Permit", "LOTO Permit No. " + this.loto_no + " suspension point has been agreed and applied by Facility Owner.", url + "Home?p=LOTO/edit/" + this.id);
 
             return retVal;
         }
@@ -2661,15 +2692,18 @@ namespace PermitToWork.Models.ClearancePermit
             SendEmail sendEmail = new SendEmail();
 
             List<string> s = new List<string>();
+            List<int> userIds = new List<int>();
 #if (!DEBUG)
             LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
             if (suspension != null && suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONINSPECTION)
             {
                 s.Add(suspension.foUser.email);
+                userIds.Add(suspension.foUser.id);
                 List<UserEntity> listDel = suspension.foUser.GetDelegateFO(user);
                 foreach (UserEntity u in listDel)
                 {
                     s.Add(u.email);
+                    userIds.Add(u.id);
                 }
             }
 #else
@@ -2678,6 +2712,7 @@ namespace PermitToWork.Models.ClearancePermit
             string message = url + "Home?p=Loto/edit/" + this.id;
 
             sendEmail.Send(s, message, "LOTO Permit Suspension Inspected by LOTO Holder, Need To Be Approved by Facility Owner");
+            sendEmail.SendToNotificationCenter(userIds, "LOTO Permit", "Please approve LOTO Permit Suspension No. " + this.loto_no, url + "Home?p=LOTO/edit/" + this.id);
 
             return retVal;
         }
@@ -2688,14 +2723,17 @@ namespace PermitToWork.Models.ClearancePermit
             SendEmail sendEmail = new SendEmail();
 
             List<string> s = new List<string>();
+            List<int> userIds = new List<int>();
 #if (!DEBUG)
             LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
             if (suspension != null)
             {
                 s.Add(suspension.requestorUser.email);
+                userIds.Add(suspension.requestorUser.id);
                 foreach (LotoSuspensionHolderEntity suspensionHolder in suspension.suspensionHolder)
                 {
                     s.Add(suspensionHolder.userEntity.email);
+                    userIds.Add(suspensionHolder.userEntity.id);
                 }
             }
 #else
@@ -2704,6 +2742,7 @@ namespace PermitToWork.Models.ClearancePermit
             string message = url + "Home?p=Loto/edit/" + this.id;
 
             sendEmail.Send(s, message, "LOTO Permit Suspension Approved By Facility Owner");
+            sendEmail.SendToNotificationCenter(userIds, "LOTO Permit", "LOTO Permit Suspension No. " + this.loto_no + " has been approved by Facility Owner.", url + "Home?p=LOTO/edit/" + this.id);
 
             return retVal;
         }
@@ -2714,6 +2753,7 @@ namespace PermitToWork.Models.ClearancePermit
             SendEmail sendEmail = new SendEmail();
 
             List<string> s = new List<string>();
+            List<int> userIds = new List<int>();
 #if (!DEBUG)
             LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
             if (suspension != null && suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.EDITANDSEND)
@@ -2721,15 +2761,18 @@ namespace PermitToWork.Models.ClearancePermit
                 foreach (LotoSuspensionHolderEntity suspensionHolder in suspension.suspensionHolder)
                 {
                     s.Add(suspensionHolder.userEntity.email);
+                    userIds.Add(suspensionHolder.userEntity.id);
                 }
             }
             else if (suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONAPPROVE)
             {
                 s.Add(suspension.foUser.email);
+                userIds.Add(suspension.foUser.id);
                 List<UserEntity> listDel = suspension.foUser.GetDelegateFO(user);
                 foreach (UserEntity u in listDel)
                 {
                     s.Add(u.email);
+                    userIds.Add(u.id);
                 }
             }
 #else
@@ -2738,6 +2781,7 @@ namespace PermitToWork.Models.ClearancePermit
             string message = url + "Home?p=Loto/edit/" + this.id;
 
             sendEmail.Send(s, message, "LOTO Permit Suspension Inspected by LOTO Holder, Need To Be Approved by Facility Owner");
+            sendEmail.SendToNotificationCenter(userIds, "LOTO Permit", "Please approve LOTO Permit Suspension No. " + this.loto_no, url + "Home?p=LOTO/edit/" + this.id);
 
             return retVal;
         }
@@ -2748,19 +2792,23 @@ namespace PermitToWork.Models.ClearancePermit
             SendEmail sendEmail = new SendEmail();
 
             List<string> s = new List<string>();
+            List<int> userIds = new List<int>();
 #if (!DEBUG)
             LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
             if (suspension != null && suspension.status != (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONAPPROVE)
             {
                 s.Add(suspension.requestorUser.email);
+                userIds.Add(suspension.requestorUser.id);
             }
             else
             {
                 s.Add(suspension.foUser.email);
+                userIds.Add(suspension.foUser.id);
                 List<UserEntity> listDel = suspension.foUser.GetDelegateFO(user);
                 foreach (UserEntity u in listDel)
                 {
                     s.Add(u.email);
+                    userIds.Add(u.id);
                 }
             }
 #else
@@ -2779,14 +2827,17 @@ namespace PermitToWork.Models.ClearancePermit
             SendEmail sendEmail = new SendEmail();
 
             List<string> s = new List<string>();
+            List<int> userIds = new List<int>();
 #if (!DEBUG)
             LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
             if (suspension != null)
             {
                 s.Add(suspension.requestorUser.email);
+                userIds.Add(suspension.requestorUser.id);
                 foreach (LotoSuspensionHolderEntity suspensionHolder in suspension.suspensionHolder)
                 {
                     s.Add(suspensionHolder.userEntity.email);
+                    userIds.Add(suspensionHolder.userEntity.id);
                 }
             }
 #else
@@ -2795,6 +2846,7 @@ namespace PermitToWork.Models.ClearancePermit
             string message = url + "Home?p=Loto/edit/" + this.id;
 
             sendEmail.Send(s, message, "LOTO Permit Suspension Point Agreed and Applied by Facility Owner");
+            sendEmail.SendToNotificationCenter(userIds, "LOTO Permit", "Please approve LOTO Permit Suspension No. " + this.loto_no, url + "Home?p=LOTO/edit/" + this.id);
 
             return retVal;
         }
@@ -2805,15 +2857,18 @@ namespace PermitToWork.Models.ClearancePermit
             SendEmail sendEmail = new SendEmail();
 
             List<string> s = new List<string>();
+            List<int> userIds = new List<int>();
 #if (!DEBUG)
             LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
             if (suspension != null && suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONINSPECTION)
             {
                 s.Add(suspension.foUser.email);
+                userIds.Add(suspension.foUser.id);
                 List<UserEntity> listDel = suspension.foUser.GetDelegateFO(user);
                 foreach (UserEntity u in listDel)
                 {
                     s.Add(u.email);
+                    userIds.Add(u.id);
                 }
             }
 #else
@@ -2822,6 +2877,7 @@ namespace PermitToWork.Models.ClearancePermit
             string message = url + "Home?p=Loto/edit/" + this.id;
 
             sendEmail.Send(s, message, "LOTO Permit Suspension Inspected by LOTO Holder, Need To Be Approved by Facility Owner");
+            sendEmail.SendToNotificationCenter(userIds, "LOTO Permit", "Please approve LOTO Permit Suspension No. " + this.loto_no, url + "Home?p=LOTO/edit/" + this.id);
 
             return retVal;
         }
@@ -2832,15 +2888,18 @@ namespace PermitToWork.Models.ClearancePermit
             SendEmail sendEmail = new SendEmail();
 
             List<string> s = new List<string>();
+            List<int> userIds = new List<int>();
 #if (!DEBUG)
             if(this.status == (int)LOTOStatus.CANCELSPV)
             {
 
                 s.Add(this.listUserInLOTO[userInLOTO.CANCELLATIONFACILITYOWNER.ToString()].email);
+                userIds.Add(this.listUserInLOTO[userInLOTO.CANCELLATIONFACILITYOWNER.ToString()].id);
                 List<UserEntity> listDel = this.listUserInLOTO[userInLOTO.CANCELLATIONFACILITYOWNER.ToString()].GetDelegateFO(user);
                 foreach (UserEntity u in listDel)
                 {
                     s.Add(u.email);
+                    userIds.Add(u.id);
                 }
             }
 #else
@@ -2849,6 +2908,7 @@ namespace PermitToWork.Models.ClearancePermit
             string message = url + "Home?p=Loto/edit/" + this.id;
 
             sendEmail.Send(s, message, "LOTO Permit Cancellation By Facility Owner");
+            sendEmail.SendToNotificationCenter(userIds, "LOTO Permit", "Please approve cancellation of LOTO Permit No. " + this.loto_no, url + "Home?p=LOTO/edit/" + this.id);
 
             return retVal;
         }
@@ -2860,7 +2920,7 @@ namespace PermitToWork.Models.ClearancePermit
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
             //s.Add(fo.email);
-            s.Add("septu.jamasoka@gmail.com"); // email FO
+            //s.Add("septu.jamasoka@gmail.com"); // email FO
             string message = url + "Home?p=Loto/edit/" + this.id;
 
             sendEmail.Send(s, message, "LOTO Permit Oncoming Holder Cancelled");

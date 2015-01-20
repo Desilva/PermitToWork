@@ -1332,121 +1332,152 @@ namespace PermitToWork.Models.ClearancePermit
                 UserEntity gasTester = new UserEntity(Int32.Parse(this.acc_gas_tester), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
+                List<int> userId = new List<int>();
 #if !DEBUG
                 s.Add(gasTester.email);
+                userId.Add(gasTester.id);
 #else
                 s.Add("septu.jamasoka@gmail.com"); // email FO
+                userId.Add(gasTester.id);
 #endif
 
                 string message = serverUrl + "Home?p=Csep/edit/" + this.id;
 
                 sendEmail.Send(s, message, "Assigned as Confined Space Entry Permit (" + this.csep_no + ") Gas Tester");
+                sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please gas test and submit the result for Confined Space Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
             }
             else if (extension == 1)
             {
                 UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_1), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
-
+                List<int> userId = new List<int>();
 #if !DEBUG
                 s.Add(gasTester.email);
+                userId.Add(gasTester.id);
 #else
                 s.Add("septu.jamasoka@gmail.com"); // email FO
+                userId.Add(gasTester.id);
 #endif
 
                 string message = serverUrl + "Home?p=Csep/edit/" + this.id;
 
                 sendEmail.Send(s, message, "Assigned as Confined Space Entry Permit (" + this.csep_no + ") Gas Tester");
+                sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please gas test and submit the result for Confined Space Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
             }
             else if (extension == 2)
             {
                 UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_2), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
+                List<int> userId = new List<int>();
 #if !DEBUG
                 s.Add(gasTester.email);
+                userId.Add(gasTester.id);
 #else
                 s.Add("septu.jamasoka@gmail.com"); // email FO
+                userId.Add(gasTester.id);
 #endif
 
                 string message = serverUrl + "Home?p=Csep/edit/" + this.id;
 
                 sendEmail.Send(s, message, "Assigned as Confined Space Entry Permit (" + this.csep_no + ") Gas Tester");
+                sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please gas test and submit the result for Confined Space Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
             }
             else if (extension == 3)
             {
                 UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_3), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
+                List<int> userId = new List<int>();
 #if !DEBUG
                 s.Add(gasTester.email);
+                userId.Add(gasTester.id);
 #else
                 s.Add("septu.jamasoka@gmail.com"); // email FO
+                userId.Add(gasTester.id);
 #endif
 
                 string message = serverUrl + "Home?p=Csep/edit/" + this.id;
 
                 sendEmail.Send(s, message, "Assigned as Confined Space Entry Permit (" + this.csep_no + ") Gas Tester");
+                sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please gas test and submit the result for Confined Space Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
             }
             else if (extension == 4)
             {
                 UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_4), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
+                List<int> userId = new List<int>();
 #if !DEBUG
                 s.Add(gasTester.email);
+                userId.Add(gasTester.id);
 #else
                 s.Add("septu.jamasoka@gmail.com"); // email FO
+                userId.Add(gasTester.id);
 #endif
 
                 string message = serverUrl + "Home?p=Csep/edit/" + this.id;
 
                 sendEmail.Send(s, message, "Assigned as Confined Space Entry Permit (" + this.csep_no + ") Gas Tester");
+                sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please gas test and submit the result for Confined Space Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
             }
             else if (extension == 5)
             {
                 UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_5), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
+                List<int> userId = new List<int>();
 #if !DEBUG
                 s.Add(gasTester.email);
+                userId.Add(gasTester.id);
 #else
                 s.Add("septu.jamasoka@gmail.com"); // email FO
+                userId.Add(gasTester.id);
 #endif
 
                 string message = serverUrl + "Home?p=Csep/edit/" + this.id;
 
                 sendEmail.Send(s, message, "Assigned as Confined Space Entry Permit (" + this.csep_no + ") Gas Tester");
+                sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please gas test and submit the result for Confined Space Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
             }
             else if (extension == 6)
             {
                 UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_6), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
+                List<int> userId = new List<int>();
 #if !DEBUG
                 s.Add(gasTester.email);
+                userId.Add(gasTester.id);
 #else
                 s.Add("septu.jamasoka@gmail.com"); // email FO
+                userId.Add(gasTester.id);
 #endif
 
                 string message = serverUrl + "Home?p=Csep/edit/" + this.id;
 
                 sendEmail.Send(s, message, "Assigned as Confined Space Entry Permit (" + this.csep_no + ") Gas Tester");
+                sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please gas test and submit the result for Confined Space Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
             }
             else if (extension == 7)
             {
                 UserEntity gasTester = new UserEntity(Int32.Parse(this.ext_gas_tester_7), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
+                List<int> userId = new List<int>();
 #if !DEBUG
                 s.Add(gasTester.email);
+                userId.Add(gasTester.id);
 #else
                 s.Add("septu.jamasoka@gmail.com"); // email FO
+                userId.Add(gasTester.id);
 #endif
 
                 string message = serverUrl + "Home?p=Csep/edit/" + this.id;
 
                 sendEmail.Send(s, message, "Assigned as Confined Space Entry Permit (" + this.csep_no + ") Gas Tester");
+                sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please gas test and submit the result for Confined Space Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
             }
 
             return "200";
@@ -1460,13 +1491,17 @@ namespace PermitToWork.Models.ClearancePermit
             UserEntity spv = new UserEntity(Int32.Parse(this.acc_supervisor), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
+            List<int> userId = new List<int>();
 #if !DEBUG
             if (!is_guest) {
                 s.Add(requestor.email);
+                userId.Add(requestor.id);
             }
             s.Add(spv.email);
+            userId.Add(spv.id);
 #else
             s.Add("septu.jamasoka@gmail.com"); // email FO
+            userId.Add(requestor.id);
 #endif
 
             string message = "";
@@ -1475,11 +1510,13 @@ namespace PermitToWork.Models.ClearancePermit
             {
                 message = serverUrl + "Home?p=Csep/edit/" + this.id;
                 subject = "Confined Space Entry Permit Requestor Approve";
+                sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please Approve Confined Space Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
             }
             else if (stat == 1)
             {
                 message = serverUrl + "Home?p=Csep/edit/" + this.id + "<br />" + comment;
                 subject = "Confined Space Entry Permit Approval Rejection";
+                sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Confined Space Entry Permit No. " + this.csep_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Csep/edit/" + this.id);
             }
 
             sendEmail.Send(s, message, subject);
@@ -1493,11 +1530,13 @@ namespace PermitToWork.Models.ClearancePermit
             UserEntity supervisor = new UserEntity(Int32.Parse(this.acc_supervisor), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
+            List<int> userId = new List<int>();
 #if !DEBUG
             s.Add(supervisor.email);
 #else
             s.Add("septu.jamasoka@gmail.com"); // email FO
 #endif
+            userId.Add(supervisor.id);
 
             if (supervisor.employee_delegate != null)
             {
@@ -1507,6 +1546,7 @@ namespace PermitToWork.Models.ClearancePermit
 #else
                 s.Add("septu.jamasoka@gmail.com"); // email FO
 #endif
+                userId.Add(del.id);
             }
 
             string message = "";
@@ -1515,14 +1555,93 @@ namespace PermitToWork.Models.ClearancePermit
             {
                 message = serverUrl + "Home?p=Csep/edit/" + this.id;
                 subject = "Confined Space Entry Permit Supervisor Approve";
+                sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please Approve Confined Space Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
             }
             else if (stat == 1)
             {
                 message = serverUrl + "Home?p=Csep/edit/" + this.id + "<br />" + comment;
                 subject = "Confined Space Entry Permit Approval Rejection";
+                sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Confined Space Entry Permit No. " + this.csep_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Csep/edit/" + this.id);
             }
 
             sendEmail.Send(s, message, subject);
+
+            return "200";
+        }
+
+        public string sendEmailSupervisorScreening(string serverUrl, string token, UserEntity user)
+        {
+            UserEntity supervisor = new UserEntity(Int32.Parse(this.acc_supervisor), token, user);
+            SendEmail sendEmail = new SendEmail();
+            List<string> s = new List<string>();
+            List<int> userId = new List<int>();
+#if (!DEBUG)
+            s.Add(supervisor.email);
+#else
+            s.Add("septu.jamasoka@gmail.com");
+#endif
+            userId.Add(supervisor.id);
+
+            if (supervisor.employee_delegate != null)
+            {
+                UserEntity del = new UserEntity(supervisor.employee_delegate.Value, token, user);
+#if (!DEBUG)
+                s.Add(del.email);
+#else
+                s.Add("septu.jamasoka@gmail.com");
+#endif
+                userId.Add(del.id);
+            }
+
+            string message = "";
+            string subject = "";
+            message = serverUrl + "Home?p=Csep/edit/" + this.id;
+            subject = "Confined Space Entry Permit Supervisor Screening";
+            sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please Screening Confined Space Entry Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
+
+            sendEmail.Send(s, message, subject);
+
+            return "200";
+        }
+
+        public string sendEmailFOScreening(string serverUrl, string token, UserEntity user)
+        {
+            UserEntity fOAcc = new UserEntity(Int32.Parse(this.acc_fo), token, user);
+            SendEmail sendEmail = new SendEmail();
+            List<string> s = new List<string>();
+            List<int> userId = new List<int>();
+#if (!DEBUG)
+            s.Add(fOAcc.email);
+#else
+            s.Add("septu.jamasoka@gmail.com");
+#endif
+            userId.Add(fOAcc.id);
+
+            if (fOAcc.employee_delegate != null)
+            {
+                UserEntity del = new UserEntity(fOAcc.employee_delegate.Value, token, user);
+#if (!DEBUG)
+                s.Add(del.email);
+#else
+                s.Add("septu.jamasoka@gmail.com");
+#endif
+                userId.Add(del.id);
+            }
+            List<UserEntity> listDel = fOAcc.GetDelegateFO(user);
+            foreach (UserEntity u in listDel)
+            {
+#if (!DEBUG)
+                s.Add(u.email);
+#else
+                s.Add("septu.jamasoka@gmail.com");
+#endif
+                userId.Add(u.id);
+            }
+
+            string message = serverUrl + "Home?p=Csep/edit/" + this.id;
+
+            sendEmail.Send(s, message, "Confined Space Entry Permit Facility Owner Screening");
+            sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please Screening Confined Space Entry Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
 
             return "200";
         }
@@ -1532,11 +1651,13 @@ namespace PermitToWork.Models.ClearancePermit
             UserEntity fireWatch = new UserEntity(Int32.Parse(this.acc_fire_watch), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
+            List<int> userId = new List<int>();
 #if !DEBUG
             s.Add(fireWatch.email);
 #else
             s.Add("septu.jamasoka@gmail.com"); // email FO
 #endif
+            userId.Add(fireWatch.id);
 
             if (fireWatch.employee_delegate != null)
             {
@@ -1546,6 +1667,7 @@ namespace PermitToWork.Models.ClearancePermit
 #else
                 s.Add("septu.jamasoka@gmail.com"); // email FO
 #endif
+                userId.Add(del.id);
             }
 
             string message = "";
@@ -1554,11 +1676,13 @@ namespace PermitToWork.Models.ClearancePermit
             {
                 message = serverUrl + "Home?p=Csep/edit/" + this.id;
                 subject = "Confined Space Entry Permit Fire Watch Approve Approve";
+                sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please Approve Confined Space Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
             }
             else if (stat == 1)
             {
                 message = serverUrl + "Home?p=Csep/edit/" + this.id + "<br />" + comment;
                 subject = "Confined Space Entry Permit Approval Rejection";
+                sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Confined Space Entry Permit No. " + this.csep_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Csep/edit/" + this.id);
             }
 
             sendEmail.Send(s, message, subject);
@@ -1571,12 +1695,13 @@ namespace PermitToWork.Models.ClearancePermit
             UserEntity fOAcc = new UserEntity(Int32.Parse(this.acc_fo), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
+            List<int> userId = new List<int>();
 #if !DEBUG
             s.Add(fOAcc.email);
 #else
             s.Add("septu.jamasoka@gmail.com"); // email FO
 #endif
-
+            userId.Add(fOAcc.id);
             if (fOAcc.employee_delegate != null)
             {
                 UserEntity del = new UserEntity(fOAcc.employee_delegate.Value, token, user);
@@ -1585,6 +1710,7 @@ namespace PermitToWork.Models.ClearancePermit
 #else
                 s.Add("septu.jamasoka@gmail.com"); // email FO
 #endif
+                userId.Add(del.id);
             }
             List<UserEntity> listDel = fOAcc.GetDelegateFO(user);
             foreach (UserEntity u in listDel)
@@ -1594,11 +1720,13 @@ namespace PermitToWork.Models.ClearancePermit
 #else
                 s.Add("septu.jamasoka@gmail.com");
 #endif
+                userId.Add(u.id);
             }
 
             string message = serverUrl + "Home?p=Csep/edit/" + this.id;
 
             sendEmail.Send(s, message, "Confined Space Entry Permit Facility Owner Approve");
+            sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please Approve Confined Space Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
 
             return "200";
         }
@@ -1633,11 +1761,13 @@ namespace PermitToWork.Models.ClearancePermit
             UserEntity fOAcc = new UserEntity(fo_id, token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
+            List<int> userId = new List<int>();
 #if !DEBUG
             s.Add(fOAcc.email);
 #else
             s.Add("septu.jamasoka@gmail.com"); // email FO
 #endif
+            userId.Add(fOAcc.id);
 
             if (fOAcc.employee_delegate != null)
             {
@@ -1647,6 +1777,7 @@ namespace PermitToWork.Models.ClearancePermit
 #else
                 s.Add("septu.jamasoka@gmail.com"); // email FO
 #endif
+                userId.Add(del.id);
             }
             List<UserEntity> listDel = fOAcc.GetDelegateFO(user);
             foreach (UserEntity u in listDel)
@@ -1656,11 +1787,13 @@ namespace PermitToWork.Models.ClearancePermit
 #else
                 s.Add("septu.jamasoka@gmail.com");
 #endif
+                userId.Add(u.id);
             }
 
             string message = serverUrl + "Home?p=Csep/edit/" + this.id;
 
             sendEmail.Send(s, message, "Confined Space Entry Permit Facility Owner Approve");
+            sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please Approve Extension of Confined Space Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
 
             return "200";
         }
@@ -1670,11 +1803,13 @@ namespace PermitToWork.Models.ClearancePermit
             UserEntity fOCan = new UserEntity(Int32.Parse(this.can_fo), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
+            List<int> userId = new List<int>();
 #if !DEBUG
             s.Add(fOCan.email);
 #else
             s.Add("septu.jamasoka@gmail.com"); // email FO
 #endif
+            userId.Add(fOCan.id);
 
             if (fOCan.employee_delegate != null)
             {
@@ -1684,6 +1819,7 @@ namespace PermitToWork.Models.ClearancePermit
 #else
                 s.Add("septu.jamasoka@gmail.com"); // email FO
 #endif
+                userId.Add(del.id);
             }
             List<UserEntity> listDel = fOCan.GetDelegateFO(user);
             foreach (UserEntity u in listDel)
@@ -1693,11 +1829,13 @@ namespace PermitToWork.Models.ClearancePermit
 #else
                 s.Add("septu.jamasoka@gmail.com");
 #endif
+                userId.Add(u.id);
             }
 
             string message = serverUrl + "Home?p=Csep/edit/" + this.id;
 
             sendEmail.Send(s, message, "Confined Space Entry Permit Facility Owner Closing");
+            sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please Approve Cancellation of Confined Space Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
 
             return "200";
         }

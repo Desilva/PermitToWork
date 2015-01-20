@@ -82,19 +82,19 @@ namespace PermitToWork.Models.Ptw
 
         public enum statusPtw
         {
-            CREATE,
-            GUESTCOMPLETE,
-            CLEARANCECOMPLETE,
-            ACCSPV,
-            CHOOSEASS,
-            ACCASS,
-            ACCFO,
-            CANCEL,
-            CANREQ,
-            CANSPV,
-            CANASS,
-            CANFO,
-            CANCELLED
+            CREATE, // 0
+            GUESTCOMPLETE,// 1
+            CLEARANCECOMPLETE,// 2
+            ACCSPV,// 3
+            CHOOSEASS,// 4
+            ACCASS,// 5
+            ACCFO,// 6
+            CANCEL,// 7
+            CANREQ,// 8
+            CANSPV,// 9
+            CANASS,// 10
+            CANFO,// 11
+            CANCELLED// 12
         };
 
         public enum statusClearance
@@ -1644,11 +1644,12 @@ namespace PermitToWork.Models.Ptw
 
         #region send email
 
-        public string sendEmailRequestNo(UserEntity userLogin)
+        public string sendEmailRequestNo(UserEntity userLogin, string serverUrl)
         {
             ListUser listUser = new ListUser();
             var users = listUser.GetAdminSHE(userLogin.token, userLogin.id);
             List<string> s = new List<string>();
+            List<int> userId = new List<int>();
             SendEmail sendEmail = new SendEmail();
 
             permit_to_work ptw = this.db.permit_to_work.Find(this.id);
@@ -1659,26 +1660,31 @@ namespace PermitToWork.Models.Ptw
             foreach (UserEntity user in users)
             {
                 s.Add(user.email);
+                userId.Add(user.id);
             }
 
             UserEntity requestor = new UserEntity(Int32.Parse(this.acc_supervisor), userLogin.token, userLogin);
             string message = requestor.alpha_name + " has requested to give PTW Holder No to " + this.acc_ptw_requestor + " for PTW No: " + this.ptw_no;
             string subject = "Request PTW Holder No with PTW No " + this.ptw_no;
+            sendEmail.SendToNotificationCenter(userId, "General Permit", "Please Give PTW Holder No to " + this.acc_ptw_requestor + " for PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
 
             sendEmail.Send(s, message, subject);
 
             return "200";
         }
 
-        public string sendEmailRequestNoSet(UserEntity userLogin)
+        public string sendEmailRequestNoSet(UserEntity userLogin, string serverUrl)
         {
             UserEntity requestor = new UserEntity(Int32.Parse(this.acc_supervisor), userLogin.token, userLogin);
             List<string> s = new List<string>();
             SendEmail sendEmail = new SendEmail();
+            List<int> userId = new List<int>();
             s.Add(requestor.email);
+            userId.Add(requestor.id);
 
             string message = "Requestor's PTW Holder No has been set.";
             string subject = "Request PTW Holder No with PTW No " + this.ptw_no + " Set";
+            sendEmail.SendToNotificationCenter(userId, "General Permit", "PTW Holder Number has been given. PTW No. " + this.ptw_no + " can be proceed.", serverUrl + "Home?p=ptw/edit/" + this.id);
 
             sendEmail.Send(s, message, subject);
 
@@ -1745,7 +1751,9 @@ namespace PermitToWork.Models.Ptw
             UserEntity requestor = new UserEntity(Int32.Parse(this.acc_ptw_requestor), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
+            List<int> userId = new List<int>();
             s.Add(requestor.email);
+            userId.Add(requestor.id);
             //s.Add("septu.jamasoka@gmail.com");
 
             string message = "";
@@ -1754,11 +1762,13 @@ namespace PermitToWork.Models.Ptw
             {
                 message = serverUrl + "Home?p=ptw/edit/" + this.id;
                 subject = "Permit to Work Requestor Approve";
+                sendEmail.SendToNotificationCenter(userId, "General Permit", "Please Approve PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
             }
             else if (stat == 1)
             {
                 message = serverUrl + "Home?p=ptw/edit/" + this.id + "<br />" + comment;
                 subject = "Permit to Work Approval Rejection";
+                sendEmail.SendToNotificationCenter(userId, "General Permit", "PTW No. " + this.ptw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=ptw/edit/" + this.id);
             }
 
             sendEmail.Send(s, message, subject);
@@ -1778,14 +1788,19 @@ namespace PermitToWork.Models.Ptw
             UserEntity supervisor = new UserEntity(supervisor_id, token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
+            List<int> userId = new List<int>();
             if (supervisor.email != null)
+            {
                 s.Add(supervisor.email);
-            //s.Add("septu.jamasoka@gmail.com");
+                userId.Add(supervisor.id);
+                //s.Add("septu.jamasoka@gmail.com");
 
+            }
             if (supervisor.employee_delegate != null)
             {
                 UserEntity del = new UserEntity(supervisor.employee_delegate.Value, token, user);
                 s.Add(del.email);
+                userId.Add(del.id);
                 //s.Add("septu.jamasoka@gmail.com");
             }
 
@@ -1795,11 +1810,14 @@ namespace PermitToWork.Models.Ptw
             {
                 message = serverUrl + "Home?p=ptw/edit/" + this.id;
                 subject = "Permit to Work Supervisor Approve";
+
+                sendEmail.SendToNotificationCenter(userId, "General Permit", "Please Approve PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
             }
             else if (stat == 1)
             {
                 message = serverUrl + "Home?p=ptw/edit/" + this.id + "<br />" + comment;
                 subject = "Permit to Work Approval Rejection";
+                sendEmail.SendToNotificationCenter(userId, "General Permit", "PTW No. " + this.ptw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=ptw/edit/" + this.id);
             }
 
             sendEmail.Send(s, message, subject);
@@ -1818,13 +1836,16 @@ namespace PermitToWork.Models.Ptw
             UserEntity assessor = new UserEntity(assessor_id, token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
+            List<int> userId = new List<int>();
             s.Add(assessor.email);
+            userId.Add(assessor.id);
             //s.Add("septu.jamasoka@gmail.com");
 
             if (assessor.employee_delegate != null)
             {
                 UserEntity del = new UserEntity(assessor.employee_delegate.Value, token, user);
                 s.Add(del.email);
+                userId.Add(del.id);
                 //s.Add("septu.jamasoka@gmail.com");
             }
 
@@ -1834,11 +1855,13 @@ namespace PermitToWork.Models.Ptw
             {
                 message = serverUrl + "Home?p=ptw/edit/" + this.id;
                 subject = "Permit to Work Assessor Approve";
+                sendEmail.SendToNotificationCenter(userId, "General Permit", "Please Approve PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
             }
             else if (stat == 1)
             {
                 message = serverUrl + "Home?p=ptw/edit/" + this.id + "<br />" + comment;
                 subject = "Permit to Work Approval Rejection";
+                sendEmail.SendToNotificationCenter(userId, "General Permit", "PTW No. " + this.ptw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=ptw/edit/" + this.id);
             }
 
             sendEmail.Send(s, message, subject);
@@ -1858,14 +1881,28 @@ namespace PermitToWork.Models.Ptw
             UserEntity facilityOwner = new UserEntity(fo_id, token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
+            List<int> userId = new List<int>();
             s.Add(facilityOwner.email);
+            userId.Add(facilityOwner.id);
             //s.Add("septu.jamasoka@gmail.com");
 
             if (facilityOwner.employee_delegate != null)
             {
                 UserEntity del = new UserEntity(facilityOwner.employee_delegate.Value, token, user);
                 s.Add(del.email);
+                userId.Add(del.id);
                 //s.Add("septu.jamasoka@gmail.com");
+            }
+
+            List<UserEntity> listDel = facilityOwner.GetDelegateFO(user);
+            foreach (UserEntity u in listDel)
+            {
+#if (!DEBUG)
+                s.Add(u.email);
+#else
+                s.Add("septu.jamasoka@gmail.com");
+#endif
+                userId.Add(u.id);
             }
 
             string message = "";
@@ -1874,11 +1911,19 @@ namespace PermitToWork.Models.Ptw
             {
                 message = serverUrl + "Home?p=Hw/edit/" + this.id + "<br />" + comment;
                 subject = "Permit to Work Facility Owner Approve";
+                sendEmail.SendToNotificationCenter(userId, "General Permit", "Please Approve PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
             }
             else if (stat == 1)
             {
                 message = serverUrl + "Home?p=Hw/edit/" + this.id + "<br />" + comment;
                 subject = "Permit to Work Approval Rejection";
+                sendEmail.SendToNotificationCenter(userId, "General Permit", "PTW No. " + this.ptw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=ptw/edit/" + this.id);
+            }
+            else if (stat == 2)
+            {
+                message = serverUrl + "Home?p=Hw/edit/" + this.id + "<br />" + comment;
+                subject = "Permit to Work Choosing Assessor";
+                sendEmail.SendToNotificationCenter(userId, "General Permit", "Please Choose Assessor of PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
             }
 
             sendEmail.Send(s, message, subject);
@@ -1893,15 +1938,18 @@ namespace PermitToWork.Models.Ptw
 
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
+            List<int> userId = new List<int>();
             if (this.is_guest == 1)
             {
                 UserEntity requestor = new UserEntity(Int32.Parse(this.acc_supervisor), token, user);
                 s.Add(requestor.email);
+                userId.Add(requestor.id);
             }
             else
             {
                 UserEntity requestor = new UserEntity(Int32.Parse(this.acc_ptw_requestor), token, user);
                 s.Add(requestor.email);
+                userId.Add(requestor.id);
             }
             //s.Add("septu.jamasoka@gmail.com");
 
@@ -1915,10 +1963,12 @@ namespace PermitToWork.Models.Ptw
                     case (int)clearancePermit.HOTWORK:
                         message = "Hot Work Permit has approved by facility owner.<br />" + serverUrl + "Home?p=Hw/edit/" + this.hw_id;
                         subject = "Hot Work Permit Number " + hw_no + " Has Been Approved";
+                        sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Hot Work Permit has been approved by facility owner.", serverUrl + "Home?p=Hw/edit/" + this.hw_id);
                         break;
                     case (int)clearancePermit.CONFINEDSPACE:
-                        message = "Confined Space Entry Permit has approved by facility owner.<br />" + serverUrl + "Home?p=Csep/edit/" + this.hw_id;
+                        message = "Confined Space Entry Permit has approved by facility owner.<br />" + serverUrl + "Home?p=Csep/edit/" + this.csep_id;
                         subject = "Confined Space Entry Permit Number " + csep_no + " Has Been Approved";
+                        sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Confined Space Entry Permit has been approved by facility owner.", serverUrl + "Home?p=Csep/edit/" + this.csep_id);
                         break;
                 }
             }
@@ -1929,10 +1979,12 @@ namespace PermitToWork.Models.Ptw
                     case (int)clearancePermit.HOTWORK:
                         message = "Hot Work Permit has approved to close by facility owner.<br />" + serverUrl + "Home?p=Hw/edit/" + this.hw_id;
                         subject = "Hot Work Permit Number " + hw_no + " Has Been Closed";
+                        sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Hot Work Permit has been cancelled by facility owner.", serverUrl + "Home?p=Hw/edit/" + this.hw_id);
                         break;
                     case (int)clearancePermit.CONFINEDSPACE:
-                        message = "Confined Space Entry Permit has approved to close by facility owner.<br />" + serverUrl + "Home?p=Csep/edit/" + this.hw_id;
+                        message = "Confined Space Entry Permit has approved to close by facility owner.<br />" + serverUrl + "Home?p=Csep/edit/" + this.csep_id;
                         subject = "Confined Space Entry Permit Number " + csep_no + " Has Been Closed";
+                        sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Confined Space Entry Permit has been cancelled by facility owner.", serverUrl + "Home?p=Csep/edit/" + this.csep_id);
                         break;
                 }
             }
@@ -1943,10 +1995,12 @@ namespace PermitToWork.Models.Ptw
                     case (int)clearancePermit.HOTWORK:
                         message = "Hot Work Permit has approved to close by supervisor.<br />" + serverUrl + "Home?p=Hw/edit/" + this.hw_id;
                         subject = "Hot Work Permit Number " + hw_no + " Has Been Cancelled by Supervisor";
+                        sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Hot Work Permit has been cancelled by Supervisor.", serverUrl + "Home?p=Hw/edit/" + this.hw_id);
                         break;
                     case (int)clearancePermit.CONFINEDSPACE:
-                        message = "Confined Space Entry Permit has approved to close by supervisor.<br />" + serverUrl + "Home?p=Csep/edit/" + this.hw_id;
+                        message = "Confined Space Entry Permit has approved to close by supervisor.<br />" + serverUrl + "Home?p=Csep/edit/" + this.csep_id;
                         subject = "Confined Space Entry Permit Number " + csep_no + " Has Been Cancelled by Supervisor";
+                        sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Confined Space Entry Permit has been cancelled by Supervisor.", serverUrl + "Home?p=Csep/edit/" + this.csep_id);
                         break;
                 }
             }
@@ -1964,7 +2018,9 @@ namespace PermitToWork.Models.Ptw
             UserEntity requestor = is_guest == 1 ? new UserEntity(Int32.Parse(this.acc_supervisor), token, user) : new UserEntity(Int32.Parse(this.acc_ptw_requestor), token, user);
             SendEmail sendEmail = new SendEmail();
             List<string> s = new List<string>();
+            List<int> userId = new List<int>();
             s.Add(requestor.email);
+            userId.Add(requestor.id);
             //s.Add("septu.jamasoka@gmail.com");
 
             string message = "All clearance permit has been approved, you may continue by approving this Permit to Work.<br />" + serverUrl + "Home?p=Ptw/edit/" + this.id;
@@ -1974,16 +2030,19 @@ namespace PermitToWork.Models.Ptw
             {
                 message = "All clearance permit has been approved, you may continue by approving this Permit to Work.<br />" + serverUrl + "Home?p=Ptw/edit/" + this.id;
                 subject = "All Clearance Permit Approved";
+                sendEmail.SendToNotificationCenter(userId, "General Permit", "All clearance permit has been approved. Please approve PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
             }
             else if (status == 2)
             {
                 message = "All clearance permit has been closed, you may continue by cancelling this Permit to Work.<br />" + serverUrl + "Home?p=Ptw/edit/" + this.id;
                 subject = "All Clearance Permit Closed";
+                sendEmail.SendToNotificationCenter(userId, "General Permit", "All clearance permit has been cancelled. Please approve PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
             }
             else if (status == 3)
             {
                 message = "All clearance permit has been cancelled by supervisor, you may continue by cancelling this Permit to Work.<br />" + serverUrl + "Home?p=Ptw/edit/" + this.id;
                 subject = "All Clearance Permit Cancelled by Supervisor";
+                sendEmail.SendToNotificationCenter(userId, "General Permit", "All clearance permit has been cancelled by Supervisor. Please approve PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
             }
 
             sendEmail.Send(s, message, subject);
@@ -2000,7 +2059,9 @@ namespace PermitToWork.Models.Ptw
                 UserEntity requestor = new UserEntity(Int32.Parse(this.acc_ptw_requestor), token, user);
                 SendEmail sendEmail = new SendEmail();
                 List<string> s = new List<string>();
+                List<int> userId = new List<int>();
                 s.Add(requestor.email);
+                userId.Add(requestor.id);
                 //s.Add("septu.jamasoka@gmail.com");
 
                 string message = "Permit to Work has been approved, you may start working using this permit.<br />" + serverUrl + "Home?p=Ptw/edit/" + this.id;
@@ -2010,11 +2071,13 @@ namespace PermitToWork.Models.Ptw
                 {
                     message = "Permit to Work has been approved, you may start working using this permit.<br />" + serverUrl + "Home?p=Ptw/edit/" + this.id;
                     subject = "Permit to Work Approved";
+                    sendEmail.SendToNotificationCenter(userId, "General Permit", "General Permit has been approved by Facility Owner.", serverUrl + "Home?p=ptw/edit/" + this.id);
                 }
                 else if (status == 2)
                 {
                     message = "Permit to Work has been cancelled. You cannot work using this permit again.<br />" + serverUrl + "Home?p=Ptw/edit/" + this.id;
                     subject = "Permit to Work Cancelled";
+                    sendEmail.SendToNotificationCenter(userId, "General Permit", "General Permit has been cancelled by Facility Owner.", serverUrl + "Home?p=ptw/edit/" + this.id);
                 }
 
                 sendEmail.Send(s, message, subject);

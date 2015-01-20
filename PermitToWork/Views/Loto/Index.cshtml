@@ -45,10 +45,14 @@
             var values = {
                 id_ptw: '@Model.id',
             };
+            $(this).attr('disabled', 'disabled');
+            $('#create-loading').show();
             $.post("@Url.Action("CreateNewLOTO","Loto")", values, function (resp) {
                 if (resp.status == "200") {
                     $('#history').val('@Url.Action("Index","Loto", new { id = Model.id })');
                     changeContent('@Url.Action("Edit","Loto")' + '/?id=' + resp.id + '&id_loto=' + '@Model.id');
+                    $('#new-loto').removeAttr('disabled');
+                    $('#create-loading').hide();
                 }
             });
         });
@@ -172,6 +176,7 @@
                 }
             <input type="button" class="btn btn-warning" value="Follow Previous LOTO Form" id="previous-loto" />
             }
+            <span id="create-loading" style="display:none"><img src="@Url.Content("~/Content/Images/loading.gif")" alt="loading" width="24" height="24" /> Create Form.. Please Wait..</span>
         </div>
     </div>
     <div class="row-fluid">

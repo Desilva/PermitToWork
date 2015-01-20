@@ -571,6 +571,7 @@ namespace PermitToWork.Models.WorkingHeight
             SendEmail sendEmail = new SendEmail();
             string message = "";
             string title = "";
+            List<int> userIds = new List<int>();
             if (wh != null)
             {
                 //listEmail.Add("septujamasoka@gmail.com");
@@ -586,10 +587,12 @@ namespace PermitToWork.Models.WorkingHeight
                                 if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.ERECTOR.ToString()))
                                 {
                                     listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].email);
+                                    userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].id);
                                     if ((userId = this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].employee_delegate) != null)
                                     {
                                         userRad = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userRad.email);
+                                        userIds.Add(userRad.id);
                                     }
                                 }
                             }
@@ -598,10 +601,12 @@ namespace PermitToWork.Models.WorkingHeight
                                 if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.INSPECTOR.ToString()))
                                 {
                                     listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.INSPECTOR.ToString()].email);
+                                    userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.INSPECTOR.ToString()].id);
                                     if ((userId = this.userInWorkingHeight[UserInWorkingHeight.INSPECTOR.ToString()].employee_delegate) != null)
                                     {
                                         userRad = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userRad.email);
+                                        userIds.Add(userRad.id);
                                     }
                                 }
                             }
@@ -612,10 +617,12 @@ namespace PermitToWork.Models.WorkingHeight
                                     if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.SUPERVISOR.ToString()))
                                     {
                                         listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                        userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].id);
                                         if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
                                         {
                                             userRad = new UserEntity(userId.Value, user.token, user);
                                             listEmail.Add(userRad.email);
+                                            userIds.Add(userRad.id);
                                         }
                                     }
                                 }
@@ -624,10 +631,12 @@ namespace PermitToWork.Models.WorkingHeight
                                     if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
                                     {
                                         listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                        userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id);
                                         if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
                                         {
                                             userRad = new UserEntity(userId.Value, user.token, user);
                                             listEmail.Add(userRad.email);
+                                            userIds.Add(userRad.id);
                                         }
                                     }
                                 }
@@ -636,6 +645,7 @@ namespace PermitToWork.Models.WorkingHeight
 #endif
                             title = "Working at Height Clearance Permit (" + this.wh_no + ") Need Review and Approval";
                             message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id;
+                            sendEmail.SendToNotificationCenter(userIds, "Working at Height Permit", "Please approve Working at Height Permit No. " + this.wh_no, serverUrl + "Home?p=WorkingHeight/edit/" + this.id);
                         }
 
                         retVal = 1;
@@ -649,10 +659,12 @@ namespace PermitToWork.Models.WorkingHeight
                                 if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.ERECTOR.ToString()))
                                 {
                                     listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].email);
+                                    userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].id);
                                     if ((userId = this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].employee_delegate) != null)
                                     {
                                         userRad = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userRad.email);
+                                        userIds.Add(userRad.id);
                                     }
                                 }
                             }
@@ -663,10 +675,12 @@ namespace PermitToWork.Models.WorkingHeight
                                     if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.SUPERVISOR.ToString()))
                                     {
                                         listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                        userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].id);
                                         if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
                                         {
                                             userRad = new UserEntity(userId.Value, user.token, user);
                                             listEmail.Add(userRad.email);
+                                            userIds.Add(userRad.id);
                                         }
                                     }
                                 }
@@ -675,10 +689,12 @@ namespace PermitToWork.Models.WorkingHeight
                                     if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
                                     {
                                         listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                        userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id);
                                         if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
                                         {
                                             userRad = new UserEntity(userId.Value, user.token, user);
                                             listEmail.Add(userRad.email);
+                                            userIds.Add(userRad.id);
                                         }
                                     }
                                 }
@@ -688,6 +704,7 @@ namespace PermitToWork.Models.WorkingHeight
 
                         title = "Working at Height Clearance Permit (" + this.wh_no + ") Need Review and Approval";
                         message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id;
+                            sendEmail.SendToNotificationCenter(userIds, "Working at Height Permit", "Please approve Working at Height Permit No. " + this.wh_no, serverUrl + "Home?p=WorkingHeight/edit/" + this.id);
                         retVal = 1;
                         break;
                     case 3 /* Requestor / Erector */:
@@ -696,14 +713,17 @@ namespace PermitToWork.Models.WorkingHeight
                             {
 #if !DEBUG
                                 listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].id);
                                 if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
                                 {
                                     userRad = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userRad.email);
+                                    userIds.Add(userRad.id);
                                 }
 #endif
                                 title = "Working at Height Clearance Permit (" + this.wh_no + ") Need Review and Approval from Supervisor";
                                 message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id;
+                                sendEmail.SendToNotificationCenter(userIds, "Working at Height Permit", "Please approve Working at Height Permit No. " + this.wh_no, serverUrl + "Home?p=WorkingHeight/edit/" + this.id);
                             }
                             else
                             {
@@ -718,10 +738,12 @@ namespace PermitToWork.Models.WorkingHeight
                                 if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.SUPERVISOR.ToString()))
                                 {
                                     listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                    userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].id);
                                     if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
                                     {
                                         userRad = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userRad.email);
+                                        userIds.Add(userRad.id);
                                     }
                                 }
                             }
@@ -730,16 +752,19 @@ namespace PermitToWork.Models.WorkingHeight
                                 if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
                                 {
                                     listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                    userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id);
                                     if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
                                     {
                                         userRad = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userRad.email);
+                                        userIds.Add(userRad.id);
                                     }
                                 }
                             }
 
                             message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id + "<br />Comment: " + comment;
                             title = "Working at Height Clearance Permit (" + this.wh_no + ") Rejected from Erector";
+                            sendEmail.SendToNotificationCenter(userIds, "Working at Height Permit", "Working at Height Permit No. " + this.wh_no + " is rejected with comment: " + comment, serverUrl + "Home?p=WorkingHeight/edit/" + this.id);
 
 #endif
                         }
@@ -752,20 +777,24 @@ namespace PermitToWork.Models.WorkingHeight
                             if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.FACILITYOWNER.ToString()))
                             {
                                 listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].email);
+                                userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].id);
                                 if ((userId = this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].employee_delegate) != null)
                                 {
                                     userRad = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userRad.email);
+                                    userIds.Add(userRad.id);
                                 }
                                 List<UserEntity> listDel = this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].GetDelegateFO(user);
                                 foreach (UserEntity u in listDel)
                                 {
                                     listEmail.Add(u.email);
+                                    userIds.Add(u.id);
                                 }
                             }
 #endif
                             title = "Working at Height Clearance Permit (" + this.wh_no + ") Need Review and Approval From Facility Owner";
                             message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id;
+                            sendEmail.SendToNotificationCenter(userIds, "Working at Height Permit", "Please approve Working at Height Permit No. " + this.wh_no, serverUrl + "Home?p=WorkingHeight/edit/" + this.id);
                         }
                         else if (stat == 2)
                         {
@@ -775,10 +804,12 @@ namespace PermitToWork.Models.WorkingHeight
                                 if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.ERECTOR.ToString()))
                                 {
                                     listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].email);
+                                    userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].id);
                                     if ((userId = this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].employee_delegate) != null)
                                     {
                                         userRad = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userRad.email);
+                                        userIds.Add(userRad.id);
                                     }
                                 }
                             }
@@ -789,10 +820,12 @@ namespace PermitToWork.Models.WorkingHeight
                                     if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.SUPERVISOR.ToString()))
                                     {
                                         listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                        userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].id);
                                         if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
                                         {
                                             userRad = new UserEntity(userId.Value, user.token, user);
                                             listEmail.Add(userRad.email);
+                                            userIds.Add(userRad.id);
                                         }
                                     }
                                 }
@@ -801,10 +834,12 @@ namespace PermitToWork.Models.WorkingHeight
                                     if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
                                     {
                                         listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                        userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id);
                                         if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
                                         {
                                             userRad = new UserEntity(userId.Value, user.token, user);
                                             listEmail.Add(userRad.email);
+                                            userIds.Add(userRad.id);
                                         }
                                     }
                                 }
@@ -812,6 +847,7 @@ namespace PermitToWork.Models.WorkingHeight
 #endif
                             message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id + "<br />Comment: " + comment;
                             title = "Working at Height Clearance Permit (" + this.wh_no + ") Rejected from Supervisor";
+                            sendEmail.SendToNotificationCenter(userIds, "Working at Height Permit", "Working at Height Permit No. " + this.wh_no + " is rejected with comment: " + comment, serverUrl + "Home?p=WorkingHeight/edit/" + this.id);
                         }
 
                         retVal = 1;
@@ -825,10 +861,12 @@ namespace PermitToWork.Models.WorkingHeight
                                 if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.SUPERVISOR.ToString()))
                                 {
                                     listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                    userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].id);
                                     if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
                                     {
                                         userRad = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userRad.email);
+                                        userIds.Add(userRad.id);
                                     }
                                 }
                             }
@@ -837,10 +875,12 @@ namespace PermitToWork.Models.WorkingHeight
                                 if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
                                 {
                                     listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                    userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id);
                                     if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
                                     {
                                         userRad = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userRad.email);
+                                        userIds.Add(userRad.id);
                                     }
                                 }
                             }
@@ -848,6 +888,7 @@ namespace PermitToWork.Models.WorkingHeight
 #endif
                             title = "Working at Height Clearance Permit (" + this.wh_no + ") Completed and Approved";
                             message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id;
+                            sendEmail.SendToNotificationCenter(userIds, "Working at Height Permit", "Working at Height Permit No. " + this.wh_no + " has been completed.", serverUrl + "Home?p=WorkingHeight/edit/" + this.id);
                         }
                         else if (stat == 2)
                         {
@@ -855,15 +896,18 @@ namespace PermitToWork.Models.WorkingHeight
                             if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.SUPERVISOR.ToString()))
                             {
                                 listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].id);
                                 if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
                                 {
                                     userRad = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userRad.email);
+                                    userIds.Add(userRad.id);
                                 }
                             }
 #endif
                             message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id + "<br />Comment: " + comment;
                             title = "Working at Height Clearance Permit (" + this.wh_no + ") Rejected from Facility Owner";
+                            sendEmail.SendToNotificationCenter(userIds, "Working at Height Permit", "Working at Height Permit No. " + this.wh_no + " is rejected with comment: " + comment, serverUrl + "Home?p=WorkingHeight/edit/" + this.id);
                         }
                         retVal = 1;
                         break;
@@ -1388,6 +1432,7 @@ namespace PermitToWork.Models.WorkingHeight
             SendEmail sendEmail = new SendEmail();
             string message = "";
             string title = "";
+            List<int> userIds = new List<int>();
             if (wh != null)
             {
 #if DEBUG
@@ -1405,10 +1450,12 @@ namespace PermitToWork.Models.WorkingHeight
                                 if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.ERECTOR.ToString()))
                                 {
                                     listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].email);
+                                    userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].id);
                                     if ((userId = this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].employee_delegate) != null)
                                     {
                                         userRad = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userRad.email);
+                                        userIds.Add(userRad.id);
                                     }
                                 }
                             }
@@ -1419,10 +1466,12 @@ namespace PermitToWork.Models.WorkingHeight
                                     if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.SUPERVISOR.ToString()))
                                     {
                                         listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                        userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].id);
                                         if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
                                         {
                                             userRad = new UserEntity(userId.Value, user.token, user);
                                             listEmail.Add(userRad.email);
+                                            userIds.Add(userRad.id);
                                         }
                                     }
                                 }
@@ -1431,10 +1480,12 @@ namespace PermitToWork.Models.WorkingHeight
                                     if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
                                     {
                                         listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                        userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id);
                                         if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
                                         {
                                             userRad = new UserEntity(userId.Value, user.token, user);
                                             listEmail.Add(userRad.email);
+                                            userIds.Add(userRad.id);
                                         }
                                     }
                                 }
@@ -1443,6 +1494,7 @@ namespace PermitToWork.Models.WorkingHeight
 #endif
                             title = "Working at Height Clearance Permit (" + this.wh_no + ") Cancellation Need Review and Approval";
                             message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id;
+                            sendEmail.SendToNotificationCenter(userIds, "Working at Height Permit", "Please approve cancellation of Working at Height Permit No. " + this.wh_no, serverUrl + "Home?p=WorkingHeight/edit/" + this.id);
                         }
 
                         retVal = 1;
@@ -1454,14 +1506,17 @@ namespace PermitToWork.Models.WorkingHeight
                             {
 #if !DEBUG
                                 listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].id);
                                 if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
                                 {
                                     userRad = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userRad.email);
+                                    userIds.Add(userRad.id);
                                 }
 #endif
                                 title = "Working at Height Clearance Permit (" + this.wh_no + ") Need Review and Approval from Supervisor";
                                 message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id;
+                                sendEmail.SendToNotificationCenter(userIds, "Working at Height Permit", "Please approve cancellation of Working at Height Permit No. " + this.wh_no, serverUrl + "Home?p=WorkingHeight/edit/" + this.id);
                             }
                             else
                             {
@@ -1476,10 +1531,12 @@ namespace PermitToWork.Models.WorkingHeight
                                 if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.SUPERVISOR.ToString()))
                                 {
                                     listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                    userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].id);
                                     if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
                                     {
                                         userRad = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userRad.email);
+                                        userIds.Add(userRad.id);
                                     }
                                 }
                             }
@@ -1488,16 +1545,19 @@ namespace PermitToWork.Models.WorkingHeight
                                 if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
                                 {
                                     listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                    userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id);
                                     if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
                                     {
                                         userRad = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userRad.email);
+                                        userIds.Add(userRad.id);
                                     }
                                 }
                             }
 
                             message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id + "<br />Comment: " + comment;
                             title = "Working at Height Clearance Permit (" + this.wh_no + ") Rejected from Erector";
+                            sendEmail.SendToNotificationCenter(userIds, "Working at Height Permit", "Cancellation of Working at Height Permit No. " + this.wh_no + " is rejected with comment: " + comment, serverUrl + "Home?p=WorkingHeight/edit/" + this.id);
 
 #endif
                         }
@@ -1510,20 +1570,24 @@ namespace PermitToWork.Models.WorkingHeight
                             if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.FACILITYOWNER.ToString()))
                             {
                                 listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].email);
+                                userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].id);
                                 if ((userId = this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].employee_delegate) != null)
                                 {
                                     userRad = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userRad.email);
+                                    userIds.Add(userRad.id);
                                 }
                                 List<UserEntity> listDel = this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()].GetDelegateFO(user);
                                 foreach (UserEntity u in listDel)
                                 {
                                     listEmail.Add(u.email);
+                                    userIds.Add(u.id);
                                 }
                             }
 #endif
                             title = "Working at Height Clearance Permit (" + this.wh_no + ") Cancellation Need Review and Approval From Facility Owner";
                             message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id;
+                            sendEmail.SendToNotificationCenter(userIds, "Working at Height Permit", "Please approve cancellation of Working at Height Permit No. " + this.wh_no, serverUrl + "Home?p=WorkingHeight/edit/" + this.id);
                         }
                         else if (stat == 2)
                         {
@@ -1533,10 +1597,12 @@ namespace PermitToWork.Models.WorkingHeight
                                 if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.ERECTOR.ToString()))
                                 {
                                     listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].email);
+                                    userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].id);
                                     if ((userId = this.userInWorkingHeight[UserInWorkingHeight.ERECTOR.ToString()].employee_delegate) != null)
                                     {
                                         userRad = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userRad.email);
+                                        userIds.Add(userRad.id);
                                     }
                                 }
                             }
@@ -1547,10 +1613,12 @@ namespace PermitToWork.Models.WorkingHeight
                                     if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.SUPERVISOR.ToString()))
                                     {
                                         listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                        userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].id);
                                         if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
                                         {
                                             userRad = new UserEntity(userId.Value, user.token, user);
                                             listEmail.Add(userRad.email);
+                                            userIds.Add(userRad.id);
                                         }
                                     }
                                 }
@@ -1559,10 +1627,12 @@ namespace PermitToWork.Models.WorkingHeight
                                     if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
                                     {
                                         listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                        userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id);
                                         if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
                                         {
                                             userRad = new UserEntity(userId.Value, user.token, user);
                                             listEmail.Add(userRad.email);
+                                            userIds.Add(userRad.id);
                                         }
                                     }
                                 }
@@ -1570,6 +1640,7 @@ namespace PermitToWork.Models.WorkingHeight
 #endif
                             message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id + "<br />Comment: " + comment;
                             title = "Working at Height Clearance Permit (" + this.wh_no + ") Cancellation Rejected from Supervisor";
+                            sendEmail.SendToNotificationCenter(userIds, "Working at Height Permit", "Cancellation of Working at Height Permit No. " + this.wh_no + " is rejected with comment: " + comment, serverUrl + "Home?p=WorkingHeight/edit/" + this.id);
                         }
 
                         retVal = 1;
@@ -1583,10 +1654,12 @@ namespace PermitToWork.Models.WorkingHeight
                                 if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.SUPERVISOR.ToString()))
                                 {
                                     listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                    userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].id);
                                     if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
                                     {
                                         userRad = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userRad.email);
+                                        userIds.Add(userRad.id);
                                     }
                                 }
                             }
@@ -1595,10 +1668,12 @@ namespace PermitToWork.Models.WorkingHeight
                                 if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.REQUESTOR.ToString()))
                                 {
                                     listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].email);
+                                    userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].id);
                                     if ((userId = this.userInWorkingHeight[UserInWorkingHeight.REQUESTOR.ToString()].employee_delegate) != null)
                                     {
                                         userRad = new UserEntity(userId.Value, user.token, user);
                                         listEmail.Add(userRad.email);
+                                        userIds.Add(userRad.id);
                                     }
                                 }
                             }
@@ -1606,6 +1681,7 @@ namespace PermitToWork.Models.WorkingHeight
 #endif
                             title = "Working at Height Clearance Permit (" + this.wh_no + ") Cancellation Completed and Approved";
                             message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id;
+                            sendEmail.SendToNotificationCenter(userIds, "Working at Height Permit", "Cancellation of Working at Height Permit No. " + this.wh_no + " has been completed.", serverUrl + "Home?p=WorkingHeight/edit/" + this.id);
                         }
                         else if (stat == 2)
                         {
@@ -1613,15 +1689,18 @@ namespace PermitToWork.Models.WorkingHeight
                             if (this.userInWorkingHeight.Keys.ToList().Exists(p => p == UserInWorkingHeight.SUPERVISOR.ToString()))
                             {
                                 listEmail.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].email);
+                                userIds.Add(this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].id);
                                 if ((userId = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()].employee_delegate) != null)
                                 {
                                     userRad = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userRad.email);
+                                    userIds.Add(userRad.id);
                                 }
                             }
 #endif
                             message = serverUrl + "Home?p=WorkingHeight/edit/" + this.id + "<br />Comment: " + comment;
                             title = "Working at Height Clearance Permit (" + this.wh_no + ") Cancellation Rejected from Facility Owner";
+                            sendEmail.SendToNotificationCenter(userIds, "Working at Height Permit", "Cancellation of Working at Height Permit No. " + this.wh_no + " is rejected with comment: " + comment, serverUrl + "Home?p=WorkingHeight/edit/" + this.id);
                         }
                         retVal = 1;
                         break;

@@ -99,7 +99,7 @@ namespace PermitToWork.Controllers
             {
                 // change status to SPVSCREENING
                 csep_new.sendEmailRandomPIN(fullUrl(), user.token, user);
-
+                csep_new.sendEmailSupervisorScreening(fullUrl(), user.token, user);
                 // send email to facility owner (5)
             }
 
@@ -107,7 +107,8 @@ namespace PermitToWork.Controllers
             {
                 // change status to SPVSCREENING
                 csep_new.setStatus((int)CsepEntity.CsepStatus.SPVSCREENING);
-                this.sendEmailFO(csep_new);
+                csep_new.sendEmailFOScreening(fullUrl(), user.token, user);
+                //this.sendEmailFO(csep_new);
                 // send email to facility owner (5)
             }
 

@@ -703,7 +703,7 @@
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
     <button class="btn btn-primary" id="save-reject-spv">Save</button>
-    <span id="reject-spv-loading" style="display:none"><img src="@Url.Content("~/Content/Images/loading.gif")" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span>      
+    <span id="reject-spv-loading" style="display:none"><img src="@Url.Content("~/Content/Images/loading.gif")" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span>
   </div>
 </div>
 
@@ -1153,7 +1153,7 @@
             $.post('@Url.Action("SaveDraft", "Loto")', values, function (resp) {
                 if (resp.status == "200") {
                     alert('Save success.');
-                    $('#content').load('@Url.Action("Edit", "Loto")');
+                    $('#content').load('@Url.Action("Edit", "Loto")/' + values.id);
                 }
             });
         });
@@ -1171,7 +1171,7 @@
             $.post('@Url.Action("SaveDraft", "Loto")', values, function (resp) {
                 if (resp.status == "200") {
                     alert('Save success.');
-                    $('#content').load('@Url.Action("Edit", "Loto")');
+                    $('#content').load('@Url.Action("Edit", "Loto")/' + values.id);
                 }
             });
         });
@@ -1195,7 +1195,7 @@
                     $('#loading').hide();
                     if (resp.status == "200") {
                         alert('Save success. Others Permit Holder has been informed to approve LOTO Point changed.');
-                        $('#content').load('@Url.Action("Edit", "Loto")');
+                        $('#content').load('@Url.Action("Edit", "Loto")/' + values.id);
                     }
                 });
             } else {
@@ -1224,7 +1224,7 @@
                 $('#loading').hide();
                 if (resp.status == "200") {
                     alert('Save success. Requestor has been informed to inspect and verify applied LOTO Point Position.');
-                    $('#content').load('@Url.Action("Edit", "Loto")');
+                    $('#content').load('@Url.Action("Edit", "Loto")/' + values.id);
                 }
             });
         });
@@ -1239,7 +1239,7 @@
                 $('#loading').hide();
                 if (resp.status == "200") {
                     alert('Save success. Supervisor has been informed to approve.');
-                    $('#content').load('@Url.Action("Edit", "Loto")');
+                    $('#content').load('@Url.Action("Edit", "Loto")/' + values.id);
                 }
             });
         });
@@ -1256,7 +1256,7 @@
                 $('#loading').hide();
                 if (resp.status == "200") {
                     alert('LOTO Permit is approved.');
-                    $('#content').load('@Url.Action("Edit", "Loto")');
+                    $('#content').load('@Url.Action("Edit", "Loto")/' + values.id);
                 }
             });
         });
@@ -1272,7 +1272,7 @@
                 $('#loading').hide();
                 if (resp.status == "200") {
                     alert('LOTO Permit is approved.');
-                    $('#content').load('@Url.Action("Edit", "Loto")');
+                    $('#content').load('@Url.Action("Edit", "Loto")/' + values.id);
                 }
             });
         });
@@ -1285,7 +1285,7 @@
             $.post('@Url.Action("requestLotoChange", "Loto")', values, function (resp) {
                 if (resp.status == "200") {
                     alert('LOTO Permit is requested for changing.');
-                    $('#content').load('@Url.Action("Edit", "Loto")');
+                    $('#content').load('@Url.Action("Edit", "Loto")/' + values.id);
                 }
             });
         });
@@ -1300,7 +1300,7 @@
                 $('#loading').hide();
                 if (resp.status == "200") {
                     alert('LOTO Permit is approved.');
-                    $('#content').load('@Url.Action("Edit", "Loto")');
+                    $('#content').load('@Url.Action("Edit", "Loto")/' + values.id);
                 }
             });
         });
@@ -1315,7 +1315,7 @@
                 $('#loading').hide();
                 if (resp.status == "200") {
                     alert('Save success. Requestor and others Permit Holder has been informed to inspect and verify applied LOTO Point Position.');
-                    $('#content').load('@Url.Action("Edit", "Loto")');
+                    $('#content').load('@Url.Action("Edit", "Loto")/' + values.id);
                 }
             });
         });
@@ -1332,7 +1332,7 @@
                 $('#loading').hide();
                 if (resp.status == "200") {
                     alert('LOTO Permit is approved.');
-                    $('#content').load('@Url.Action("Edit", "Loto")');
+                    $('#content').load('@Url.Action("Edit", "Loto")/' + values.id);
                 }
             });
         });

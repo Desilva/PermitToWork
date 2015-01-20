@@ -137,14 +137,17 @@ namespace PermitToWork.Models.Ptw
         public List<PtwEntity> listPtwOwn(UserEntity user)
         {
             List<PtwEntity> listPtwUser = new List<PtwEntity>();
-            var result = db.permit_to_work.Where(p => p.status < (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.ACCFO ).ToList().OrderByDescending(p => p.ptw_no != null ? p.ptw_no.Split('-').ElementAt(1) : "");
+            var result = db.permit_to_work.Where(p => p.status <= (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.ACCFO).ToList().OrderByDescending(p => p.ptw_no != null ? p.ptw_no.Split('-').ElementAt(1) : "");
             this.listUser = new ListUser(user.token, user.id);
 
             foreach (var a in result)
             {
                 
                 PtwEntity ptw = new PtwEntity(a, user, true, listUser);
-                listPtwUser.Add(ptw);
+                if (ptw.validity_period_end == null || (DateTime.Now.Subtract(ptw.validity_period_end.Value).Days > 0 && !ptw.has_extend))
+                {
+                    listPtwUser.Add(ptw);
+                }
             }
 
             return listPtwUser;

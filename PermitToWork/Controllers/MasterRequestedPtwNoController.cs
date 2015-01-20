@@ -13,6 +13,16 @@ namespace PermitToWork.Controllers
         //
         // GET: /MasterRequestedPtwNo/
 
+        private string fullUrl()
+        {
+            string url = Request.Url.Authority;
+            string applicationPath = Request.ApplicationPath;
+
+            string fullUrl = "http://" + url + applicationPath;
+
+            return fullUrl;
+        }
+
         public ActionResult Index()
         {
             return PartialView();
@@ -31,7 +41,7 @@ namespace PermitToWork.Controllers
         {
             UserEntity userLogin = Session["user"] as UserEntity;
             ptw.setGuestHolderNo();
-            ptw.sendEmailRequestNoSet(userLogin);
+            ptw.sendEmailRequestNoSet(userLogin, fullUrl());
             return Json(true);
         }
 

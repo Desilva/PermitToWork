@@ -431,6 +431,7 @@ namespace PermitToWork.Models
             SendEmail sendEmail = new SendEmail();
             string message = "";
             string title = "";
+            List<int> userIds = new List<int>();
             if (fi != null)
             {
 #if DEBUG
@@ -445,10 +446,12 @@ namespace PermitToWork.Models
                             if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.SUPERVISOR.ToString()))
                             {
                                 listEmail.Add(this.userInFI[UserInFI.SUPERVISOR.ToString()].email);
+                                userIds.Add(this.userInFI[UserInFI.SUPERVISOR.ToString()].id);
                                 if ((userId = this.userInFI[UserInFI.SUPERVISOR.ToString()].employee_delegate) != null)
                                 {
                                     userFi = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userFi.email);
+                                    userIds.Add(userFi.id);
                                 }
                             }
                         }
@@ -457,10 +460,12 @@ namespace PermitToWork.Models
                             if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.REQUESTOR.ToString()))
                             {
                                 listEmail.Add(this.userInFI[UserInFI.REQUESTOR.ToString()].email);
+                                userIds.Add(this.userInFI[UserInFI.REQUESTOR.ToString()].id);
                                 if ((userId = this.userInFI[UserInFI.REQUESTOR.ToString()].employee_delegate) != null)
                                 {
                                     userFi = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userFi.email);
+                                    userIds.Add(userFi.id);
                                 }
                             }
                         }
@@ -471,11 +476,13 @@ namespace PermitToWork.Models
                         {
                             title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Need Review and Approval";
                             message = serverUrl + "Home?p=FI/edit/" + this.id;
+                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Please approve Fire Impairment Permit No. " + this.fi_no, serverUrl + "Home?p=FI/edit/" + this.id);
                         }
                         else if (stat == 2)
                         {
                             message = serverUrl + "Home?p=FI/edit/" + this.id + "<br />Comment: " + comment;
                             title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Rejected from Fire Watch";
+                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Fire Impairment Permit No. " + this.fi_no + "is rejected with comment: " + comment, serverUrl + "Home?p=FI/edit/" + this.id);
                         }
 
                         retVal = 1;
@@ -486,10 +493,12 @@ namespace PermitToWork.Models
                         if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.FIREWATCH.ToString()))
                         {
                             listEmail.Add(this.userInFI[UserInFI.FIREWATCH.ToString()].email);
+                            userIds.Add(this.userInFI[UserInFI.FIREWATCH.ToString()].id);
                             if ((userId = this.userInFI[UserInFI.FIREWATCH.ToString()].employee_delegate) != null)
                             {
                                 userFi = new UserEntity(userId.Value, user.token, user);
                                 listEmail.Add(userFi.email);
+                                userIds.Add(userFi.id);
                             }
                         }
 
@@ -499,11 +508,15 @@ namespace PermitToWork.Models
                         {
                             title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Need Review and Approval";
                             message = serverUrl + "Home?p=FI/edit/" + this.id;
+                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Please approve Fire Impairment Permit No. " + this.fi_no, serverUrl + "Home?p=FI/edit/" + this.id);
+
+                            sendEmailAssign(serverUrl, user);
                         }
                         else if (stat == 2)
                         {
                             message = serverUrl + "Home?p=FI/edit/" + this.id + "<br />Comment: " + comment;
                             title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Rejected from Supervisor";
+                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Fire Impairment Permit No. " + this.fi_no + "is rejected with comment: " + comment, serverUrl + "Home?p=FI/edit/" + this.id);
                         }
                         retVal = 1;
                         break;
@@ -513,10 +526,12 @@ namespace PermitToWork.Models
                         if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.SUPERVISOR.ToString()))
                         {
                             listEmail.Add(this.userInFI[UserInFI.SUPERVISOR.ToString()].email);
+                            userIds.Add(this.userInFI[UserInFI.SUPERVISOR.ToString()].id);
                             if ((userId = this.userInFI[UserInFI.SUPERVISOR.ToString()].employee_delegate) != null)
                             {
                                 userFi = new UserEntity(userId.Value, user.token, user);
                                 listEmail.Add(userFi.email);
+                                userIds.Add(userFi.id);
                             }
                         }
                         else
@@ -530,11 +545,13 @@ namespace PermitToWork.Models
                         {
                             title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Need Review and Approval";
                             message = serverUrl + "Home?p=FI/edit/" + this.id;
+                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Please approve Fire Impairment Permit No. " + this.fi_no, serverUrl + "Home?p=FI/edit/" + this.id);
                         }
                         else if (stat == 2)
                         {
                             message = serverUrl + "Home?p=FI/edit/" + this.id + "<br />Comment: " + comment;
                             title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Rejected from Safety Officer";
+                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Fire Impairment Permit No. " + this.fi_no + "is rejected with comment: " + comment, serverUrl + "Home?p=FI/edit/" + this.id);
                         }
                         retVal = 1;
                         break;
@@ -543,10 +560,12 @@ namespace PermitToWork.Models
                         {
                             #if !DEBUG
                             listEmail.Add(this.userInFI[UserInFI.SAFETYOFFICER.ToString()].email);
+                            userIds.Add(this.userInFI[UserInFI.SAFETYOFFICER.ToString()].id);
                             if ((userId = this.userInFI[UserInFI.SAFETYOFFICER.ToString()].employee_delegate) != null)
                             {
                                 userFi = new UserEntity(userId.Value, user.token, user);
                                 listEmail.Add(userFi.email);
+                                userIds.Add(userFi.id);
                             }
                             #endif
 
@@ -554,30 +573,36 @@ namespace PermitToWork.Models
                             {
                                 title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Need Review and Approval";
                                 message = serverUrl + "Home?p=FI/edit/" + this.id;
+                                sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Please approve Fire Impairment Permit No. " + this.fi_no, serverUrl + "Home?p=FI/edit/" + this.id);
                             }
                             else if (stat == 2)
                             {
                                 message = serverUrl + "Home?p=FI/edit/" + this.id + "<br />Comment: " + comment;
                                 title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Rejected from Facility Owner";
+                                sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Fire Impairment Permit No. " + this.fi_no + "is rejected with comment: " + comment, serverUrl + "Home?p=FI/edit/" + this.id);
                             }
                         } else {
                             #if !DEBUG
                             listEmail.Add(this.userInFI[UserInFI.FACILITYOWNER.ToString()].email);
+                            userIds.Add(this.userInFI[UserInFI.FACILITYOWNER.ToString()].id);
                             if ((userId = this.userInFI[UserInFI.FACILITYOWNER.ToString()].employee_delegate) != null)
                             {
                                 userFi = new UserEntity(userId.Value, user.token, user);
                                 listEmail.Add(userFi.email);
+                                userIds.Add(userFi.id);
                             }
 
                             List<UserEntity> listDel = this.userInFI[UserInFI.FACILITYOWNER.ToString()].GetDelegateFO(user);
                             foreach (UserEntity u in listDel)
                             {
                                 listEmail.Add(u.email);
+                                userIds.Add(u.id);
                             }
                             #endif
 
                             title = "[URGENT] Fire Impairment Clearance Permit (" + this.fi_no + ") Safety Officer hasn't been Chosen";
                             message = serverUrl + "Home?p=FI/edit/" + this.id;
+                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Please choose safety officer and Dept. Head FO for Fire Impairment Permit No. " + this.fi_no, serverUrl + "Home?p=FI/edit/" + this.id);
                         }
                         retVal = 1;
                         break;
@@ -586,15 +611,18 @@ namespace PermitToWork.Models
                         if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.FACILITYOWNER.ToString()))
                         {
                             listEmail.Add(this.userInFI[UserInFI.FACILITYOWNER.ToString()].email);
+                            userIds.Add(this.userInFI[UserInFI.FACILITYOWNER.ToString()].id);
                             if ((userId = this.userInFI[UserInFI.FACILITYOWNER.ToString()].employee_delegate) != null)
                             {
                                 userFi = new UserEntity(userId.Value, user.token, user);
                                 listEmail.Add(userFi.email);
+                                userIds.Add(userFi.id);
                             }
                             List<UserEntity> listDel = this.userInFI[UserInFI.FACILITYOWNER.ToString()].GetDelegateFO(user);
                             foreach (UserEntity u in listDel)
                             {
                                 listEmail.Add(u.email);
+                                userIds.Add(u.id);
                             }
                         }
                         #endif
@@ -603,11 +631,13 @@ namespace PermitToWork.Models
                         {
                             title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Need Review and Approval";
                             message = serverUrl + "Home?p=FI/edit/" + this.id;
+                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Please approve Fire Impairment Permit No. " + this.fi_no, serverUrl + "Home?p=FI/edit/" + this.id);
                         }
                         else if (stat == 2)
                         {
                             message = serverUrl + "Home?p=FI/edit/" + this.id + "<br />Comment: " + comment;
                             title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Rejected from Dept. Head FO";
+                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Fire Impairment Permit No. " + this.fi_no + "is rejected with comment: " + comment, serverUrl + "Home?p=FI/edit/" + this.id);
                         }
                         retVal = 1;
                         break;
@@ -616,10 +646,12 @@ namespace PermitToWork.Models
                         if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.DEPTHEADFO.ToString()))
                         {
                             listEmail.Add(this.userInFI[UserInFI.DEPTHEADFO.ToString()].email);
+                            userIds.Add(this.userInFI[UserInFI.DEPTHEADFO.ToString()].id);
                             if ((userId = this.userInFI[UserInFI.DEPTHEADFO.ToString()].employee_delegate) != null)
                             {
                                 userFi = new UserEntity(userId.Value, user.token, user);
                                 listEmail.Add(userFi.email);
+                                userIds.Add(userFi.id);
                             }
                         }
                         #endif
@@ -628,6 +660,7 @@ namespace PermitToWork.Models
                         {
                             title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Need Review and Approval";
                             message = serverUrl + "Home?p=FI/edit/" + this.id;
+                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Please approve Fire Impairment Permit No. " + this.fi_no, serverUrl + "Home?p=FI/edit/" + this.id);
                         }
                         retVal = 1;
                         break;
@@ -639,10 +672,12 @@ namespace PermitToWork.Models
                             if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.SUPERVISOR.ToString()))
                             {
                                 listEmail.Add(this.userInFI[UserInFI.SUPERVISOR.ToString()].email);
+                                userIds.Add(this.userInFI[UserInFI.SUPERVISOR.ToString()].id);
                                 if ((userId = this.userInFI[UserInFI.SUPERVISOR.ToString()].employee_delegate) != null)
                                 {
                                     userFi = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userFi.email);
+                                    userIds.Add(userFi.id);
                                 }
                             }
                         }
@@ -651,10 +686,12 @@ namespace PermitToWork.Models
                             if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.REQUESTOR.ToString()))
                             {
                                 listEmail.Add(this.userInFI[UserInFI.REQUESTOR.ToString()].email);
+                                userIds.Add(this.userInFI[UserInFI.REQUESTOR.ToString()].id);
                                 if ((userId = this.userInFI[UserInFI.REQUESTOR.ToString()].employee_delegate) != null)
                                 {
                                     userFi = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userFi.email);
+                                    userIds.Add(userFi.id);
                                 }
                             }
                         }
@@ -665,6 +702,7 @@ namespace PermitToWork.Models
                         {
                             title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Completed and Approved";
                             message = serverUrl + "Home?p=FI/edit/" + this.id;
+                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Fire Impairment Permit No. " + this.fi_no + " has been approved by Dept. Head Facility Owner.", serverUrl + "Home?p=FI/edit/" + this.id);
                         }
 
                         retVal = 1;
@@ -834,16 +872,18 @@ namespace PermitToWork.Models
         {
             // sending email
             List<string> email = new List<string>();
+            List<int> userId = new List<int>();
             int foId = 0;
             Int32.TryParse(this.acc_fo, out foId);
             UserEntity spv = new UserEntity(foId, user.token, user);
             email.Add(spv.email);
-
+            userId.Add(spv.id);
 
             List<UserEntity> listDel = spv.GetDelegateFO(user);
             foreach (UserEntity u in listDel)
             {
                 email.Add(u.email);
+                userId.Add(u.id);
             }
             // email.Add("septujamasoka@gmail.com");
             SendEmail sendEmail = new SendEmail();
@@ -853,6 +893,7 @@ namespace PermitToWork.Models
             string message = serverUrl + "Home?p=FI/edit/" + this.id;
 
             sendEmail.Send(email, message, "Assign Safety Officer and Dept. Head FO for Fire Impairment Clearance Permit");
+            sendEmail.SendToNotificationCenter(userId, "Fire Impairment Permit", "Please choose safety officer and Dept. Head FO for Fire Impairment Permit No. " + this.fi_no, serverUrl + "Home?p=FI/edit/" + this.id);
 
             return 1;
         }
@@ -1394,6 +1435,7 @@ namespace PermitToWork.Models
             SendEmail sendEmail = new SendEmail();
             string message = "";
             string title = "";
+            List<int> userIds = new List<int>();
             if (fi != null)
             {
 #if DEBUG
@@ -1408,10 +1450,12 @@ namespace PermitToWork.Models
                             if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.SUPERVISOR.ToString()))
                             {
                                 listEmail.Add(this.userInFI[UserInFI.SUPERVISOR.ToString()].email);
+                                userIds.Add(this.userInFI[UserInFI.SUPERVISOR.ToString()].id);
                                 if ((userId = this.userInFI[UserInFI.SUPERVISOR.ToString()].employee_delegate) != null)
                                 {
                                     userFi = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userFi.email);
+                                    userIds.Add(userFi.id);
                                 }
                             }
                         }
@@ -1420,10 +1464,12 @@ namespace PermitToWork.Models
                             if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.REQUESTOR.ToString()))
                             {
                                 listEmail.Add(this.userInFI[UserInFI.REQUESTOR.ToString()].email);
+                                userIds.Add(this.userInFI[UserInFI.REQUESTOR.ToString()].id);
                                 if ((userId = this.userInFI[UserInFI.REQUESTOR.ToString()].employee_delegate) != null)
                                 {
                                     userFi = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userFi.email);
+                                    userIds.Add(userFi.id);
                                 }
                             }
                         }
@@ -1435,11 +1481,13 @@ namespace PermitToWork.Models
                         {
                             title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Need Review and Approval";
                             message = serverUrl + "Home?p=FI/edit/" + this.id;
+                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Please approve cancellation of Fire Impairment Permit No. " + this.fi_no, serverUrl + "Home?p=FI/edit/" + this.id);
                         }
                         else if (stat == 2)
                         {
                             message = serverUrl + "Home?p=FI/edit/" + this.id + "<br />Comment: " + comment;
                             title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Rejected from Fire Watch";
+                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Cancellation of Fire Impairment Permit No. " + this.fi_no + " is rejected with comment: " + comment, serverUrl + "Home?p=FI/edit/" + this.id);
                         }
 
                         retVal = 1;
@@ -1450,10 +1498,12 @@ namespace PermitToWork.Models
                         if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.FIREWATCH.ToString()))
                         {
                             listEmail.Add(this.userInFI[UserInFI.FIREWATCH.ToString()].email);
+                            userIds.Add(this.userInFI[UserInFI.FIREWATCH.ToString()].id);
                             if ((userId = this.userInFI[UserInFI.FIREWATCH.ToString()].employee_delegate) != null)
                             {
                                 userFi = new UserEntity(userId.Value, user.token, user);
                                 listEmail.Add(userFi.email);
+                                userIds.Add(userFi.id);
                             }
                         }
 
@@ -1463,11 +1513,13 @@ namespace PermitToWork.Models
                         {
                             title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Need Review and Approval";
                             message = serverUrl + "Home?p=FI/edit/" + this.id;
+                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Please approve cancellation of Fire Impairment Permit No. " + this.fi_no, serverUrl + "Home?p=FI/edit/" + this.id);
                         }
                         else if (stat == 2)
                         {
                             message = serverUrl + "Home?p=FI/edit/" + this.id + "<br />Comment: " + comment;
                             title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Rejected from Supervisor";
+                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Cancellation of Fire Impairment Permit No. " + this.fi_no + " is rejected with comment: " + comment, serverUrl + "Home?p=FI/edit/" + this.id);
                         }
                         retVal = 1;
                         break;
@@ -1477,10 +1529,12 @@ namespace PermitToWork.Models
                         if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.SUPERVISOR.ToString()))
                         {
                             listEmail.Add(this.userInFI[UserInFI.SUPERVISOR.ToString()].email);
+                            userIds.Add(this.userInFI[UserInFI.SUPERVISOR.ToString()].id);
                             if ((userId = this.userInFI[UserInFI.SUPERVISOR.ToString()].employee_delegate) != null)
                             {
                                 userFi = new UserEntity(userId.Value, user.token, user);
                                 listEmail.Add(userFi.email);
+                                userIds.Add(userFi.id);
                             }
                         }
                         else
@@ -1494,11 +1548,13 @@ namespace PermitToWork.Models
                         {
                             title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Need Review and Approval";
                             message = serverUrl + "Home?p=FI/edit/" + this.id;
+                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Please approve cancellation of Fire Impairment Permit No. " + this.fi_no, serverUrl + "Home?p=FI/edit/" + this.id);
                         }
                         else if (stat == 2)
                         {
                             message = serverUrl + "Home?p=FI/edit/" + this.id + "<br />Comment: " + comment;
                             title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Rejected from Safety Officer";
+                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Cancellation of Fire Impairment Permit No. " + this.fi_no + " is rejected with comment: " + comment, serverUrl + "Home?p=FI/edit/" + this.id);
                         }
                         retVal = 1;
                         break;
@@ -1507,10 +1563,12 @@ namespace PermitToWork.Models
                         {
 #if !DEBUG
                             listEmail.Add(this.userInFI[UserInFI.SAFETYOFFICER.ToString()].email);
+                            userIds.Add(this.userInFI[UserInFI.SAFETYOFFICER.ToString()].id);
                             if ((userId = this.userInFI[UserInFI.SAFETYOFFICER.ToString()].employee_delegate) != null)
                             {
                                 userFi = new UserEntity(userId.Value, user.token, user);
                                 listEmail.Add(userFi.email);
+                                userIds.Add(userFi.id);
                             }
 #endif
                         }
@@ -1519,11 +1577,13 @@ namespace PermitToWork.Models
                         {
                             title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Need Review and Approval";
                             message = serverUrl + "Home?p=FI/edit/" + this.id;
+                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Please approve cancellation of Fire Impairment Permit No. " + this.fi_no, serverUrl + "Home?p=FI/edit/" + this.id);
                         }
                         else if (stat == 2)
                         {
                             message = serverUrl + "Home?p=FI/edit/" + this.id + "<br />Comment: " + comment;
                             title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Rejected from Facility Owner";
+                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Cancellation of Fire Impairment Permit No. " + this.fi_no + " is rejected with comment: " + comment, serverUrl + "Home?p=FI/edit/" + this.id);
                         }
                         retVal = 1;
                         break;
@@ -1532,15 +1592,18 @@ namespace PermitToWork.Models
                         if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.FACILITYOWNER.ToString()))
                         {
                             listEmail.Add(this.userInFI[UserInFI.FACILITYOWNER.ToString()].email);
+                            userIds.Add(this.userInFI[UserInFI.FACILITYOWNER.ToString()].id);
                             if ((userId = this.userInFI[UserInFI.FACILITYOWNER.ToString()].employee_delegate) != null)
                             {
                                 userFi = new UserEntity(userId.Value, user.token, user);
                                 listEmail.Add(userFi.email);
+                                userIds.Add(userFi.id);
                             }
                             List<UserEntity> listDel = this.userInFI[UserInFI.FACILITYOWNER.ToString()].GetDelegateFO(user);
                             foreach (UserEntity u in listDel)
                             {
                                 listEmail.Add(u.email);
+                                userIds.Add(u.id);
                             }
                         }
 #endif
@@ -1549,11 +1612,13 @@ namespace PermitToWork.Models
                         {
                             title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Need Review and Approval";
                             message = serverUrl + "Home?p=FI/edit/" + this.id;
+                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Please approve cancellation of Fire Impairment Permit No. " + this.fi_no, serverUrl + "Home?p=FI/edit/" + this.id);
                         }
                         else if (stat == 2)
                         {
                             message = serverUrl + "Home?p=FI/edit/" + this.id + "<br />Comment: " + comment;
                             title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Rejected from Dept. Head FO";
+                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Cancellation of Fire Impairment Permit No. " + this.fi_no + " is rejected with comment: " + comment, serverUrl + "Home?p=FI/edit/" + this.id);
                         }
                         retVal = 1;
                         break;
@@ -1562,10 +1627,12 @@ namespace PermitToWork.Models
                         if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.DEPTHEADFO.ToString()))
                         {
                             listEmail.Add(this.userInFI[UserInFI.DEPTHEADFO.ToString()].email);
+                            userIds.Add(this.userInFI[UserInFI.DEPTHEADFO.ToString()].id);
                             if ((userId = this.userInFI[UserInFI.DEPTHEADFO.ToString()].employee_delegate) != null)
                             {
                                 userFi = new UserEntity(userId.Value, user.token, user);
                                 listEmail.Add(userFi.email);
+                                userIds.Add(userFi.id);
                             }
                         }
 #endif
@@ -1574,6 +1641,7 @@ namespace PermitToWork.Models
                         {
                             title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Need Review and Approval";
                             message = serverUrl + "Home?p=FI/edit/" + this.id;
+                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Please approve cancellation of Fire Impairment Permit No. " + this.fi_no, serverUrl + "Home?p=FI/edit/" + this.id);
                         }
                         retVal = 1;
                         break;
@@ -1584,10 +1652,12 @@ namespace PermitToWork.Models
                             if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.SUPERVISOR.ToString()))
                             {
                                 listEmail.Add(this.userInFI[UserInFI.SUPERVISOR.ToString()].email);
+                                userIds.Add(this.userInFI[UserInFI.SUPERVISOR.ToString()].id);
                                 if ((userId = this.userInFI[UserInFI.SUPERVISOR.ToString()].employee_delegate) != null)
                                 {
                                     userFi = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userFi.email);
+                                    userIds.Add(userFi.id);
                                 }
                             }
                         }
@@ -1596,10 +1666,12 @@ namespace PermitToWork.Models
                             if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.REQUESTOR.ToString()))
                             {
                                 listEmail.Add(this.userInFI[UserInFI.REQUESTOR.ToString()].email);
+                                userIds.Add(this.userInFI[UserInFI.REQUESTOR.ToString()].id);
                                 if ((userId = this.userInFI[UserInFI.REQUESTOR.ToString()].employee_delegate) != null)
                                 {
                                     userFi = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userFi.email);
+                                    userIds.Add(userFi.id);
                                 }
                             }
                         }
@@ -1610,6 +1682,7 @@ namespace PermitToWork.Models
                         {
                             title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Approved";
                             message = serverUrl + "Home?p=FI/edit/" + this.id;
+                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Fire Impairment Permit No. " + this.fi_no + " has been cancelled by Dept. Head FO.", serverUrl + "Home?p=FI/edit/" + this.id);
                         }
 
                         retVal = 1;

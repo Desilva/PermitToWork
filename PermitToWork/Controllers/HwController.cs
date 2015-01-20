@@ -96,7 +96,7 @@ namespace PermitToWork.Controllers
             {
                 // change status to SPVSCREENING
                 hw_new.sendEmailRandomPIN(fullUrl(),user.token,user);
-
+                hw_new.sendEmailSupervisorScreening(fullUrl(), user.token, user);
                 // send email to facility owner (5)
             }
 
@@ -104,6 +104,7 @@ namespace PermitToWork.Controllers
             {
                 // change status to SPVSCREENING
                 hw_new.setStatus((int)HwEntity.statusHW.SPVSCREENING);
+                hw_new.sendEmailFOScreening(fullUrl(), user.token, user);
                 // sendEmailFO(hw_new);
                 // send email to facility owner (5)
             }
@@ -281,7 +282,7 @@ namespace PermitToWork.Controllers
             //    hw.assignFireWatch(assesor);
             //    hw.sendEmailFOAcc(fullUrl());
             //}
-            string retVal = hw.supervisorAcc(user);
+            string retVal = hw.supervisorAcc(userLogin);
             hw.sendEmailFOAcc(fullUrl(), userLogin.token, userLogin);
             return Json(new { status = retVal });
         }
