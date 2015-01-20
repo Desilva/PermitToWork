@@ -1,2 +1,5 @@
 *.csproj
 PermitToWork/bin/Microsoft.Web.Infrastructure.xml
+PermitToWork/obj/
+packages/
+Rotativa/obj/

@@ -1,5 +1,0 @@
-E:\Informatics\Proyek\Star Energy\PermitToWork\Rotativa\bin\Release\Rotativa.dll
-E:\Informatics\Proyek\Star Energy\PermitToWork\Rotativa\bin\Release\Rotativa.pdb
-E:\Informatics\Proyek\Star Energy\PermitToWork\Rotativa\obj\Release\Rotativa.csprojResolveAssemblyReference.cache
-E:\Informatics\Proyek\Star Energy\PermitToWork\Rotativa\obj\Release\Rotativa.dll
-E:\Informatics\Proyek\Star Energy\PermitToWork\Rotativa\obj\Release\Rotativa.pdb
