@@ -1,0 +1,1187 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{AFA47568-EF5F-4BCA-89EE-4810988BD2CB}</ProjectGuid>
+    <ProjectTypeGuids>{E53F8FEA-EAE0-44A6-8774-FFD645390401};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>PermitToWork</RootNamespace>
+    <AssemblyName>PermitToWork</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="itextsharp, Version=10.0.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.5.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Helpers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.1.0.20105.408\lib\net40\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.3.0.20105.1\lib\net40\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.1.0.20105.408\lib\net40\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.1.0.20105.408\lib\net40\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.1.0.20105.408\lib\net40\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.1.0.20105.408\lib\net40\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Controllers\CsepController.cs" />
+    <Compile Include="Controllers\ExcavationController.cs" />
+    <Compile Include="Controllers\FiController.cs" />
+    <Compile Include="Controllers\HiraController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\HwController.cs" />
+    <Compile Include="Controllers\InspectionNoController.cs" />
+    <Compile Include="Controllers\LogController.cs" />
+    <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\LotoController.cs" />
+    <Compile Include="Controllers\MasterAreaCodeController.cs" />
+    <Compile Include="Controllers\MasterAssessorController.cs" />
+    <Compile Include="Controllers\MasterDelegateFOController.cs" />
+    <Compile Include="Controllers\MasterDepartmentController.cs" />
+    <Compile Include="Controllers\MasterDeptHeadController.cs" />
+    <Compile Include="Controllers\MasterEIController.cs" />
+    <Compile Include="Controllers\MasterErectorController.cs" />
+    <Compile Include="Controllers\MasterFacilitiesController.cs" />
+    <Compile Include="Controllers\MasterFOController.cs" />
+    <Compile Include="Controllers\MasterInspectorController.cs" />
+    <Compile Include="Controllers\MasterLockBoxController.cs" />
+    <Compile Include="Controllers\MasterPtwHolderNoController.cs" />
+    <Compile Include="Controllers\MasterRadiationPOController.cs" />
+    <Compile Include="Controllers\MasterRadiographerController.cs" />
+    <Compile Include="Controllers\MasterRequestedPtwNoController.cs" />
+    <Compile Include="Controllers\MasterSectionController.cs" />
+    <Compile Include="Controllers\MasterSOController.cs" />
+    <Compile Include="Controllers\PrintController.cs" />
+    <Compile Include="Controllers\PtwController.cs" />
+    <Compile Include="Controllers\RadiographyController.cs" />
+    <Compile Include="Controllers\SafetyBriefingController.cs" />
+    <Compile Include="Models\audit.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\audit_log.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\audit_log_clause.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\bom.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\ClearancePermit\CsepEntity.cs" />
+    <Compile Include="Models\ClearancePermit\ExcavationEntity.cs" />
+    <Compile Include="Models\ClearancePermit\LotoComingHolderEntity.cs" />
+    <Compile Include="Models\ClearancePermit\LotoEntity.cs" />
+    <Compile Include="Models\ClearancePermit\LotoGlarfEntity.cs" />
+    <Compile Include="Models\ClearancePermit\LotoGlarfUserEntity.cs" />
+    <Compile Include="Models\ClearancePermit\LotoPointEntity.cs" />
+    <Compile Include="Models\ClearancePermit\LotoSuspensionEntity.cs" />
+    <Compile Include="Models\ClearancePermit\LotoSuspensionHolderEntity.cs" />
+    <Compile Include="Models\comms_rbi.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\component.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\confined_space.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\daily_log.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\daily_log_last_plant_status.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\daily_log_maintainence.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\daily_log_operation_warning.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\daily_log_power_stations.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\daily_log_pro.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\daily_log_sags.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\daily_log_sap.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\daily_log_weekly_target.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\daily_log_wpnb.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\discipline.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\email_error.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\employee.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\employee_dept.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\equipment.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\equipment_daily_report.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\equipment_daily_report_table.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\equipment_event.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\equipment_groups.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\equipment_paf.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\equipment_part.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\equipment_readiness_nav.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\equipment_read_nav_note.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\event_descriptions.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\excavation.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\failure_causes.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\failure_effects.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\failure_modes.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\FireImpairment\FIEntity.cs" />
+    <Compile Include="Models\fire_impairment.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\foc.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\foc_op_avail.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\foc_paf.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\foc_target_paf.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\Hira\HiraTreeViewModel.cs" />
+    <Compile Include="Models\hot_work.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Hw\HwEntity.cs" />
+    <Compile Include="Models\iir_recommendations.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\immediate_actions.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\incident_report.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\incident_report_log.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\investigation_report.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\investigation_report_log.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\ir_KPI_log.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\Log\LogEntity.cs" />
+    <Compile Include="Models\long_term_actions.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\loto_coming_holder.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\loto_glarf.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\loto_glarf_user.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\loto_permit.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\loto_point.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\loto_suspension.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\loto_suspension_holder.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ma.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\Master\MstAreaCodeEntity.cs" />
+    <Compile Include="Models\Master\MstAssessorEntity.cs" />
+    <Compile Include="Models\Master\MstDelegateFOEntity.cs" />
+    <Compile Include="Models\Master\MstDepartmentEntity.cs" />
+    <Compile Include="Models\Master\MstDeptHeadEntity.cs" />
+    <Compile Include="Models\Master\MstEIEntity.cs" />
+    <Compile Include="Models\Master\MstErectorEntity.cs" />
+    <Compile Include="Models\Master\MstFacilitiesEntity.cs" />
+    <Compile Include="Models\Master\MstFOEntity.cs" />
+    <Compile Include="Models\Master\MstInspectorEntity.cs" />
+    <Compile Include="Models\Master\MstLockBoxEntity.cs" />
+    <Compile Include="Models\Master\MstNoInspectionEntity.cs" />
+    <Compile Include="Models\Master\MstPtwHolderNoEntity.cs" />
+    <Compile Include="Models\Master\MstRadiationPOEntity.cs" />
+    <Compile Include="Models\Master\MstRadiographerEntity.cs" />
+    <Compile Include="Models\Master\MstSectionEntity.cs" />
+    <Compile Include="Models\Master\MstSOEntity.cs" />
+    <Compile Include="Models\Master\PtwHolderExcelModel.cs" />
+    <Compile Include="Models\Master\ScaffoldingInspectionModel.cs" />
+    <Compile Include="Models\monthly_project_activity.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\monthly_project_outstanding_activity.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\monthly_project_she_report.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\monthly_she_contractor.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\mst_area_code.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\mst_assessor.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\mst_delegate_fo.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\mst_department.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\mst_dept_head_fo.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\mst_ei.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\mst_erector.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\mst_facilities.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\mst_facility_owner.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\mst_inspector.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\mst_lock_box.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\mst_loto_point.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\mst_no_inspection.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\mst_ptw_holder_no.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\mst_radiation_po.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\mst_radiographer.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\mst_safety_officer.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\mst_section.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\part.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\part_unit_event.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\permit_log.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\pir.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\pir_clause.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\pir_log.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\plant.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\process_owner.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\Ptw\IClearancePermitEntity.cs" />
+    <Compile Include="Models\Ptw\PtwExcelEntity.cs" />
+    <Compile Include="Models\radiography.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Radiography\RadEntity.cs" />
+    <Compile Include="Models\rca.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\rca_analisys_type.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\rca_building.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\rca_csf.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\rca_csf_conector.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\rca_department.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\rca_desc.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\rca_facility.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\rca_fishbone_master.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\rca_floor.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\rca_graph_metric.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\rca_implementation.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\rca_preserve_category.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\rca_pre_task.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\rca_section.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\rca_team_connector.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\rca_template.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\ResponseModel.cs" />
+    <Compile Include="Models\SafetyBriefing\SafetyBriefingEntity.cs" />
+    <Compile Include="Models\SafetyBriefing\SafetyBriefingUserEntity.cs" />
+    <Compile Include="Models\safety_briefing.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\safety_briefing_user.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\safe_man_hours.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\safe_man_hours_incident.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\scaffolding_inspection.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\secondary_effects.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\she_illness_report.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\she_injury_report.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\she_KPI_target.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\she_observation.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\she_observation_undian.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\she_observation_undian_exception.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\she_observation_undian_reward.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\she_observation_undian_winner.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\she_obs_category.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\she_obs_KPI_log.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\she_obs_sub_category.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\StarEnergyFRACAS.Context.cs">
+      <DependentUpon>StarEnergyFRACAS.Context.tt</DependentUpon>
+      <SubType>Code</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Models\StarEnergyFRACAS.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Models\StarEnergyFRACAS.Designer.cs">
+      <DependentUpon>StarEnergyFRACAS.edmx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Models\sub_component.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\system.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\system_paf.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\tag_types.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\trouble_shooting.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\trouble_shooting_log.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\unit.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\unit_paf.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\user.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\user_per_role.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\user_role.cs">
+      <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Models\WorkingHeight\WorkingHeightEntity.cs" />
+    <Compile Include="Models\working_height.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Service References\WWUserService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Utilities\AuthorizeUserAttribute.cs" />
+    <Compile Include="Utilities\Base64.cs" />
+    <Compile Include="Utilities\CapturingResponseFilter.cs" />
+    <Compile Include="Utilities\DownloadFileActionResult.cs" />
+    <Compile Include="Utilities\ExcelReader.cs" />
+    <Compile Include="Utilities\LogActionFilter.cs" />
+    <Compile Include="Utilities\ModelUtilization.cs" />
+    <Compile Include="Utilities\PdfGenerator\BinaryContentResult.cs" />
+    <Compile Include="Utilities\PdfGenerator\FakeView.cs" />
+    <Compile Include="Utilities\PdfGenerator\HtmlViewRenderer.cs" />
+    <Compile Include="Utilities\PdfGenerator\PdfViewController.cs" />
+    <Compile Include="Utilities\PdfGenerator\PrintHeaderFooter.cs" />
+    <Compile Include="Utilities\PdfGenerator\StandardPdfRenderer.cs" />
+    <Compile Include="Utilities\SendEmail.cs" />
+    <Compile Include="Controllers\WorkingHeightController.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Hira\HiraEntity.cs" />
+    <Compile Include="Models\Hira\ListHira.cs" />
+    <Compile Include="Models\hira_document.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Ptw\ListPtw.cs" />
+    <Compile Include="Models\permit_to_work.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Ptw\PtwEntity.cs" />
+    <Compile Include="Models\User\ListUser.cs" />
+    <Compile Include="Models\User\UserEntity.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Models\StarEnergyPTW.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>StarEnergyPTW.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\StarEnergyPTW.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\StarEnergyPTW.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>StarEnergyPTW.edmx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\bootstrap-responsive.css" />
+    <Content Include="Content\bootstrap-responsive.min.css" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\colorpicker.css" />
+    <Content Include="Content\Images\loading.gif" />
+    <Content Include="Content\kendo.common.min.css" />
+    <Content Include="Content\kendo.metro.min.css" />
+    <Content Include="Content\Metro\editor.png" />
+    <Content Include="Content\Metro\imagebrowser.png" />
+    <Content Include="Content\Metro\loading-image.gif" />
+    <Content Include="Content\Metro\loading.gif" />
+    <Content Include="Content\Metro\loading_2x.gif" />
+    <Content Include="Content\Metro\slider-h.gif" />
+    <Content Include="Content\Metro\slider-v.gif" />
+    <Content Include="Content\Metro\sprite.png" />
+    <Content Include="Content\Metro\sprite_2x.png" />
+    <Content Include="Content\unicorn.white.css" />
+    <Content Include="Content\datepicker.css" />
+    <Content Include="Content\fullcalendar.css" />
+    <Content Include="Content\jquery-ui.css" />
+    <Content Include="Content\jquery.gritter.css" />
+    <Content Include="Content\jquery.ui.ie.css" />
+    <Content Include="Content\select2.css" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\jquery-ui.css" />
+    <Content Include="Content\themes\base\jquery.ui.accordion.css" />
+    <Content Include="Content\themes\base\jquery.ui.all.css" />
+    <Content Include="Content\themes\base\jquery.ui.autocomplete.css" />
+    <Content Include="Content\themes\base\jquery.ui.base.css" />
+    <Content Include="Content\themes\base\jquery.ui.button.css" />
+    <Content Include="Content\themes\base\jquery.ui.core.css" />
+    <Content Include="Content\themes\base\jquery.ui.datepicker.css" />
+    <Content Include="Content\themes\base\jquery.ui.dialog.css" />
+    <Content Include="Content\themes\base\jquery.ui.progressbar.css" />
+    <Content Include="Content\themes\base\jquery.ui.resizable.css" />
+    <Content Include="Content\themes\base\jquery.ui.selectable.css" />
+    <Content Include="Content\themes\base\jquery.ui.slider.css" />
+    <Content Include="Content\themes\base\jquery.ui.tabs.css" />
+    <Content Include="Content\themes\base\jquery.ui.theme.css" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\minified\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\minified\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\minified\jquery-ui.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.accordion.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.autocomplete.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.button.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.core.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.datepicker.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.dialog.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.progressbar.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.resizable.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.selectable.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.slider.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.tabs.min.css" />
+    <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
+    <Content Include="Content\unicorn.blue.css" />
+    <Content Include="Content\unicorn.grey.css" />
+    <Content Include="Content\unicorn.light-blue.css" />
+    <Content Include="Content\unicorn.login.css" />
+    <Content Include="Content\unicorn.main.css" />
+    <Content Include="Content\unicorn.red-green.css" />
+    <Content Include="Content\unicorn.red.css" />
+    <Content Include="Content\uniform.css" />
+    <Content Include="Global.asax" />
+    <Content Include="Content\Site.css" />
+    <Content Include="Img\blank.png" />
+    <Content Include="Img\box-c.png" />
+    <Content Include="Img\box.png" />
+    <Content Include="Img\close.png" />
+    <Content Include="Img\coloricons-sprite.png" />
+    <Content Include="Img\warning.gif" />
+    <Content Include="Log\penting.log" />
+    <Content Include="Log\penting20131216.log" />
+    <Content Include="Log\penting20131218.log" />
+    <Content Include="Content\template\scaffolding_inspection.xls" />
+    <None Include="Properties\PublishProfiles\PermitToWork.pubxml" />
+    <None Include="Scripts\jquery-1.7.1.intellisense.js" />
+    <Content Include="Img\alpha.png" />
+    <Content Include="Img\breadcrumb.png" />
+    <Content Include="Img\clientsDb.png" />
+    <Content Include="Img\demo\av1.jpg" />
+    <Content Include="Img\demo\av2.jpg" />
+    <Content Include="Img\demo\av3.jpg" />
+    <Content Include="Img\demo\envelope.png" />
+    <Content Include="Img\demo\img1.jpg" />
+    <Content Include="Img\demo\img10.jpg" />
+    <Content Include="Img\demo\img11.jpg" />
+    <Content Include="Img\demo\img12.jpg" />
+    <Content Include="Img\demo\img13.jpg" />
+    <Content Include="Img\demo\img14.jpg" />
+    <Content Include="Img\demo\img15.jpg" />
+    <Content Include="Img\demo\img16.jpg" />
+    <Content Include="Img\demo\img17.jpg" />
+    <Content Include="Img\demo\img18.jpg" />
+    <Content Include="Img\demo\img2.jpg" />
+    <Content Include="Img\demo\img3.jpg" />
+    <Content Include="Img\demo\img4.jpg" />
+    <Content Include="Img\demo\img5.jpg" />
+    <Content Include="Img\demo\img6.jpg" />
+    <Content Include="Img\demo\img7.jpg" />
+    <Content Include="Img\demo\img8.jpg" />
+    <Content Include="Img\demo\img9.jpg" />
+    <Content Include="Img\demo\red-green.png" />
+    <Content Include="Img\glyphicons-halflings-white.png" />
+    <Content Include="Img\glyphicons-halflings.png" />
+    <Content Include="Img\gritter-light.png" />
+    <Content Include="Img\gritter-long.png" />
+    <Content Include="Img\gritter.png" />
+    <Content Include="Img\hue.png" />
+    <Content Include="Img\icons\16\book.png" />
+    <Content Include="Img\icons\16\cabinet.png" />
+    <Content Include="Img\icons\16\calendar.png" />
+    <Content Include="Img\icons\16\client.png" />
+    <Content Include="Img\icons\16\database.png" />
+    <Content Include="Img\icons\16\download.png" />
+    <Content Include="Img\icons\16\graph.png" />
+    <Content Include="Img\icons\16\home.png" />
+    <Content Include="Img\icons\16\lock.png" />
+    <Content Include="Img\icons\16\mail.png" />
+    <Content Include="Img\icons\16\pdf.png" />
+    <Content Include="Img\icons\16\people.png" />
+    <Content Include="Img\icons\16\piechart.png" />
+    <Content Include="Img\icons\16\search.png" />
+    <Content Include="Img\icons\16\shopping-bag.png" />
+    <Content Include="Img\icons\16\survey.png" />
+    <Content Include="Img\icons\16\tag.png" />
+    <Content Include="Img\icons\16\user.png" />
+    <Content Include="Img\icons\16\wallet.png" />
+    <Content Include="Img\icons\16\web.png" />
+    <Content Include="Img\icons\32\book.png" />
+    <Content Include="Img\icons\32\cabinet.png" />
+    <Content Include="Img\icons\32\calendar.png" />
+    <Content Include="Img\icons\32\client.png" />
+    <Content Include="Img\icons\32\database.png" />
+    <Content Include="Img\icons\32\download.png" />
+    <Content Include="Img\icons\32\graph.png" />
+    <Content Include="Img\icons\32\home.png" />
+    <Content Include="Img\icons\32\lock.png" />
+    <Content Include="Img\icons\32\mail.png" />
+    <Content Include="Img\icons\32\pdf.png" />
+    <Content Include="Img\icons\32\people.png" />
+    <Content Include="Img\icons\32\piechart.png" />
+    <Content Include="Img\icons\32\search.png" />
+    <Content Include="Img\icons\32\shopping-bag.png" />
+    <Content Include="Img\icons\32\survey.png" />
+    <Content Include="Img\icons\32\tag.png" />
+    <Content Include="Img\icons\32\user.png" />
+    <Content Include="Img\icons\32\wallet.png" />
+    <Content Include="Img\icons\32\web.png" />
+    <Content Include="Img\ie-spacer.gif" />
+    <Content Include="Img\jquery-ui\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Img\jquery-ui\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Img\jquery-ui\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Img\jquery-ui\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Img\jquery-ui\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Img\jquery-ui\ui-bg_glass_75_ffffff_1x400.png" />
+    <Content Include="Img\jquery-ui\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Img\jquery-ui\ui-bg_inset-soft_95_fef1ec_1x100.png" />
+    <Content Include="Img\jquery-ui\ui-icons_222222_256x240.png" />
+    <Content Include="Img\jquery-ui\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Img\jquery-ui\ui-icons_454545_256x240.png" />
+    <Content Include="Img\jquery-ui\ui-icons_888888_256x240.png" />
+    <Content Include="Img\jquery-ui\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Img\jquery-ui\ui-icons_f6cf3b_256x240.png" />
+    <Content Include="Img\larrow.png" />
+    <Content Include="Img\line.png" />
+    <Content Include="Img\logo-clean.png" />
+    <Content Include="Img\logo-small.png" />
+    <Content Include="Img\logo.png" />
+    <Content Include="Img\menu-active.png" />
+    <Content Include="Img\rarrow.png" />
+    <Content Include="Img\saturation.png" />
+    <Content Include="Img\select2.png" />
+    <Content Include="Img\select2x2.png" />
+    <Content Include="Img\spinner.gif" />
+    <Content Include="Img\sprite.png" />
+    <Content Include="Models\StarEnergyFRACAS.Context.tt">
+      <DependentUpon>StarEnergyFRACAS.edmx</DependentUpon>
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>StarEnergyFRACAS.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Models\StarEnergyFRACAS.edmx.diagram">
+      <DependentUpon>StarEnergyFRACAS.edmx</DependentUpon>
+    </Content>
+    <Content Include="Models\StarEnergyFRACAS.tt">
+      <DependentUpon>StarEnergyFRACAS.edmx</DependentUpon>
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>StarEnergyFRACAS.cs</LastGenOutput>
+    </Content>
+    <Content Include="Rotativa\libeay32.dll" />
+    <Content Include="Rotativa\libgcc_s_dw2-1.dll" />
+    <Content Include="Rotativa\mingwm10.dll" />
+    <Content Include="Rotativa\README.txt" />
+    <Content Include="Rotativa\ssleay32.dll" />
+    <Content Include="Rotativa\wkhtmltopdf.exe" />
+    <Content Include="Scripts\bootstrap-alert.js" />
+    <Content Include="Scripts\bootstrap-colorpicker.js" />
+    <Content Include="Scripts\bootstrap-datepicker.js" />
+    <Content Include="Scripts\bootstrap-modal.js" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\excanvas.js" />
+    <Content Include="Scripts\excanvas.min.js" />
+    <Content Include="Scripts\fullcalendar.js" />
+    <Content Include="Scripts\fullcalendar.min.js" />
+    <Content Include="Scripts\jquery-1.7.1.js" />
+    <Content Include="Scripts\jquery-1.7.1.min.js" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery-ui-1.8.20.js" />
+    <Content Include="Scripts\jquery-ui-1.8.20.min.js" />
+    <Content Include="Scripts\jquery-ui.custom.js" />
+    <Content Include="Scripts\jquery-ui.custom.min.js" />
+    <Content Include="Scripts\jquery.dataTables.js" />
+    <Content Include="Scripts\jquery.dataTables.min.js" />
+    <Content Include="Scripts\jquery.flot.js" />
+    <Content Include="Scripts\jquery.flot.min.js" />
+    <Content Include="Scripts\jquery.flot.pie.js" />
+    <Content Include="Scripts\jquery.flot.pie.min.js" />
+    <Content Include="Scripts\jquery.flot.resize.js" />
+    <Content Include="Scripts\jquery.flot.resize.min.js" />
+    <Content Include="Scripts\jquery.gritter.js" />
+    <Content Include="Scripts\jquery.gritter.min.js" />
+    <Content Include="Scripts\jquery.js" />
+    <Content Include="Scripts\jquery.masonry.js" />
+    <Content Include="Scripts\jquery.masonry.min.js" />
+    <Content Include="Scripts\jquery.min.js" />
+    <Content Include="Scripts\jquery.peity.js" />
+    <Content Include="Scripts\jquery.peity.min.js" />
+    <Content Include="Scripts\jquery.uniform.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.wizard.js" />
+    <Content Include="Scripts\kendo.all.min.js" />
+    <Content Include="Scripts\kendo.web.min.js" />
+    <Content Include="Scripts\modernizr-2.5.3.js" />
+    <Content Include="Scripts\select2.js" />
+    <Content Include="Scripts\select2.min.js" />
+    <Content Include="Scripts\unicorn.calendar.js" />
+    <Content Include="Scripts\unicorn.charts.js" />
+    <Content Include="Scripts\unicorn.chat.js" />
+    <Content Include="Scripts\unicorn.dashboard.js" />
+    <Content Include="Scripts\unicorn.form_common.js" />
+    <Content Include="Scripts\unicorn.form_validation.js" />
+    <Content Include="Scripts\unicorn.interface.js" />
+    <Content Include="Scripts\unicorn.js" />
+    <Content Include="Scripts\unicorn.login.js" />
+    <Content Include="Scripts\unicorn.tables.js" />
+    <Content Include="Scripts\unicorn.wizard.js" />
+    <None Include="Service References\WWUserService\configuration91.svcinfo" />
+    <None Include="Service References\WWUserService\configuration.svcinfo" />
+    <Content Include="Service References\WWUserService\PermitToWork.WWUserService.ResponseModel.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <None Include="Service References\WWUserService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\MicrosoftAjax.js" />
+    <Content Include="Scripts\MicrosoftAjax.debug.js" />
+    <Content Include="Scripts\MicrosoftMvcAjax.js" />
+    <Content Include="Scripts\MicrosoftMvcAjax.debug.js" />
+    <Content Include="Scripts\MicrosoftMvcValidation.js" />
+    <Content Include="Scripts\MicrosoftMvcValidation.debug.js" />
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Login\Index.cshtml" />
+    <Content Include="Views\Ptw\Index.cshtml" />
+    <Content Include="Views\Ptw\Create.cshtml" />
+    <Content Include="Views\Csep\Create.cshtml" />
+    <Content Include="Views\Csep\GasTestCreate.cshtml" />
+    <Content Include="Views\Excavation\Create.cshtml" />
+    <Content Include="Views\Fi\Create.cshtml" />
+    <Content Include="Views\Hw\Create.cshtml" />
+    <Content Include="Views\Loto\Create.cshtml" />
+    <Content Include="Views\Loto\Create1.cshtml" />
+    <Content Include="Views\Loto\Create2.cshtml" />
+    <Content Include="Views\SafetyBriefing\Create.cshtml" />
+    <Content Include="Views\Radiography\Create.cshtml" />
+    <Content Include="Views\WorkingHeight\Create.cshtml" />
+    <Content Include="Views\WorkingHeight\ScaffoldingDesign.cshtml" />
+    <Content Include="Views\WorkingHeight\ScaffoldingInspection.cshtml" />
+    <EntityDeploy Include="Models\StarEnergyFRACAS.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>StarEnergyFRACAS.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <EntityDeploy Include="Models\StarEnergyPTW.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>StarEnergyPTW.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\StarEnergyPTW.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>StarEnergyPTW.edmx</DependentUpon>
+      <LastGenOutput>StarEnergyPTW.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Models\StarEnergyPTW.edmx.diagram">
+      <DependentUpon>StarEnergyPTW.edmx</DependentUpon>
+    </Content>
+    <Content Include="Models\StarEnergyPTW.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>StarEnergyPTW.edmx</DependentUpon>
+      <LastGenOutput>StarEnergyPTW.cs</LastGenOutput>
+    </Content>
+    <Content Include="Views\Log\Log.cshtml" />
+    <Content Include="Views\Ptw\Print.cshtml" />
+    <Content Include="Views\Hw\Print.cshtml" />
+    <None Include="Service References\WWUserService\UserService.wsdl" />
+    <Content Include="Views\Loto\Index.cshtml" />
+    <Content Include="Views\Loto\Glarf.cshtml" />
+    <Content Include="Views\InspectionNo\Index.cshtml" />
+    <Content Include="Views\Print\PtwPrint.cshtml" />
+    <Content Include="Views\Print\FiPrint.cshtml" />
+    <Content Include="Views\Print\HwPrint.cshtml" />
+    <Content Include="Views\Print\CsepPrint.cshtml" />
+    <Content Include="Views\Print\WhPrint.cshtml" />
+    <Content Include="Views\Print\ExPrint.cshtml" />
+    <Content Include="Views\Print\RadPrint.cshtml" />
+    <Content Include="Views\Print\LotoPrint.cshtml" />
+    <Content Include="Views\Print\GlarfPrint.cshtml" />
+    <Content Include="Views\Print\SafetyBriefingPrint.cshtml" />
+    <Content Include="Views\Loto\LotoPoint.cshtml" />
+    <Content Include="Views\MasterAssessor\Index.cshtml" />
+    <Content Include="Views\MasterDepartment\Index.cshtml" />
+    <Content Include="Views\MasterDeptHead\Index.cshtml" />
+    <Content Include="Views\MasterEI\Index.cshtml" />
+    <Content Include="Views\MasterErector\Index.cshtml" />
+    <Content Include="Views\MasterFacilities\Index.cshtml" />
+    <Content Include="Views\MasterFO\Index.cshtml" />
+    <Content Include="Views\MasterInspector\Index.cshtml" />
+    <Content Include="Views\MasterLockBox\Index.cshtml" />
+    <Content Include="Views\MasterRadiationPO\Index.cshtml" />
+    <Content Include="Views\MasterRadiographer\Index.cshtml" />
+    <Content Include="Views\MasterPtwHolderNo\Index.cshtml" />
+    <Content Include="Views\MasterSection\Index.cshtml" />
+    <Content Include="Views\MasterSO\Index.cshtml" />
+    <Content Include="Views\Hira\Index.cshtml" />
+    <Content Include="Views\InspectionNo\InspectionSheet.cshtml" />
+    <Content Include="Views\MasterAreaCode\Index.cshtml" />
+    <Content Include="Views\MasterRequestedPtwNo\Index.cshtml" />
+    <Content Include="Views\MasterDelegateFO\Index.cshtml" />
+    <Content Include="Views\Home\Page.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\ProjectLog\ProjectLog\ProjectLog\ProjectLog.csproj">
+      <Project>{d929ce4f-8b73-450b-9acb-9a9c659b49e1}</Project>
+      <Name>ProjectLog</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Rotativa\Rotativa.csproj">
+      <Project>{d93faa11-31f0-4629-b53c-aa8680283529}</Project>
+      <Name>Rotativa</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\WWUserService\" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>11470</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:17865/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>
