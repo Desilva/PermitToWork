@@ -411,7 +411,7 @@ namespace PermitToWork.Models.Ptw
             if (this.acc_ptw_requestor != null || this.acc_supervisor != null)
             {
                 var ptwRequestor = ptw.is_guest != 1 ? listUser.listUser.Find(p => p.id == Int32.Parse(this.acc_ptw_requestor)) : listUser.listUser.Find(p => p.id == Int32.Parse(this.acc_supervisor));
-                this.isNeedClose = this.status == (int)statusPtw.ACCFO && ptw.validity_period_end != null && ptw.validity_period_end.Value.CompareTo(DateTime.Now) < 0 && !this.has_extend && (ptwRequestor.id == user.id || ptwRequestor.employee_delegate == user.id) ? true : false;
+                this.isNeedClose = this.status == (int)statusPtw.ACCFO && (ptw.validity_period_end != null && ptw.validity_period_end.Value.CompareTo(DateTime.Now) < 0) && !this.has_extend && (ptwRequestor.id == user.id || ptwRequestor.employee_delegate == user.id) ? true : false;
             }
         }
 
