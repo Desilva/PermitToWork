@@ -100,7 +100,7 @@ namespace PermitToWork.Models.ClearancePermit
             // this.ptw = new PtwEntity(fi.id_ptw.Value);
             ModelUtilization.Clone(ex, this);
 
-            this.is_guest = ex.permit_to_work.is_guest == 1;
+            this.is_guest = ex.permit_to_work.is_guest == null ? false : ex.permit_to_work.is_guest == 1;
 
             this.pre_screening_fo_arr = this.pre_screening_fo.Split('#');
             this.pre_screening_spv_arr = this.pre_screening_spv.Split('#');

@@ -287,7 +287,8 @@ namespace PermitToWork.Controllers
             }
             else if (who == 2)
             {
-                retVal &= loto.approvalFacilityOwner(user);
+                retVal = loto.approvalFacilityOwner(user);
+                loto.sendEmailSupervisorComplete(retVal, fullUrl(), user);
             }
             return Json(new { status = retVal > 0 ? "200" : "404" });
         }

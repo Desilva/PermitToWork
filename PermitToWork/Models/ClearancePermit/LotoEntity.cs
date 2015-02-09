@@ -504,6 +504,7 @@ namespace PermitToWork.Models.ClearancePermit
                     if (isComplete)
                     {
                         ptwE.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
+                        retVal = 2;
                     }
                 }
             }
@@ -2533,6 +2534,34 @@ namespace PermitToWork.Models.ClearancePermit
 
             sendEmail.Send(s, message, "LOTO Permit Supervisor Approval");
             sendEmail.SendToNotificationCenter(userIds, "LOTO Permit", "Please approve LOTO Permit No. " + this.loto_no, url + "Home?p=LOTO/edit/" + this.id);
+
+            return retVal;
+        }
+
+        public int sendEmailSupervisorComplete(int retVals, string url, UserEntity user)
+        {
+            int retVal = 0;
+
+            UserEntity userFo = new UserEntity(Int32.Parse(this.supervisor), user.token, user);
+            SendEmail sendEmail = new SendEmail();
+
+            List<string> s = new List<string>();
+            List<int> userIds = new List<int>();
+
+#if (!DEBUG)
+            s.Add(userFo.email);
+            userIds.Add(userFo.id);
+#else
+            s.Add("septu.jamasoka@gmail.com"); // email FO
+#endif
+            string message = url + "Home?p=Loto/edit/" + this.id;
+            if (retVals == 1) {
+                sendEmail.Send(s, message, "LOTO GLARF Completion");
+                sendEmail.SendToNotificationCenter(userIds, "LOTO Permit", "Please complete LOTO GLARF for LOTO Permit No. " + this.loto_no, url + "Home?p=LOTO/edit/" + this.id);
+            } else if (retVals == 2) {
+                sendEmail.Send(s, message, "LOTO Permit Completed");
+                sendEmail.SendToNotificationCenter(userIds, "LOTO Permit", "LOTO Permit No. " + this.loto_no + " has been completed.", url + "Home?p=LOTO/edit/" + this.id);
+            }
 
             return retVal;
         }

@@ -301,6 +301,7 @@ namespace PermitToWork.Controllers
             if (ptw.loto_need == 1)
             {
                 ptw.setClearancePermit(null, (int)PtwEntity.statusClearance.NOTCOMPLETE, PtwEntity.clearancePermit.LOCKOUTTAGOUT.ToString());
+                ptw.sendEmailSupervisorLOTO(fullUrl(), user.token, user);
             }
 
             ListUser listUser = new ListUser(user.token, user.id);

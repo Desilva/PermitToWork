@@ -158,7 +158,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.closeHw(user);
-            // sendEmailFO(hw);
+            hw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin);
             return Json(new { status = retVal, message = "There is error when saving data to database. Please check again your data." });
         }
 
@@ -294,7 +294,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.supervisorAccReject(user, comment);
-            hw.sendEmailRequestor(fullUrl(), userLogin.token, userLogin, 0, 1, comment);
+            hw.sendEmailRequestor(fullUrl(), userLogin.token, userLogin, 0, 1, 0, comment);
             return Json(new { status = retVal });
         }
 
@@ -316,7 +316,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.fireWatchAccReject(user, comment);
-            hw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, comment);
+            hw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, 0, comment);
             return Json(new { status = retVal });
         }
 
@@ -345,9 +345,9 @@ namespace PermitToWork.Controllers
             HwEntity hw = new HwEntity(id);
             string retVal = hw.fOAccReject(user, extension, comment);
             if (extension == 0)
-                hw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, comment);
+                hw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, 0, comment);
             else
-                hw.sendEmailRequestor(fullUrl(), userLogin.token, userLogin, extension, 1, comment);
+                hw.sendEmailRequestor(fullUrl(), userLogin.token, userLogin, extension, 1, 0, comment);
             return Json(new { status = retVal });
         }
 
@@ -358,7 +358,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.requestorCan(user);
-            hw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin);
+            hw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 0, 1);
             return Json(new { status = retVal });
         }
 
@@ -387,7 +387,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.supervisorCanReject(user, comment);
-            hw.sendEmailRequestor(fullUrl(), userLogin.token, userLogin, 0, 1, comment);
+            hw.sendEmailRequestor(fullUrl(), userLogin.token, userLogin, 0, 1, 1, comment);
             return Json(new { status = retVal });
         }
 
@@ -415,7 +415,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.fireWatchCanReject(user, comment);
-            hw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, comment);
+            hw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, 1, comment);
             return Json(new { status = retVal });
         }
 
@@ -443,7 +443,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.fOCanReject(user, comment);
-            hw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, comment);
+            hw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, 1, comment);
             return Json(new { status = retVal });
         }
 

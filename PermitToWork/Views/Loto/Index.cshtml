@@ -135,6 +135,8 @@
             history = history.toLowerCase();
             if (history.indexOf('home') >= 0) {
                 window.location = history;
+            } else if (history == "") {
+                window.location = '@Url.Action("Index","Home")';
             } else {
                 $('#content').load(history);
             }

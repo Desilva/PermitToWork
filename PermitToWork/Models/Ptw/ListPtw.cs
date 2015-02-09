@@ -35,11 +35,11 @@ namespace PermitToWork.Models.Ptw
             //}
         }
 
-        public List<PtwEntity> listPtwByUser(UserEntity user, int type)
+        public List<PtwEntity> listPtwByUser(UserEntity user, int type, ListUser listUsers)
         {
             List<PtwEntity> listPtwUser = new List<PtwEntity>();
-            var result = db.permit_to_work.ToList().OrderByDescending(p => p.ptw_no != null ? p.ptw_no.Split('-').ElementAt(1) : "");
-            this.listUser = new ListUser(user.token, user.id);
+            var result = db.permit_to_work.ToList().OrderByDescending(p => p.ptw_no != null ? p.ptw_no.Split('-').ElementAt(1) : "").ToList();
+            this.listUser = listUsers;
 
             MstFOEntity prodFo = new MstFOEntity("PROD", user);
             List<MstDelegateFOEntity> listMstProdFO = new MstDelegateFOEntity().getListByFO(prodFo, user, listUser);
@@ -54,7 +54,14 @@ namespace PermitToWork.Models.Ptw
             {
                 admin = true;
             }
-
+            if (type == 1)
+            {
+                result = result.Where(p => DateTime.Today.CompareTo(p.validity_period_end != null ? p.validity_period_end : p.proposed_period_end.Value) <= 0 && p.status < (int)PtwEntity.statusPtw.CANFO).ToList();
+            }
+            else if (type == 2)
+            {
+                result = result.Where(p => DateTime.Today.CompareTo(p.validity_period_end != null ? p.validity_period_end : p.proposed_period_end.Value) > 0 && p.status < (int)PtwEntity.statusPtw.CANFO).ToList();
+            }
             foreach (var a in result)
             {
                 Debug.WriteLine("a = " + DateTime.Now.TimeOfDay.TotalMilliseconds);
@@ -144,7 +151,7 @@ namespace PermitToWork.Models.Ptw
             {
                 
                 PtwEntity ptw = new PtwEntity(a, user, true, listUser);
-                if (ptw.validity_period_end == null || (DateTime.Now.Subtract(ptw.validity_period_end.Value).Days > 0 && !ptw.has_extend))
+                if (ptw.isNeedClose == true)
                 {
                     listPtwUser.Add(ptw);
                 }

@@ -158,7 +158,6 @@ namespace PermitToWork.Models
             this.requestor = requestor;
 
             this.acc_fo = acc_fo;
-            this.cancel_fo = acc_fo;
             this.spv = acc_supervisor;
 
             this.screening_fo = "#####";

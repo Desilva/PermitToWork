@@ -113,11 +113,13 @@
         // Delete button behavior
         $(document).on("click", ".delete-link", function (e) {
             e.preventDefault();
-            console.log('a');
-            var treeview = $("#treeview").data("kendoTreeView");
             var id = $(this).data('id');
+            var data = $(this).closest(".k-item");
             $.post('@Url.Action("Remove","Hira")', { filenames: id.split('#')[1] }, function (resp) {
-                treeview.remove($(this).closest(".k-item"));
+                var treeview = $("#treeview").data("kendoTreeView");
+                console.log('a');
+                console.log(data);
+                treeview.remove(data);
             });
         });
     });
