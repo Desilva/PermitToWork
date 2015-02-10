@@ -258,6 +258,7 @@ namespace PermitToWork.Models.Ptw
                 this.isNeedClose = this.status == (int)statusPtw.ACCFO && this.validity_period_end != null && this.validity_period_end.Value.CompareTo(DateTime.Now) < 0 && this.is_extend != 1 && (ptwRequestor.id == user.id || ptwRequestor.employee_delegate == user.id) ? true : false;
             }
 
+            this.acc_fo = ptw.acc_fo;
             // this.hira_document = new ListHira(this.id,this.db).listHira;
         }
 
@@ -580,6 +581,7 @@ namespace PermitToWork.Models.Ptw
             this.acc_ptw_requestor = ptw.acc_ptw_requestor;
             this.acc_supervisor = ptw.acc_supervisor;
             this.acc_supervisor_delegate = ptw.acc_supervisor_delegate;
+            this.acc_fo = ptw.acc_fo;
             this.guest_holder_no = ptw.guest_holder_no;
             this.is_guest = ptw.is_guest;
             if (this.is_guest == 1)
@@ -2007,6 +2009,44 @@ namespace PermitToWork.Models.Ptw
 
             sendEmail.Send(s, message, subject);
             //}
+
+            return "200";
+        }
+
+        public string sendEmailSupervisorLOTO(string serverUrl, string token, UserEntity user) {
+            int supervisor_id = 0;
+
+            if (this.acc_supervisor != null)
+                supervisor_id = Int32.Parse(this.acc_supervisor);
+            // else
+            // supervisor_id = Int32.Parse(this.can_supervisor);
+            UserEntity supervisor = new UserEntity(supervisor_id, token, user);
+            SendEmail sendEmail = new SendEmail();
+            List<string> s = new List<string>();
+            List<int> userId = new List<int>();
+            if (supervisor.email != null)
+            {
+                s.Add(supervisor.email);
+                userId.Add(supervisor.id);
+                //s.Add("septu.jamasoka@gmail.com");
+
+            }
+            if (supervisor.employee_delegate != null)
+            {
+                UserEntity del = new UserEntity(supervisor.employee_delegate.Value, token, user);
+                s.Add(del.email);
+                userId.Add(del.id);
+                //s.Add("septu.jamasoka@gmail.com");
+            }
+
+            string message = "";
+            string subject = "";
+            message = serverUrl + "Home?p=ptw/edit/" + this.id;
+            subject = "LOTO Permit Creation";
+
+            sendEmail.SendToNotificationCenter(userId, "General Permit", "Please Create LOTO Permit for this PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
+
+            sendEmail.Send(s, message, subject);
 
             return "200";
         }

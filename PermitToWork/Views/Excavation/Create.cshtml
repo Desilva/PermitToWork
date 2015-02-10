@@ -229,6 +229,8 @@
             history = history.toLowerCase();
             if (history.indexOf('home') >= 0) {
                 window.location = history;
+            } else if (history == "") {
+                window.location = '@Url.Action("Index","Home")';
             } else {
                 $('#content').load(history);
             }
@@ -245,7 +247,7 @@
                 id: '@Model.id',
                 comment: $('#comment').val(),
             }
-            values = getScreeningValues(values, $('#who').val());
+            values = getScreeningValues(values, parseInt($('#who').val()));
             var type = $('#type-reject').val();
             var url = '';
             switch (type) {

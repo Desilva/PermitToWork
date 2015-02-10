@@ -98,8 +98,8 @@ namespace PermitToWork.Controllers
                     System.IO.File.Delete(physicalPath);
                 }
 
-                HiraEntity hira = new HiraEntity(fileName);
-                hira.deleteHiraDocument();
+                //HiraEntity hira = new HiraEntity(fileName);
+                //hira.deleteHiraDocument();
             }
             // Return an empty string to signify success
             return Content("");

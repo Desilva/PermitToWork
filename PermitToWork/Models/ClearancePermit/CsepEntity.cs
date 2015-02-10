@@ -1483,7 +1483,7 @@ namespace PermitToWork.Models.ClearancePermit
             return "200";
         }
 
-        public string sendEmailRequestor(string serverUrl, string token, UserEntity user, int extension, int stat = 0, string comment = null)
+        public string sendEmailRequestor(string serverUrl, string token, UserEntity user, int extension, int stat = 0, int cancel = 0, string comment = null)
         {
             //if (extension == 0)
             //{
@@ -1510,13 +1510,27 @@ namespace PermitToWork.Models.ClearancePermit
             {
                 message = serverUrl + "Home?p=Csep/edit/" + this.id;
                 subject = "Confined Space Entry Permit Requestor Approve";
-                sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please Approve Confined Space Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
+                if (cancel == 0)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please Approve Confined Space Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
+                }
+                else if (cancel == 1)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please Approve Cancellation of Confined Space Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
+                }
             }
             else if (stat == 1)
             {
                 message = serverUrl + "Home?p=Csep/edit/" + this.id + "<br />" + comment;
                 subject = "Confined Space Entry Permit Approval Rejection";
-                sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Confined Space Entry Permit No. " + this.csep_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Csep/edit/" + this.id);
+                if (cancel == 0)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Confined Space Entry Permit No. " + this.csep_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Csep/edit/" + this.id);
+                }
+                else if (cancel == 1)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Cancellation of Confined Space Entry Permit No. " + this.csep_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Csep/edit/" + this.id);
+                }
             }
 
             sendEmail.Send(s, message, subject);
@@ -1525,7 +1539,7 @@ namespace PermitToWork.Models.ClearancePermit
             return "200";
         }
 
-        public string sendEmailSupervisor(string serverUrl, string token, UserEntity user, int stat = 0, string comment = null)
+        public string sendEmailSupervisor(string serverUrl, string token, UserEntity user, int stat = 0, int cancel = 0, string comment = null)
         {
             UserEntity supervisor = new UserEntity(Int32.Parse(this.acc_supervisor), token, user);
             SendEmail sendEmail = new SendEmail();
@@ -1555,13 +1569,27 @@ namespace PermitToWork.Models.ClearancePermit
             {
                 message = serverUrl + "Home?p=Csep/edit/" + this.id;
                 subject = "Confined Space Entry Permit Supervisor Approve";
-                sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please Approve Confined Space Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
+                if (cancel == 0)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please Approve Confined Space Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
+                }
+                else if (cancel == 1)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please Approve Cancellation Confined Space Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
+                }
             }
             else if (stat == 1)
             {
                 message = serverUrl + "Home?p=Csep/edit/" + this.id + "<br />" + comment;
                 subject = "Confined Space Entry Permit Approval Rejection";
-                sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Confined Space Entry Permit No. " + this.csep_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Csep/edit/" + this.id);
+                if (cancel == 0)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Confined Space Entry Permit No. " + this.csep_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Csep/edit/" + this.id);
+                }
+                else if (cancel == 1)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Cancellation of Confined Space Entry Permit No. " + this.csep_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Csep/edit/" + this.id);
+                }
             }
 
             sendEmail.Send(s, message, subject);

@@ -297,7 +297,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             CsepEntity csep = new CsepEntity(id, userLogin);
             string retVal = csep.supervisorAccReject(user, comment);
-            csep.sendEmailRequestor(fullUrl(), userLogin.token, userLogin, 0, 1, comment);
+            csep.sendEmailRequestor(fullUrl(), userLogin.token, userLogin, 0, 1, 0, comment);
             return Json(new { status = retVal });
         }
 
@@ -319,7 +319,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             CsepEntity csep = new CsepEntity(id, userLogin);
             string retVal = csep.fireWatchAccReject(user, comment);
-            csep.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, comment);
+            csep.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, 0, comment);
             return Json(new { status = retVal });
         }
 
@@ -348,9 +348,9 @@ namespace PermitToWork.Controllers
             CsepEntity csep = new CsepEntity(id, userLogin);
             string retVal = csep.fOAccReject(user, extension, comment);
             if (extension == 0)
-                csep.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, comment);
+                csep.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, 0, comment);
             else
-                csep.sendEmailRequestor(fullUrl(), userLogin.token, userLogin, extension, 1, comment);
+                csep.sendEmailRequestor(fullUrl(), userLogin.token, userLogin, extension, 1, 0, comment);
             return Json(new { status = retVal });
         }
 
@@ -361,7 +361,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             CsepEntity csep = new CsepEntity(id, userLogin);
             string retVal = csep.requestorCan(user);
-            csep.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin);
+            csep.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 0, 1);
             return Json(new { status = retVal });
         }
 
@@ -390,7 +390,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             CsepEntity csep = new CsepEntity(id, userLogin);
             string retVal = csep.supervisorCanReject(user, comment);
-            csep.sendEmailRequestor(fullUrl(), userLogin.token, userLogin, 0, 1, comment);
+            csep.sendEmailRequestor(fullUrl(), userLogin.token, userLogin, 0, 1, 1, comment);
             return Json(new { status = retVal });
         }
 
@@ -415,7 +415,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             CsepEntity csep = new CsepEntity(id, userLogin);
             string retVal = csep.fireWatchCanReject(user, comment);
-            csep.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, comment);
+            csep.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, 1, comment);
             return Json(new { status = retVal });
         }
 
@@ -443,7 +443,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             CsepEntity csep = new CsepEntity(id, userLogin);
             string retVal = csep.fOCanReject(user, comment);
-            csep.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, comment);
+            csep.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, 1, comment);
             return Json(new { status = retVal });
         }
 

@@ -2049,7 +2049,7 @@
         {
         <button class="btn" onclick="save()">@(Model.status == (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.ACCSPV ? "Save" : "Save as Draft")</button>
         }
-        @if ((isCanEdit == true && Model.status < (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.ACCFO && !Model.has_extend))
+        @if ((isCanEdit == true && Model.status < (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.ACCFO && !Model.has_extend && Model.id_parent_ptw == null))
         {
         <button class="btn btn-danger" id="ptw-cancelled">Cancel PTW Request</button>
         }

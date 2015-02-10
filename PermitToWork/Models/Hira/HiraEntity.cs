@@ -40,7 +40,7 @@ namespace PermitToWork.Models.Hira
         {
             this.db = new star_energy_ptwEntities();
             hira_document hira = db.hira_document.Where(p => p.filename == fileName).FirstOrDefault();
-            this.id = hira.id;
+            //this.id = hira.id;
             this.location = hira.location;
             this.filename = hira.filename;
             this.id_ptw = hira.id_ptw;

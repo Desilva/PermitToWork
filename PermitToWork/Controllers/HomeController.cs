@@ -34,6 +34,10 @@ namespace PermitToWork.Controllers
 
             UserEntity user = Session["user"] as UserEntity;
 
+            HttpContext.Application.Lock();
+            HttpContext.Application["ListUser"] = new ListUser(user.token, user.id);
+            HttpContext.Application.UnLock();
+
             ViewBag.inspector = new MstInspectorEntity().getListInspector(user).Exists(d => d.user.id == user.id);
             ViewBag.isFo = new MstFOEntity().getListMstFO(user).Exists(c => c.id_employee == user.id);
             ViewBag.isProd = user.department == "Production";
@@ -79,7 +83,7 @@ namespace PermitToWork.Controllers
             if (user.id != 1)
             {
                 ListPtw listPtw = new ListPtw();
-                result = listPtw.listPtwByUser(user, type);
+                result = listPtw.listPtwByUser(user, type, HttpContext.Application["ListUser"] as ListUser);
             }
             var serializer = new JavaScriptSerializer();
             serializer.MaxJsonLength = Int32.MaxValue;

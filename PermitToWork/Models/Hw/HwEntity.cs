@@ -1876,7 +1876,7 @@ namespace PermitToWork.Models.Hw
             return "200";
         }
 
-        public string sendEmailRequestor(string serverUrl, string token, UserEntity user, int extension, int stat = 0, string comment = null)
+        public string sendEmailRequestor(string serverUrl, string token, UserEntity user, int extension, int stat = 0, int cancel = 0, string comment = null)
         {
             //if (extension == 0)
             //{
@@ -1906,13 +1906,27 @@ namespace PermitToWork.Models.Hw
             {
                 message = serverUrl + "Home?p=Hw/edit/" + this.id;
                 subject = "Hot Work Requestor Approve";
-                sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please Approve Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
+                if (cancel == 0)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please Approve Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
+                }
+                else if (cancel == 1)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please Approve Cancellation Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
+                }
             }
             else if (stat == 1)
             {
                 message = serverUrl + "Home?p=Hw/edit/" + this.id + "<br />" + comment;
                 subject = "Hot Work Approval Rejection";
-                sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Hot Work Permit No. " + this.hw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Hw/edit/" + this.id);
+                if (cancel == 0)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Hot Work Permit No. " + this.hw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Hw/edit/" + this.id);
+                }
+                else if (cancel == 1)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Cancellation of Hot Work Permit No. " + this.hw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Hw/edit/" + this.id);
+                }
             }
 
             sendEmail.Send(s, message, subject);
@@ -1921,7 +1935,7 @@ namespace PermitToWork.Models.Hw
             return "200";
         }
 
-        public string sendEmailSupervisor(string serverUrl, string token, UserEntity user, int stat = 0, string comment = null)
+        public string sendEmailSupervisor(string serverUrl, string token, UserEntity user, int stat = 0, int cancel = 0, string comment = null)
         {
             UserEntity supervisor = new UserEntity(Int32.Parse(this.acc_supervisor), token, user);
             SendEmail sendEmail = new SendEmail();
@@ -1951,13 +1965,27 @@ namespace PermitToWork.Models.Hw
             {
                 message = serverUrl + "Home?p=Hw/edit/" + this.id;
                 subject = "Hot Work Supervisor Approve";
-                sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please Approve Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
+                if (cancel == 0)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please Approve Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
+                }
+                else if (cancel == 1)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please Approve Cancellation of Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
+                }
             }
             else if (stat == 1)
             {
                 message = serverUrl + "Home?p=Hw/edit/" + this.id + "<br />" + comment;
-                subject = "Hot Work Approval Rejection";
-                sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Hot Work Permit No. " + this.hw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Hw/edit/" + this.id);
+                subject = "Hot Work Approval Rejection"; 
+                if (cancel == 0)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Hot Work Permit No. " + this.hw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Hw/edit/" + this.id);
+                }
+                else if (cancel == 1)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Cancellation of Hot Work Permit No. " + this.hw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Hw/edit/" + this.id);
+                }
             }
 
             sendEmail.Send(s, message, subject);
