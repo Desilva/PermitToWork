@@ -161,7 +161,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             CsepEntity csep = new CsepEntity(id, user);
             string retVal = csep.closeCsep(user);
-            // sendEmailFO(csep);
+            csep.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 0, 1);
             return Json(new { status = retVal, message = "There is error when saving data to database. Please check again your data." });
         }
 

@@ -28,19 +28,19 @@ namespace PermitToWork.Controllers
 
         public ActionResult Edit(int id)
         {
-
             UserEntity user = Session["user"] as UserEntity;
-            RadEntity entity = new RadEntity(id, user);
+            ListUser listUser = new ListUser(user.token, user.id);
+            RadEntity entity = new RadEntity(id, user, listUser);
             entity.GetPtw(user);
             bool[] isCanEdit = new bool[19];
 
             isCanEdit[0] = entity.isCanEditGeneralInformation(user);
-            isCanEdit[1] = entity.isCanEditFOChoosingSO(user);
+            isCanEdit[1] = entity.isCanEditFOChoosingSO(user, listUser);
             isCanEdit[2] = entity.isCanApproveOperator(user);
             isCanEdit[3] = entity.isCanApproveRadiographer2(user);
             isCanEdit[4] = entity.isCanApproveSpv(user);
             isCanEdit[5] = entity.isCanApproveSO(user);
-            isCanEdit[6] = entity.isCanApproveFO(user);
+            isCanEdit[6] = entity.isCanApproveFO(user, listUser);
             isCanEdit[7] = entity.isCanCancel(user);
             //isCanEdit[11] = entity.isCanEditSpvCancelScreening(user);
             //isCanEdit[12] = entity.isCanEditRadCancelScreening(user);
@@ -49,7 +49,7 @@ namespace PermitToWork.Controllers
             isCanEdit[9] = entity.isCanApproveRadiographer2Cancel(user);
             isCanEdit[10] = entity.isCanApproveSpvCancel(user);
             isCanEdit[11] = entity.isCanApproveSOCancel(user);
-            isCanEdit[12] = entity.isCanApproveFOCancel(user);
+            isCanEdit[12] = entity.isCanApproveFOCancel(user, listUser);
             //isCanEdit[10] = entity.isCanEditFormSPVCancel(user);
             //isCanEdit[11] = entity.isCanEditFormSOCancel(user);
             //isCanEdit[12] = entity.isCanEditFormFOCancel(user);
@@ -62,11 +62,11 @@ namespace PermitToWork.Controllers
             ViewBag.isCanEdit = isCanEdit;
 
             ViewBag.position = "Edit";
-            ViewBag.listUser = new ListUser(user.token, user.id);
+            ViewBag.listUser = listUser;
 
             var listRadiographer2 = new List<SelectListItem>();
             var listRadiographer1 = new List<SelectListItem>();
-            var listRadiographers = new MstRadiographerEntity().getListRadiographer(user);
+            var listRadiographers = new MstRadiographerEntity().getListRadiographer(user, listUser);
             listRadiographer2.Add(new SelectListItem
             {
                 Text = "",
@@ -103,7 +103,7 @@ namespace PermitToWork.Controllers
 
 
             var listRPO = new List<SelectListItem>();
-            var listRPOs = new MstRadiationPOEntity().getListRadiationPO(user);
+            var listRPOs = new MstRadiationPOEntity().getListRadiationPO(user, listUser);
             listRPO.Add(new SelectListItem
             {
                 Text = "",
@@ -133,7 +133,7 @@ namespace PermitToWork.Controllers
             ViewBag.listTotalCrew = listTotalCrew;
 
             var listSafetyOfficer = new List<SelectListItem>();
-            var listMstSO = new MstSOEntity().getListMstSO(user);
+            var listMstSO = new MstSOEntity().getListMstSO(user, listUser);
             foreach (MstSOEntity so in listMstSO)
             {
                 listSafetyOfficer.Add(new SelectListItem

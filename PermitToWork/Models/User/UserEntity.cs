@@ -163,6 +163,18 @@ namespace PermitToWork.Models.User
         /// </summary>
         /// <param name="user">FO</param>
         /// <returns></returns>
+        public List<UserEntity> GetDelegateFO(UserEntity user, ListUser listUser)
+        {
+            List<UserEntity> result = new List<UserEntity>();
+            MstFOEntity fo = new MstFOEntity(this);
+            if (fo.id_employee != null)
+            {
+                List<MstDelegateFOEntity> listDelegate = new MstDelegateFOEntity().getListByFO(this.id, user, listUser);
+                result.AddRange(listDelegate.Select(p => p.user));
+            }
+            return result;
+        }
+
         public List<UserEntity> GetDelegateFO(UserEntity user)
         {
             List<UserEntity> result = new List<UserEntity>();

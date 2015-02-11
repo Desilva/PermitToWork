@@ -814,11 +814,11 @@ namespace PermitToWork.Models.ClearancePermit
                         else if (stat == 2)
                         {
 #if !DEBUG
-                            if (this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()] != null)
+                            if (this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()] != null)
                             {
-                                listEmail.Add(this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()].email);
-                                userIds.Add(this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()].id);
-                                if ((userId = this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()].employee_delegate) != null)
+                                listEmail.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].email);
+                                userIds.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].id);
+                                if ((userId = this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].employee_delegate) != null)
                                 {
                                     userEx = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userEx.email);
@@ -919,11 +919,11 @@ namespace PermitToWork.Models.ClearancePermit
                         else if (stat == 2)
                         {
 #if !DEBUG
-                            if (this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()] != null)
+                            if (this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()] != null)
                             {
-                                listEmail.Add(this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()].email);
-                                userIds.Add(this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()].id);
-                                if ((userId = this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()].employee_delegate) != null)
+                                listEmail.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].email);
+                                userIds.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].id);
+                                if ((userId = this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].employee_delegate) != null)
                                 {
                                     userEx = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userEx.email);
@@ -1028,7 +1028,7 @@ namespace PermitToWork.Models.ClearancePermit
 #endif
                             title = "Excavation Clearance Permit (" + this.ex_no + ") Completed and Approved";
                             message = serverUrl + "Home?p=Excavation/edit/" + this.id;
-                            sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Please approve Excavation Permit No. " + this.ex_no, serverUrl + "Home?p=Excavation/edit/" + this.id);
+                            sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Excavation Permit No. " + this.ex_no + "  has been approved by Facility Owner.", serverUrl + "Home?p=Excavation/edit/" + this.id);
                         }
                         else if (stat == 2)
                         {
@@ -1296,7 +1296,7 @@ namespace PermitToWork.Models.ClearancePermit
                     case 2:
                         if (stat == 1)
                         {
-                            if (this.userInExcavation.Keys.ToList().Exists(p => p == UserInExcavation.FACILITIES.ToString() && p == UserInExcavation.EI.ToString()))
+                            if (this.userInExcavation.Keys.ToList().Exists(p => p == UserInExcavation.FACILITIES.ToString()) && this.userInExcavation.Keys.ToList().Exists(p => p == UserInExcavation.EI.ToString()))
                             {
 #if !DEBUG
                                 listEmail.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].email);
@@ -1414,7 +1414,7 @@ namespace PermitToWork.Models.ClearancePermit
                             {
                                 listEmail.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].email);
                                 userIds.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].id);
-                                if ((userId = this.userInExcavation[UserInExcavation.SUPERVISORDELEGATE.ToString()].employee_delegate) != null)
+                                if ((userId = this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].employee_delegate) != null)
                                 {
                                     userEx = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userEx.email);

@@ -44,6 +44,14 @@ namespace PermitToWork.Models.Master
             this.user = new UserEntity(Int32.Parse(this.employee), user.token, user);
         }
 
+        public MstRadiographerEntity(mst_radiographer radiographer, UserEntity user, ListUser listUser)
+            : this()
+        {
+            ModelUtilization.Clone(radiographer, this);
+
+            this.user = listUser.listUser.Find(p => p.id == Int32.Parse(this.employee));
+        }
+
         public List<MstRadiographerEntity> getListRadiographer(UserEntity user)
         {
             var list = this.db.mst_radiographer.ToList();
@@ -53,6 +61,21 @@ namespace PermitToWork.Models.Master
                 if (i.valid_date.Value.CompareTo(DateTime.Now) >= 0)
                 {
                     ret.Add(new MstRadiographerEntity(i, user));
+                }
+            }
+
+            return ret;
+        }
+
+        public List<MstRadiographerEntity> getListRadiographer(UserEntity user, ListUser listUser)
+        {
+            var list = this.db.mst_radiographer.ToList();
+            List<MstRadiographerEntity> ret = new List<MstRadiographerEntity>();
+            foreach (mst_radiographer i in list)
+            {
+                if (i.valid_date.Value.CompareTo(DateTime.Now) >= 0)
+                {
+                    ret.Add(new MstRadiographerEntity(i, user, listUser));
                 }
             }
 

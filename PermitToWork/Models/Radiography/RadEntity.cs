@@ -122,7 +122,8 @@ namespace PermitToWork.Models.Radiography
 
             int radiographerId = 0;
 
-            if (Int32.TryParse(this.radiographer_1, out radiographerId)) {
+            if (Int32.TryParse(this.radiographer_1, out radiographerId))
+            {
                 this.radiographer1 = new MstRadiographerEntity(radiographerId, user);
             }
 
@@ -134,6 +135,86 @@ namespace PermitToWork.Models.Radiography
             if (Int32.TryParse(this.radiation_protection_officer, out radiographerId))
             {
                 this.radiationPO = new MstRadiationPOEntity(radiographerId, user);
+            }
+
+            string path = HttpContext.Current.Server.MapPath("~/Upload/Radiography/" + this.id + "/LicenseNumber1");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            DirectoryInfo d = new DirectoryInfo(path);//Assuming Test is your Folder
+            FileInfo[] Files = d.GetFiles(); //Getting Text files
+
+            this.listDocumentUploaded.Add(DocumentUploaded.RADIOGRAPHER1LICENSENUMBER.ToString(), Files.Select(p => p.Name).ToList());
+
+            path = HttpContext.Current.Server.MapPath("~/Upload/Radiography/" + this.id + "/LicenseNumber2");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            d = new DirectoryInfo(path);//Assuming Test is your Folder
+            Files = d.GetFiles(); //Getting Text files
+
+            this.listDocumentUploaded.Add(DocumentUploaded.RADIOGRAPHER2LICENSENUMBER.ToString(), Files.Select(p => p.Name).ToList());
+
+            path = HttpContext.Current.Server.MapPath("~/Upload/Radiography/" + this.id + "/LicenseNumberRPO");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            d = new DirectoryInfo(path);//Assuming Test is your Folder
+            Files = d.GetFiles(); //Getting Text files
+
+            this.listDocumentUploaded.Add(DocumentUploaded.RADIATIONPOLICENSENUMBER.ToString(), Files.Select(p => p.Name).ToList());
+
+            path = HttpContext.Current.Server.MapPath("~/Upload/Radiography/" + this.id + "/Attachment");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            d = new DirectoryInfo(path);//Assuming Test is your Folder
+            Files = d.GetFiles(); //Getting Text files
+
+            this.listDocumentUploaded.Add(DocumentUploaded.ATTACHMENT.ToString(), Files.Select(p => p.Name).ToList());
+
+            this.statusText = getStatus();
+
+            generateUserInRadiography(rad, user, null);
+
+            // this.hira_document = new ListHira(this.id_ptw.Value, this.db).listHira;
+        }
+
+        public RadEntity(int id, UserEntity user, ListUser listUser)
+            : this()
+        {
+            radiography rad = this.db.radiographies.Find(id);
+            // this.ptw = new PtwEntity(fi.id_ptw.Value);
+            ModelUtilization.Clone(rad, this);
+
+            this.screening_fo_arr = this.pre_screening_fo.Split('#');
+            this.screening_spv_arr = this.pre_screening_spv.Split('#');
+            this.screening_rad_arr = this.pre_screening_rad.Split('#');
+
+            this.can_screening_fo_arr = this.can_screening_fo.Split('#');
+            this.can_screening_spv_arr = this.can_screening_spv.Split('#');
+            this.can_screening_rad_arr = this.can_screening_rad.Split('#');
+
+            this.is_guest = rad.permit_to_work.is_guest == 1;
+
+            int radiographerId = 0;
+
+            if (Int32.TryParse(this.radiographer_1, out radiographerId)) {
+                this.radiographer1 = new MstRadiographerEntity(radiographerId, user, listUser);
+            }
+
+            if (Int32.TryParse(this.radiographer_2, out radiographerId))
+            {
+                this.radiographer2 = new MstRadiographerEntity(radiographerId, user, listUser);
+            }
+
+            if (Int32.TryParse(this.radiation_protection_officer, out radiographerId))
+            {
+                this.radiationPO = new MstRadiationPOEntity(radiographerId, user, listUser);
             }
 
             string path = HttpContext.Current.Server.MapPath("~/Upload/Radiography/" + this.id + "/LicenseNumber1");
@@ -178,7 +259,7 @@ namespace PermitToWork.Models.Radiography
 
             this.statusText = getStatus();
 
-            generateUserInRadiography(rad, user, null);
+            generateUserInRadiography(rad, user, listUser);
 
             // this.hira_document = new ListHira(this.id_ptw.Value, this.db).listHira;
         }
@@ -2089,11 +2170,11 @@ namespace PermitToWork.Models.Radiography
         //    return false;
         //}
 
-        public bool isCanEditFOChoosingSO(UserEntity user)
+        public bool isCanEditFOChoosingSO(UserEntity user, ListUser listUser)
         {
             if (this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()] != null)
             {
-                List<UserEntity> listDel = this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].GetDelegateFO(user);
+                List<UserEntity> listDel = this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].GetDelegateFO(user, listUser);
                 if ((user.id == this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].id || user.id == this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].employee_delegate) && this.status <= (int)RadStatus.SPVAPPROVE)
                 {
                     return true;
@@ -2159,11 +2240,11 @@ namespace PermitToWork.Models.Radiography
             return false;
         }
 
-        public bool isCanApproveFO(UserEntity user)
+        public bool isCanApproveFO(UserEntity user, ListUser listUser)
         {
             if (this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()] != null)
             {
-                List<UserEntity> listDel = this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].GetDelegateFO(user);
+                List<UserEntity> listDel = this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].GetDelegateFO(user, listUser);
                 if ((user.id == this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].id || user.id == this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].employee_delegate) && this.status == (int)RadStatus.SOAPPROVE)
                 {
                     return true;
@@ -2294,11 +2375,11 @@ namespace PermitToWork.Models.Radiography
             return false;
         }
 
-        public bool isCanApproveFOCancel(UserEntity user)
+        public bool isCanApproveFOCancel(UserEntity user, ListUser listUser)
         {
             if (this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()] != null)
             {
-                List<UserEntity> listDel = this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].GetDelegateFO(user);
+                List<UserEntity> listDel = this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].GetDelegateFO(user, listUser);
                 if ((user.id == this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].id || user.id == this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()].employee_delegate) && this.status == (int)RadStatus.CANSOAPPROVE)
                 {
                     return true;

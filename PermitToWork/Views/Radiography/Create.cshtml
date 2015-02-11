@@ -467,8 +467,12 @@
                 id: '@Model.id',
                 comment: $('#comment').val(),
             }
-            values = getPreScreeningValues(values, $('#who').val());
             var type = $('#type-reject').val();
+            if (type == "1") {
+                values = getPreScreeningValues(values, $('#who').val());
+            } else if (type == "2") {
+                values = getCancelScreeningValues(values, $('#who').val());
+            }
             var url = '';
             switch (type) {
                 case "1": values.who = $('#who').val(); url = '@Url.Action("rejectPermit", "Radiography")'; break;

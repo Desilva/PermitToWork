@@ -158,7 +158,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.closeHw(user);
-            hw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin);
+            hw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 0, 1);
             return Json(new { status = retVal, message = "There is error when saving data to database. Please check again your data." });
         }
 

@@ -1681,7 +1681,7 @@ namespace PermitToWork.Models
                         {
                             title = "Fire Impairment Clearance Permit (" + this.fi_no + ") Cancellation Approved";
                             message = serverUrl + "Home?p=FI/edit/" + this.id;
-                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Fire Impairment Permit No. " + this.fi_no + " has been cancelled by Dept. Head FO.", serverUrl + "Home?p=FI/edit/" + this.id);
+                            sendEmail.SendToNotificationCenter(userIds, "Fire Impairment Permit", "Cancellation of Fire Impairment Permit No. " + this.fi_no + " has been completed.", serverUrl + "Home?p=FI/edit/" + this.id);
                         }
 
                         retVal = 1;

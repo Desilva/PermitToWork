@@ -44,6 +44,14 @@ namespace PermitToWork.Models.Master
             this.user = new UserEntity(Int32.Parse(this.employee), user.token, user);
         }
 
+        public MstRadiationPOEntity(mst_radiation_po radiationPO, UserEntity user, ListUser listUser)
+            : this()
+        {
+            ModelUtilization.Clone(radiationPO, this);
+
+            this.user = listUser.listUser.Find(p => p.id == Int32.Parse(this.employee));
+        }
+
         public List<MstRadiationPOEntity> getListRadiationPO(UserEntity user)
         {
             var list = this.db.mst_radiation_po.ToList();
@@ -53,6 +61,21 @@ namespace PermitToWork.Models.Master
                 if (i.valid_date.Value.CompareTo(DateTime.Now) >= 0)
                 {
                     ret.Add(new MstRadiationPOEntity(i, user));
+                }
+            }
+
+            return ret;
+        }
+
+        public List<MstRadiationPOEntity> getListRadiationPO(UserEntity user, ListUser listUser)
+        {
+            var list = this.db.mst_radiation_po.ToList();
+            List<MstRadiationPOEntity> ret = new List<MstRadiationPOEntity>();
+            foreach (mst_radiation_po i in list)
+            {
+                if (i.valid_date.Value.CompareTo(DateTime.Now) >= 0)
+                {
+                    ret.Add(new MstRadiationPOEntity(i, user, listUser));
                 }
             }
 

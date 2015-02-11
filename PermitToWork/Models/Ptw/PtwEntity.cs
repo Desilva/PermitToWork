@@ -2076,13 +2076,13 @@ namespace PermitToWork.Models.Ptw
             {
                 message = "All clearance permit has been closed, you may continue by cancelling this Permit to Work.<br />" + serverUrl + "Home?p=Ptw/edit/" + this.id;
                 subject = "All Clearance Permit Closed";
-                sendEmail.SendToNotificationCenter(userId, "General Permit", "All clearance permit has been cancelled. Please approve PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
+                sendEmail.SendToNotificationCenter(userId, "General Permit", "All clearance permit has been cancelled. Please approve Cancellation of PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
             }
             else if (status == 3)
             {
                 message = "All clearance permit has been cancelled by supervisor, you may continue by cancelling this Permit to Work.<br />" + serverUrl + "Home?p=Ptw/edit/" + this.id;
                 subject = "All Clearance Permit Cancelled by Supervisor";
-                sendEmail.SendToNotificationCenter(userId, "General Permit", "All clearance permit has been cancelled by Supervisor. Please approve PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
+                sendEmail.SendToNotificationCenter(userId, "General Permit", "All clearance permit has been cancelled by Supervisor. Please approve Cancellation of PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
             }
 
             sendEmail.Send(s, message, subject);
