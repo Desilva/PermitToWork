@@ -1497,8 +1497,11 @@ namespace PermitToWork.Models.ClearancePermit
                 s.Add(requestor.email);
                 userId.Add(requestor.id);
             }
-            s.Add(spv.email);
-            userId.Add(spv.id);
+            if (cancel == 0)
+            {
+                s.Add(spv.email);
+                userId.Add(spv.id);
+            }
 #else
             s.Add("septu.jamasoka@gmail.com"); // email FO
             userId.Add(requestor.id);

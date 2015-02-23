@@ -1746,7 +1746,7 @@ namespace PermitToWork.Models.Ptw
             return "200";
         }
 
-        public string sendEmailRequestor(string serverUrl, string token, UserEntity user, int stat = 0, string comment = null)
+        public string sendEmailRequestor(string serverUrl, string token, UserEntity user, int stat = 0, int cancel = 0, string comment = null)
         {
             //if (extension == 0)
             //{
@@ -1764,13 +1764,27 @@ namespace PermitToWork.Models.Ptw
             {
                 message = serverUrl + "Home?p=ptw/edit/" + this.id;
                 subject = "Permit to Work Requestor Approve";
-                sendEmail.SendToNotificationCenter(userId, "General Permit", "Please Approve PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
+                if (cancel == 0)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "General Permit", "Please Approve PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
+                }
+                else if (cancel == 1)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "General Permit", "Please Approve Cancellation of PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
+                }
             }
             else if (stat == 1)
             {
                 message = serverUrl + "Home?p=ptw/edit/" + this.id + "<br />" + comment;
                 subject = "Permit to Work Approval Rejection";
-                sendEmail.SendToNotificationCenter(userId, "General Permit", "PTW No. " + this.ptw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=ptw/edit/" + this.id);
+                if (cancel == 0)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "General Permit", "PTW No. " + this.ptw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=ptw/edit/" + this.id);
+                }
+                else if (cancel == 1)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "General Permit", "Cancellation of PTW No. " + this.ptw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=ptw/edit/" + this.id);
+                }
             }
 
             sendEmail.Send(s, message, subject);
@@ -1779,7 +1793,7 @@ namespace PermitToWork.Models.Ptw
             return "200";
         }
 
-        public string sendEmailSupervisor(string serverUrl, string token, UserEntity user, int pos = 1, int stat = 0, string comment = null)
+        public string sendEmailSupervisor(string serverUrl, string token, UserEntity user, int pos = 1, int stat = 0, int cancel = 0, string comment = null)
         {
             int supervisor_id = 0;
 
@@ -1812,14 +1826,27 @@ namespace PermitToWork.Models.Ptw
             {
                 message = serverUrl + "Home?p=ptw/edit/" + this.id;
                 subject = "Permit to Work Supervisor Approve";
-
-                sendEmail.SendToNotificationCenter(userId, "General Permit", "Please Approve PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
+                if (cancel == 0)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "General Permit", "Please Approve PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
+                }
+                else if (cancel == 1)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "General Permit", "Please Approve Cancellation of PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
+                }
             }
             else if (stat == 1)
             {
                 message = serverUrl + "Home?p=ptw/edit/" + this.id + "<br />" + comment;
                 subject = "Permit to Work Approval Rejection";
-                sendEmail.SendToNotificationCenter(userId, "General Permit", "PTW No. " + this.ptw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=ptw/edit/" + this.id);
+                if (cancel == 0)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "General Permit", "PTW No. " + this.ptw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=ptw/edit/" + this.id);
+                }
+                else if (cancel == 1)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "General Permit", "Cancellation of PTW No. " + this.ptw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=ptw/edit/" + this.id);
+                }
             }
 
             sendEmail.Send(s, message, subject);
@@ -1827,7 +1854,7 @@ namespace PermitToWork.Models.Ptw
             return "200";
         }
 
-        public string sendEmailAssessor(string serverUrl, string token, UserEntity user, int pos = 0, int stat = 0, string comment = null)
+        public string sendEmailAssessor(string serverUrl, string token, UserEntity user, int pos = 0, int stat = 0, int cancel = 0, string comment = null)
         {
             int assessor_id = 0;
 
@@ -1857,13 +1884,27 @@ namespace PermitToWork.Models.Ptw
             {
                 message = serverUrl + "Home?p=ptw/edit/" + this.id;
                 subject = "Permit to Work Assessor Approve";
-                sendEmail.SendToNotificationCenter(userId, "General Permit", "Please Approve PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
+                if (cancel == 0)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "General Permit", "Please Approve PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
+                }
+                else if (cancel == 1)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "General Permit", "Please Approve Cancellation of PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
+                }
             }
             else if (stat == 1)
             {
                 message = serverUrl + "Home?p=ptw/edit/" + this.id + "<br />" + comment;
                 subject = "Permit to Work Approval Rejection";
-                sendEmail.SendToNotificationCenter(userId, "General Permit", "PTW No. " + this.ptw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=ptw/edit/" + this.id);
+                if (cancel == 0)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "General Permit", "PTW No. " + this.ptw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=ptw/edit/" + this.id);
+                }
+                else if (cancel == 1)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "General Permit", "Cancellation of PTW No. " + this.ptw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=ptw/edit/" + this.id);
+                }
             }
 
             sendEmail.Send(s, message, subject);
@@ -1871,7 +1912,7 @@ namespace PermitToWork.Models.Ptw
             return "200";
         }
 
-        public string sendEmailFo(string serverUrl, string token, UserEntity user, int pos = 0, int stat = 0, string comment = null)
+        public string sendEmailFo(string serverUrl, string token, UserEntity user, int pos = 0, int stat = 0, int cancel = 0, string comment = null)
         {
             int fo_id = 0;
 
@@ -1914,12 +1955,28 @@ namespace PermitToWork.Models.Ptw
                 message = serverUrl + "Home?p=Hw/edit/" + this.id + "<br />" + comment;
                 subject = "Permit to Work Facility Owner Approve";
                 sendEmail.SendToNotificationCenter(userId, "General Permit", "Please Approve PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
+                if (cancel == 0)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "General Permit", "Please Approve PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
+                }
+                else if (cancel == 1)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "General Permit", "Please Approve Cancellation of PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
+                }
             }
             else if (stat == 1)
             {
                 message = serverUrl + "Home?p=Hw/edit/" + this.id + "<br />" + comment;
                 subject = "Permit to Work Approval Rejection";
                 sendEmail.SendToNotificationCenter(userId, "General Permit", "PTW No. " + this.ptw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=ptw/edit/" + this.id);
+                if (cancel == 0)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "General Permit", "PTW No. " + this.ptw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=ptw/edit/" + this.id);
+                }
+                else if (cancel == 1)
+                {
+                    sendEmail.SendToNotificationCenter(userId, "General Permit", "Cancellation of PTW No. " + this.ptw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=ptw/edit/" + this.id);
+                }
             }
             else if (stat == 2)
             {
@@ -2111,13 +2168,13 @@ namespace PermitToWork.Models.Ptw
                 {
                     message = "Permit to Work has been approved, you may start working using this permit.<br />" + serverUrl + "Home?p=Ptw/edit/" + this.id;
                     subject = "Permit to Work Approved";
-                    sendEmail.SendToNotificationCenter(userId, "General Permit", "General Permit has been approved by Facility Owner.", serverUrl + "Home?p=ptw/edit/" + this.id);
+                    sendEmail.SendToNotificationCenter(userId, "General Permit", "General Permit (" + this.ptw_no + ") has been approved by Facility Owner.", serverUrl + "Home?p=ptw/edit/" + this.id);
                 }
                 else if (status == 2)
                 {
                     message = "Permit to Work has been cancelled. You cannot work using this permit again.<br />" + serverUrl + "Home?p=Ptw/edit/" + this.id;
                     subject = "Permit to Work Cancelled";
-                    sendEmail.SendToNotificationCenter(userId, "General Permit", "General Permit has been cancelled by Facility Owner.", serverUrl + "Home?p=ptw/edit/" + this.id);
+                    sendEmail.SendToNotificationCenter(userId, "General Permit", "General Permit (" + this.ptw_no + ") has been cancelled by Facility Owner.", serverUrl + "Home?p=ptw/edit/" + this.id);
                 }
 
                 sendEmail.Send(s, message, subject);

@@ -510,7 +510,7 @@
             $.post('@Url.Action("CancelRadPermit", "Radiography")', values, function (resp) {
                 $('#loading_gif').hide();
                 if (resp.status == "200") {
-                    alert("Radiography Clearance Permit Cancelled. Notification has been sent to supervisor for cancellation screening.");
+                    alert("Radiography Clearance Permit Cancelled. Notification has been sent to operator level 1.");
                 }
                 $('#content').load('@Url.Action("Edit", "Radiography")');
             });

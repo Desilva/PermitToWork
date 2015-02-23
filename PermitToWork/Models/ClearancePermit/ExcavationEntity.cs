@@ -1236,8 +1236,10 @@ namespace PermitToWork.Models.ClearancePermit
                         ex.status = (int)ExStatus.CANSPVAPPROVE;
                         break;
                     case 6 /* Facility Owner */:
-                        ex.can_safety_officer_signature = null;
-                        ex.can_safety_officer_delegate = null;
+                        ex.can_facilities_signature = null;
+                        ex.can_facilities_delegate = null;
+                        ex.can_ei_signature = null;
+                        ex.can_ei_delegate = null;
                         ex.status = (int)ExStatus.CANSPVAPPROVE;
                         break;
                 }
@@ -1593,11 +1595,19 @@ namespace PermitToWork.Models.ClearancePermit
                         else if (stat == 2)
                         {
 #if !DEBUG
-                            if (this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()] != null)
+                            if (this.userInExcavation[UserInExcavation.FACILITIES.ToString()] != null)
                             {
-                                listEmail.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].email);
-                                userIds.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].id);
-                                if ((userId = this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].employee_delegate) != null)
+                                listEmail.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].email);
+                                userIds.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].id);
+                                if ((userId = this.userInExcavation[UserInExcavation.FACILITIES.ToString()].employee_delegate) != null)
+                                {
+                                    userEx = new UserEntity(userId.Value, user.token, user);
+                                    listEmail.Add(userEx.email);
+                                    userIds.Add(userEx.id);
+                                }
+                                listEmail.Add(this.userInExcavation[UserInExcavation.EI.ToString()].email);
+                                userIds.Add(this.userInExcavation[UserInExcavation.EI.ToString()].id);
+                                if ((userId = this.userInExcavation[UserInExcavation.EI.ToString()].employee_delegate) != null)
                                 {
                                     userEx = new UserEntity(userId.Value, user.token, user);
                                     listEmail.Add(userEx.email);
