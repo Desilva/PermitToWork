@@ -653,7 +653,7 @@ namespace PermitToWork.Controllers
             {
                 ptw.guestCanApproval(user);
             }
-            ptw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1);
+            //ptw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, 0, 1);
             return Json(new { status = retVal });
         }
 

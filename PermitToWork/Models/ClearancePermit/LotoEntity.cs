@@ -1437,7 +1437,11 @@ namespace PermitToWork.Models.ClearancePermit
                         {
                             complete = complete && comingHolder.isCancel();
                         }
-                        if (complete) loto.status = (int)LOTOStatus.CANCELSPV;
+                        if (complete)
+                        {
+                            this.status = (int)LOTOStatus.CANCELSPV;
+                            loto.status = (int)LOTOStatus.CANCELSPV;
+                        }
 
                         this.db.Entry(loto).State = EntityState.Modified;
                         retVal = this.db.SaveChanges();

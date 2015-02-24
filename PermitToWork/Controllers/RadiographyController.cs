@@ -238,7 +238,7 @@ namespace PermitToWork.Controllers
             UserEntity user = Session["user"] as UserEntity;
             RadEntity rad = new RadEntity(id, user);
             int retVal = rad.signClearanceCancel(1, user);
-            retVal = retVal & rad.sendToUserCancel(1, 1, fullUrl(), user);
+            retVal = retVal & rad.sendToUserCancel(2, 1, fullUrl(), user);
 
             return Json(new { status = retVal == 0 ? "400" : "200" });
         }
