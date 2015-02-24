@@ -585,7 +585,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             PtwEntity ptw = new PtwEntity(id, user);
             string retVal = ptw.supervisorAccReject(user, comment);
-            ptw.sendEmailRequestor(fullUrl(), userLogin.token, userLogin, 1, comment);
+            ptw.sendEmailRequestor(fullUrl(), userLogin.token, userLogin, 1, 0, comment);
             return Json(new { status = retVal });
         }
 
@@ -606,7 +606,7 @@ namespace PermitToWork.Controllers
             //ptw.acc_assessor_delegate = fo.employee_delegate.ToString();
             //ptw.can_assessor_delegate = fo.employee_delegate.ToString();
             string retVal = ptw.assessorAccApproval(user);
-            ptw.sendEmailFo(fullUrl(), userLogin.token, userLogin, 1, 0, comment);
+            ptw.sendEmailFo(fullUrl(), userLogin.token, userLogin, 1, 0, 0, comment);
             return Json(new { status = retVal });
         }
 
@@ -617,7 +617,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             PtwEntity ptw = new PtwEntity(id, user);
             string retVal = ptw.assessorAccReject(user,comment);
-            ptw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 0, 1, comment);
+            ptw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 0, 1, 0, comment);
             return Json(new { status = retVal });
         }
 
@@ -639,7 +639,7 @@ namespace PermitToWork.Controllers
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             PtwEntity ptw = new PtwEntity(id, userLogin);
             string retVal = ptw.fOAccReject(userLogin, comment);
-            ptw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 0, 1, comment);
+            ptw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 0, 1, 0, comment);
             return Json(new { status = retVal });
         }
 
