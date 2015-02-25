@@ -98,7 +98,7 @@ namespace PermitToWork.Controllers
 
             ViewBag.isCanEdit = isCanEdit;
 
-            ViewBag.id_loto = id_loto;
+            ViewBag.id_loto = id_loto == null ? id : id_loto;
 
             ViewBag.listLotoPoint = new star_energy_ptwEntities().mst_loto_point.ToList();
             ViewBag.listUser = new ListUser(user.token, user.id).listUser;
