@@ -52,24 +52,24 @@ namespace PermitToWork.Models.ClearancePermit
 
         public enum LOTOStatus
         {
-            CREATE,
+            CREATE, //0
             SENDTOFO,
             FOAGREED,
             FOAPPLIED,
             INSPECTION,
-            SPVSIGN,
+            SPVSIGN, //5
             FOSIGN,
             LOTOCHANGE,
             CHGSENDTOHOLDER,
             CHGSENDTOFO,
-            CHGFOAGREED,
+            CHGFOAGREED, // 10
             CHGFOAPPLIED,
             CHGINSPECTION,
             CHGSPVSIGN,
             CHGFOSIGN,
-            COMINGHOLDERSIGN,
+            COMINGHOLDERSIGN, // 15
             LOTOSUSPENSION,
-            CANCELSPV,
+            CANCELSPV, // 17
             LOTOCANCELLED,
         }
 
@@ -1403,7 +1403,11 @@ namespace PermitToWork.Models.ClearancePermit
                     }
                 }
                 loto.cancellation_notes = this.cancellation_notes;
-                if (complete) loto.status = (int)LOTOStatus.CANCELSPV;
+                if (complete)
+                {
+                    this.status = (int)LOTOStatus.CANCELSPV;
+                    loto.status = (int)LOTOStatus.CANCELSPV;
+                }
 
                 this.db.Entry(loto).State = EntityState.Modified;
                 retVal = this.db.SaveChanges();

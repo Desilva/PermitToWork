@@ -1954,7 +1954,6 @@ namespace PermitToWork.Models.Ptw
             {
                 message = serverUrl + "Home?p=Hw/edit/" + this.id + "<br />" + comment;
                 subject = "Permit to Work Facility Owner Approve";
-                sendEmail.SendToNotificationCenter(userId, "General Permit", "Please Approve PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
                 if (cancel == 0)
                 {
                     sendEmail.SendToNotificationCenter(userId, "General Permit", "Please Approve PTW No. " + this.ptw_no, serverUrl + "Home?p=ptw/edit/" + this.id);
@@ -1968,7 +1967,6 @@ namespace PermitToWork.Models.Ptw
             {
                 message = serverUrl + "Home?p=Hw/edit/" + this.id + "<br />" + comment;
                 subject = "Permit to Work Approval Rejection";
-                sendEmail.SendToNotificationCenter(userId, "General Permit", "PTW No. " + this.ptw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=ptw/edit/" + this.id);
                 if (cancel == 0)
                 {
                     sendEmail.SendToNotificationCenter(userId, "General Permit", "PTW No. " + this.ptw_no + "is rejected with comment: " + comment, serverUrl + "Home?p=ptw/edit/" + this.id);
