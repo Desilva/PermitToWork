@@ -60,6 +60,7 @@ namespace PermitToWork.Models.Ptw
         public int? id_safety_briefing { get; set; }
         public int? safety_briefing_status { get; set; }
         public bool isNeedClose { get; set; }
+        public bool isUser { get; set; }
 
         public bool isUserPtw { get; set; }
         public bool will_overdue { get; set; }
@@ -78,7 +79,7 @@ namespace PermitToWork.Models.Ptw
         public List<LotoEntity> lotoPermit { get; set; }
         public string ptw_status { get; set; }
 
-        public Dictionary<string, UserEntity> userInFI { get; set; }
+        public Dictionary<string, UserEntity> userInPTW { get; set; }
 
         public enum statusPtw
         {
@@ -122,17 +123,12 @@ namespace PermitToWork.Models.Ptw
             SUPERVISOR,
             ASSESSOR,
             FACILITYOWNER,
-            DEPTHEADFO,
             REQUESTORDELEGATE,
-            FIREWATCHDELEGATE,
-            SAFETYOFFICERDELEGATE,
+            SUPERVISORDELEGATE,
+            ASSESSORDELEGATE,
             FACILITYOWNERDELEGATE,
-            DEPTHEADFODELEGATE,
-            CANREQUESTORDELEGATE,
-            CANFIREWATCHDELEGATE,
-            CANSAFETYOFFICERDELEGATE,
-            CANFACILITYOWNERDELEGATE,
-            CANDEPTHEADFODELEGATE,
+            CANASSESSOR,
+            CANASSESSORDELEGATE,
         }
 
         private star_energy_ptwEntities db;
@@ -140,6 +136,7 @@ namespace PermitToWork.Models.Ptw
         public PtwEntity() {
             this.db = new star_energy_ptwEntities();
             this.cPermit = new Dictionary<string, IClearancePermitEntity>();
+            this.userInPTW = new Dictionary<string, UserEntity>();
         }
 
         public PtwEntity(int id, UserEntity user, star_energy_ptwEntities db = null)
@@ -259,6 +256,7 @@ namespace PermitToWork.Models.Ptw
             }
 
             this.acc_fo = ptw.acc_fo;
+            this.generateUserInPTW(user);
             // this.hira_document = new ListHira(this.id,this.db).listHira;
         }
 
@@ -374,6 +372,7 @@ namespace PermitToWork.Models.Ptw
             }
             this.will_overdue = !this.has_extend && this.validity_period_end != null && this.validity_period_end.Value.Subtract(DateTime.Today).TotalDays < 2 && this.status >= (int)statusPtw.ACCFO && this.status < (int)statusPtw.CANFO;
             Debug.WriteLine(this.will_overdue);
+            this.generateUserInPTW(user,listUser);
             Debug.WriteLine("e = " + DateTime.Now.TimeOfDay.TotalMilliseconds);
         }
 
@@ -704,6 +703,77 @@ namespace PermitToWork.Models.Ptw
             return this.db.SaveChanges();
         }
 
+        private void generateUserInPTW(UserEntity user, ListUser listUsers = null)
+        {
+            ListUser listUser = listUsers != null ? listUsers : new ListUser(user.token, user.id);
+            int userId = 0;
+
+            if (is_guest == 1)
+            {
+                UserEntity userGuest = new UserEntity();
+                userGuest.alpha_name = this.acc_ptw_requestor;
+                this.userInPTW.Add(UserInPTW.REQUESTOR.ToString(), userGuest);
+            }
+            else
+            {
+                Int32.TryParse(this.acc_ptw_requestor, out userId);
+                isUser = isUser || user.id == userId;
+                this.userInPTW.Add(UserInPTW.REQUESTOR.ToString(), listUser.listUser.Find(p => p.id == userId));
+            }
+
+            userId = 0;
+            Int32.TryParse(this.acc_supervisor, out userId);
+            isUser = isUser || user.id == userId;
+            this.userInPTW.Add(UserInPTW.SUPERVISOR.ToString(), listUser.listUser.Find(p => p.id == userId));
+
+            userId = 0;
+            Int32.TryParse(this.acc_assessor, out userId);
+            isUser = isUser || user.id == userId;
+            this.userInPTW.Add(UserInPTW.ASSESSOR.ToString(), listUser.listUser.Find(p => p.id == userId));
+
+            userId = 0;
+            Int32.TryParse(this.acc_fo, out userId);
+            isUser = isUser || user.id == userId;
+            this.userInPTW.Add(UserInPTW.FACILITYOWNER.ToString(), listUser.listUser.Find(p => p.id == userId));
+
+            userId = 0;
+            Int32.TryParse(this.acc_supervisor_delegate, out userId);
+            if (userId != 0)
+            {
+                isUser = isUser || user.id == userId;
+                this.userInPTW.Add(UserInPTW.SUPERVISORDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
+            }
+
+            userId = 0;
+            Int32.TryParse(this.acc_assessor_delegate, out userId);
+            if (userId != 0)
+            {
+                isUser = isUser || user.id == userId;
+                this.userInPTW.Add(UserInPTW.ASSESSORDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
+            }
+
+            userId = 0;
+            Int32.TryParse(this.acc_fo_delegate, out userId);
+            if (userId != 0)
+            {
+                isUser = isUser || user.id == userId;
+                this.userInPTW.Add(UserInPTW.FACILITYOWNERDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
+            }
+
+            userId = 0;
+            Int32.TryParse(this.can_assessor, out userId);
+            isUser = isUser || user.id == userId;
+            this.userInPTW.Add(UserInPTW.CANASSESSOR.ToString(), listUser.listUser.Find(p => p.id == userId));
+
+            userId = 0;
+            Int32.TryParse(this.can_assessor_delegate, out userId);
+            if (userId != 0)
+            {
+                isUser = isUser || user.id == userId;
+                this.userInPTW.Add(UserInPTW.CANASSESSORDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
+            }
+        }
+
         #region generate ptw_number
 
         public void generatePtwNumber(string lastNumber, string fo_code = null, bool isExtend = false)
@@ -779,7 +849,8 @@ namespace PermitToWork.Models.Ptw
         {
             var retVal = false;
             string user_id = user.id.ToString();
-            if ((this.acc_ptw_requestor == user_id))
+            if (this.userInPTW[UserInPTW.REQUESTOR.ToString()] != null && (this.userInPTW[UserInPTW.REQUESTOR.ToString()].id == user.id))
+            //if ((this.acc_ptw_requestor == user_id))
             {
                 retVal = true;
             }
@@ -791,7 +862,8 @@ namespace PermitToWork.Models.Ptw
         {
             var retVal = false;
             string user_id = user.id.ToString();
-            if ((this.acc_supervisor == user_id || this.acc_supervisor_delegate == user_id))
+            if (this.userInPTW[UserInPTW.SUPERVISOR.ToString()] != null && (this.userInPTW[UserInPTW.SUPERVISOR.ToString()].id == user.id || this.userInPTW[UserInPTW.SUPERVISOR.ToString()].employee_delegate == user.id))
+            //if ((this.acc_supervisor == user_id || this.acc_supervisor_delegate == user_id))
             {
                 retVal = true;
             }
@@ -803,7 +875,7 @@ namespace PermitToWork.Models.Ptw
         {
             var retVal = false;
             string user_id = user.id.ToString();
-            if ((this.acc_assessor == user_id || this.acc_assessor_delegate == user_id))
+            if (this.userInPTW[UserInPTW.ASSESSOR.ToString()] != null && (this.userInPTW[UserInPTW.ASSESSOR.ToString()].id == user.id || this.userInPTW[UserInPTW.ASSESSOR.ToString()].employee_delegate == user.id))
             {
                 retVal = true;
             }
@@ -820,7 +892,7 @@ namespace PermitToWork.Models.Ptw
             int assId = 0;
             Int32.TryParse(this.acc_assessor, out assId);
             List<MstDelegateFOEntity> delegates = new MstDelegateFOEntity().getListByFO(foid, user, listUser);
-            if (this.acc_fo == user_id || user_id == this.acc_fo_delegate)
+            if (this.userInPTW[UserInPTW.FACILITYOWNER.ToString()] != null && (this.userInPTW[UserInPTW.FACILITYOWNER.ToString()].id == user.id || this.userInPTW[UserInPTW.FACILITYOWNER.ToString()].employee_delegate == user.id))
             {
                 retVal = true;
             }
@@ -844,7 +916,7 @@ namespace PermitToWork.Models.Ptw
         {
             var retVal = false;
             string user_id = user.id.ToString();
-            if ((this.can_supervisor == user_id || this.can_supervisor_delegate == user_id))
+            if (this.userInPTW[UserInPTW.SUPERVISOR.ToString()] != null && (this.userInPTW[UserInPTW.SUPERVISOR.ToString()].id == user.id || this.userInPTW[UserInPTW.SUPERVISOR.ToString()].employee_delegate == user.id))
             {
                 retVal = true;
             }
@@ -856,7 +928,7 @@ namespace PermitToWork.Models.Ptw
         {
             var retVal = false;
             string user_id = user.id.ToString();
-            if ((this.can_assessor == user_id || this.can_assessor_delegate == user_id))
+            if (this.userInPTW[UserInPTW.CANASSESSOR.ToString()] != null && (this.userInPTW[UserInPTW.CANASSESSOR.ToString()].id == user.id || this.userInPTW[UserInPTW.CANASSESSOR.ToString()].employee_delegate == user.id))
             {
                 retVal = true;
             }
@@ -873,7 +945,7 @@ namespace PermitToWork.Models.Ptw
             int assId = 0;
             Int32.TryParse(this.can_assessor, out assId);
             List<MstDelegateFOEntity> delegates = new MstDelegateFOEntity().getListByFO(foid, user);
-            if (this.can_fo == user_id || user_id == this.can_fo_delegate)
+            if (this.userInPTW[UserInPTW.FACILITYOWNER.ToString()] != null && (this.userInPTW[UserInPTW.FACILITYOWNER.ToString()].id == user.id || this.userInPTW[UserInPTW.FACILITYOWNER.ToString()].employee_delegate == user.id))
             {
                 retVal = true;
             }
@@ -1187,13 +1259,13 @@ namespace PermitToWork.Models.Ptw
 
                 return "200";
             } 
-            else if (user.id.ToString() == this.acc_supervisor_delegate) 
+            else
             {
                 //ptw.acc_assessor = this.acc_assessor;
                 //ptw.acc_assessor_delegate = this.acc_assessor_delegate;
                 //ptw.can_assessor = this.can_assessor;
                 //ptw.can_assessor_delegate = this.can_assessor_delegate;
-                ptw.acc_supervisor_delegate = this.acc_supervisor_delegate;
+                ptw.acc_supervisor_delegate = user.id.ToString();
                 ptw.acc_supervisor_approve = "d" + user.signature;
                 if (ptw.acc_assessor != null)
                 {
@@ -1208,10 +1280,6 @@ namespace PermitToWork.Models.Ptw
 
                 return "201";
             }
-            else
-            {
-                return "400";
-            }
         }
 
         public string supervisorAccReject(UserEntity user, string comment)
@@ -1220,7 +1288,7 @@ namespace PermitToWork.Models.Ptw
             // return code - 200 {ok}
             //               400 {not the user}
 
-            if (user.id.ToString() == this.acc_supervisor || user.id.ToString() == this.acc_supervisor_delegate)
+            if (user.id.ToString() == this.acc_supervisor || user.id == this.userInPTW[UserInPTW.SUPERVISOR.ToString()].employee_delegate)
             {
                 permit_to_work ptw = this.db.permit_to_work.Find(this.id);
                 ptw.acc_ptw_requestor_approve = null;
@@ -1280,22 +1348,19 @@ namespace PermitToWork.Models.Ptw
                 }
                 return "200";
             }
-            else if (user.id.ToString() == this.acc_assessor_delegate)
+            else
             {
                 //ptw.acc_fo = this.acc_fo;
                 //ptw.acc_fo_delegate = this.acc_fo_delegate;
                 //ptw.can_fo = this.acc_fo;
                 //ptw.can_fo_delegate = this.acc_fo_delegate;
+                ptw.acc_assessor_delegate = user.id.ToString();
                 ptw.acc_assessor_approve = "d" + user.signature;
                 ptw.status = (int)statusPtw.ACCASS;
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
 
                 return "201";
-            }
-            else
-            {
-                return "400";
             }
         }
 
@@ -1305,10 +1370,11 @@ namespace PermitToWork.Models.Ptw
             // return code - 200 {ok}
             //               400 {not the user}
 
-            if (user.id.ToString() == this.acc_assessor || user.id.ToString() == this.acc_assessor_delegate)
+            if (user.id.ToString() == this.acc_assessor || user.id == this.userInPTW[UserInPTW.ASSESSOR.ToString()].employee_delegate)
             {
                 permit_to_work ptw = this.db.permit_to_work.Find(this.id);
                 ptw.acc_supervisor_approve = null;
+                ptw.acc_supervisor_delegate = null;
                 ptw.status = (int)statusPtw.CLEARANCECOMPLETE;
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
@@ -1367,6 +1433,8 @@ namespace PermitToWork.Models.Ptw
             permit_to_work ptw = this.db.permit_to_work.Find(this.id);
             ptw.acc_supervisor_approve = null;
             ptw.acc_assessor_approve = null;
+            ptw.acc_assessor_delegate = null;
+            ptw.acc_supervisor_delegate = null;
             ptw.status = (int)statusPtw.CLEARANCECOMPLETE;
             this.db.Entry(ptw).State = EntityState.Modified;
             this.db.SaveChanges();
@@ -1427,13 +1495,13 @@ namespace PermitToWork.Models.Ptw
                 }
                 retVal = "200";
             }
-            else if (user.id.ToString() == this.can_supervisor_delegate)
+            else
             {
                 //ptw.acc_assessor = this.acc_assessor;
                 //ptw.acc_assessor_delegate = this.acc_assessor_delegate;
                 //ptw.can_assessor = this.can_assessor;
                 //ptw.can_assessor_delegate = this.can_assessor_delegate;
-                ptw.can_supervisor_delegate = this.can_supervisor_delegate;
+                ptw.can_supervisor_delegate = user.id.ToString();
                 ptw.can_supervisor_approve = "d" + user.signature;
                 ptw.status = (int)statusPtw.CANSPV;
                 this.db.Entry(ptw).State = EntityState.Modified;
@@ -1446,10 +1514,6 @@ namespace PermitToWork.Models.Ptw
                 }
                 retVal = "201";
             }
-            else
-            {
-                retVal = "400";
-            }
             return retVal;
         }
 
@@ -1459,7 +1523,7 @@ namespace PermitToWork.Models.Ptw
             // return code - 200 {ok}
             //               400 {not the user}
 
-            if (user.id.ToString() == this.can_supervisor || user.id.ToString() == this.can_supervisor_delegate)
+            if (user.id.ToString() == this.can_supervisor || user.id == this.userInPTW[UserInPTW.SUPERVISOR.ToString()].employee_delegate)
             {
                 permit_to_work ptw = this.db.permit_to_work.Find(this.id);
                 this.id_parent_ptw = ptw.id_parent_ptw;
@@ -1508,12 +1572,13 @@ namespace PermitToWork.Models.Ptw
                 }
                 return "200";
             }
-            else if (user.id.ToString() == this.can_assessor_delegate)
+            else
             {
                 //ptw.acc_fo = this.acc_fo;
                 //ptw.acc_fo_delegate = this.acc_fo_delegate;
                 //ptw.can_fo = this.acc_fo;
                 //ptw.can_fo_delegate = this.acc_fo_delegate;
+                ptw.can_assessor_delegate = user.id.ToString();
                 ptw.can_assessor_approve = "d" + user.signature;
                 ptw.status = (int)statusPtw.CANASS;
                 this.db.Entry(ptw).State = EntityState.Modified;
@@ -1525,10 +1590,6 @@ namespace PermitToWork.Models.Ptw
                 }
                 return "201";
             }
-            else
-            {
-                return "400";
-            }
         }
 
         public string assessorCanReject(UserEntity user, string comment)
@@ -1537,11 +1598,12 @@ namespace PermitToWork.Models.Ptw
             // return code - 200 {ok}
             //               400 {not the user}
 
-            if (user.id.ToString() == this.can_assessor || user.id.ToString() == this.can_assessor_delegate)
+            if (user.id.ToString() == this.can_assessor || user.id == this.userInPTW[UserInPTW.CANASSESSOR.ToString()].employee_delegate)
             {
                 permit_to_work ptw = this.db.permit_to_work.Find(this.id);
                 this.id_parent_ptw = ptw.id_parent_ptw;
                 ptw.can_supervisor_approve = null;
+                ptw.can_supervisor_delegate = null;
                 ptw.status = (int)statusPtw.CANREQ;
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
@@ -1614,7 +1676,9 @@ namespace PermitToWork.Models.Ptw
                 permit_to_work ptw = this.db.permit_to_work.Find(this.id);
 
                 ptw.can_assessor_approve = null;
+                ptw.can_assessor_delegate = null;
                 ptw.can_supervisor_approve = null;
+                ptw.can_supervisor_delegate = null;
                 this.id_parent_ptw = ptw.id_parent_ptw;
                 ptw.status = (int)statusPtw.CANREQ;
                 this.db.Entry(ptw).State = EntityState.Modified;

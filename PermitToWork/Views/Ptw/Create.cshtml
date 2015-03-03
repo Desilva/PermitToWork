@@ -1695,11 +1695,15 @@
                         }
                         @if (Model.acc_supervisor != null)
                         {
-                            if ((Model.acc_supervisor_approve == null && Model.acc_supervisor_delegate == requestor.id.ToString()) || (Model.acc_supervisor_approve != null && Model.acc_supervisor_approve.Substring(0, 1) == "d"))
+                            if ((Model.acc_supervisor_approve == null && Model.userInPTW[PermitToWork.Models.Ptw.PtwEntity.UserInPTW.SUPERVISOR.ToString()].employee_delegate == requestor.id))
+                            {
+                                <span>@listUser.listUser.Where(p => p.id == Model.userInPTW[PermitToWork.Models.Ptw.PtwEntity.UserInPTW.SUPERVISOR.ToString()].employee_delegate).FirstOrDefault().alpha_name</span><br />
+                            }
+                            else if (Model.acc_supervisor_approve != null && Model.acc_supervisor_approve.Substring(0, 1) == "d")
                             {
                                 <span>@listUser.listUser.Where(p => p.id == Model.acc_supervisor_delegate.AsInt()).FirstOrDefault().alpha_name</span><br />
                             }
-                            <span>@((Model.acc_supervisor_approve == null && Model.acc_supervisor_delegate == requestor.id.ToString()) || (Model.acc_supervisor_approve != null && Model.acc_supervisor_approve.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.acc_supervisor.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                            <span>@((Model.acc_supervisor_approve == null && Model.userInPTW[PermitToWork.Models.Ptw.PtwEntity.UserInPTW.SUPERVISOR.ToString()].employee_delegate == requestor.id) || (Model.acc_supervisor_approve != null && Model.acc_supervisor_approve.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.acc_supervisor.AsInt()).FirstOrDefault().alpha_name)</span><br />
                         }
                         <strong><u>Supervisor / Project manager</u></strong>
                     </td>
@@ -1737,11 +1741,15 @@
                         }
                         else if (Model.acc_assessor != null)
                         {
-                            if ((Model.acc_assessor_approve == null && Model.acc_assessor_delegate == requestor.id.ToString()) || (Model.acc_assessor_approve != null && Model.acc_assessor_approve.Substring(0, 1) == "d"))
+                            if ((Model.acc_assessor_approve == null && Model.userInPTW[PermitToWork.Models.Ptw.PtwEntity.UserInPTW.ASSESSOR.ToString()].employee_delegate == requestor.id))
+                            {
+                                <span>@listUser.listUser.Where(p => p.id == Model.userInPTW[PermitToWork.Models.Ptw.PtwEntity.UserInPTW.ASSESSOR.ToString()].employee_delegate).FirstOrDefault().alpha_name</span><br />
+                            }
+                            else if (Model.acc_assessor_approve != null && Model.acc_assessor_approve.Substring(0, 1) == "d")
                             {
                                 <span>@listUser.listUser.Where(p => p.id == Model.acc_assessor_delegate.AsInt()).FirstOrDefault().alpha_name</span><br />
                             }
-                            <span>@((Model.acc_assessor_approve == null && Model.acc_assessor_delegate == requestor.id.ToString()) || (Model.acc_assessor_approve != null && Model.acc_assessor_approve.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.acc_assessor.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                            <span>@((Model.acc_assessor_approve == null && Model.userInPTW[PermitToWork.Models.Ptw.PtwEntity.UserInPTW.ASSESSOR.ToString()].employee_delegate == requestor.id) || (Model.acc_assessor_approve != null && Model.acc_assessor_approve.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.acc_assessor.AsInt()).FirstOrDefault().alpha_name)</span><br />
                         }
                         <strong><u>Assessor</u></strong>
                     </td>
@@ -1985,11 +1993,19 @@
                         {
                             <img id="img_cancel_supervisor" width="50" height="50" @(Model.can_supervisor_approve == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_supervisor_approve == null ? "" : Model.can_supervisor_approve.Substring(1))"/><br />
                         }
-                        @if ((Model.can_supervisor_approve == null && Model.can_supervisor_delegate == requestor.id.ToString()) || (Model.can_supervisor_approve != null && Model.can_supervisor_approve.Substring(0, 1) == "d"))
+                        @if ((Model.can_supervisor_approve == null && Model.userInPTW[PermitToWork.Models.Ptw.PtwEntity.UserInPTW.SUPERVISOR.ToString()].employee_delegate == requestor.id))
+                        {
+                        <span>@listUser.listUser.Where(p => p.id == Model.userInPTW[PermitToWork.Models.Ptw.PtwEntity.UserInPTW.SUPERVISOR.ToString()].employee_delegate).FirstOrDefault().alpha_name</span><br />
+                        }
+                        else if (Model.can_supervisor_approve != null && Model.can_supervisor_approve.Substring(0, 1) == "d")
+                        {
+                        <span>@listUser.listUser.Where(p => p.id == Model.can_supervisor_delegate.AsInt()).FirstOrDefault().alpha_name</span><br />
+                        }
+                        @*@if ((Model.can_supervisor_approve == null && Model.can_supervisor_delegate == requestor.id.ToString()) || (Model.can_supervisor_approve != null && Model.can_supervisor_approve.Substring(0, 1) == "d"))
                         {
                             <span>@listUser.listUser.Where(p => p.id == Model.can_supervisor_delegate.AsInt()).FirstOrDefault().alpha_name</span><br />
-                        }
-                        <span>@((Model.can_supervisor_approve == null && Model.can_supervisor_delegate == requestor.id.ToString()) || (Model.can_supervisor_approve != null && Model.can_supervisor_approve.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.can_supervisor.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                        }*@
+                        <span>@((Model.can_supervisor_approve == null && Model.userInPTW[PermitToWork.Models.Ptw.PtwEntity.UserInPTW.SUPERVISOR.ToString()].employee_delegate == requestor.id) || (Model.can_supervisor_approve != null && Model.can_supervisor_approve.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.can_supervisor.AsInt()).FirstOrDefault().alpha_name)</span><br />
                         <strong><u>Supervisor / Project manager</u></strong>
                     </td>
                 </tr>
@@ -2010,11 +2026,19 @@
                         {
                             <img id="img_cancel_assessor" width="50" height="50" @(Model.can_assessor_approve == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_assessor_approve == null ? "" : Model.can_assessor_approve.Substring(1))"/><br />
                         }
-                        @if ((Model.can_assessor_approve == null && Model.can_assessor_delegate == requestor.id.ToString()) || (Model.can_assessor_approve != null && Model.can_assessor_approve.Substring(0, 1) == "d"))
+                        @*@if ((Model.can_assessor_approve == null && Model.can_assessor_delegate == requestor.id.ToString()) || (Model.can_assessor_approve != null && Model.can_assessor_approve.Substring(0, 1) == "d"))
+                        {
+                            <span>@listUser.listUser.Where(p => p.id == Model.can_assessor_delegate.AsInt()).FirstOrDefault().alpha_name</span><br />
+                        }*@
+                        @if ((Model.can_assessor_approve == null && Model.userInPTW[PermitToWork.Models.Ptw.PtwEntity.UserInPTW.CANASSESSOR.ToString()].employee_delegate == requestor.id))
+                        {
+                            <span>@listUser.listUser.Where(p => p.id == Model.userInPTW[PermitToWork.Models.Ptw.PtwEntity.UserInPTW.CANASSESSOR.ToString()].employee_delegate).FirstOrDefault().alpha_name</span><br />
+                        }
+                        else if (Model.can_assessor_approve != null && Model.can_assessor_approve.Substring(0, 1) == "d")
                         {
                             <span>@listUser.listUser.Where(p => p.id == Model.can_assessor_delegate.AsInt()).FirstOrDefault().alpha_name</span><br />
                         }
-                        <span>@((Model.can_assessor_approve == null && Model.can_assessor_delegate == requestor.id.ToString()) || (Model.can_assessor_approve != null && Model.can_assessor_approve.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.can_assessor.AsInt()).FirstOrDefault().alpha_name)</span><br />
+                        <span>@((Model.can_assessor_approve == null && Model.userInPTW[PermitToWork.Models.Ptw.PtwEntity.UserInPTW.CANASSESSOR.ToString()].employee_delegate == requestor.id) || (Model.can_assessor_approve != null && Model.can_assessor_approve.Substring(0, 1) == "d") ? "a/n" : "") @(listUser.listUser.Where(p => p.id == Model.can_assessor.AsInt()).FirstOrDefault().alpha_name)</span><br />
                         <strong><u>Assessor</u></strong>
                     </td>
                     <td class="td-centre">
