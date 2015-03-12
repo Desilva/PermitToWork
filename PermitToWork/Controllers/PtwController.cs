@@ -113,17 +113,17 @@ namespace PermitToWork.Controllers
             {
                 ViewBag.isAccSupervisor = entity.isAccSupervisor(user);
                 ViewBag.isAccAssessor = entity.isAccAssessor(user);
-                ViewBag.isAccFO = entity.isAccFO(user);
+                ViewBag.isAccFO = entity.isAccFO(user, listUser);
             }
             else
             {
                 ViewBag.isCancel = true;
                 ViewBag.isCanSupervisor = entity.isCanSupervisor(user);
                 ViewBag.isCanAssessor = entity.isCanAssessor(user);
-                ViewBag.isCanFO = entity.isCanFO(user);
+                ViewBag.isCanFO = entity.isCanFO(user, listUser);
             }
             bool isFo = false;
-            ViewBag.isCanEdit = entity.isCanEdit(user, out isFo);
+            ViewBag.isCanEdit = entity.isCanEdit(user, listUser, out isFo);
             ViewBag.isClearenceComplete = entity.isAllClearanceComplete();
             ViewBag.isClearenceClose = entity.isAllClearanceClose();
             ViewBag.position = "Edit";

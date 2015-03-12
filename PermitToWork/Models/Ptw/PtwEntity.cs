@@ -1008,7 +1008,7 @@ namespace PermitToWork.Models.Ptw
             return retVal;
         }
 
-        public bool isAccFO(UserEntity user, ListUser listUser = null)
+        public bool isAccFO(UserEntity user, ListUser listUser)
         {
             var retVal = false;
             string user_id = user.id.ToString();
@@ -1061,7 +1061,7 @@ namespace PermitToWork.Models.Ptw
             return retVal;
         }
 
-        public bool isCanFO(UserEntity user)
+        public bool isCanFO(UserEntity user, ListUser listUser)
         {
             var retVal = false;
             string user_id = user.id.ToString();
@@ -1069,7 +1069,7 @@ namespace PermitToWork.Models.Ptw
             Int32.TryParse(this.can_fo, out foid);
             int assId = 0;
             Int32.TryParse(this.can_assessor, out assId);
-            List<MstDelegateFOEntity> delegates = new MstDelegateFOEntity().getListByFO(foid, user);
+            List<MstDelegateFOEntity> delegates = new MstDelegateFOEntity().getListByFO(foid, user, listUser);
             if (this.userInPTW[UserInPTW.FACILITYOWNER.ToString()] != null && (this.userInPTW[UserInPTW.FACILITYOWNER.ToString()].id == user.id || this.userInPTW[UserInPTW.FACILITYOWNER.ToString()].employee_delegate == user.id))
             {
                 retVal = true;
@@ -1090,7 +1090,7 @@ namespace PermitToWork.Models.Ptw
             return retVal;
         }
 
-        public bool isCanEdit(UserEntity user, out bool isFo)
+        public bool isCanEdit(UserEntity user, ListUser listUser, out bool isFo)
         {
             bool isCanEdit = false;
             isFo = false;
@@ -1103,7 +1103,7 @@ namespace PermitToWork.Models.Ptw
                 isCanEdit = true;
             }
 
-            if (isAccFO(user))
+            if (isAccFO(user, listUser))
             {
                 isFo = true;
             }
