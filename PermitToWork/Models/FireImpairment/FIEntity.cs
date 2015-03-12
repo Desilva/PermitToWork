@@ -2642,6 +2642,11 @@ namespace PermitToWork.Models
             this.ptw = new PtwEntity(this.id_ptw.Value, user);
             this.ptw_status = this.ptw.status;
         }
+        public void getPtw(UserEntity user, ListUser listUser)
+        {
+            this.ptw = new PtwEntity(this.id_ptw.Value, user, listUser);
+            this.ptw_status = this.ptw.status;
+        }
 
         #endregion
     }

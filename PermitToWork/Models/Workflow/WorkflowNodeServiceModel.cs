@@ -24,12 +24,64 @@ namespace PermitToWork.Models.Workflow
             GAS_TESTING,
             REQUESTOR_APPROVE,
             SUPERVISOR_APPROVE,
-            FACILITY_OWNER_APPROVE
+            FACILITY_OWNER_APPROVE,
+            CANCELLATION_INITIATOR,
+            CANCELLATION_SUPERVISOR,
+            CANCELLATION_FACILITY_OWNER
+        }
+
+        public enum HotWorkNodeName
+        {
+            REQUESTOR_INPUT,
+            SUPERVISOR_SCREENING,
+            FACILITY_OWNER_SCREENING,
+            GAS_TESTING,
+            REQUESTOR_APPROVE,
+            SUPERVISOR_APPROVE,
+            FACILITY_OWNER_APPROVE,
+            CANCELLATION_INITIATOR,
+            CANCELLATION_SUPERVISOR,
+            CANCELLATION_FACILITY_OWNER
+        }
+
+        public enum GeneralPermitNodeName
+        {
+            REQUESTOR_APPROVE,
+            SUPERVISOR_APPROVE,
+            CHOOSING_ASSESSOR,
+            ASSESSOR_APPROVE,
+            FACILITY_OWNER_APPROVE,
+            CANCELLATION_REQUESTOR,
+            CANCELLATION_SUPERVISOR,
+            CANCELLATION_ASSESSOR,
+            CANCELLATION_FACILITY_OWNER
+        }
+
+        public enum FireImpairmentNodeName
+        {
+            REQUESTOR_APPROVE,
+            FIREWATCH_APPROVE,
+            SUPERVISOR_SCREENING,
+            SAFETY_OFFICER_APPROVE,
+            FACILITY_OWNER_APPROVE,
+            DEPT_HEAD_FO_APPROVE,
+            CANCELLATION_REQUESTOR,
+            CANCELLATION_FIREWATCH,
+            CANCELLATION_SUPERVISOR,
+            CANCELLATION_FACILITY_OWNER,
+            CANCELLATION_DEPT_HEAD_FO
         }
 
         public enum DocumentType
         {
-            CSEP
+            GENERALPERMIT,
+            CSEP,
+            HOTWORK,
+            FIREIMPAIRMENT,
+            EXCAVATION,
+            WORKINGATHEIGHT,
+            RADIOGRAPHIC,
+            LOTO
         }
 
         public bool CreateNode(int permitId, string permitName, string nodeName, byte nodeStatus)

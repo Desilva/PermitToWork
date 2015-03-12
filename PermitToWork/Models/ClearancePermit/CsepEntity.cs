@@ -243,7 +243,7 @@ namespace PermitToWork.Models.ClearancePermit
 
         #region check user
 
-        public bool isWorkLeader(UserEntity user)
+        public bool isWorkLeader(UserEntity user, ListUser listUser)
         {
             var retVal = false;
             string user_id = user.id.ToString();
@@ -255,56 +255,64 @@ namespace PermitToWork.Models.ClearancePermit
             return retVal;
         }
 
-        public bool isAccSupervisor(UserEntity user)
+        public bool isAccSupervisor(UserEntity user, ListUser listUser)
         {
             var retVal = false;
             string user_id = user.id.ToString();
             int foId = 0;
-            Int32.TryParse(this.acc_supervisor, out foId);
-            UserEntity fo = new UserEntity(foId, user.token, user);
-            if ((this.acc_supervisor == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
+            Int32.TryParse(this.acc_supervisor, out foId); if (foId != 0)
             {
-                retVal = true;
+                UserEntity fo = listUser.listUser.Find(p => p.id == foId);
+                if ((this.acc_supervisor == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
+                {
+                    retVal = true;
+                }
             }
 
             return retVal;
         }
 
-        public bool isAccFireWatch(UserEntity user)
+        public bool isAccFireWatch(UserEntity user, ListUser listUser)
         {
             var retVal = false;
             string user_id = user.id.ToString();
             int foId = 0;
             Int32.TryParse(this.acc_fire_watch, out foId);
-            UserEntity fo = new UserEntity(foId, user.token, user);
-            if ((this.acc_fire_watch == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
+            if (foId != 0)
             {
-                retVal = true;
+                UserEntity fo = listUser.listUser.Find(p => p.id == foId);
+                if ((this.acc_fire_watch == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
+                {
+                    retVal = true;
+                }
             }
 
             return retVal;
         }
 
-        public bool isAccFO(UserEntity user)
+        public bool isAccFO(UserEntity user, ListUser listUser)
         {
             var retVal = false;
             int foId = 0;
             Int32.TryParse(this.acc_fo, out foId);
-            UserEntity fo = new UserEntity(foId, user.token, user);
-            string user_id = user.id.ToString();
-            List<UserEntity> listDel = fo.GetDelegateFO(user);
-            if ((this.acc_fo == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
+            if (foId != 0)
             {
-                retVal = true;
-            }
-            else if (listDel.Exists(p => p.id == user.id))
-            {
-                return true;
+                UserEntity fo = listUser.listUser.Find(p => p.id == foId);
+                string user_id = user.id.ToString();
+                List<UserEntity> listDel = fo.GetDelegateFO(user, listUser);
+                if ((this.acc_fo == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
+                {
+                    retVal = true;
+                }
+                else if (listDel.Exists(p => p.id == user.id))
+                {
+                    return true;
+                }
             }
             return retVal;
         }
 
-        public bool isAccGasTester(UserEntity user)
+        public bool isAccGasTester(UserEntity user, ListUser listUser)
         {
             var retVal = false;
             string user_id = user.id.ToString();
@@ -316,57 +324,66 @@ namespace PermitToWork.Models.ClearancePermit
             return retVal;
         }
 
-        public bool isCanSupervisor(UserEntity user)
+        public bool isCanSupervisor(UserEntity user, ListUser listUser)
         {
             var retVal = false;
             string user_id = user.id.ToString();
             int foId = 0;
             Int32.TryParse(this.can_supervisor, out foId);
-            UserEntity fo = new UserEntity(foId, user.token, user);
-            if ((this.can_supervisor == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
+            if (foId != 0)
             {
-                retVal = true;
+                UserEntity fo = listUser.listUser.Find(p => p.id == foId);
+                if ((this.can_supervisor == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
+                {
+                    retVal = true;
+                }
             }
 
             return retVal;
         }
 
-        public bool isCanFireWatch(UserEntity user)
+        public bool isCanFireWatch(UserEntity user, ListUser listUser)
         {
             var retVal = false;
             string user_id = user.id.ToString();
             int foId = 0;
             Int32.TryParse(this.can_fire_watch, out foId);
-            UserEntity fo = new UserEntity(foId, user.token, user);
-            if ((this.can_fire_watch == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
+            if (foId != 0)
             {
-                retVal = true;
+                UserEntity fo = listUser.listUser.Find(p => p.id == foId);
+                if ((this.can_fire_watch == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
+                {
+                    retVal = true;
+                }
             }
 
             return retVal;
         }
 
-        public bool isCanFO(UserEntity user)
+        public bool isCanFO(UserEntity user, ListUser listUser)
         {
             var retVal = false;
             int foId = 0;
             Int32.TryParse(this.can_fo, out foId);
-            UserEntity fo = new UserEntity(foId, user.token, user);
-            string user_id = user.id.ToString();
-            List<UserEntity> listDel = fo.GetDelegateFO(user);
-            if ((this.can_fo == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
+            if (foId != 0)
             {
-                retVal = true;
-            }
-            else if (listDel.Exists(p => p.id == user.id))
-            {
-                return true;
+                UserEntity fo = listUser.listUser.Find(p => p.id == foId);
+                string user_id = user.id.ToString();
+                List<UserEntity> listDel = fo.GetDelegateFO(user, listUser);
+                if ((this.can_fo == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
+                {
+                    retVal = true;
+                }
+                else if (listDel.Exists(p => p.id == user.id))
+                {
+                    return true;
+                }
             }
 
             return retVal;
         }
 
-        public bool isExtGasTester(UserEntity user, int extension)
+        public bool isExtGasTester(UserEntity user, ListUser listUser, int extension)
         {
             var retVal = false;
             string user_id = user.id.ToString();
@@ -419,7 +436,7 @@ namespace PermitToWork.Models.ClearancePermit
             return retVal;
         }
 
-        public bool isExtFO(UserEntity user, int extension)
+        public bool isExtFO(UserEntity user, ListUser listUser, int extension)
         {
             var retVal = false;
             string user_id = user.id.ToString();
@@ -430,119 +447,63 @@ namespace PermitToWork.Models.ClearancePermit
             {
                 case 1:
                     Int32.TryParse(this.ext_fo_1, out foId);
-                    fo = new UserEntity(foId, user.token, user);
-                    listDel = fo.GetDelegateFO(user);
-                    if ((this.ext_fo_1 == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
-                    {
-                        retVal = true;
-                    }
-                    else if (listDel.Exists(p => p.id == user.id))
-                    {
-                        return true;
-                    }
                     break;
                 case 2:
                     Int32.TryParse(this.ext_fo_2, out foId);
-                    fo = new UserEntity(foId, user.token, user);
-                    listDel = fo.GetDelegateFO(user);
-                    if ((this.ext_fo_2 == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
-                    {
-                        retVal = true;
-                    }
-                    else if (listDel.Exists(p => p.id == user.id))
-                    {
-                        return true;
-                    }
                     break;
                 case 3:
                     Int32.TryParse(this.ext_fo_3, out foId);
-                    fo = new UserEntity(foId, user.token, user);
-                    listDel = fo.GetDelegateFO(user);
-                    if ((this.ext_fo_3 == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
-                    {
-                        retVal = true;
-                    }
-                    else if (listDel.Exists(p => p.id == user.id))
-                    {
-                        return true;
-                    }
                     break;
                 case 4:
                     Int32.TryParse(this.ext_fo_4, out foId);
-                    fo = new UserEntity(foId, user.token, user);
-                    listDel = fo.GetDelegateFO(user);
-                    if ((this.ext_fo_4 == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
-                    {
-                        retVal = true;
-                    }
-                    else if (listDel.Exists(p => p.id == user.id))
-                    {
-                        return true;
-                    }
                     break;
                 case 5:
                     Int32.TryParse(this.ext_fo_5, out foId);
-                    fo = new UserEntity(foId, user.token, user);
-                    listDel = fo.GetDelegateFO(user);
-                    if ((this.ext_fo_5 == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
-                    {
-                        retVal = true;
-                    }
-                    else if (listDel.Exists(p => p.id == user.id))
-                    {
-                        return true;
-                    }
                     break;
                 case 6:
                     Int32.TryParse(this.ext_fo_6, out foId);
-                    fo = new UserEntity(foId, user.token, user);
-                    listDel = fo.GetDelegateFO(user);
-                    if ((this.ext_fo_6 == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
-                    {
-                        retVal = true;
-                    }
-                    else if (listDel.Exists(p => p.id == user.id))
-                    {
-                        return true;
-                    }
                     break;
                 case 7:
                     Int32.TryParse(this.ext_fo_7, out foId);
-                    fo = new UserEntity(foId, user.token, user);
-                    listDel = fo.GetDelegateFO(user);
-                    if ((this.ext_fo_7 == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
-                    {
-                        retVal = true;
-                    }
-                    else if (listDel.Exists(p => p.id == user.id))
-                    {
-                        return true;
-                    }
                     break;
+            }
+
+            if (foId != 0)
+            {
+                fo = listUser.listUser.Find(p => p.id == foId);
+                listDel = fo.GetDelegateFO(user, listUser);
+                if ((this.ext_fo_7 == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
+                {
+                    retVal = true;
+                }
+                else if (listDel.Exists(p => p.id == user.id))
+                {
+                    retVal = true;
+                }
             }
 
             return retVal;
         }
 
-        public bool isCanEdit(UserEntity user)
+        public bool isCanEdit(UserEntity user, ListUser listUser)
         {
             bool isCanEdit = false;
             if (this.ptw.is_guest == 1)
             {
-                if (isAccSupervisor(user) && this.status < (int)CsepStatus.ACCWORKLEADER)
+                if (isAccSupervisor(user, listUser) && this.status < (int)CsepStatus.ACCWORKLEADER)
                 {
                     isCanEdit = true;
                 }
             }
             else
             {
-                if (isWorkLeader(user) && this.status < (int)CsepStatus.ACCWORKLEADER)
+                if (isWorkLeader(user, listUser) && this.status < (int)CsepStatus.ACCWORKLEADER)
                 {
                     isCanEdit = true;
                 }
             }
 
-            if (isAccSupervisor(user) && (this.status == (int)CsepStatus.CREATE || this.status == (int)CsepStatus.ACCWORKLEADER))
+            if (isAccSupervisor(user, listUser) && (this.status == (int)CsepStatus.CREATE || this.status == (int)CsepStatus.ACCWORKLEADER))
             {
                 isCanEdit = true;
             }
@@ -552,12 +513,12 @@ namespace PermitToWork.Models.ClearancePermit
             //    isCanEdit = true;
             //}
 
-            if (isAccFO(user) && this.status == (int)CsepStatus.ACCSPV || this.status == (int)CsepStatus.SPVSCREENING)
+            if (isAccFO(user, listUser) && this.status == (int)CsepStatus.ACCSPV || this.status == (int)CsepStatus.SPVSCREENING)
             {
                 isCanEdit = true;
             }
 
-            if ((isAccGasTester(user) || isAccFO(user)) && this.status == (int)CsepStatus.FOSCREENING)
+            if ((isAccGasTester(user, listUser) || isAccFO(user, listUser)) && this.status == (int)CsepStatus.FOSCREENING)
             {
                 isCanEdit = true;
             }
@@ -570,12 +531,12 @@ namespace PermitToWork.Models.ClearancePermit
             return isCanEdit;
         }
 
-        public bool isCanEditExt(UserEntity user, int extension)
+        public bool isCanEditExt(UserEntity user, ListUser listUser, int extension)
         {
             bool isCanEdit = false;
             if (this.ptw.is_guest == 1)
             {
-                if (isAccSupervisor(user))
+                if (isAccSupervisor(user, listUser))
                 {
                     switch (extension)
                     {
@@ -627,7 +588,7 @@ namespace PermitToWork.Models.ClearancePermit
             }
             else
             {
-                if (isWorkLeader(user))
+                if (isWorkLeader(user, listUser))
                 {
                     switch (extension)
                     {
@@ -678,7 +639,7 @@ namespace PermitToWork.Models.ClearancePermit
                 }
             }
 
-            if (isExtFO(user, extension))
+            if (isExtFO(user, listUser, extension))
             {
                 switch (extension)
                 {
@@ -727,7 +688,7 @@ namespace PermitToWork.Models.ClearancePermit
                 }
             }
 
-            if (isExtGasTester(user, extension))
+            if (isExtGasTester(user, listUser, extension))
             {
                 switch (extension)
                 {
@@ -1128,11 +1089,11 @@ namespace PermitToWork.Models.ClearancePermit
             }
         }
 
-        public bool isUserInCSEP(UserEntity user)
+        public bool isUserInCSEP(UserEntity user, ListUser listUser)
         {
-            return (isAccGasTester(user)
-                || isExtGasTester(user, 1) || isExtGasTester(user, 2) || isExtGasTester(user, 3) || isExtGasTester(user, 4)
-                || isExtGasTester(user, 5) || isExtGasTester(user, 6) || isExtGasTester(user, 7));
+            return (isAccGasTester(user, listUser)
+                || isExtGasTester(user, listUser, 1) || isExtGasTester(user, listUser, 2) || isExtGasTester(user, listUser, 3) || isExtGasTester(user, listUser, 4)
+                || isExtGasTester(user, listUser, 5) || isExtGasTester(user, listUser, 6) || isExtGasTester(user, listUser, 7));
         }
 
         #endregion
@@ -1953,7 +1914,7 @@ namespace PermitToWork.Models.ClearancePermit
             return "200";
         }
 
-        public string requestorAcc(UserEntity user, string token, int extension, string random_pin = null)
+        public string requestorAcc(UserEntity user, int extension, string random_pin = null)
         {
             // requestor approval
             // return code - 200 {ok}
@@ -1985,7 +1946,7 @@ namespace PermitToWork.Models.ClearancePermit
                     }
                     else
                     {
-                        user = new UserEntity(Int32.Parse(this.work_leader), token, user);
+                        user = new UserEntity(Int32.Parse(this.work_leader), user.token, user);
                         csep.acc_work_leader_approve = "a" + user.signature;
                     }
                     csep.status = (int)CsepStatus.ACCWORKLEADER;
@@ -2531,6 +2492,9 @@ namespace PermitToWork.Models.ClearancePermit
             }
             this.db.Entry(csep).State = EntityState.Modified;
             this.db.SaveChanges();
+            // create node
+            workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.CSEP.ToString(),
+                WorkflowNodeServiceModel.CSEPNodeName.CANCELLATION_INITIATOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
             return "200";
         }
 
@@ -2555,6 +2519,9 @@ namespace PermitToWork.Models.ClearancePermit
                 csep.status = (int)CsepStatus.CANSPV;
                 this.db.Entry(csep).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.CSEP.ToString(),
+                    WorkflowNodeServiceModel.CSEPNodeName.CANCELLATION_SUPERVISOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                 return "200";
             }
@@ -2569,6 +2536,9 @@ namespace PermitToWork.Models.ClearancePermit
                 csep.status = (int)CsepStatus.CANSPV;
                 this.db.Entry(csep).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.CSEP.ToString(),
+                    WorkflowNodeServiceModel.CSEPNodeName.CANCELLATION_SUPERVISOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                 return "201";
             }
@@ -2589,6 +2559,9 @@ namespace PermitToWork.Models.ClearancePermit
                 csep.status = (int)CsepStatus.CANCEL;
                 this.db.Entry(csep).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.CSEP.ToString(),
+                    WorkflowNodeServiceModel.CSEPNodeName.CANCELLATION_SUPERVISOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
 
                 return "200";
             }
@@ -2672,6 +2645,9 @@ namespace PermitToWork.Models.ClearancePermit
                 csep.status = (int)CsepStatus.CANFO;
                 this.db.Entry(csep).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.CSEP.ToString(),
+                    WorkflowNodeServiceModel.CSEPNodeName.CANCELLATION_FACILITY_OWNER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                 return "200";
             }
             else
@@ -2681,6 +2657,9 @@ namespace PermitToWork.Models.ClearancePermit
                 csep.status = (int)CsepStatus.CANFO;
                 this.db.Entry(csep).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.CSEP.ToString(),
+                    WorkflowNodeServiceModel.CSEPNodeName.CANCELLATION_FACILITY_OWNER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                 return "201";
             }
         }
@@ -2695,6 +2674,9 @@ namespace PermitToWork.Models.ClearancePermit
             csep.status = (int)CsepStatus.CANWORKLEADER;
             this.db.Entry(csep).State = EntityState.Modified;
             this.db.SaveChanges();
+            // create node
+            workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.CSEP.ToString(),
+                WorkflowNodeServiceModel.CSEPNodeName.CANCELLATION_FACILITY_OWNER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
 
             return "200";
         }
@@ -2840,6 +2822,12 @@ namespace PermitToWork.Models.ClearancePermit
         public void GetPtw(UserEntity user)
         {
             this.ptw = new PtwEntity(this.id_ptw.Value, user);
+            this.is_guest = this.ptw.is_guest == 1;
+        }
+
+        public void GetPtw(UserEntity user, ListUser listUser)
+        {
+            this.ptw = new PtwEntity(this.id_ptw.Value, user, listUser);
             this.is_guest = this.ptw.is_guest == 1;
         }
     }

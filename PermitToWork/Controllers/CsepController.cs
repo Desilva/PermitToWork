@@ -34,53 +34,54 @@ namespace PermitToWork.Controllers
         public ActionResult Edit(int id)
         {
             UserEntity user = Session["user"] as UserEntity;
+            ListUser listUser = new ListUser(user.token, user.id);
             CsepEntity entity = new CsepEntity(id, user);
-            entity.GetPtw(user);
+            entity.GetPtw(user, listUser);
             entity.getHiraNo();
-            ViewBag.isWorkLeader = entity.isWorkLeader(user);
+            ViewBag.isWorkLeader = entity.isWorkLeader(user, listUser);
             if (entity.status < (int)CsepEntity.CsepStatus.CANCEL)
             {
-                ViewBag.isAccSupervisor = entity.isAccSupervisor(user);
-                ViewBag.isAccFireWatch = entity.isAccFireWatch(user);
-                ViewBag.isAccFO = entity.isAccFO(user);
-                ViewBag.isGasTester = entity.isAccGasTester(user);
+                ViewBag.isAccSupervisor = entity.isAccSupervisor(user, listUser);
+                ViewBag.isAccFireWatch = entity.isAccFireWatch(user, listUser);
+                ViewBag.isAccFO = entity.isAccFO(user, listUser);
+                ViewBag.isGasTester = entity.isAccGasTester(user, listUser);
             }
             else
             {
                 ViewBag.isCancel = true;
-                ViewBag.isCanSupervisor = entity.isCanSupervisor(user);
-                ViewBag.isCanFireWatch = entity.isCanFireWatch(user);
-                ViewBag.isCanFO = entity.isCanFO(user);
+                ViewBag.isCanSupervisor = entity.isCanSupervisor(user, listUser);
+                ViewBag.isCanFireWatch = entity.isCanFireWatch(user, listUser);
+                ViewBag.isCanFO = entity.isCanFO(user, listUser);
             }
 
             if (entity.status >= (int)CsepEntity.CsepStatus.ACCFO && entity.status <= (int)CsepEntity.CsepStatus.EXTACCFO7)
             {
                 ViewBag.ptwStatus = new PtwEntity(entity.id_ptw.Value, user).status;
                 ViewBag.isCanAddExt = true;
-                ViewBag.isGasTesterExt1 = entity.isExtGasTester(user, 1);
-                ViewBag.isFOExt1 = entity.isExtFO(user, 1);
-                ViewBag.isGasTesterExt2 = entity.isExtGasTester(user, 2);
-                ViewBag.isFOExt2 = entity.isExtFO(user, 2);
-                ViewBag.isGasTesterExt3 = entity.isExtGasTester(user, 3);
-                ViewBag.isFOExt3 = entity.isExtFO(user, 3);
-                ViewBag.isGasTesterExt4 = entity.isExtGasTester(user, 4);
-                ViewBag.isFOExt4 = entity.isExtFO(user, 4);
-                ViewBag.isGasTesterExt5 = entity.isExtGasTester(user, 5);
-                ViewBag.isFOExt5 = entity.isExtFO(user, 5);
-                ViewBag.isGasTesterExt6 = entity.isExtGasTester(user, 6);
-                ViewBag.isFOExt6 = entity.isExtFO(user, 6);
-                ViewBag.isGasTesterExt7 = entity.isExtGasTester(user, 7);
-                ViewBag.isFOExt7 = entity.isExtFO(user, 7);
+                ViewBag.isGasTesterExt1 = entity.isExtGasTester(user, listUser, 1);
+                ViewBag.isFOExt1 = entity.isExtFO(user, listUser, 1);
+                ViewBag.isGasTesterExt2 = entity.isExtGasTester(user, listUser, 2);
+                ViewBag.isFOExt2 = entity.isExtFO(user, listUser, 2);
+                ViewBag.isGasTesterExt3 = entity.isExtGasTester(user, listUser, 3);
+                ViewBag.isFOExt3 = entity.isExtFO(user, listUser, 3);
+                ViewBag.isGasTesterExt4 = entity.isExtGasTester(user, listUser, 4);
+                ViewBag.isFOExt4 = entity.isExtFO(user, listUser, 4);
+                ViewBag.isGasTesterExt5 = entity.isExtGasTester(user, listUser, 5);
+                ViewBag.isFOExt5 = entity.isExtFO(user, listUser, 5);
+                ViewBag.isGasTesterExt6 = entity.isExtGasTester(user, listUser, 6);
+                ViewBag.isFOExt6 = entity.isExtFO(user, listUser, 6);
+                ViewBag.isGasTesterExt7 = entity.isExtGasTester(user, listUser, 7);
+                ViewBag.isFOExt7 = entity.isExtFO(user, listUser, 7);
             }
-            ViewBag.isCanEdit = entity.isCanEdit(user);
+            ViewBag.isCanEdit = entity.isCanEdit(user, listUser);
 
-            ViewBag.isCanEditExt1 = entity.isCanEditExt(user, 1);
-            ViewBag.isCanEditExt2 = entity.isCanEditExt(user, 2);
-            ViewBag.isCanEditExt3 = entity.isCanEditExt(user, 3);
-            ViewBag.isCanEditExt4 = entity.isCanEditExt(user, 4);
-            ViewBag.isCanEditExt5 = entity.isCanEditExt(user, 5);
-            ViewBag.isCanEditExt6 = entity.isCanEditExt(user, 6);
-            ViewBag.isCanEditExt7 = entity.isCanEditExt(user, 7);
+            ViewBag.isCanEditExt1 = entity.isCanEditExt(user, listUser, 1);
+            ViewBag.isCanEditExt2 = entity.isCanEditExt(user, listUser, 2);
+            ViewBag.isCanEditExt3 = entity.isCanEditExt(user, listUser, 3);
+            ViewBag.isCanEditExt4 = entity.isCanEditExt(user, listUser, 4);
+            ViewBag.isCanEditExt5 = entity.isCanEditExt(user, listUser, 5);
+            ViewBag.isCanEditExt6 = entity.isCanEditExt(user, listUser, 6);
+            ViewBag.isCanEditExt7 = entity.isCanEditExt(user, listUser, 7);
 
             ViewBag.position = "Edit";
             ViewBag.listUser = new ListUser(user.token, user.id);
@@ -92,10 +93,11 @@ namespace PermitToWork.Controllers
         public JsonResult editCsep(CsepEntity csep)
         {
             UserEntity user = Session["user"] as UserEntity;
+            ListUser listUser = new ListUser(user.token, user.id);
             int ret = csep.edit();
             CsepEntity csep_new = new CsepEntity(csep.id, user);
 
-            if (csep_new.status == (int)CsepEntity.CsepStatus.CREATE && (csep_new.isWorkLeader(user) || (csep_new.is_guest && csep_new.isAccSupervisor(user))))
+            if (csep_new.status == (int)CsepEntity.CsepStatus.CREATE && (csep_new.isWorkLeader(user, listUser) || (csep_new.is_guest && csep_new.isAccSupervisor(user, listUser))))
             {
                 // change status to SPVSCREENING
                 csep_new.sendEmailRandomPIN(fullUrl(), user.token, user);
@@ -103,7 +105,7 @@ namespace PermitToWork.Controllers
                 // send email to facility owner (5)
             }
 
-            if (csep_new.status == (int)CsepEntity.CsepStatus.CREATE && csep_new.isAccSupervisor(user))
+            if (csep_new.status == (int)CsepEntity.CsepStatus.CREATE && csep_new.isAccSupervisor(user, listUser))
             {
                 // change status to SPVSCREENING
                 csep_new.setStatus((int)CsepEntity.CsepStatus.SPVSCREENING);
@@ -112,7 +114,7 @@ namespace PermitToWork.Controllers
                 // send email to facility owner (5)
             }
 
-            if (csep_new.status == (int)CsepEntity.CsepStatus.SPVSCREENING && csep_new.isAccFO(user))
+            if (csep_new.status == (int)CsepEntity.CsepStatus.SPVSCREENING && csep_new.isAccFO(user, listUser))
             {
                 // change status to FOSCREENING
 
@@ -265,7 +267,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             CsepEntity csep = new CsepEntity(id, userLogin);
-            string retVal = csep.requestorAcc(user, userLogin.token, extension, random_pin);
+            string retVal = csep.requestorAcc(userLogin, extension, random_pin);
             if (extension == 0 && retVal == "200")
                 csep.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin);
             else if (extension != 0)
@@ -285,7 +287,7 @@ namespace PermitToWork.Controllers
             //    csep.assignFireWatch(assesor);
             //    csep.sendEmailFOAcc(fullUrl());
             //}
-            string retVal = csep.supervisorAcc(user);
+            string retVal = csep.supervisorAcc(userLogin);
             csep.sendEmailFOAcc(fullUrl(), userLogin.token, userLogin);
             return Json(new { status = retVal });
         }
@@ -296,7 +298,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             CsepEntity csep = new CsepEntity(id, userLogin);
-            string retVal = csep.supervisorAccReject(user, comment);
+            string retVal = csep.supervisorAccReject(userLogin, comment);
             csep.sendEmailRequestor(fullUrl(), userLogin.token, userLogin, 0, 1, 0, comment);
             return Json(new { status = retVal });
         }
@@ -307,7 +309,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             CsepEntity csep = new CsepEntity(id, userLogin);
-            string retVal = csep.fireWatchAccApproval(user);
+            string retVal = csep.fireWatchAccApproval(userLogin);
             csep.sendEmailFOAcc(fullUrl(), userLogin.token, userLogin);
             return Json(new { status = retVal });
         }
@@ -318,7 +320,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             CsepEntity csep = new CsepEntity(id, userLogin);
-            string retVal = csep.fireWatchAccReject(user, comment);
+            string retVal = csep.fireWatchAccReject(userLogin, comment);
             csep.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, 0, comment);
             return Json(new { status = retVal });
         }
@@ -329,7 +331,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             CsepEntity csep = new CsepEntity(id, userLogin);
-            string retVal = csep.fOAccApproval(user, extension);
+            string retVal = csep.fOAccApproval(userLogin, extension);
             PtwEntity ptw = new PtwEntity(csep.id_ptw.Value, user);
             ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.CONFINEDSPACE.ToString());
             ptw.sendEmailRequestorClearance(fullUrl(), userLogin.token, userLogin, (int)PtwEntity.clearancePermit.CONFINEDSPACE, (int)PtwEntity.statusClearance.COMPLETE);
@@ -346,7 +348,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             CsepEntity csep = new CsepEntity(id, userLogin);
-            string retVal = csep.fOAccReject(user, extension, comment);
+            string retVal = csep.fOAccReject(userLogin, extension, comment);
             if (extension == 0)
                 csep.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, 0, comment);
             else
@@ -360,7 +362,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             CsepEntity csep = new CsepEntity(id, userLogin);
-            string retVal = csep.requestorCan(user);
+            string retVal = csep.requestorCan(userLogin);
             csep.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 0, 1);
             return Json(new { status = retVal });
         }
@@ -371,7 +373,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             CsepEntity csep = new CsepEntity(id, userLogin);
-            string retVal = csep.supervisorCan(user);
+            string retVal = csep.supervisorCan(userLogin);
             PtwEntity ptw = new PtwEntity(csep.id_ptw.Value, user);
             ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.REQUESTORCANCELLED, PtwEntity.clearancePermit.CONFINEDSPACE.ToString());
             ptw.sendEmailRequestorClearance(fullUrl(), userLogin.token, userLogin, (int)PtwEntity.clearancePermit.CONFINEDSPACE, (int)PtwEntity.statusClearance.REQUESTORCANCELLED);
@@ -389,7 +391,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             CsepEntity csep = new CsepEntity(id, userLogin);
-            string retVal = csep.supervisorCanReject(user, comment);
+            string retVal = csep.supervisorCanReject(userLogin, comment);
             csep.sendEmailRequestor(fullUrl(), userLogin.token, userLogin, 0, 1, 1, comment);
             return Json(new { status = retVal });
         }
@@ -400,7 +402,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             CsepEntity csep = new CsepEntity(id, userLogin);
-            string retVal = csep.fireWatchCanApproval(user);
+            string retVal = csep.fireWatchCanApproval(userLogin);
             if (csep.can_fo == null)
                 sendEmailFO(csep);
             else
@@ -414,7 +416,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             CsepEntity csep = new CsepEntity(id, userLogin);
-            string retVal = csep.fireWatchCanReject(user, comment);
+            string retVal = csep.fireWatchCanReject(userLogin, comment);
             csep.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, 1, comment);
             return Json(new { status = retVal });
         }
@@ -425,7 +427,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             CsepEntity csep = new CsepEntity(id, userLogin);
-            string retVal = csep.fOCanApproval(user);
+            string retVal = csep.fOCanApproval(userLogin);
             PtwEntity ptw = new PtwEntity(csep.id_ptw.Value, user);
             ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.CLOSE, PtwEntity.clearancePermit.CONFINEDSPACE.ToString());
             ptw.sendEmailRequestorClearance(fullUrl(), userLogin.token, userLogin, (int)PtwEntity.clearancePermit.CONFINEDSPACE, (int)PtwEntity.statusClearance.CLOSE);
@@ -442,7 +444,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             CsepEntity csep = new CsepEntity(id, userLogin);
-            string retVal = csep.fOCanReject(user, comment);
+            string retVal = csep.fOCanReject(userLogin, comment);
             csep.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, 1, comment);
             return Json(new { status = retVal });
         }
@@ -467,6 +469,7 @@ namespace PermitToWork.Controllers
         public JsonResult editExtCsep(CsepEntity csep, int extension)
         {
             UserEntity user = Session["user"] as UserEntity;
+            ListUser listUser = new ListUser(user.token, user.id);
             int ret = csep.editExtHotWork(extension);
             CsepEntity csep_new = new CsepEntity(csep.id, user);
 
@@ -476,7 +479,7 @@ namespace PermitToWork.Controllers
                 csep_new.status == (int)CsepEntity.CsepStatus.EXTCREATE4 ||
                 csep_new.status == (int)CsepEntity.CsepStatus.EXTCREATE5 ||
                 csep_new.status == (int)CsepEntity.CsepStatus.EXTCREATE6 ||
-                csep_new.status == (int)CsepEntity.CsepStatus.EXTCREATE7) && (csep_new.isWorkLeader(user) || (csep_new.is_guest && csep_new.isAccSupervisor(user))))
+                csep_new.status == (int)CsepEntity.CsepStatus.EXTCREATE7) && (csep_new.isWorkLeader(user, listUser) || (csep_new.is_guest && csep_new.isAccSupervisor(user, listUser))))
             {
                 sendEmailFO(csep_new);
                 // send email to facility owner (5)
@@ -488,7 +491,7 @@ namespace PermitToWork.Controllers
                 csep_new.status == (int)CsepEntity.CsepStatus.EXTCREATE4 ||
                 csep_new.status == (int)CsepEntity.CsepStatus.EXTCREATE5 ||
                 csep_new.status == (int)CsepEntity.CsepStatus.EXTCREATE6 ||
-                csep_new.status == (int)CsepEntity.CsepStatus.EXTCREATE7) && csep_new.isExtFO(user, extension))
+                csep_new.status == (int)CsepEntity.CsepStatus.EXTCREATE7) && csep_new.isExtFO(user, listUser, extension))
             {
                 // change status to FOSCREENING
 

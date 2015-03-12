@@ -128,7 +128,7 @@ namespace PermitToWork.Models.Ptw
 
                         if (!state && ptw.csep_id != null)
                         {
-                            if (isProd || ((CsepEntity)ptw.cPermit[PtwEntity.clearancePermit.CONFINEDSPACE.ToString()]).isUserInCSEP(user))
+                            if (isProd || ((CsepEntity)ptw.cPermit[PtwEntity.clearancePermit.CONFINEDSPACE.ToString()]).isUserInCSEP(user, listUser))
                             {
                                 listPtwUser.Add(ptw);
                                 state = true;

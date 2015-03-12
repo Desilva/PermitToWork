@@ -260,6 +260,127 @@ namespace PermitToWork.Models.Ptw
             // this.hira_document = new ListHira(this.id,this.db).listHira;
         }
 
+        public PtwEntity(int id, UserEntity user, ListUser listUser, star_energy_ptwEntities db = null)
+            : this()
+        {
+            if (db == null)
+            {
+                this.db = new star_energy_ptwEntities();
+            }
+            else
+            {
+                this.db = db;
+            }
+            permit_to_work ptw = this.db.permit_to_work.Find(id);
+            ModelUtilization.Clone(ptw, this);
+            this.is_extend = (byte)(ptw.id_parent_ptw != null ? 1 : 0);
+            this.has_extend = ptw.permit_to_work1.Count > 0;
+            this.extend_ptw_no = ptw.permit_to_work2 != null ? ptw.permit_to_work2.ptw_no : "";
+            if (this.is_guest != 1)
+            {
+                if (ptw.mst_ptw_holder_no != null)
+                {
+                    this.ptw_holder_no = new MstPtwHolderNoEntity(ptw.mst_ptw_holder_no);
+                }
+            }
+            this.section1 = new MstSectionEntity(ptw.mst_section);
+            this.department = new MstDepartmentEntity(ptw.mst_department);
+
+            if (this.hw_id != null)
+            {
+                IClearancePermitEntity hw = (IClearancePermitEntity)new HwEntity(this.hw_id.Value);
+                hw.ids = this.hw_id.Value;
+                hw.statusText = ((HwEntity)hw).getStatus();
+                this.cPermit.Add(clearancePermit.HOTWORK.ToString(), hw);
+                this.hw_no = ptw.hot_work.ElementAt(0).hw_no;
+                this.has_clearance = true;
+            }
+
+            //if (ptw.fire_impairment.Count > 0)
+            //{
+            //    fireImpairments = new List<FIEntity>();
+            //    foreach (fire_impairment fi in ptw.fire_impairment)
+            //    {
+            //        fireImpairments.Add(new FIEntity(fi, user));
+            //    }
+            //}
+
+            if (this.fi_id != null)
+            {
+                IClearancePermitEntity fi = (IClearancePermitEntity)new FIEntity(this.fi_id.Value, user);
+                fi.ids = this.fi_id.Value;
+                fi.statusText = ((FIEntity)fi).getStatus();
+                this.cPermit.Add(clearancePermit.FIREIMPAIRMENT.ToString(), fi);
+                this.fi_no = ptw.fire_impairment.ElementAt(0).fi_no;
+                this.has_clearance = true;
+            }
+
+            if (this.rad_id != null)
+            {
+                IClearancePermitEntity rad = (IClearancePermitEntity)new RadEntity(this.rad_id.Value, user);
+                rad.ids = this.rad_id.Value;
+                this.cPermit.Add(clearancePermit.RADIOGRAPHY.ToString(), rad);
+                this.rad_no = ptw.radiographies.ElementAt(0).rg_no;
+                this.has_clearance = true;
+            }
+
+            if (this.wh_id != null)
+            {
+                IClearancePermitEntity wh = (IClearancePermitEntity)new WorkingHeightEntity(this.wh_id.Value, user);
+                wh.ids = this.wh_id.Value;
+                this.cPermit.Add(clearancePermit.WORKINGHEIGHT.ToString(), wh);
+                this.wh_no = ptw.working_height.ElementAt(0).wh_no;
+                this.has_clearance = true;
+            }
+
+            if (this.ex_id != null)
+            {
+                IClearancePermitEntity ex = (IClearancePermitEntity)new ExcavationEntity(this.ex_id.Value, user);
+                ex.ids = this.ex_id.Value;
+                this.cPermit.Add(clearancePermit.EXCAVATION.ToString(), ex);
+                this.ex_no = ptw.excavations.ElementAt(0).ex_no;
+                this.has_clearance = true;
+            }
+
+            if (this.csep_id != null)
+            {
+                IClearancePermitEntity csep = (IClearancePermitEntity)new CsepEntity(this.csep_id.Value, user);
+                csep.ids = this.csep_id.Value;
+                this.cPermit.Add(clearancePermit.CONFINEDSPACE.ToString(), csep);
+                this.csep_no = ptw.confined_space.ElementAt(0).csep_no;
+                this.has_clearance = true;
+            }
+
+            if (this.loto_need != null && this.loto_need != 0)
+            {
+                this.lotoPermit = new List<LotoEntity>();
+                foreach (loto_permit loto in ptw.loto_permit)
+                {
+                    this.lotoPermit.Add(new LotoEntity(loto.id, user, this.acc_ptw_requestor));
+                }
+                this.loto_no = "";
+                this.loto_statusText = this.loto_status == 0 ? "LOTO Permit is being edited by Requestor" : (this.loto_status == 1 ? "LOTO Permit is Approved" : (this.loto_status == 2 ? "LOTO Permit is Cancelled" : ""));
+                this.has_clearance = true;
+            }
+
+            if (ptw.safety_briefing.Count > 0)
+            {
+                this.id_safety_briefing = ptw.safety_briefing.ElementAt(0).id;
+                this.safety_briefing_status = ptw.safety_briefing.ElementAt(0).status;
+            }
+
+            this.ptw_status = getPtwStatus();
+            if (this.acc_ptw_requestor != null || this.acc_supervisor != null)
+            {
+                var ptwRequestor = this.is_guest != 1 ? new UserEntity(Int32.Parse(this.acc_ptw_requestor), user.token, user) : new UserEntity(Int32.Parse(this.acc_supervisor), user.token, user);
+                this.isNeedClose = this.status == (int)statusPtw.ACCFO && this.validity_period_end != null && this.validity_period_end.Value.CompareTo(DateTime.Now) < 0 && this.is_extend != 1 && (ptwRequestor.id == user.id || ptwRequestor.employee_delegate == user.id) ? true : false;
+            }
+
+            this.acc_fo = ptw.acc_fo;
+            this.generateUserInPTW(user, listUser);
+            // this.hira_document = new ListHira(this.id,this.db).listHira;
+        }
+
         public PtwEntity(permit_to_work ptw, UserEntity user, ListUser listUser, bool isProd = false)
             : this()
         {

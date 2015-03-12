@@ -8,6 +8,7 @@ using System.Data;
 using System.Linq;
 using System.Web;
 using System.IO;
+using PermitToWork.Models.Workflow;
 
 namespace PermitToWork.Models.Hw
 {
@@ -190,6 +191,8 @@ namespace PermitToWork.Models.Hw
         public bool isUser { get; set; }
         public Dictionary<string, List<string>> listDocumentUploaded { get; set; }
 
+        public WorkflowNodeServiceModel workflowNodeService { get; set; }
+
         public enum statusHW
         {
             CREATE,
@@ -244,9 +247,10 @@ namespace PermitToWork.Models.Hw
 
         public HwEntity() {
             this.db = new star_energy_ptwEntities();
+            this.workflowNodeService = new WorkflowNodeServiceModel();
         }
 
-        public HwEntity(int id_ptw, string work_leader, string purpose, string acc_spv = null, string acc_spv_del = null, string acc_fo = null)
+        public HwEntity(int id_ptw, string work_leader, string purpose, string acc_spv = null, string acc_spv_del = null, string acc_fo = null) : this()
         {
             this.db = new star_energy_ptwEntities();
             this.id_ptw = id_ptw;
@@ -260,14 +264,13 @@ namespace PermitToWork.Models.Hw
             this.can_fo = acc_fo;
         }
 
-        public HwEntity(string id)
+        public HwEntity(string id) : this()
         {
-            this.db = new star_energy_ptwEntities();
             hot_work hw = this.db.hot_work.OrderByDescending(p => p.hw_no).FirstOrDefault();
             this.hw_no = hw == null ? "" : hw.hw_no;
         }
 
-        public HwEntity(int id, star_energy_ptwEntities db = null)
+        public HwEntity(int id, star_energy_ptwEntities db = null) : this()
         {
             if (db == null)
             {
@@ -451,7 +454,7 @@ namespace PermitToWork.Models.Hw
             this.hira_document = new ListHira(this.id_ptw.Value,this.db).listHira;
         }
 
-        public HwEntity(hot_work hw)
+        public HwEntity(hot_work hw) : this()
         {
             this.id = hw.id;
             this.hw_no = hw.hw_no;
@@ -2022,6 +2025,9 @@ namespace PermitToWork.Models.Hw
             message = serverUrl + "Home?p=Hw/edit/" + this.id;
             subject = "Hot Work Supervisor Screening";
             sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please Screening Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
+            // create node
+            workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString(),
+                WorkflowNodeServiceModel.CSEPNodeName.REQUESTOR_INPUT.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
             sendEmail.Send(s, message, subject);
 
@@ -2066,6 +2072,9 @@ namespace PermitToWork.Models.Hw
 
             sendEmail.Send(s, message, "Hot Work Facility Owner Screening");
             sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please Screening Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
+            // create node
+            workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString(),
+                WorkflowNodeServiceModel.HotWorkNodeName.REQUESTOR_INPUT.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
             return "200";
         }
