@@ -32,7 +32,7 @@ namespace PermitToWork.Controllers
             UserEntity user = Session["user"] as UserEntity;
             ListUser listUser = new ListUser(user.token, user.id);
             FIEntity entity = new FIEntity(id, user, listUser);
-            entity.getPtw(user);
+            entity.getPtw(user, listUser);
             entity.getHiraNo();
             bool[] isCanEdit = new bool[14];
 

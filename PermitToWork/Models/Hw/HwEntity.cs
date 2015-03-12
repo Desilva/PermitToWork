@@ -714,10 +714,13 @@ namespace PermitToWork.Models.Hw
             string user_id = user.id.ToString();
             int foId = 0;
             Int32.TryParse(this.acc_supervisor, out foId);
-            UserEntity fo = listUser == null ? new UserEntity(foId, user.token, user) : listUser.listUser.Find(p => p.id == foId);
-            if ((this.acc_supervisor == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
+            if (foId != 0)
             {
-                retVal = true;
+                UserEntity fo = listUser == null ? new UserEntity(foId, user.token, user) : listUser.listUser.Find(p => p.id == foId);
+                if ((this.acc_supervisor == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
+                {
+                    retVal = true;
+                }
             }
 
             return retVal;
@@ -729,10 +732,13 @@ namespace PermitToWork.Models.Hw
             string user_id = user.id.ToString();
             int foId = 0;
             Int32.TryParse(this.acc_fire_watch, out foId);
-            UserEntity fo = listUser == null ? new UserEntity(foId, user.token, user) : listUser.listUser.Find(p => p.id == foId);
-            if ((this.acc_fire_watch == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
+            if (foId != 0)
             {
-                retVal = true;
+                UserEntity fo = listUser == null ? new UserEntity(foId, user.token, user) : listUser.listUser.Find(p => p.id == foId);
+                if ((this.acc_fire_watch == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
+                {
+                    retVal = true;
+                }
             }
 
             return retVal;
@@ -743,16 +749,19 @@ namespace PermitToWork.Models.Hw
             var retVal = false;
             int foId = 0;
             Int32.TryParse(this.acc_fo, out foId);
-            UserEntity fo = listUser == null ? new UserEntity(foId, user.token, user) : listUser.listUser.Find(p => p.id == foId);
-            string user_id = user.id.ToString();
-            List<UserEntity> listDel = fo.GetDelegateFO(user);
-            if ((this.acc_fo == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
+            if (foId != 0)
             {
-                retVal = true;
-            }
-            else if (listDel.Exists(p => p.id == user.id))
-            {
-                return true;
+                UserEntity fo = listUser == null ? new UserEntity(foId, user.token, user) : listUser.listUser.Find(p => p.id == foId);
+                string user_id = user.id.ToString();
+                List<UserEntity> listDel = fo.GetDelegateFO(user);
+                if ((this.acc_fo == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
+                {
+                    retVal = true;
+                }
+                else if (listDel.Exists(p => p.id == user.id))
+                {
+                    return true;
+                }
             }
             return retVal;
         }
@@ -769,7 +778,7 @@ namespace PermitToWork.Models.Hw
             return retVal;
         }
 
-        public bool isExtGasTester(UserEntity user, int extension)
+        public bool isExtGasTester(UserEntity user, ListUser listUser, int extension)
         {
             var retVal = false;
             string user_id = user.id.ToString();
@@ -822,7 +831,7 @@ namespace PermitToWork.Models.Hw
             return retVal;
         }
 
-        public bool isExtFO(UserEntity user, int extension)
+        public bool isExtFO(UserEntity user, ListUser listUser, int extension)
         {
             var retVal = false;
             string user_id = user.id.ToString();
@@ -833,106 +842,50 @@ namespace PermitToWork.Models.Hw
             {
                 case 1:
                     Int32.TryParse(this.ext_fo_1, out foId);
-                    fo = new UserEntity(foId, user.token, user);
-                    listDel = fo.GetDelegateFO(user);
-                    if ((this.ext_fo_1 == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
-                    {
-                        retVal = true;
-                    }
-                    else if (listDel.Exists(p => p.id == user.id))
-                    {
-                        return true;
-                    }
                     break;
                 case 2:
                     Int32.TryParse(this.ext_fo_2, out foId);
-                    fo = new UserEntity(foId, user.token, user);
-                    listDel = fo.GetDelegateFO(user);
-                    if ((this.ext_fo_2 == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
-                    {
-                        retVal = true;
-                    }
-                    else if (listDel.Exists(p => p.id == user.id))
-                    {
-                        return true;
-                    }
                     break;
                 case 3:
                     Int32.TryParse(this.ext_fo_3, out foId);
-                    fo = new UserEntity(foId, user.token, user);
-                    listDel = fo.GetDelegateFO(user);
-                    if ((this.ext_fo_3 == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
-                    {
-                        retVal = true;
-                    }
-                    else if (listDel.Exists(p => p.id == user.id))
-                    {
-                        return true;
-                    }
                     break;
                 case 4:
                     Int32.TryParse(this.ext_fo_4, out foId);
-                    fo = new UserEntity(foId, user.token, user);
-                    listDel = fo.GetDelegateFO(user);
-                    if ((this.ext_fo_4 == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
-                    {
-                        retVal = true;
-                    }
-                    else if (listDel.Exists(p => p.id == user.id))
-                    {
-                        return true;
-                    }
                     break;
                 case 5:
                     Int32.TryParse(this.ext_fo_5, out foId);
-                    fo = new UserEntity(foId, user.token, user);
-                    listDel = fo.GetDelegateFO(user);
-                    if ((this.ext_fo_5 == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
-                    {
-                        retVal = true;
-                    }
-                    else if (listDel.Exists(p => p.id == user.id))
-                    {
-                        return true;
-                    }
                     break;
                 case 6:
                     Int32.TryParse(this.ext_fo_6, out foId);
-                    fo = new UserEntity(foId, user.token, user);
-                    listDel = fo.GetDelegateFO(user);
-                    if ((this.ext_fo_6 == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
-                    {
-                        retVal = true;
-                    }
-                    else if (listDel.Exists(p => p.id == user.id))
-                    {
-                        return true;
-                    }
                     break;
                 case 7:
                     Int32.TryParse(this.ext_fo_7, out foId);
-                    fo = new UserEntity(foId, user.token, user);
-                    listDel = fo.GetDelegateFO(user);
-                    if ((this.ext_fo_7 == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
-                    {
-                        retVal = true;
-                    }
-                    else if (listDel.Exists(p => p.id == user.id))
-                    {
-                        return true;
-                    }
                     break;
+            }
+
+            if (foId != 0)
+            {
+                fo = listUser.listUser.Find(p => p.id == foId);
+                listDel = fo.GetDelegateFO(user);
+                if ((this.ext_fo_1 == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
+                {
+                    retVal = true;
+                }
+                else if (listDel.Exists(p => p.id == user.id))
+                {
+                    return true;
+                }
             }
 
             return retVal;
         }
 
-        public bool isCanEdit(UserEntity user)
+        public bool isCanEdit(UserEntity user, ListUser listUser)
         {
             bool isCanEdit = false;
             if (this.ptw.is_guest == 1)
             {
-                if (isAccSupervisor(user) && this.status < (int)statusHW.ACCWORKLEADER)
+                if (isAccSupervisor(user, listUser) && this.status < (int)statusHW.ACCWORKLEADER)
                 {
                     isCanEdit = true;
                 }
@@ -945,7 +898,7 @@ namespace PermitToWork.Models.Hw
                 }
             }
 
-            if (isAccSupervisor(user) && (this.status == (int)statusHW.CREATE || this.status == (int)statusHW.ACCWORKLEADER))
+            if (isAccSupervisor(user, listUser) && (this.status == (int)statusHW.CREATE || this.status == (int)statusHW.ACCWORKLEADER))
             {
                 isCanEdit = true;
             }
@@ -955,12 +908,12 @@ namespace PermitToWork.Models.Hw
             //    isCanEdit = true;
             //}
 
-            if (isAccFO(user) && this.status == (int)statusHW.ACCSPV || this.status == (int)statusHW.SPVSCREENING)
+            if (isAccFO(user, listUser) && this.status == (int)statusHW.ACCSPV || this.status == (int)statusHW.SPVSCREENING)
             {
                 isCanEdit = true;
             }
 
-            if ((isAccGasTester(user) || isAccFO(user)) && this.status == (int)statusHW.FOSCREENING)
+            if ((isAccGasTester(user) || isAccFO(user, listUser)) && this.status == (int)statusHW.FOSCREENING)
             {
                 isCanEdit = true;
             }
@@ -973,12 +926,12 @@ namespace PermitToWork.Models.Hw
             return isCanEdit;
         }
 
-        public bool isCanEditExt(UserEntity user, int extension)
+        public bool isCanEditExt(UserEntity user, ListUser listUser, int extension)
         {
             bool isCanEdit = false;
             if (this.ptw.is_guest == 1)
             {
-                if (isAccSupervisor(user))
+                if (isAccSupervisor(user, listUser))
                 {
                     switch (extension)
                     {
@@ -1081,7 +1034,7 @@ namespace PermitToWork.Models.Hw
                 }
             }
 
-            if (isExtFO(user,extension))
+            if (isExtFO(user, listUser, extension))
             {
                 switch (extension)
                 {
@@ -1130,7 +1083,7 @@ namespace PermitToWork.Models.Hw
                 }
             }
 
-            if (isExtGasTester(user, extension))
+            if (isExtGasTester(user, listUser, extension))
             {
                 switch (extension)
                 {
@@ -1533,8 +1486,8 @@ namespace PermitToWork.Models.Hw
 
         public bool isUserInHw(UserEntity user, ListUser listUser) {
             return (isAccGasTester(user)
-                || isExtGasTester(user, 1) || isExtGasTester(user, 2) || isExtGasTester(user, 3) || isExtGasTester(user, 4)
-                || isExtGasTester(user, 5) || isExtGasTester(user, 6) || isExtGasTester(user, 7));
+                || isExtGasTester(user, listUser, 1) || isExtGasTester(user, listUser, 2) || isExtGasTester(user, listUser, 3) || isExtGasTester(user, listUser, 4)
+                || isExtGasTester(user, listUser, 5) || isExtGasTester(user, listUser, 6) || isExtGasTester(user, listUser, 7));
         }
 
         #endregion
@@ -3249,6 +3202,12 @@ namespace PermitToWork.Models.Hw
         public void GetPtw(UserEntity user)
         {
             this.ptw = new PtwEntity(this.id_ptw.Value, user);
+            this.is_guest = this.ptw.is_guest == 1;
+        }
+
+        public void GetPtw(UserEntity user, ListUser listUser)
+        {
+            this.ptw = new PtwEntity(this.id_ptw.Value, user, listUser);
             this.is_guest = this.ptw.is_guest == 1;
         }
     }

@@ -62,6 +62,7 @@ namespace PermitToWork.Models.Workflow
             REQUESTOR_APPROVE,
             FIREWATCH_APPROVE,
             SUPERVISOR_SCREENING,
+            CHOOSING_SO_DEPT_HEAD_FO,
             SAFETY_OFFICER_APPROVE,
             FACILITY_OWNER_APPROVE,
             DEPT_HEAD_FO_APPROVE,

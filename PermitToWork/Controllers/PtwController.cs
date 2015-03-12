@@ -106,7 +106,8 @@ namespace PermitToWork.Controllers
         public ActionResult Edit(int id)
         {
             UserEntity user = Session["user"] as UserEntity;
-            PtwEntity entity = new PtwEntity(id, user);
+            ListUser listUser = new ListUser(user.token, user.id);
+            PtwEntity entity = new PtwEntity(id, user, listUser);
             ViewBag.isRequestor = entity.isRequestor(user);
             if (entity.status < (int)PtwEntity.statusPtw.CANCEL)
             {
@@ -126,7 +127,7 @@ namespace PermitToWork.Controllers
             ViewBag.isClearenceComplete = entity.isAllClearanceComplete();
             ViewBag.isClearenceClose = entity.isAllClearanceClose();
             ViewBag.position = "Edit";
-            ViewBag.listUser = new ListUser(user.token, user.id);
+            ViewBag.listUser = listUser;
             ViewBag.listFO = new MstFOEntity().getListMstFO();
             ViewBag.listAssessor = new MstAssessorEntity().getListAssessor(user.id);
 

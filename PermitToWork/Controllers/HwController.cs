@@ -30,57 +30,58 @@ namespace PermitToWork.Controllers
 
         public ActionResult Edit(int id)
         {
-            HwEntity entity = new HwEntity(id);
             UserEntity user = Session["user"] as UserEntity;
-            entity.GetPtw(user);
+            ListUser listUser = new ListUser(user.token, user.id);
+            HwEntity entity = new HwEntity(id);
+            entity.GetPtw(user, listUser);
             entity.getHiraNo();
             ViewBag.isWorkLeader = entity.isWorkLeader(user);
             if (entity.status < (int)HwEntity.statusHW.CANCEL)
             {
-                ViewBag.isAccSupervisor = entity.isAccSupervisor(user);
-                ViewBag.isAccFireWatch = entity.isAccFireWatch(user);
-                ViewBag.isAccFO = entity.isAccFO(user);
+                ViewBag.isAccSupervisor = entity.isAccSupervisor(user, listUser);
+                ViewBag.isAccFireWatch = entity.isAccFireWatch(user, listUser);
+                ViewBag.isAccFO = entity.isAccFO(user, listUser);
                 ViewBag.isGasTester = entity.isAccGasTester(user);
             }
             else
             {
                 ViewBag.isCancel = true;
-                ViewBag.isCanSupervisor = entity.isAccSupervisor(user);
-                ViewBag.isCanFireWatch = entity.isAccFireWatch(user);
-                ViewBag.isCanFO = entity.isAccFO(user);
+                ViewBag.isCanSupervisor = entity.isAccSupervisor(user, listUser);
+                ViewBag.isCanFireWatch = entity.isAccFireWatch(user, listUser);
+                ViewBag.isCanFO = entity.isAccFO(user, listUser);
             }
 
             if (entity.status >= (int)HwEntity.statusHW.ACCFO && entity.status <= (int)HwEntity.statusHW.EXTACCFO7)
             {
                 ViewBag.ptwStatus = new PtwEntity(entity.id_ptw.Value, user).status;
                 ViewBag.isCanAddExt = true;
-                ViewBag.isGasTesterExt1 = entity.isExtGasTester(user, 1);
-                ViewBag.isFOExt1 = entity.isExtFO(user, 1);
-                ViewBag.isGasTesterExt2 = entity.isExtGasTester(user, 2);
-                ViewBag.isFOExt2 = entity.isExtFO(user, 2);
-                ViewBag.isGasTesterExt3 = entity.isExtGasTester(user, 3);
-                ViewBag.isFOExt3 = entity.isExtFO(user, 3);
-                ViewBag.isGasTesterExt4 = entity.isExtGasTester(user, 4);
-                ViewBag.isFOExt4 = entity.isExtFO(user, 4);
-                ViewBag.isGasTesterExt5 = entity.isExtGasTester(user, 5);
-                ViewBag.isFOExt5 = entity.isExtFO(user, 5);
-                ViewBag.isGasTesterExt6 = entity.isExtGasTester(user, 6);
-                ViewBag.isFOExt6 = entity.isExtFO(user, 6);
-                ViewBag.isGasTesterExt7 = entity.isExtGasTester(user, 7);
-                ViewBag.isFOExt7 = entity.isExtFO(user, 7);
+                ViewBag.isGasTesterExt1 = entity.isExtGasTester(user, listUser, 1);
+                ViewBag.isFOExt1 = entity.isExtFO(user, listUser, 1);
+                ViewBag.isGasTesterExt2 = entity.isExtGasTester(user, listUser, 2);
+                ViewBag.isFOExt2 = entity.isExtFO(user, listUser, 2);
+                ViewBag.isGasTesterExt3 = entity.isExtGasTester(user, listUser, 3);
+                ViewBag.isFOExt3 = entity.isExtFO(user, listUser, 3);
+                ViewBag.isGasTesterExt4 = entity.isExtGasTester(user, listUser, 4);
+                ViewBag.isFOExt4 = entity.isExtFO(user, listUser, 4);
+                ViewBag.isGasTesterExt5 = entity.isExtGasTester(user, listUser, 5);
+                ViewBag.isFOExt5 = entity.isExtFO(user, listUser, 5);
+                ViewBag.isGasTesterExt6 = entity.isExtGasTester(user, listUser, 6);
+                ViewBag.isFOExt6 = entity.isExtFO(user, listUser, 6);
+                ViewBag.isGasTesterExt7 = entity.isExtGasTester(user, listUser, 7);
+                ViewBag.isFOExt7 = entity.isExtFO(user, listUser, 7);
             }
-            ViewBag.isCanEdit = entity.isCanEdit(user);
+            ViewBag.isCanEdit = entity.isCanEdit(user, listUser);
 
-            ViewBag.isCanEditExt1 = entity.isCanEditExt(user, 1);
-            ViewBag.isCanEditExt2 = entity.isCanEditExt(user, 2);
-            ViewBag.isCanEditExt3 = entity.isCanEditExt(user, 3);
-            ViewBag.isCanEditExt4 = entity.isCanEditExt(user, 4);
-            ViewBag.isCanEditExt5 = entity.isCanEditExt(user, 5);
-            ViewBag.isCanEditExt6 = entity.isCanEditExt(user, 6);
-            ViewBag.isCanEditExt7 = entity.isCanEditExt(user, 7);
+            ViewBag.isCanEditExt1 = entity.isCanEditExt(user, listUser, 1);
+            ViewBag.isCanEditExt2 = entity.isCanEditExt(user, listUser, 2);
+            ViewBag.isCanEditExt3 = entity.isCanEditExt(user, listUser, 3);
+            ViewBag.isCanEditExt4 = entity.isCanEditExt(user, listUser, 4);
+            ViewBag.isCanEditExt5 = entity.isCanEditExt(user, listUser, 5);
+            ViewBag.isCanEditExt6 = entity.isCanEditExt(user, listUser, 6);
+            ViewBag.isCanEditExt7 = entity.isCanEditExt(user, listUser, 7);
 
             ViewBag.position = "Edit";
-            ViewBag.listUser = new ListUser(user.token, user.id);
+            ViewBag.listUser = listUser;
             ViewBag.listGasTester = (ViewBag.listUser as ListUser).GetHotWorkGasTester();
             return PartialView("create", entity);
         }
@@ -467,6 +468,7 @@ namespace PermitToWork.Controllers
         public JsonResult editExtHw(HwEntity hw, int extension)
         {
             UserEntity user = Session["user"] as UserEntity;
+            ListUser listUser = new ListUser(user.token, user.id);
             int ret = hw.editExtHotWork(extension);
             HwEntity hw_new = new HwEntity(hw.id);
 
@@ -488,7 +490,7 @@ namespace PermitToWork.Controllers
                 hw_new.status == (int)HwEntity.statusHW.EXTCREATE4 ||
                 hw_new.status == (int)HwEntity.statusHW.EXTCREATE5 ||
                 hw_new.status == (int)HwEntity.statusHW.EXTCREATE6 ||
-                hw_new.status == (int)HwEntity.statusHW.EXTCREATE7) && hw_new.isExtFO(user,extension))
+                hw_new.status == (int)HwEntity.statusHW.EXTCREATE7) && hw_new.isExtFO(user,listUser,extension))
             {
                 // change status to FOSCREENING
 

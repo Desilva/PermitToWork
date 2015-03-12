@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Web;
 using PermitToWork.Models.Master;
+using PermitToWork.Models.Workflow;
 
 namespace PermitToWork.Models
 {
@@ -48,6 +49,8 @@ namespace PermitToWork.Models
         public bool isUser { get; set; }
 
         private star_energy_ptwEntities db;
+
+        public WorkflowNodeServiceModel workflowNodeService { get; set; }
 
 
         /// <summary>
@@ -95,6 +98,7 @@ namespace PermitToWork.Models
         {
             this.db = new star_energy_ptwEntities();
             this.userInFI = new Dictionary<string, UserEntity>();
+            this.workflowNodeService = new WorkflowNodeServiceModel();
         }
 
         // constructor with id to get object from database
@@ -309,6 +313,9 @@ namespace PermitToWork.Models
                         }
 
                         fi.status = (int)FIStatus.REQUESTORAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
+                            WorkflowNodeServiceModel.FireImpairmentNodeName.REQUESTOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                         break;
                     case 2 /* Fire Watch */:
@@ -325,9 +332,15 @@ namespace PermitToWork.Models
                         }
 
                         fi.status = (int)FIStatus.FIREWATCHAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
+                            WorkflowNodeServiceModel.FireImpairmentNodeName.FIREWATCH_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 3 /* Supervisor */:
                         fi.status = (int)FIStatus.SPVSCREENING;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
+                            WorkflowNodeServiceModel.FireImpairmentNodeName.SUPERVISOR_SCREENING.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 4 /* Safety Officer */:
                         Int32.TryParse(fi.acc_so, out userId);
@@ -343,6 +356,9 @@ namespace PermitToWork.Models
                         }
 
                         fi.status = (int)FIStatus.SOAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
+                            WorkflowNodeServiceModel.FireImpairmentNodeName.SAFETY_OFFICER_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 5 /* Facility Owner */:
                         Int32.TryParse(fi.acc_fo, out userId);
@@ -358,6 +374,9 @@ namespace PermitToWork.Models
                         }
 
                         fi.status = (int)FIStatus.FOAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
+                            WorkflowNodeServiceModel.FireImpairmentNodeName.FACILITY_OWNER_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 6 /* Dept. Head Facility Owner */:
                         Int32.TryParse(fi.acc_dept_head, out userId);
@@ -373,6 +392,9 @@ namespace PermitToWork.Models
                         }
 
                         fi.status = (int)FIStatus.DEPTFOAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
+                            WorkflowNodeServiceModel.FireImpairmentNodeName.DEPT_HEAD_FO_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                         this.ptw = new PtwEntity(fi.id_ptw.Value, user);
                         this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString());
@@ -408,24 +430,39 @@ namespace PermitToWork.Models
                         fi.acc_work_leader_signature = null;
                         fi.acc_work_leader_delegate = null;
                         fi.status = (int)FIStatus.CREATE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
+                            WorkflowNodeServiceModel.FireImpairmentNodeName.FIREWATCH_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 3 /* Supervisor */:
                         fi.acc_fire_watch_signature = null;
                         fi.acc_fire_wacth_delegate = null;
                         fi.status = (int)FIStatus.REQUESTORAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
+                            WorkflowNodeServiceModel.FireImpairmentNodeName.SUPERVISOR_SCREENING.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 4 /* Safety Officer */:
                         fi.status = (int)FIStatus.FIREWATCHAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
+                            WorkflowNodeServiceModel.FireImpairmentNodeName.SAFETY_OFFICER_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 5 /* Facility Owner */:
                         fi.acc_so_signature = null;
                         fi.acc_so_delegate = null;
                         fi.status = (int)FIStatus.SPVSCREENING;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
+                            WorkflowNodeServiceModel.FireImpairmentNodeName.FACILITY_OWNER_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 6 /* Dept. Head Facility Owner */:
                         fi.acc_fo_signature = null;
                         fi.acc_fo_delegate = null;
                         fi.status = (int)FIStatus.SOAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
+                            WorkflowNodeServiceModel.FireImpairmentNodeName.DEPT_HEAD_FO_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                 }
 
@@ -1311,6 +1348,9 @@ namespace PermitToWork.Models
                         }
 
                         fi.status = (int)FIStatus.CANREQUESTORAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
+                            WorkflowNodeServiceModel.FireImpairmentNodeName.CANCELLATION_REQUESTOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                         break;
                     case 2 /* Fire Watch */:
@@ -1327,9 +1367,15 @@ namespace PermitToWork.Models
                         }
 
                         fi.status = (int)FIStatus.CANFIREWATCHAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
+                            WorkflowNodeServiceModel.FireImpairmentNodeName.CANCELLATION_FIREWATCH.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 3 /* Supervisor */:
                         fi.status = (int)FIStatus.CANSPVSCREENING;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
+                            WorkflowNodeServiceModel.FireImpairmentNodeName.CANCELLATION_SUPERVISOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                         this.ptw = new PtwEntity(fi.id_ptw.Value, user);
                         this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.REQUESTORCANCELLED, PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString());
@@ -1348,6 +1394,9 @@ namespace PermitToWork.Models
                         }
 
                         fi.status = (int)FIStatus.CANSOAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
+                            WorkflowNodeServiceModel.FireImpairmentNodeName.CANCELLATION_SAFETY_OFFICER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 5 /* Facility Owner */:
                         Int32.TryParse(fi.acc_fo, out userId);
@@ -1363,6 +1412,9 @@ namespace PermitToWork.Models
                         }
 
                         fi.status = (int)FIStatus.CANFOAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
+                            WorkflowNodeServiceModel.FireImpairmentNodeName.CANCELLATION_FACILITY_OWNER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 6 /* Dept. Head Facility Owner */:
                         Int32.TryParse(fi.acc_dept_head, out userId);
@@ -1378,6 +1430,9 @@ namespace PermitToWork.Models
                         }
 
                         fi.status = (int)FIStatus.CANDEPTFOAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
+                            WorkflowNodeServiceModel.FireImpairmentNodeName.CANCELLATION_DEPT_HEAD_FO.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                         this.ptw = new PtwEntity(fi.id_ptw.Value, user);
                         this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.CLOSE, PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString());
@@ -1413,24 +1468,39 @@ namespace PermitToWork.Models
                         fi.cancel_work_leader_signature = null;
                         fi.cancel_work_leader_delegate = null;
                         fi.status = (int)FIStatus.CLOSING;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
+                            WorkflowNodeServiceModel.FireImpairmentNodeName.CANCELLATION_FIREWATCH.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 3 /* Supervisor */:
                         fi.cancel_fire_watch_signature = null;
                         fi.cancel_fire_watch_delegate = null;
                         fi.status = (int)FIStatus.CANREQUESTORAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
+                            WorkflowNodeServiceModel.FireImpairmentNodeName.CANCELLATION_SUPERVISOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 4 /* Safety Officer */:
                         fi.status = (int)FIStatus.CANFIREWATCHAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
+                            WorkflowNodeServiceModel.FireImpairmentNodeName.CANCELLATION_FIREWATCH.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 5 /* Facility Owner */:
                         fi.cancel_so_signature = null;
                         fi.cancel_so_delegate = null;
                         fi.status = (int)FIStatus.CANSPVSCREENING;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
+                            WorkflowNodeServiceModel.FireImpairmentNodeName.CANCELLATION_FACILITY_OWNER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 6 /* Dept. Head Facility Owner */:
                         fi.cancel_fo_signature = null;
                         fi.cancel_fo_delegate = null;
                         fi.status = (int)FIStatus.CANSOAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
+                            WorkflowNodeServiceModel.FireImpairmentNodeName.CANCELLATION_DEPT_HEAD_FO.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                 }
 
@@ -2144,10 +2214,13 @@ namespace PermitToWork.Models
         {
             int deptHeadId = 0;
             Int32.TryParse(this.acc_dept_head, out deptHeadId);
-            UserEntity deptHead = listUser.listUser.Find(p => p.id == deptHeadId);
-            if (deptHead != null && (user.id == deptHead.id || user.id == deptHead.employee_delegate))
+            if (deptHeadId != 0)
             {
-                return true;
+                UserEntity deptHead = listUser.listUser.Find(p => p.id == deptHeadId);
+                if (deptHead != null && (user.id == deptHead.id || user.id == deptHead.employee_delegate))
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -2156,17 +2229,21 @@ namespace PermitToWork.Models
         {
             int foId = 0;
             Int32.TryParse(this.acc_fo, out foId);
-            UserEntity fo = listUser == null ? new UserEntity(foId,user.token,user) : listUser.listUser.Find(p => p.id == foId);
-            if (fo != null)
+
+            if (foId != 0)
             {
-                List<UserEntity> listDel = fo.GetDelegateFO(user);
-                if (user.id == fo.id || user.id == fo.employee_delegate)
+                UserEntity fo = listUser == null ? new UserEntity(foId, user.token, user) : listUser.listUser.Find(p => p.id == foId);
+                if (fo != null)
                 {
-                    return true;
-                }
-                else if (listDel.Exists(p => p.id == user.id))
-                {
-                    return true;
+                    List<UserEntity> listDel = fo.GetDelegateFO(user);
+                    if (user.id == fo.id || user.id == fo.employee_delegate)
+                    {
+                        return true;
+                    }
+                    else if (listDel.Exists(p => p.id == user.id))
+                    {
+                        return true;
+                    }
                 }
             }
             return false;
@@ -2176,10 +2253,13 @@ namespace PermitToWork.Models
         {
             int soId = 0;
             Int32.TryParse(this.acc_so, out soId);
-            UserEntity so = listUser.listUser.Find(p => p.id == soId);
-            if (so != null && (user.id == so.id || user.id == so.employee_delegate))
+            if (soId != 0)
             {
-                return true;
+                UserEntity so = listUser.listUser.Find(p => p.id == soId);
+                if (so != null && (user.id == so.id || user.id == so.employee_delegate))
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -2188,10 +2268,13 @@ namespace PermitToWork.Models
         {
             int fireWatchId = 0;
             Int32.TryParse(this.fire_watch, out fireWatchId);
-            UserEntity fireWatch = listUser.listUser.Find(p => p.id == fireWatchId);
-            if (fireWatch != null && (user.id == fireWatch.id || user.id == fireWatch.employee_delegate))
+            if (fireWatchId != 0)
             {
-                return true;
+                UserEntity fireWatch = listUser.listUser.Find(p => p.id == fireWatchId);
+                if (fireWatch != null && (user.id == fireWatch.id || user.id == fireWatch.employee_delegate))
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -2200,10 +2283,13 @@ namespace PermitToWork.Models
         {
             int spvId = 0;
             Int32.TryParse(this.spv, out spvId);
-            UserEntity spv = listUser.listUser.Find(p => p.id == spvId);
-            if (spv != null && (user.id == spv.id || user.id == spv.employee_delegate))
+            if (spvId != 0)
             {
-                return true;
+                UserEntity spv = listUser.listUser.Find(p => p.id == spvId);
+                if (spv != null && (user.id == spv.id || user.id == spv.employee_delegate))
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -2212,10 +2298,13 @@ namespace PermitToWork.Models
         {
             int requestorId = 0;
             Int32.TryParse(this.requestor, out requestorId);
-            UserEntity requestor = listUser.listUser.Find(p => p.id == requestorId);
-            if (requestor != null && (user.id == requestor.id || user.id == requestor.employee_delegate))
+            if (requestorId != 0)
             {
-                return true;
+                UserEntity requestor = listUser.listUser.Find(p => p.id == requestorId);
+                if (requestor != null && (user.id == requestor.id || user.id == requestor.employee_delegate))
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -2226,19 +2315,25 @@ namespace PermitToWork.Models
             if (this.ptw.is_guest == 1)
             {
                 Int32.TryParse(this.spv, out requestorId);
-                UserEntity requestor = listUser.listUser.Find(p => p.id == requestorId);
-                if ((user.id == requestor.id || user.id == requestor.employee_delegate) && this.status == (int)FIStatus.CREATE)
+                if (requestorId != 0)
                 {
-                    return true;
+                    UserEntity requestor = listUser.listUser.Find(p => p.id == requestorId);
+                    if ((user.id == requestor.id || user.id == requestor.employee_delegate) && this.status == (int)FIStatus.CREATE)
+                    {
+                        return true;
+                    }
                 }
             }
             else
             {
                 Int32.TryParse(this.requestor, out requestorId);
-                UserEntity requestor = listUser.listUser.Find(p => p.id == requestorId);
-                if ((user.id == requestor.id || user.id == requestor.employee_delegate) && this.status == (int)FIStatus.CREATE)
+                if (requestorId  != 0)
                 {
-                    return true;
+                    UserEntity requestor = listUser.listUser.Find(p => p.id == requestorId);
+                    if ((user.id == requestor.id || user.id == requestor.employee_delegate) && this.status == (int)FIStatus.CREATE)
+                    {
+                        return true;
+                    }
                 }
             }
             return false;
@@ -2248,10 +2343,13 @@ namespace PermitToWork.Models
         {
             int spvId = 0;
             Int32.TryParse(this.spv, out spvId);
-            UserEntity spv = listUser.listUser.Find(p => p.id == spvId);
-            if ((user.id == spv.id || user.id == spv.employee_delegate) && this.status == (int)FIStatus.FIREWATCHAPPROVE)
+            if (spvId != 0)
             {
-                return true;
+                UserEntity spv = listUser.listUser.Find(p => p.id == spvId);
+                if ((user.id == spv.id || user.id == spv.employee_delegate) && this.status == (int)FIStatus.FIREWATCHAPPROVE)
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -2260,15 +2358,18 @@ namespace PermitToWork.Models
         {
             int foId = 0;
             Int32.TryParse(this.acc_fo, out foId);
-            UserEntity fo = listUser.listUser.Find(p => p.id == foId);
-            List<UserEntity> listDel = fo.GetDelegateFO(user, listUser);
-            if ((user.id == fo.id || user.id == fo.employee_delegate) && (this.acc_so == null || this.acc_dept_head == null))
+            if (foId != 0)
             {
-                return true;
-            }
-            else if (listDel.Exists(p => p.id == user.id) && (this.acc_so == null || this.acc_dept_head == null))
-            {
-                return true;
+                UserEntity fo = listUser.listUser.Find(p => p.id == foId);
+                List<UserEntity> listDel = fo.GetDelegateFO(user, listUser);
+                if ((user.id == fo.id || user.id == fo.employee_delegate) && (this.acc_so == null || this.acc_dept_head == null))
+                {
+                    return true;
+                }
+                else if (listDel.Exists(p => p.id == user.id) && (this.acc_so == null || this.acc_dept_head == null))
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -2277,10 +2378,13 @@ namespace PermitToWork.Models
         {
             int fireWatchId = 0;
             Int32.TryParse(this.fire_watch, out fireWatchId);
-            UserEntity fireWatch = listUser.listUser.Find(p => p.id == fireWatchId);
-            if ((user.id == fireWatch.id || user.id == fireWatch.employee_delegate) && this.status == (int)FIStatus.REQUESTORAPPROVE)
+            if (fireWatchId != 0)
             {
-                return true;
+                UserEntity fireWatch = listUser.listUser.Find(p => p.id == fireWatchId);
+                if ((user.id == fireWatch.id || user.id == fireWatch.employee_delegate) && this.status == (int)FIStatus.REQUESTORAPPROVE)
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -2289,10 +2393,13 @@ namespace PermitToWork.Models
         {
             int sOId = 0;
             Int32.TryParse(this.acc_so, out sOId);
-            UserEntity sO = listUser.listUser.Find(p => p.id == sOId);
-            if ((user.id == sO.id || user.id == sO.employee_delegate) && this.status == (int)FIStatus.SPVSCREENING)
+            if (sOId != 0)
             {
-                return true;
+                UserEntity sO = listUser.listUser.Find(p => p.id == sOId);
+                if ((user.id == sO.id || user.id == sO.employee_delegate) && this.status == (int)FIStatus.SPVSCREENING)
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -2301,15 +2408,18 @@ namespace PermitToWork.Models
         {
             int fOId = 0;
             Int32.TryParse(this.acc_fo, out fOId);
-            UserEntity fO = listUser.listUser.Find(p => p.id == fOId);
-            List<UserEntity> listDel = fO.GetDelegateFO(user, listUser);
-            if ((user.id == fO.id || user.id == fO.employee_delegate) && this.status == (int)FIStatus.SOAPPROVE)
+            if (fOId != 0)
             {
-                return true;
-            }
-            else if (listDel.Exists(p => p.id == user.id) && this.status == (int)FIStatus.SOAPPROVE)
-            {
-                return true;
+                UserEntity fO = listUser.listUser.Find(p => p.id == fOId);
+                List<UserEntity> listDel = fO.GetDelegateFO(user, listUser);
+                if ((user.id == fO.id || user.id == fO.employee_delegate) && this.status == (int)FIStatus.SOAPPROVE)
+                {
+                    return true;
+                }
+                else if (listDel.Exists(p => p.id == user.id) && this.status == (int)FIStatus.SOAPPROVE)
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -2318,10 +2428,13 @@ namespace PermitToWork.Models
         {
             int deptHeadId = 0;
             Int32.TryParse(this.acc_dept_head, out deptHeadId);
-            UserEntity deptHead = listUser.listUser.Find(p => p.id == deptHeadId);
-            if ((user.id == deptHead.id || user.id == deptHead.employee_delegate) && this.status == (int)FIStatus.FOAPPROVE)
+            if (deptHeadId != 0)
             {
-                return true;
+                UserEntity deptHead = listUser.listUser.Find(p => p.id == deptHeadId);
+                if ((user.id == deptHead.id || user.id == deptHead.employee_delegate) && this.status == (int)FIStatus.FOAPPROVE)
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -2332,19 +2445,25 @@ namespace PermitToWork.Models
             if (this.ptw.is_guest == 1)
             {
                 Int32.TryParse(this.spv, out requestorId);
-                UserEntity requestor = listUser.listUser.Find(p => p.id == requestorId);
-                if ((user.id == requestor.id || user.id == requestor.employee_delegate) && this.status == (int)FIStatus.DEPTFOAPPROVE)
+                if (requestorId != 0)
                 {
-                    return true;
+                    UserEntity requestor = listUser.listUser.Find(p => p.id == requestorId);
+                    if ((user.id == requestor.id || user.id == requestor.employee_delegate) && this.status == (int)FIStatus.DEPTFOAPPROVE)
+                    {
+                        return true;
+                    }
                 }
             }
             else
             {
                 Int32.TryParse(this.requestor, out requestorId);
-                UserEntity requestor = listUser.listUser.Find(p => p.id == requestorId);
-                if ((user.id == requestor.id || user.id == requestor.employee_delegate) && this.status == (int)FIStatus.DEPTFOAPPROVE)
+                if (requestorId != 0)
                 {
-                    return true;
+                    UserEntity requestor = listUser.listUser.Find(p => p.id == requestorId);
+                    if ((user.id == requestor.id || user.id == requestor.employee_delegate) && this.status == (int)FIStatus.DEPTFOAPPROVE)
+                    {
+                        return true;
+                    }
                 }
             }
             return false;
@@ -2354,10 +2473,13 @@ namespace PermitToWork.Models
         {
             int spvId = 0;
             Int32.TryParse(this.spv, out spvId);
-            UserEntity spv = listUser.listUser.Find(p => p.id == spvId);
-            if ((user.id == spv.id || user.id == spv.employee_delegate) && this.status == (int)FIStatus.CANFIREWATCHAPPROVE)
+            if (spvId != 0)
             {
-                return true;
+                UserEntity spv = listUser.listUser.Find(p => p.id == spvId);
+                if ((user.id == spv.id || user.id == spv.employee_delegate) && this.status == (int)FIStatus.CANFIREWATCHAPPROVE)
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -2392,19 +2514,25 @@ namespace PermitToWork.Models
             if (this.ptw.is_guest == 1)
             {
                 Int32.TryParse(this.spv, out requestorId);
-                UserEntity requestor = listUser.listUser.Find(p => p.id == requestorId);
-                if ((user.id == requestor.id || user.id == requestor.employee_delegate) && this.status == (int)FIStatus.CLOSING)
+                if (requestorId != 0)
                 {
-                    return true;
+                    UserEntity requestor = listUser.listUser.Find(p => p.id == requestorId);
+                    if ((user.id == requestor.id || user.id == requestor.employee_delegate) && this.status == (int)FIStatus.CLOSING)
+                    {
+                        return true;
+                    }
                 }
             }
             else
             {
                 Int32.TryParse(this.requestor, out requestorId);
-                UserEntity requestor = listUser.listUser.Find(p => p.id == requestorId);
-                if ((user.id == requestor.id || user.id == requestor.employee_delegate) && this.status == (int)FIStatus.CLOSING)
+                if (requestorId != 0)
                 {
-                    return true;
+                    UserEntity requestor = listUser.listUser.Find(p => p.id == requestorId);
+                    if ((user.id == requestor.id || user.id == requestor.employee_delegate) && this.status == (int)FIStatus.CLOSING)
+                    {
+                        return true;
+                    }
                 }
             }
             return false;
@@ -2414,10 +2542,13 @@ namespace PermitToWork.Models
         {
             int fireWatchId = 0;
             Int32.TryParse(this.fire_watch, out fireWatchId);
-            UserEntity fireWatch = listUser.listUser.Find(p => p.id == fireWatchId);
-            if ((user.id == fireWatch.id || user.id == fireWatch.employee_delegate) && this.status == (int)FIStatus.CANREQUESTORAPPROVE)
+            if (fireWatchId != 0)
             {
-                return true;
+                UserEntity fireWatch = listUser.listUser.Find(p => p.id == fireWatchId);
+                if ((user.id == fireWatch.id || user.id == fireWatch.employee_delegate) && this.status == (int)FIStatus.CANREQUESTORAPPROVE)
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -2426,10 +2557,13 @@ namespace PermitToWork.Models
         {
             int sOId = 0;
             Int32.TryParse(this.acc_so, out sOId);
-            UserEntity sO = listUser.listUser.Find(p => p.id == sOId);
-            if ((user.id == sO.id || user.id == sO.employee_delegate) && this.status == (int)FIStatus.CANSPVSCREENING)
+            if (sOId != 0)
             {
-                return true;
+                UserEntity sO = listUser.listUser.Find(p => p.id == sOId);
+                if ((user.id == sO.id || user.id == sO.employee_delegate) && this.status == (int)FIStatus.CANSPVSCREENING)
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -2438,15 +2572,18 @@ namespace PermitToWork.Models
         {
             int fOId = 0;
             Int32.TryParse(this.acc_fo, out fOId);
-            UserEntity fO = listUser.listUser.Find(p => p.id == fOId);
-            List<UserEntity> listDel = fO.GetDelegateFO(user, listUser);
-            if ((user.id == fO.id || user.id == fO.employee_delegate) && this.status == (int)FIStatus.CANSOAPPROVE)
+            if (fOId != 0)
             {
-                return true;
-            }
-            else if (listDel.Exists(p => p.id == user.id) && this.status == (int)FIStatus.CANSOAPPROVE)
-            {
-                return true;
+                UserEntity fO = listUser.listUser.Find(p => p.id == fOId);
+                List<UserEntity> listDel = fO.GetDelegateFO(user, listUser);
+                if ((user.id == fO.id || user.id == fO.employee_delegate) && this.status == (int)FIStatus.CANSOAPPROVE)
+                {
+                    return true;
+                }
+                else if (listDel.Exists(p => p.id == user.id) && this.status == (int)FIStatus.CANSOAPPROVE)
+                {
+                    return true;
+                }
             }
             return false;
         }
@@ -2455,10 +2592,13 @@ namespace PermitToWork.Models
         {
             int deptHeadId = 0;
             Int32.TryParse(this.acc_dept_head, out deptHeadId);
-            UserEntity deptHead = listUser.listUser.Find(p => p.id == deptHeadId);
-            if ((user.id == deptHead.id || user.id == deptHead.employee_delegate) && this.status == (int)FIStatus.CANFOAPPROVE)
+            if (deptHeadId != 0)
             {
-                return true;
+                UserEntity deptHead = listUser.listUser.Find(p => p.id == deptHeadId);
+                if ((user.id == deptHead.id || user.id == deptHead.employee_delegate) && this.status == (int)FIStatus.CANFOAPPROVE)
+                {
+                    return true;
+                }
             }
             return false;
         }
