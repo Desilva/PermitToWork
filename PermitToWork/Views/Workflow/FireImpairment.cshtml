@@ -105,21 +105,21 @@
 </div>
 
 <!-- CANCELLATION WORKFLOW -->
-<div id="workflow-cancellation">
+<div class="workflow-cancellation">
     <hr />
     <h3>Cancellation</h3>
-        
+
     <div class="workflow-container workflow-row-2">
         <div id="CANCELLATION_REQUESTOR" class="workflow-node workflow-col-1">
-	        <div class="workflow-box">
+            <div class="workflow-box">
                 <div class="workflow-text">Requestor Approve</div>
-	        </div>
+            </div>
             <div class="workflow-line">
                 @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
             </div>
         </div>
         <div id="CANCELLATION_FIREWATCH" class="workflow-node workflow-col-2">
-	        <div class="workflow-box">
+            <div class="workflow-box">
                 <div class="workflow-text">Fire Watch Approve</div>
             </div>
             <div class="workflow-line">
@@ -127,7 +127,7 @@
             </div>
         </div>
         <div id="CANCELLATION_SUPERVISOR" class="workflow-node workflow-col-3">
-	        <div class="workflow-box">
+            <div class="workflow-box">
                 <div class="workflow-text">Supervisor Screening</div>
             </div>
             <div class="workflow-line">
@@ -135,7 +135,7 @@
             </div>
         </div>
         <div id="CANCELLATION_SAFETY_OFFICER" class="workflow-node workflow-col-4">
-	        <div class="workflow-box">
+            <div class="workflow-box">
                 <div class="workflow-text">Safety Officer Approve</div>
             </div>
             <div class="workflow-line">
@@ -144,7 +144,6 @@
         </div>
 
         <!-- BRIDGING LINE -->
-    
         @{
             top = "22px";
             left = "1006px";
@@ -153,7 +152,7 @@
         <div class="workflow-bridge" style="@style">
             @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-vertical.svg")))
         </div>
-    
+
         @{
             top = "109px";
             left = "509px";
@@ -162,7 +161,7 @@
         <div class="workflow-bridge" style="@style">
             @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-horizontal-5x.svg")))
         </div>
-    
+
         @{
             left = "152px";
             style = string.Format("top: {0}; left: {1};", top, left);
@@ -170,7 +169,7 @@
         <div class="workflow-bridge" style="@style">
             @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-horizontal-5x.svg")))
         </div>
-    
+
         @{
             top = "121px";
             left = "152px";
@@ -179,24 +178,23 @@
         <div class="workflow-bridge" style="@style">
             @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-vertical.svg")))
         </div>
-    
+
         @{
             top = "207px";
             left = "152px";
             style = string.Format("top: {0}; left: {1};", top, left);
         }
         <div class="workflow-bridge" style="@style">
-                @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-horizontal.svg")))
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-horizontal.svg")))
         </div>
-    
-        <!-- ROW 2 -->
 
+        <!-- ROW 2 -->
         @{
             top = "195px";
             style = string.Format("top: {0};", top);
         }
         <div id="CANCELLATION_FACILITY_OWNER" class="workflow-node workflow-col-2" style="@style">
-	        <div class="workflow-box">
+            <div class="workflow-box">
                 <div class="workflow-text">Facility Owner Approve</div>
             </div>
             <div class="workflow-line">
@@ -204,7 +202,7 @@
             </div>
         </div>
         <div id="CANCELLATION_DEPT_HEAD_FO" class="workflow-node workflow-col-3" style="@style">
-	        <div class="workflow-box">
+            <div class="workflow-box">
                 <div class="workflow-text">Dept. Head FO Approve</div>
             </div>
         </div>
