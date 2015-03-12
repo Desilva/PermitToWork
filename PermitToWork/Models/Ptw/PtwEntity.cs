@@ -1015,14 +1015,14 @@ namespace PermitToWork.Models.Ptw
         {
             this.acc_supervisor = supervisor.id.ToString();
             this.can_supervisor = supervisor.id.ToString();
-            this.acc_supervisor_delegate = supervisor.employee_delegate.ToString();
-            this.can_supervisor_delegate = supervisor.employee_delegate.ToString();
+            //this.acc_supervisor_delegate = supervisor.employee_delegate.ToString();
+            //this.can_supervisor_delegate = supervisor.employee_delegate.ToString();
 
             permit_to_work ptw = this.db.permit_to_work.Find(this.id);
             ptw.acc_supervisor = this.acc_supervisor;
             ptw.can_supervisor = this.can_supervisor;
-            ptw.acc_supervisor_delegate = this.acc_supervisor_delegate;
-            ptw.can_supervisor_delegate = this.can_supervisor_delegate;
+            //ptw.acc_supervisor_delegate = this.acc_supervisor_delegate;
+            //ptw.can_supervisor_delegate = this.can_supervisor_delegate;
 
             this.db.Entry(ptw).State = EntityState.Modified;
 

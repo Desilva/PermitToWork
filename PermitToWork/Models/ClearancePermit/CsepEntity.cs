@@ -2102,7 +2102,7 @@ namespace PermitToWork.Models.ClearancePermit
 
                 return "200";
             }
-            else if (user.id.ToString() == this.acc_supervisor_delegate)
+            else
             {
                 //ptw.acc_assessor = this.acc_assessor;
                 //ptw.acc_assessor_delegate = this.acc_assessor_delegate;
@@ -2115,10 +2115,6 @@ namespace PermitToWork.Models.ClearancePermit
                 this.db.SaveChanges();
 
                 return "201";
-            }
-            else
-            {
-                return "400";
             }
         }
 
@@ -2168,7 +2164,7 @@ namespace PermitToWork.Models.ClearancePermit
 
                 return "200";
             }
-            else if (user.id.ToString() == this.acc_fire_watch_delegate)
+            else
             {
                 //ptw.acc_fo = this.acc_fo;
                 //ptw.acc_fo_delegate = this.acc_fo_delegate;
@@ -2180,10 +2176,6 @@ namespace PermitToWork.Models.ClearancePermit
                 this.db.SaveChanges();
 
                 return "201";
-            }
-            else
-            {
-                return "400";
             }
         }
 
@@ -2521,7 +2513,7 @@ namespace PermitToWork.Models.ClearancePermit
 
                 return "200";
             }
-            else if (user.id.ToString() == this.can_supervisor_delegate)
+            else
             {
                 //ptw.acc_assessor = this.acc_assessor;
                 //ptw.acc_assessor_delegate = this.acc_assessor_delegate;
@@ -2534,10 +2526,6 @@ namespace PermitToWork.Models.ClearancePermit
                 this.db.SaveChanges();
 
                 return "201";
-            }
-            else
-            {
-                return "400";
             }
         }
 
@@ -2587,7 +2575,7 @@ namespace PermitToWork.Models.ClearancePermit
 
                 return "200";
             }
-            else if (user.id.ToString() == this.can_fire_watch_delegate)
+            else
             {
                 //ptw.acc_fo = this.acc_fo;
                 //ptw.acc_fo_delegate = this.acc_fo_delegate;
@@ -2599,10 +2587,6 @@ namespace PermitToWork.Models.ClearancePermit
                 this.db.SaveChanges();
 
                 return "201";
-            }
-            else
-            {
-                return "400";
             }
         }
 
