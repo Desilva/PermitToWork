@@ -5,6 +5,7 @@ using PermitToWork.Models.Master;
 using PermitToWork.Models.Radiography;
 using PermitToWork.Models.SafetyBriefing;
 using PermitToWork.Models.User;
+using PermitToWork.Models.Workflow;
 using PermitToWork.Models.WorkingHeight;
 using PermitToWork.Utilities;
 using System;
@@ -81,6 +82,8 @@ namespace PermitToWork.Models.Ptw
 
         public Dictionary<string, UserEntity> userInPTW { get; set; }
 
+        public WorkflowNodeServiceModel workflowNodeService { get; set; }
+
         public enum statusPtw
         {
             CREATE, // 0
@@ -137,6 +140,7 @@ namespace PermitToWork.Models.Ptw
             this.db = new star_energy_ptwEntities();
             this.cPermit = new Dictionary<string, IClearancePermitEntity>();
             this.userInPTW = new Dictionary<string, UserEntity>();
+            this.workflowNodeService = new WorkflowNodeServiceModel();
         }
 
         public PtwEntity(int id, UserEntity user, star_energy_ptwEntities db = null)
@@ -1164,6 +1168,9 @@ namespace PermitToWork.Models.Ptw
             ptw.can_assessor_delegate = this.can_assessor_delegate;
 
             this.db.Entry(ptw).State = EntityState.Modified;
+            // create node
+            workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString(),
+                WorkflowNodeServiceModel.GeneralPermitNodeName.CHOOSING_ASSESSOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
             return this.db.SaveChanges();
         }
@@ -1337,6 +1344,9 @@ namespace PermitToWork.Models.Ptw
                 ptw.status = (int)statusPtw.CLEARANCECOMPLETE;
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString(),
+                    WorkflowNodeServiceModel.GeneralPermitNodeName.REQUESTOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                 return "200";
             }
@@ -1377,6 +1387,9 @@ namespace PermitToWork.Models.Ptw
                 }
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString(),
+                    WorkflowNodeServiceModel.GeneralPermitNodeName.SUPERVISOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                 return "200";
             } 
@@ -1398,6 +1411,9 @@ namespace PermitToWork.Models.Ptw
                 }
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString(),
+                    WorkflowNodeServiceModel.GeneralPermitNodeName.SUPERVISOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                 return "201";
             }
@@ -1416,6 +1432,9 @@ namespace PermitToWork.Models.Ptw
                 ptw.status = (int)statusPtw.CREATE;
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString(),
+                    WorkflowNodeServiceModel.GeneralPermitNodeName.SUPERVISOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
 
                 return "200";
             }
@@ -1451,6 +1470,9 @@ namespace PermitToWork.Models.Ptw
                     ptw.status = (int)statusPtw.ACCASS;
                     this.db.Entry(ptw).State = EntityState.Modified;
                     this.db.SaveChanges();
+                    // create node
+                    workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString(),
+                        WorkflowNodeServiceModel.GeneralPermitNodeName.ASSESSOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                 }
                 catch (DbEntityValidationException e)
@@ -1480,6 +1502,9 @@ namespace PermitToWork.Models.Ptw
                 ptw.status = (int)statusPtw.ACCASS;
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString(),
+                    WorkflowNodeServiceModel.GeneralPermitNodeName.ASSESSOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                 return "201";
             }
@@ -1499,6 +1524,9 @@ namespace PermitToWork.Models.Ptw
                 ptw.status = (int)statusPtw.CLEARANCECOMPLETE;
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString(),
+                    WorkflowNodeServiceModel.GeneralPermitNodeName.SUPERVISOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
 
                 return "200";
             }
@@ -1527,6 +1555,9 @@ namespace PermitToWork.Models.Ptw
                 ptw.status = (int)statusPtw.ACCFO;
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString(),
+                    WorkflowNodeServiceModel.GeneralPermitNodeName.FACILITY_OWNER_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                 return "200";
             }
@@ -1540,6 +1571,9 @@ namespace PermitToWork.Models.Ptw
                 ptw.status = (int)statusPtw.ACCFO;
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString(),
+                    WorkflowNodeServiceModel.GeneralPermitNodeName.FACILITY_OWNER_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                 return "200";
             }
@@ -1559,6 +1593,9 @@ namespace PermitToWork.Models.Ptw
             ptw.status = (int)statusPtw.CLEARANCECOMPLETE;
             this.db.Entry(ptw).State = EntityState.Modified;
             this.db.SaveChanges();
+            // create node
+            workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString(),
+                WorkflowNodeServiceModel.GeneralPermitNodeName.FACILITY_OWNER_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
 
             return "200";
         }
@@ -1576,6 +1613,9 @@ namespace PermitToWork.Models.Ptw
                 ptw.status = (int)statusPtw.CANREQ;
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString(),
+                    WorkflowNodeServiceModel.GeneralPermitNodeName.CANCELLATION_REQUESTOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                 if (this.id_parent_ptw != null)
                 {
@@ -1609,6 +1649,9 @@ namespace PermitToWork.Models.Ptw
                 ptw.status = (int)statusPtw.CANSPV;
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString(),
+                    WorkflowNodeServiceModel.GeneralPermitNodeName.CANCELLATION_SUPERVISOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                 if (this.id_parent_ptw != null)
                 {
                     PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value, user);
@@ -1627,7 +1670,9 @@ namespace PermitToWork.Models.Ptw
                 ptw.status = (int)statusPtw.CANSPV;
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
-
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString(),
+                    WorkflowNodeServiceModel.GeneralPermitNodeName.CANCELLATION_SUPERVISOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                 if (this.id_parent_ptw != null)
                 {
                     PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value, user);
@@ -1652,6 +1697,9 @@ namespace PermitToWork.Models.Ptw
                 ptw.status = (int)statusPtw.CANCEL;
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString(),
+                    WorkflowNodeServiceModel.GeneralPermitNodeName.CANCELLATION_SUPERVISOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                 if (this.id_parent_ptw != null)
                 {
                     PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value, user);
@@ -1686,6 +1734,9 @@ namespace PermitToWork.Models.Ptw
                 ptw.status = (int)statusPtw.CANASS;
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString(),
+                    WorkflowNodeServiceModel.GeneralPermitNodeName.CANCELLATION_ASSESSOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                 if (this.id_parent_ptw != null)
                 {
                     PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value, user);
@@ -1704,6 +1755,9 @@ namespace PermitToWork.Models.Ptw
                 ptw.status = (int)statusPtw.CANASS;
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString(),
+                    WorkflowNodeServiceModel.GeneralPermitNodeName.CANCELLATION_ASSESSOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                 if (this.id_parent_ptw != null)
                 {
                     PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value, user);
@@ -1728,6 +1782,9 @@ namespace PermitToWork.Models.Ptw
                 ptw.status = (int)statusPtw.CANREQ;
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString(),
+                    WorkflowNodeServiceModel.GeneralPermitNodeName.CANCELLATION_ASSESSOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                 if (this.id_parent_ptw != null)
                 {
                     PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value, user);
@@ -1760,6 +1817,9 @@ namespace PermitToWork.Models.Ptw
                 ptw.status = (int)statusPtw.CANFO;
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString(),
+                    WorkflowNodeServiceModel.GeneralPermitNodeName.CANCELLATION_FACILITY_OWNER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                 if (this.id_parent_ptw != null)
                 {
                     PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value, user);
@@ -1777,6 +1837,9 @@ namespace PermitToWork.Models.Ptw
                 ptw.status = (int)statusPtw.CANFO;
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString(),
+                    WorkflowNodeServiceModel.GeneralPermitNodeName.CANCELLATION_FACILITY_OWNER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                 if (this.id_parent_ptw != null)
                 {
                     PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value, user);
@@ -1804,6 +1867,9 @@ namespace PermitToWork.Models.Ptw
                 ptw.status = (int)statusPtw.CANREQ;
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString(),
+                    WorkflowNodeServiceModel.GeneralPermitNodeName.CANCELLATION_FACILITY_OWNER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                 if (this.id_parent_ptw != null)
                 {
                     PtwEntity pt = new PtwEntity(this.id_parent_ptw.Value, user);

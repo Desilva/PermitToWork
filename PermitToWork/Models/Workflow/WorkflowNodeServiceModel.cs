@@ -68,6 +68,7 @@ namespace PermitToWork.Models.Workflow
             CANCELLATION_REQUESTOR,
             CANCELLATION_FIREWATCH,
             CANCELLATION_SUPERVISOR,
+            CANCELLATION_SAFETY_OFFICER,
             CANCELLATION_FACILITY_OWNER,
             CANCELLATION_DEPT_HEAD_FO
         }

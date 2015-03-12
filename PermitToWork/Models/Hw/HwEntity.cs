@@ -2027,7 +2027,7 @@ namespace PermitToWork.Models.Hw
             sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please Screening Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
             // create node
             workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString(),
-                WorkflowNodeServiceModel.CSEPNodeName.REQUESTOR_INPUT.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
+                WorkflowNodeServiceModel.HotWorkNodeName.REQUESTOR_INPUT.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
             sendEmail.Send(s, message, subject);
 
@@ -2074,7 +2074,7 @@ namespace PermitToWork.Models.Hw
             sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please Screening Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
             // create node
             workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString(),
-                WorkflowNodeServiceModel.HotWorkNodeName.REQUESTOR_INPUT.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
+                WorkflowNodeServiceModel.HotWorkNodeName.SUPERVISOR_SCREENING.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
             return "200";
         }
@@ -2348,11 +2348,17 @@ namespace PermitToWork.Models.Hw
             {
                 hw.acc_work_leader_approve = "a" + user.signature;
                 hw.status = (int)statusHW.ACCWORKLEADER;
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString(),
+                    WorkflowNodeServiceModel.HotWorkNodeName.REQUESTOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
             }
             else if (is_guest && extension == 0 && user.id.ToString() == this.acc_supervisor)
             {
                 hw.acc_work_leader_approve = hw.permit_to_work.acc_ptw_requestor_approve;
                 hw.status = (int)statusHW.ACCWORKLEADER;
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString(),
+                    WorkflowNodeServiceModel.HotWorkNodeName.REQUESTOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
             } else if (extension == 0 && random_pin != null && user.id.ToString() == this.acc_supervisor)
             {
                 if (random_pin == this.random_pin)
@@ -2367,6 +2373,9 @@ namespace PermitToWork.Models.Hw
                         hw.acc_work_leader_approve = "a" + user.signature;
                     }
                     hw.status = (int)statusHW.ACCWORKLEADER;
+                    // create node
+                    workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString(),
+                        WorkflowNodeServiceModel.HotWorkNodeName.REQUESTOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                 }
                 else
                 {
@@ -2501,6 +2510,9 @@ namespace PermitToWork.Models.Hw
                 hw.status = (int)statusHW.ACCSPV;
                 this.db.Entry(hw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString(),
+                    WorkflowNodeServiceModel.HotWorkNodeName.SUPERVISOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                 return "200";
             }
@@ -2515,6 +2527,9 @@ namespace PermitToWork.Models.Hw
                 hw.status = (int)statusHW.ACCSPV;
                 this.db.Entry(hw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString(),
+                    WorkflowNodeServiceModel.HotWorkNodeName.SUPERVISOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                 return "201";
             }
@@ -2536,6 +2551,9 @@ namespace PermitToWork.Models.Hw
                 hw.status = (int)statusHW.GASTESTER;
                 this.db.Entry(hw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString(),
+                    WorkflowNodeServiceModel.HotWorkNodeName.SUPERVISOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
 
                 return "200";
             }
@@ -2625,6 +2643,9 @@ namespace PermitToWork.Models.Hw
                     hw.status = (int)statusHW.ACCFO;
                     this.db.Entry(hw).State = EntityState.Modified;
                     this.db.SaveChanges();
+                    // create node
+                    workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString(),
+                        WorkflowNodeServiceModel.HotWorkNodeName.FACILITY_OWNER_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                     
                     return "200";
                 }
@@ -2635,6 +2656,9 @@ namespace PermitToWork.Models.Hw
                     hw.status = (int)statusHW.ACCFO;
                     this.db.Entry(hw).State = EntityState.Modified;
                     this.db.SaveChanges();
+                    // create node
+                    workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString(),
+                        WorkflowNodeServiceModel.HotWorkNodeName.FACILITY_OWNER_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                     return "201";
                 }
@@ -2797,6 +2821,9 @@ namespace PermitToWork.Models.Hw
                 hw.status = (int)statusHW.ACCWORKLEADER;
                 this.db.Entry(hw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString(),
+                    WorkflowNodeServiceModel.HotWorkNodeName.FACILITY_OWNER_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
 
                 return "200";
             }
@@ -2893,6 +2920,9 @@ namespace PermitToWork.Models.Hw
             }
             this.db.Entry(hw).State = EntityState.Modified;
             this.db.SaveChanges();
+            // create node
+            workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString(),
+                WorkflowNodeServiceModel.HotWorkNodeName.CANCELLATION_INITIATOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
             return "200";
         }
 
@@ -2917,6 +2947,9 @@ namespace PermitToWork.Models.Hw
                 hw.status = (int)statusHW.CANSPV;
                 this.db.Entry(hw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString(),
+                    WorkflowNodeServiceModel.HotWorkNodeName.CANCELLATION_SUPERVISOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                 return "200";
             }
@@ -2931,6 +2964,9 @@ namespace PermitToWork.Models.Hw
                 hw.status = (int)statusHW.CANSPV;
                 this.db.Entry(hw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString(),
+                    WorkflowNodeServiceModel.HotWorkNodeName.CANCELLATION_SUPERVISOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                 return "201";
             }
@@ -2951,6 +2987,9 @@ namespace PermitToWork.Models.Hw
                 hw.status = (int)statusHW.CANCEL;
                 this.db.Entry(hw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString(),
+                    WorkflowNodeServiceModel.HotWorkNodeName.CANCELLATION_SUPERVISOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
 
                 return "200";
             }
@@ -3034,6 +3073,9 @@ namespace PermitToWork.Models.Hw
                 hw.status = (int)statusHW.CANFO;
                 this.db.Entry(hw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString(),
+                    WorkflowNodeServiceModel.HotWorkNodeName.CANCELLATION_FACILITY_OWNER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                 return "200";
             }
             else
@@ -3043,6 +3085,9 @@ namespace PermitToWork.Models.Hw
                 hw.status = (int)statusHW.CANFO;
                 this.db.Entry(hw).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString(),
+                    WorkflowNodeServiceModel.HotWorkNodeName.CANCELLATION_FACILITY_OWNER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                 return "201";
             }
         }
@@ -3057,6 +3102,9 @@ namespace PermitToWork.Models.Hw
             hw.status = (int)statusHW.CANWORKLEADER;
             this.db.Entry(hw).State = EntityState.Modified;
             this.db.SaveChanges();
+            // create node
+            workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString(),
+                WorkflowNodeServiceModel.HotWorkNodeName.CANCELLATION_FACILITY_OWNER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
 
             return "200";
         }
