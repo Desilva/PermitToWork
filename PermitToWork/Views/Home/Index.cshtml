@@ -86,7 +86,7 @@
     <a class="btn btn-success" href="@Url.Action("Index", "Print")?id=#= id #&type=0&no=#= ptw_no #">Print</a>
     #}#
     <input type="button" class="btn btn-success" value="Log" onclick="logPtw(#= id #)"/>
-    
+    <a href="javascript:" class="btn btn-default" title="Show Workflow" onclick="showWorkflowGeneralPermit(#= id #, '#= ptw_no #')"><img class="btn-image" src="@Url.Content("~/Content/Images/glyphicons-427-git-merge.png")" alt="workflow" /></a>   
 </script>
 <script type="text/x-kendo-template" id="warning-template">
     # if (will_overdue) { #
@@ -125,6 +125,10 @@
 
 <script id="workflow-fire-impairment-template" type="text/x-kendo-template">
      @{ Html.RenderPartial("~/Views/Workflow/FireImpairment.cshtml"); }
+</script>
+
+<script id="workflow-general-permit-template" type="text/x-kendo-template">
+     @{ Html.RenderPartial("~/Views/Workflow/GeneralPermit.cshtml"); }
 </script>
 
 <script>
@@ -421,6 +425,22 @@
         }
 
         workflowObject.workflowDiagram('reload', id, num);
+        workflowObject.workflowDiagram('show');
+    }
+
+    //general permit workflow
+    function showWorkflowGeneralPermit(id, num) {
+        var workflowObject = $('#workflow-general-permit');
+
+        if (!workflowObject.length) { //create element if not exist
+            workflowObject = $(document.createElement('div')).attr('id', 'workflow-general-permit').appendTo('body');
+            workflowObject.workflowDiagram({
+                template: kendo.template($("#workflow-general-permit-template").html()),
+                url: '@Url.Action("GeneralPermit", "Workflow")',
+            });
+        }
+
+        //workflowObject.workflowDiagram('reload', id, num);
         workflowObject.workflowDiagram('show');
     }
 </script>
