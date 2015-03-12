@@ -702,6 +702,7 @@
       <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Models\Workflow\GeneralPermitModel.cs" />
     <Compile Include="Models\Workflow\FireImpairmentModel.cs" />
     <Compile Include="Models\Workflow\HotWorkModel.cs" />
     <Compile Include="Models\Workflow\CSEPModel.cs" />
@@ -863,6 +864,7 @@
     <Content Include="Content\unicorn.red-green.css" />
     <Content Include="Content\unicorn.red.css" />
     <Content Include="Content\uniform.css" />
+    <Content Include="Content\workflow.css" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="Img\blank.png" />
@@ -1162,6 +1164,7 @@
     <Content Include="Views\Workflow\CSEP.cshtml" />
     <Content Include="Views\Workflow\HotWork.cshtml" />
     <Content Include="Views\Workflow\FireImpairment.cshtml" />
+    <Content Include="Views\Workflow\GeneralPermit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

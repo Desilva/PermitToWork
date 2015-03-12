@@ -4,7 +4,7 @@
     string style = "";
 }
 <div class="workflow-container workflow-row-2">
-    <div id="REQUESTOR_APPROVE" class="workflow-node workflow-col-1">
+    <div data-node-name="REQUESTOR_APPROVE" class="workflow-node workflow-col-1">
 	    <div class="workflow-box">
             <div class="workflow-text">Requestor Approve</div>
 	    </div>
@@ -12,7 +12,7 @@
             @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
         </div>
     </div>
-    <div id="FIREWATCH_APPROVE" class="workflow-node workflow-col-2">
+    <div data-node-name="SUPERVISOR_APPROVE" class="workflow-node workflow-col-2">
 	    <div class="workflow-box">
             <div class="workflow-text">Supervisor Approve</div>
         </div>
@@ -37,7 +37,7 @@
         left = "900px";
         style = string.Format("left: {0};", left);
     }
-    <div id="SUPERVISOR_SCREENING" class="workflow-node workflow-col-4" style="@style">
+    <div data-node-name="ASSESSOR_APPROVE" class="workflow-node workflow-col-4" style="@style">
 	    <div class="workflow-box">
             <div class="workflow-text">Assessor Approve</div>
         </div>
@@ -50,7 +50,7 @@
         left = "1152px";
         style = string.Format("left: {0};", left);
     }
-    <div id="SAFETY_OFFICER_APPROVE" class="workflow-node workflow-col-5" style="@style">
+    <div data-node-name="FACILITY_OWNER_APPROVE" class="workflow-node workflow-col-5" style="@style">
 	    <div class="workflow-box">
             <div class="workflow-text">Facility Owner Approve</div>
         </div>
@@ -96,7 +96,7 @@
         left = "552px";
         style = string.Format("top: {0}; left: {1};", top, left);
     }
-    <div id="CHOOSING_SO_DEPT_HEAD_FO" class="workflow-node workflow-col-4" style="@style">
+    <div data-node-name="CHOOSING_ASSESSOR" class="workflow-node workflow-col-4" style="@style">
 	    <div class="workflow-box">
             <div class="workflow-text">Choosing Assessor</div>
         </div>
@@ -109,7 +109,7 @@
     <h3>Cancellation</h3>
         
     <div class="workflow-container workflow-row-2">
-        <div id="CANCELLATION_REQUESTOR" class="workflow-node workflow-col-1">
+        <div data-node-name="CANCELLATION_REQUESTOR" class="workflow-node workflow-col-1">
 	        <div class="workflow-box">
                 <div class="workflow-text">Requestor Approve</div>
 	        </div>
@@ -117,7 +117,7 @@
                 @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
             </div>
         </div>
-        <div id="CANCELLATION_FIREWATCH" class="workflow-node workflow-col-2">
+        <div data-node-name="CANCELLATION_SUPERVISOR" class="workflow-node workflow-col-2">
 	        <div class="workflow-box">
                 <div class="workflow-text">Supervisor Approve</div>
             </div>
@@ -125,7 +125,7 @@
                 @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
             </div>
         </div>
-        <div id="CANCELLATION_SUPERVISOR" class="workflow-node workflow-col-3">
+        <div data-node-name="CANCELLATION_ASSESSOR" class="workflow-node workflow-col-3">
 	        <div class="workflow-box">
                 <div class="workflow-text">Assessor Screening</div>
             </div>
@@ -133,7 +133,7 @@
                 @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
             </div>
         </div>
-        <div id="CANCELLATION_SAFETY_OFFICER" class="workflow-node workflow-col-4">
+        <div data-node-name="CANCELLATION_FACILITY_OWNER" class="workflow-node workflow-col-4">
 	        <div class="workflow-box">
                 <div class="workflow-text">Facility Owner Approve</div>
             </div>

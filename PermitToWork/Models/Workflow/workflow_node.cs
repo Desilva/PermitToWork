@@ -73,6 +73,26 @@ namespace PermitToWork.Models.Workflow
                 };
             }
 
+            //dummy data GENERAL PERMIT
+            if (permitName == WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString())
+            {
+                result = new List<workflow_node> 
+                {
+                    new workflow_node { id = 1, id_report = 105, node_name = "REQUESTOR_APPROVE", report_type = "GENERALPERMIT", status = 2 },
+                    new workflow_node { id = 2, id_report = 105, node_name = "SUPERVISOR_APPROVE", report_type = "GENERALPERMIT", status = 2 },
+                    new workflow_node { id = 3, id_report = 105, node_name = "CHOOSING_ASSESSOR", report_type = "GENERALPERMIT", status = 2 },
+                    new workflow_node { id = 4, id_report = 105, node_name = "ASSESSOR_APPROVE", report_type = "GENERALPERMIT", status = 3 },
+                    new workflow_node { id = 5, id_report = 105, node_name = "SUPERVISOR_APPROVE", report_type = "GENERALPERMIT", status = 3 },
+                    new workflow_node { id = 6, id_report = 105, node_name = "REQUESTOR_APPROVE", report_type = "GENERALPERMIT", status = 2 },
+                    new workflow_node { id = 7, id_report = 105, node_name = "SUPERVISOR_APPROVE", report_type = "GENERALPERMIT", status = 2 },
+                    new workflow_node { id = 8, id_report = 105, node_name = "ASSESSOR_APPROVE", report_type = "GENERALPERMIT", status = 2 },
+                    new workflow_node { id = 9, id_report = 105, node_name = "CANCELLATION_REQUESTOR", report_type = "GENERALPERMIT", status = 2 },
+                    new workflow_node { id = 10, id_report = 105, node_name = "CANCELLATION_SUPERVISOR", report_type = "GENERALPERMIT", status = 2 },
+                    new workflow_node { id = 11, id_report = 105, node_name = "CANCELLATION_ASSESSOR", report_type = "GENERALPERMIT", status = 2 },
+                    new workflow_node { id = 12, id_report = 105, node_name = "CANCELLATION_FACILITY_OWNER", report_type = "GENERALPERMIT", status = 2 },
+                };
+            }
+
             //WorkflowNodeServiceModel workflowNodeServiceModel = new WorkflowNodeServiceModel();
             //result = workflowNodeServiceModel.GetWorkflow(permitId, permitName);
 
