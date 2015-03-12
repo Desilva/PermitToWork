@@ -8,7 +8,7 @@ namespace PermitToWork.Models.Workflow
     public class WorkflowHelper
     {
         /// <summary>
-        /// memproses nodes dengan diagram berbentuk seial
+        /// memproses nodes dengan diagram berbentuk serial dan TIDAK ADA kasus khusus
         /// </summary>
         /// <param name="signals">signal pekerjaan PTW</param>
         /// <param name="nodeNames">nama node terurut sesuai diagram</param>

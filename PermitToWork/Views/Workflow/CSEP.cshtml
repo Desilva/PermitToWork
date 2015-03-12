@@ -123,7 +123,7 @@
     <h3>Cancellation</h3>
     <div id="CANCELLATION_INITIATOR" class="workflow-node workflow-col-1">
 	    <div class="workflow-box">
-            <div class="workflow-text">Initiator</div>
+            <div class="workflow-text">Requestor Approve</div>
 	    </div>
         <div class="workflow-line">
             @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
@@ -131,7 +131,7 @@
     </div>
     <div id="CANCELLATION_SUPERVISOR" class="workflow-node workflow-col-2">
 	    <div class="workflow-box">
-            <div class="workflow-text">Supervisor Screening</div>
+            <div class="workflow-text">Supervisor Approve</div>
         </div>
         <div class="workflow-line">
             @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
@@ -139,7 +139,7 @@
     </div>
     <div id="CANCELLATION_FACILITY_OWNER" class="workflow-node workflow-col-3">
 	    <div class="workflow-box">
-            <div class="workflow-text">Facility Owner Screening</div>
+            <div class="workflow-text">Facility Owner Approve</div>
         </div>
     </div>
 </div>

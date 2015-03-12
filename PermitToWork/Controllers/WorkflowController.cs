@@ -16,5 +16,12 @@ namespace PermitToWork.Controllers
 
             return new JavaScriptSerializer().Serialize(model.NodeList);
         }
+
+        public string HotWork(int id)
+        {
+            HotWorkModel model = new HotWorkModel(new workflow_node().FindAllNode(id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString()));
+
+            return new JavaScriptSerializer().Serialize(model.NodeList);
+        }
     }
 }
