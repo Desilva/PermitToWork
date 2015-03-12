@@ -1,0 +1,126 @@
+﻿@{
+    string top = "";
+    string left = "";
+    string style = "";
+}
+<div class="workflow-container">
+    <div id="REQUESTOR_INPUT" class="workflow-node workflow-col-one">
+	    <div class="workflow-box">
+            <div class="workflow-text">Initiator</div>
+	    </div>
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+        </div>
+    </div>
+    <div id="SUPERVISOR_SCREENING" class="workflow-node workflow-col-two">
+	    <div class="workflow-box">
+            <div class="workflow-text">Supervisor Screening</div>
+        </div>
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+        </div>
+    </div>
+    <div id="FACILITY_OWNER_SCREENING" class="workflow-node workflow-col-three">
+	    <div class="workflow-box">
+            <div class="workflow-text">Facility Owner Screening</div>
+        </div>
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+        </div>
+    </div>
+    <div id="GAS_TESTING" class="workflow-node workflow-col-four">
+	    <div class="workflow-box">
+            <div class="workflow-text">Gas Testing</div>
+        </div>
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-horizontal.svg")))
+        </div>
+    </div>
+
+    <!-- BRIDGING LINE -->
+    
+    @{
+        top = "22px";
+        left = "1007px";
+        style = string.Format("top: {0}; left: {1};", top, left);
+    }
+    <div class="workflow-bridge" style="@style">
+        @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-vertical.svg")))
+    </div>
+    
+    @{
+        top = "22px";
+        left = "1006px";
+        style = string.Format("top: {0}; left: {1};", top, left);
+    }
+    <div class="workflow-bridge" style="@style">
+        @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-vertical.svg")))
+    </div>
+    
+    @{
+        top = "109px";
+        left = "509px";
+        style = string.Format("top: {0}; left: {1};", top, left);
+    }
+    <div class="workflow-bridge" style="@style">
+        @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-horizontal-5x.svg")))
+    </div>
+    
+    @{
+        left = "152px";
+        style = string.Format("top: {0}; left: {1};", top, left);
+    }
+    <div class="workflow-bridge" style="@style">
+        @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-horizontal-5x.svg")))
+    </div>
+    
+    @{
+        top = "121px";
+        left = "152px";
+        style = string.Format("top: {0}; left: {1};", top, left);
+    }
+    <div class="workflow-bridge" style="@style">
+        @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-vertical.svg")))
+    </div>
+    
+    @{
+        top = "207px";
+        left = "152px";
+        style = string.Format("top: {0}; left: {1};", top, left);
+    }
+    <div class="workflow-bridge" style="@style">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-horizontal.svg")))
+    </div>
+    
+    <!-- ROW 2 -->
+
+    @{
+        top = "195px";
+        style = string.Format("top: {0};", top);
+    }
+    <div id="REQUESTOR_APPROVE" class="workflow-node workflow-col-two" style="@style">
+	    <div class="workflow-box">
+            <div class="workflow-text">Requestor Approve</div>
+        </div>
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+        </div>
+    </div>
+    @{
+    }
+    <div id="SUPERVISOR_APPROVE" class="workflow-node workflow-col-three" style="@style">
+	    <div class="workflow-box">
+            <div class="workflow-text">Supervisor Approve</div>
+        </div>
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+        </div>
+    </div>
+    @{
+    }
+    <div id="FACILITY_OWNER_APPROVE" class="workflow-node workflow-col-four" style="@style">
+	    <div class="workflow-box">
+            <div class="workflow-text">Facility Owner Approve</div>
+        </div>
+    </div>
+</div>

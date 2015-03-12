@@ -149,6 +149,7 @@
     <Compile Include="Controllers\PtwController.cs" />
     <Compile Include="Controllers\RadiographyController.cs" />
     <Compile Include="Controllers\SafetyBriefingController.cs" />
+    <Compile Include="Controllers\WorkflowController.cs" />
     <Compile Include="Models\audit.cs">
       <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
       <SubType>Code</SubType>
@@ -701,6 +702,9 @@
       <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Models\Workflow\CSEPModel.cs" />
+    <Compile Include="Models\Workflow\WorkflowNodePresentationStub.cs" />
+    <Compile Include="Models\Workflow\workflow_node.cs" />
     <Compile Include="Models\WorkingHeight\WorkingHeightEntity.cs" />
     <Compile Include="Models\working_height.cs">
       <DependentUpon>StarEnergyPTW.tt</DependentUpon>
@@ -763,6 +767,8 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\colorpicker.css" />
+    <Content Include="Content\Images\glyphicons-427-git-merge.png" />
+    <Content Include="Content\workflow.css" />
     <Content Include="Content\Images\loading.gif" />
     <Content Include="Content\kendo.common.min.css" />
     <Content Include="Content\kendo.metro.min.css" />
@@ -775,6 +781,17 @@
     <Content Include="Content\Metro\slider-v.gif" />
     <Content Include="Content\Metro\sprite.png" />
     <Content Include="Content\Metro\sprite_2x.png" />
+    <Content Include="Content\svg\box.svg" />
+    <Content Include="Content\svg\down-arrow.svg" />
+    <Content Include="Content\svg\left-arrow.svg" />
+    <Content Include="Content\svg\line-horizontal-3x.svg" />
+    <Content Include="Content\svg\line-horizontal-5x.svg" />
+    <Content Include="Content\svg\line-horizontal.svg" />
+    <Content Include="Content\svg\line-vertical-3x.svg" />
+    <Content Include="Content\svg\line-vertical-5x.svg" />
+    <Content Include="Content\svg\line-vertical.svg" />
+    <Content Include="Content\svg\right-arrow.svg" />
+    <Content Include="Content\svg\up-arrow.svg" />
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -1016,6 +1033,7 @@
     <Content Include="Scripts\jquery.wizard.js" />
     <Content Include="Scripts\kendo.all.min.js" />
     <Content Include="Scripts\kendo.web.min.js" />
+    <Content Include="Scripts\lib\jquery.workflow-diagram.js" />
     <Content Include="Scripts\modernizr-2.5.3.js" />
     <Content Include="Scripts\select2.js" />
     <Content Include="Scripts\select2.min.js" />
@@ -1138,6 +1156,7 @@
     <Content Include="Views\MasterRequestedPtwNo\Index.cshtml" />
     <Content Include="Views\MasterDelegateFO\Index.cshtml" />
     <Content Include="Views\Home\Page.cshtml" />
+    <Content Include="Views\Workflow\CSEP.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

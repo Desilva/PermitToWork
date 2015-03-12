@@ -101,8 +101,8 @@
         All Clearance Permit Related:
         <ul>
             #if(loto_id != null){#<li>LOTO: <a href="\#" onclick="event.preventDefault();goToLoto(#= id #)" class="btn btn-primary">Go To LOTO Permit</a><br />Status : #= loto_statusText #<br />Log : <a href="\#" onclick="event.preventDefault();goToLog(#= cPermit['LOTO'].ids #, 1)" class="btn btn-success">LOTO Log</a></li>#}#
-            #if(csep_id != null){#<li>Confined Space: <a href="\#" onclick="event.preventDefault();goToCsep(#= cPermit['CONFINEDSPACE'].ids #)" class="btn btn-primary">#= csep_no #</a><br />Status : #= cPermit['CONFINEDSPACE'].statusText #<br />Log / Print : <a href="\#" onclick="event.preventDefault();goToLog(#= cPermit['CONFINEDSPACE'].ids #, 2)" class="btn btn-success">CSEP Log</a> / <a class="btn btn-primary" href='@Url.Action("Index", "Print")?id=#= cPermit['CONFINEDSPACE'].ids #&type=4&no=#= csep_no #'>Print</a></li>#}#
-            #if(hw_id != null){#<li>Hot Work: <a href="\#" onclick="event.preventDefault();goToHotWork(#= cPermit['HOTWORK'].ids #)" class="btn btn-primary">#= hw_no #</a><br />Status : #= cPermit['HOTWORK'].statusText #<br />Log / Print : <a href="\#" onclick="event.preventDefault();goToLog(#= cPermit['HOTWORK'].ids #, 3)" class="btn btn-success">HW Log</a> / <a class="btn btn-primary" href='@Url.Action("Index", "Print")?id=#= cPermit['HOTWORK'].ids #&type=5&no=#= hw_no #'>Print</a></li>#}#
+            #if(csep_id != null){#<li>Confined Space: <a href="\#" onclick="event.preventDefault();goToCsep(#= cPermit['CONFINEDSPACE'].ids #)" class="btn btn-primary">#= csep_no #</a> <a class="btn btn-default" href="javascript:" onclick="showWorkflowCSEP(#= cPermit['CONFINEDSPACE'].ids #, '#= csep_no #')"><img class="btn-image" src="@Url.Content("~/Content/Images/glyphicons-427-git-merge.png")" alt="workflow" /></a><br />Status : #= cPermit['CONFINEDSPACE'].statusText #<br />Log / Print : <a href="\#" onclick="event.preventDefault();goToLog(#= cPermit['CONFINEDSPACE'].ids #, 2)" class="btn btn-success">CSEP Log</a> / <a class="btn btn-primary" href='@Url.Action("Index", "Print")?id=#= cPermit['CONFINEDSPACE'].ids #&type=4&no=#= csep_no #'>Print</a></li>#}#
+            #if(hw_id != null){#<li>Hot Work: <a href="\#" onclick="event.preventDefault();goToHotWork(#= cPermit['HOTWORK'].ids #)" class="btn btn-primary">#= hw_no #</a> <a class="btn btn-default" href="javascript:" onclick="showWorkflowHotWork(#= cPermit['HOTWORK'].ids #, '#= hw_no #')"><img class="btn-image" src="@Url.Content("~/Content/Images/glyphicons-427-git-merge.png")" alt="workflow" /></a><br />Status : #= cPermit['HOTWORK'].statusText #<br />Log / Print : <a href="\#" onclick="event.preventDefault();goToLog(#= cPermit['HOTWORK'].ids #, 3)" class="btn btn-success">HW Log</a> / <a class="btn btn-primary" href='@Url.Action("Index", "Print")?id=#= cPermit['HOTWORK'].ids #&type=5&no=#= hw_no #'>Print</a></li>#}#
             #if(fi_id != null){#<li>Fire Impairment: <a href="\#" onclick="event.preventDefault();goToFireImpairment(#= cPermit['FIREIMPAIRMENT'].ids #)" class="btn btn-primary">#= fi_no #</a><br />Status : #= cPermit['FIREIMPAIRMENT'].statusText #<br />Log / Print : <a href="\#" onclick="event.preventDefault();goToLog(#= cPermit['FIREIMPAIRMENT'].ids #, 4)" class="btn btn-success">FI Log</a> / <a class="btn btn-primary" href='@Url.Action("Index", "Print")?id=#= cPermit['FIREIMPAIRMENT'].ids #&type=7&no=#= fi_no #'>Print</a></li>#}#
             #if(ex_id != null){#<li>Excavation: <a href="\#" onclick="event.preventDefault();goToExcavation(#= cPermit['EXCAVATION'].ids #)" class="btn btn-primary">#= ex_no #</a><br />Status : #= cPermit['EXCAVATION'].statusText #</li><br />Log / Print : <a href="\#" onclick="event.preventDefault();goToLog(#= cPermit['EXCAVATION'].ids #, 5)" class="btn btn-success">EX Log</a> / <a class="btn btn-primary" href='@Url.Action("Index", "Print")?id=#= cPermit['EXCAVATION'].ids #&type=6&no=#= ex_no #'>Print</a>#}#
             #if(wh_id != null){#<li>Working at Height: <a href="\#" onclick="event.preventDefault();goToWorkingHeight(#= cPermit['WORKINGHEIGHT'].ids #)" class="btn btn-primary">#= wh_no #</a><br />Status : #= cPermit['WORKINGHEIGHT'].statusText #</li><br />Log / Print : <a href="\#" onclick="event.preventDefault();goToLog(#= cPermit['WORKINGHEIGHT'].ids #, 6)" class="btn btn-success">WH Log</a> / <a class="btn btn-primary" href='@Url.Action("Index", "Print")?id=#= cPermit['WORKINGHEIGHT'].ids #&type=8&no=#= wh_no #'>Print</a>#}#
@@ -110,6 +110,14 @@
         </ul>
     </div>
 </script>
+
+ <script id="workflow-csep-template" type="text/x-kendo-template">
+     @{ Html.RenderPartial("~/Views/Workflow/CSEP.cshtml"); }
+</script>
+
+@section scripts
+{
+<script src="@Url.Content("~/Scripts/lib/jquery.workflow-diagram.js")"></script>
 <script>
     var isNeedClose = "";
     var day = new Date();
@@ -355,5 +363,38 @@
         $('#see-all-permit').addClass('active');
         $("#grid-ptw").data("kendoGrid").dataSource.read({ type: "0" });
     }
-</script>
 
+    //WORKFLOW
+    //CSEP workflow
+    function showWorkflowCSEP(id, num) {
+        var workflowObject = $('#workflow-csep');
+
+        if (!workflowObject.length) { //create element if not exist
+            workflowObject = $(document.createElement('div')).attr('id', 'workflow-csep').appendTo('body');
+            workflowObject.workflowDiagram({
+                template: kendo.template($("#workflow-csep-template").html()),
+                url: '@Url.Action("CSEP", "Workflow")',
+            });
+        }
+
+        workflowObject.workflowDiagram('reload', id, num);
+        workflowObject.workflowDiagram('show');
+    }
+
+    //hot work workflow    
+    function showWorkflowHotWork(id, num) {
+        var workflowObject = $('#workflow-hot-work');
+
+        if (!workflowObject.length) { //create element if not exist
+            workflowObject = $(document.createElement('div')).attr('id', 'workflow-hot-work').appendTo('body');
+            workflowObject.workflowHotWork({
+                //template: kendo.template($("#workflow-hot-work-template").html()),
+                url: '@Url.Action("HotWork", "Workflow")',
+            });
+        }
+
+        workflowObject.workflowDiagram('reload', id, num);
+        workflowObject.workflowDiagram('show');
+    }
+</script>
+}

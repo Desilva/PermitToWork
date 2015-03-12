@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="@Url.Content("~/Content/kendo.common.min.css")" class="skin-color" />
     <link rel="stylesheet" href="@Url.Content("~/Content/kendo.metro.min.css")" class="skin-color" />
     <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/workflow.css")" rel="stylesheet" type="text/css" />
 
    
     <script src="@Url.Content("~/Scripts/excanvas.min.js")"></script>
@@ -28,7 +29,6 @@
     <script src="@Url.Content("~/Scripts/fullcalendar.min.js")"></script>
     <script src="@Url.Content("~/Scripts/unicorn.js")"></script>
     <script src="@Url.Content("~/Scripts/kendo.web.min.js")"></script>
-
 
 </head>
 
@@ -94,5 +94,7 @@
         <div id="content">
             @RenderBody()
         </div>
+    
+        @RenderSection("scripts", required: false)
 </body>
 </html>
