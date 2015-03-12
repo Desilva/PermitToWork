@@ -111,13 +111,18 @@
     </div>
 </script>
 
- <script id="workflow-csep-template" type="text/x-kendo-template">
-     @{ Html.RenderPartial("~/Views/Workflow/CSEP.cshtml"); }
-</script>
-
 @section scripts
 {
 <script src="@Url.Content("~/Scripts/lib/jquery.workflow-diagram.js")"></script>
+
+<script id="workflow-csep-template" type="text/x-kendo-template">
+     @{ Html.RenderPartial("~/Views/Workflow/CSEP.cshtml"); }
+</script>
+
+ <script id="workflow-hot-work-template" type="text/x-kendo-template">
+     @{ Html.RenderPartial("~/Views/Workflow/HotWork.cshtml"); }
+</script>
+
 <script>
     var isNeedClose = "";
     var day = new Date();
@@ -388,12 +393,12 @@
         if (!workflowObject.length) { //create element if not exist
             workflowObject = $(document.createElement('div')).attr('id', 'workflow-hot-work').appendTo('body');
             workflowObject.workflowHotWork({
-                //template: kendo.template($("#workflow-hot-work-template").html()),
+                template: kendo.template($("#workflow-hot-work-template").html()),
                 url: '@Url.Action("HotWork", "Workflow")',
             });
         }
 
-        workflowObject.workflowDiagram('reload', id, num);
+        //workflowObject.workflowDiagram('reload', id, num);
         workflowObject.workflowDiagram('show');
     }
 </script>

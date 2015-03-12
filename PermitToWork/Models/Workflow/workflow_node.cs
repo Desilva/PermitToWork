@@ -30,6 +30,10 @@ namespace PermitToWork.Models.Workflow
                 new workflow_node { id = 4, id_report = 105, node_name = "GAS_TESTING", report_type = "CSEP", status = 3 },
                 new workflow_node { id = 5, id_report = 105, node_name = "FACILITY_OWNER_SCREENING", report_type = "CSEP", status = 3 },
                 new workflow_node { id = 6, id_report = 105, node_name = "SUPERVISOR_SCREENING", report_type = "CSEP", status = 2 },
+                new workflow_node { id = 7, id_report = 105, node_name = "CANCELLATION_INITIATOR", report_type = "CSEP", status = 2 },
+                new workflow_node { id = 8, id_report = 105, node_name = "CANCELLATION_SUPERVISOR", report_type = "CSEP", status = 2 },
+                new workflow_node { id = 9, id_report = 105, node_name = "CANCELLATION_FACILITY_OWNER", report_type = "CSEP", status = 3 },
+                new workflow_node { id = 8, id_report = 105, node_name = "CANCELLATION_SUPERVISOR", report_type = "CSEP", status = 2 },
             };
 
             return result;
