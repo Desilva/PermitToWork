@@ -1701,6 +1701,9 @@ namespace PermitToWork.Models.Hw
 
                 sendEmail.Send(s, message, "Assigned as Hot Work (" + this.hw_no + ") Gas Tester");
                 sendEmail.SendToNotificationCenter(userId, "Hot Work Permit", "Please gas test and submit the result for Hot Work Permit No. " + this.hw_no, serverUrl + "Home?p=Hw/edit/" + this.id);
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString(),
+                    WorkflowNodeServiceModel.HotWorkNodeName.FACILITY_OWNER_SCREENING.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
             }
             else if (extension == 1)
             {
@@ -2245,6 +2248,9 @@ namespace PermitToWork.Models.Hw
             {
                 hw.acc_gas_tester_approve = "a" + user.signature;
                 hw.status = (int)statusHW.GASTESTER;
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString(),
+                    WorkflowNodeServiceModel.HotWorkNodeName.GAS_TESTING.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
             }
             else if (extension == 1 && user.id.ToString() == this.ext_gas_tester_1 || user.id.ToString() == this.ext_fo_1 || listDel.Exists(p => p.id == user.id))
             {
@@ -2496,24 +2502,28 @@ namespace PermitToWork.Models.Hw
 
             int foId = 0;
             Int32.TryParse(this.acc_supervisor, out foId);
-            UserEntity fo = new UserEntity(foId, user.token, user);
-            if (user.id.ToString() == this.acc_supervisor || user.id.ToString() == fo.employee_delegate.ToString())
+            if (foId != 0)
             {
-                hot_work hw = this.db.hot_work.Find(this.id);
-                hw.acc_work_leader_approve = null;
-                hw.status = (int)statusHW.GASTESTER;
-                this.db.Entry(hw).State = EntityState.Modified;
-                this.db.SaveChanges();
-                // create node
-                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString(),
-                    WorkflowNodeServiceModel.HotWorkNodeName.SUPERVISOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
+                UserEntity fo = new UserEntity(foId, user.token, user);
+                if (user.id.ToString() == this.acc_supervisor || user.id.ToString() == fo.employee_delegate.ToString())
+                {
+                    hot_work hw = this.db.hot_work.Find(this.id);
+                    hw.acc_work_leader_approve = null;
+                    hw.status = (int)statusHW.GASTESTER;
+                    this.db.Entry(hw).State = EntityState.Modified;
+                    this.db.SaveChanges();
+                    // create node
+                    workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString(),
+                        WorkflowNodeServiceModel.HotWorkNodeName.SUPERVISOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
 
-                return "200";
+                    return "200";
+                }
+                else
+                {
+                    return "400";
+                }
             }
-            else
-            {
-                return "400";
-            }
+            return "400";
         }
 
         public string fireWatchAccApproval(UserEntity user)

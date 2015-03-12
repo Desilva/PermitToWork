@@ -616,7 +616,7 @@ namespace PermitToWork.Models
                         retVal = 1;
                         break;
                     case 4 /* Safety Officer */:
-                        if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.SAFETYOFFICER.ToString()))
+                        if (this.userInFI.Keys.ToList().Exists(p => p == UserInFI.SAFETYOFFICER.ToString()) && this.userInFI[UserInFI.SAFETYOFFICER.ToString()] != null)
                         {
                             #if !DEBUG
                             listEmail.Add(this.userInFI[UserInFI.SAFETYOFFICER.ToString()].email);
@@ -2199,6 +2199,13 @@ namespace PermitToWork.Models
             sendEmail.Send(email, message, "Assigned as Safety Officer for Fire Impairment Clearance Permit");
 
             return this.db.SaveChanges();
+        }
+
+        public void UpdateNodeAssignSODeptHeadFO()
+        {
+            // create node
+            workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
+                WorkflowNodeServiceModel.FireImpairmentNodeName.CHOOSING_SO_DEPT_HEAD_FO.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
         }
 
         #endregion

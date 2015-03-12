@@ -74,6 +74,63 @@ namespace PermitToWork.Models.Workflow
             CANCELLATION_DEPT_HEAD_FO
         }
 
+        public enum ExcavationNodeName
+        {
+            REQUESTOR_INPUT,
+            SUPERVISOR_APPROVE,
+            EANDI_APPROVE,
+            CIVIL_APPROVE,
+            REQUESTOR_APPROVE,
+            FACILITY_OWNER_APPROVE,
+            CANCELLATION_INPUT,
+            CANCELLATION_SUPERVISOR,
+            CANCELLATION_EANDI,
+            CANCELLATION_CIVIL,
+            CANCELLATION_REQUESTOR,
+            CANCELLATION_FACILITY_OWNER
+        }
+
+        public enum WorkingAtHeightNodeName
+        {
+            REQUESTOR_INPUT,
+            INSPECTOR_APPROVE,
+            ERECTOR_REQUESTOR_APPROVE,
+            SUPERVISOR_APPROVE,
+            FACILITY_OWNER_APPROVE,
+            CANCELLATION_INPUT,
+            CANCELLATION_ERECTOR_REQUESTOR,
+            CANCELLATION_SUPERVISOR,
+            CANCELLATION_FACILITY_OWNER
+        }
+
+        public enum RadiographicNodeName
+        {
+            REQUESTOR_INPUT,
+            OPERATOR_1_APPROVE,
+            OPERATOR_2_APPROVE,
+            SAFETY_OFFICER_APPROVE,
+            CHOOSING_SAFETY_OFFICER,
+            SUPERVISOR_APPROVE,
+            FACILITY_OWNER_APPROVE,
+            CANCELLATION_INPUT,
+            CANCELLATION_OPERATOR_1,
+            CANCELLATION_OPERATOR_2,
+            CANCELLATION_SAFETY_OFFICER,
+            CANCELLATION_SUPERVISOR,
+            CANCELLATION_FACILITY_OWNER
+        }
+
+        public enum LotoNodeName
+        {
+            SUPERVISOR_INPUT,
+            FACILITY_OWNER_APPLICATION,
+            SUPERVISOR_INSPECT,
+            SUPERVISOR_APPROVE,
+            FACILITY_OWNER_APPROVE,
+            CANCELLATION_SUPERVISOR,
+            CANCELLATION_FACILITY_OWNER
+        }
+
         public enum DocumentType
         {
             GENERALPERMIT,

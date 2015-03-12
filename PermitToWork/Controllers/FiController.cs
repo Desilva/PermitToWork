@@ -173,6 +173,8 @@ namespace PermitToWork.Controllers
                 UserEntity deptHead = new UserEntity(Int32.Parse(fi.acc_dept_head), user.token, user);
                 retVal &= fi.assignDeptHead(deptHead, fullUrl());
             }
+
+            fi.UpdateNodeAssignSODeptHeadFO();
             return Json(new { status = retVal > 0 ? "200" : "404" });
         }
 
