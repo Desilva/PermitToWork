@@ -993,6 +993,7 @@
     <Content Include="Scripts\fullcalendar.js" />
     <Content Include="Scripts\fullcalendar.min.js" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
+    <Content Include="Scripts\jquery-1.11.2.min.js" />
     <Content Include="Scripts\jquery-1.7.1.js" />
     <Content Include="Scripts\jquery-1.7.1.min.js" />
     <Content Include="Scripts\jquery-ui-1.8.20.js" />
@@ -1144,8 +1145,8 @@
     <Content Include="Views\MasterRequestedPtwNo\Index.cshtml" />
     <Content Include="Views\MasterDelegateFO\Index.cshtml" />
     <Content Include="Views\Home\Page.cshtml" />
-    <Content Include="Views\Workflow\HotWork.cshtml" />
     <Content Include="Views\Workflow\CSEP.cshtml" />
+    <Content Include="Views\Workflow\HotWork.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

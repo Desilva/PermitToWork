@@ -3,8 +3,8 @@
     string left = "";
     string style = "";
 }
-<div class="workflow-container">
-    <div id="REQUESTOR_INPUT" class="workflow-node workflow-col-one">
+<div class="workflow-container workflow-row-2">
+    <div id="REQUESTOR_INPUT" class="workflow-node workflow-col-1">
 	    <div class="workflow-box">
             <div class="workflow-text">Requestor Input</div>
 	    </div>
@@ -12,7 +12,7 @@
             @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
         </div>
     </div>
-    <div id="SUPERVISOR_SCREENING" class="workflow-node workflow-col-two">
+    <div id="SUPERVISOR_SCREENING" class="workflow-node workflow-col-2">
 	    <div class="workflow-box">
             <div class="workflow-text">Supervisor Screening</div>
         </div>
@@ -20,7 +20,7 @@
             @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
         </div>
     </div>
-    <div id="FACILITY_OWNER_SCREENING" class="workflow-node workflow-col-three">
+    <div id="FACILITY_OWNER_SCREENING" class="workflow-node workflow-col-3">
 	    <div class="workflow-box">
             <div class="workflow-text">Facility Owner Screening</div>
         </div>
@@ -28,7 +28,7 @@
             @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
         </div>
     </div>
-    <div id="GAS_TESTING" class="workflow-node workflow-col-four">
+    <div id="GAS_TESTING" class="workflow-node workflow-col-4">
 	    <div class="workflow-box">
             <div class="workflow-text">Gas Testing</div>
         </div>
@@ -89,7 +89,7 @@
         top = "195px";
         style = string.Format("top: {0};", top);
     }
-    <div id="REQUESTOR_APPROVE" class="workflow-node workflow-col-two" style="@style">
+    <div id="REQUESTOR_APPROVE" class="workflow-node workflow-col-2" style="@style">
 	    <div class="workflow-box">
             <div class="workflow-text">Requestor Approve</div>
         </div>
@@ -99,7 +99,7 @@
     </div>
     @{
     }
-    <div id="SUPERVISOR_APPROVE" class="workflow-node workflow-col-three" style="@style">
+    <div id="SUPERVISOR_APPROVE" class="workflow-node workflow-col-3" style="@style">
 	    <div class="workflow-box">
             <div class="workflow-text">Supervisor Approve</div>
         </div>
@@ -109,7 +109,7 @@
     </div>
     @{
     }
-    <div id="FACILITY_OWNER_APPROVE" class="workflow-node workflow-col-four" style="@style">
+    <div id="FACILITY_OWNER_APPROVE" class="workflow-node workflow-col-4" style="@style">
 	    <div class="workflow-box">
             <div class="workflow-text">Facility Owner Approve</div>
         </div>
@@ -118,8 +118,10 @@
 
 <!-- CANCELLATION WORKFLOW -->
 <div id="workflow-cancellation" class="workflow-container">
-    <h2>Cancellation</h2>
-    <div id="CANCELLATION_INITIATOR" class="workflow-node workflow-col-one">
+    <hr />
+    
+    <h3>Cancellation</h3>
+    <div id="CANCELLATION_INITIATOR" class="workflow-node workflow-col-1">
 	    <div class="workflow-box">
             <div class="workflow-text">Initiator</div>
 	    </div>
@@ -127,7 +129,7 @@
             @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
         </div>
     </div>
-    <div id="CANCELLATION_SUPERVISOR" class="workflow-node workflow-col-two">
+    <div id="CANCELLATION_SUPERVISOR" class="workflow-node workflow-col-2">
 	    <div class="workflow-box">
             <div class="workflow-text">Supervisor Screening</div>
         </div>
@@ -135,12 +137,9 @@
             @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
         </div>
     </div>
-    <div id="CANCELLATION_FACILITY_OWNER" class="workflow-node workflow-col-three">
+    <div id="CANCELLATION_FACILITY_OWNER" class="workflow-node workflow-col-3">
 	    <div class="workflow-box">
             <div class="workflow-text">Facility Owner Screening</div>
-        </div>
-        <div class="workflow-line">
-            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
         </div>
     </div>
 </div>
