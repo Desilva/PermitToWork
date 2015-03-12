@@ -30,5 +30,12 @@ namespace PermitToWork.Controllers
 
             return new JavaScriptSerializer().Serialize(model.NodeList);
         }
+
+        public string GeneralPermit(int id)
+        {
+            GeneralPermitModel model = new GeneralPermitModel(new workflow_node().FindAllNode(id, WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString()));
+
+            return new JavaScriptSerializer().Serialize(model.NodeList);
+        }
     }
 }

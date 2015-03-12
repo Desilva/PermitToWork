@@ -21,7 +21,7 @@ namespace PermitToWork.Models.Workflow
         {
             List<workflow_node> result = null;
 
-            ////dummy data CSEP
+            //dummy data CSEP
             //if (permitName == WorkflowNodeServiceModel.DocumentType.CSEP.ToString())
             //{
             //    result = new List<workflow_node> 
@@ -36,7 +36,7 @@ namespace PermitToWork.Models.Workflow
             //    };
             //}
 
-            ////dummy data HOT WORK
+            //dummy data HOT WORK
             //if (permitName == WorkflowNodeServiceModel.DocumentType.HOTWORK.ToString())
             //{
             //    result = new List<workflow_node> 
@@ -51,7 +51,7 @@ namespace PermitToWork.Models.Workflow
             //    };
             //}
 
-            ////dummy data FIRE IMPAIRMENT
+            //dummy data FIRE IMPAIRMENT
             //if (permitName == WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString())
             //{
             //    result = new List<workflow_node> 
@@ -70,6 +70,26 @@ namespace PermitToWork.Models.Workflow
             //        new workflow_node { id = 12, id_report = 105, node_name = "CANCELLATION_SAFETY_OFFICER", report_type = "FIREIMPAIRMENT", status = 2 },
             //        new workflow_node { id = 13, id_report = 105, node_name = "CANCELLATION_FACILITY_OWNER", report_type = "FIREIMPAIRMENT", status = 2 },
             //        new workflow_node { id = 14, id_report = 105, node_name = "CANCELLATION_DEPT_HEAD_FO", report_type = "FIREIMPAIRMENT", status = 2 }
+            //    };
+            //}
+
+            //dummy data GENERAL PERMIT
+            //if (permitName == WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString())
+            //{
+            //    result = new List<workflow_node> 
+            //    {
+            //        new workflow_node { id = 1, id_report = 105, node_name = "REQUESTOR_APPROVE", report_type = "GENERALPERMIT", status = 2 },
+            //        new workflow_node { id = 2, id_report = 105, node_name = "SUPERVISOR_APPROVE", report_type = "GENERALPERMIT", status = 2 },
+            //        new workflow_node { id = 3, id_report = 105, node_name = "CHOOSING_ASSESSOR", report_type = "GENERALPERMIT", status = 2 },
+            //        new workflow_node { id = 4, id_report = 105, node_name = "ASSESSOR_APPROVE", report_type = "GENERALPERMIT", status = 3 },
+            //        new workflow_node { id = 5, id_report = 105, node_name = "SUPERVISOR_APPROVE", report_type = "GENERALPERMIT", status = 3 },
+            //        new workflow_node { id = 6, id_report = 105, node_name = "REQUESTOR_APPROVE", report_type = "GENERALPERMIT", status = 2 },
+            //        new workflow_node { id = 7, id_report = 105, node_name = "SUPERVISOR_APPROVE", report_type = "GENERALPERMIT", status = 2 },
+            //        new workflow_node { id = 8, id_report = 105, node_name = "ASSESSOR_APPROVE", report_type = "GENERALPERMIT", status = 2 },
+            //        new workflow_node { id = 9, id_report = 105, node_name = "CANCELLATION_REQUESTOR", report_type = "GENERALPERMIT", status = 2 },
+            //        new workflow_node { id = 10, id_report = 105, node_name = "CANCELLATION_SUPERVISOR", report_type = "GENERALPERMIT", status = 2 },
+            //        new workflow_node { id = 11, id_report = 105, node_name = "CANCELLATION_ASSESSOR", report_type = "GENERALPERMIT", status = 2 },
+            //        new workflow_node { id = 12, id_report = 105, node_name = "CANCELLATION_FACILITY_OWNER", report_type = "GENERALPERMIT", status = 2 },
             //    };
             //}
 
