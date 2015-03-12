@@ -134,6 +134,8 @@ namespace PermitToWork.Controllers
                     {
                         UserEntity gasTester = new UserEntity(Int32.Parse(hw.acc_gas_tester),user.token,user);
                         hw_new.assignGasTester(gasTester);
+                        hw_new.setStatus((int)HwEntity.statusHW.FOSCREENING);
+                        hw_new.sendEmailGasTester(fullUrl(), user.token, user, 0);
                     }
                 }
                 // check if gas tester already assign
@@ -294,7 +296,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
-            string retVal = hw.supervisorAccReject(user, comment);
+            string retVal = hw.supervisorAccReject(userLogin, comment);
             hw.sendEmailRequestor(fullUrl(), userLogin.token, userLogin, 0, 1, 0, comment);
             return Json(new { status = retVal });
         }
@@ -305,7 +307,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
-            string retVal = hw.fireWatchAccApproval(user);
+            string retVal = hw.fireWatchAccApproval(userLogin);
             hw.sendEmailFOAcc(fullUrl(), userLogin.token, userLogin);
             return Json(new { status = retVal });
         }
@@ -316,7 +318,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
-            string retVal = hw.fireWatchAccReject(user, comment);
+            string retVal = hw.fireWatchAccReject(userLogin, comment);
             hw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, 0, comment);
             return Json(new { status = retVal });
         }
@@ -327,7 +329,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
-            string retVal = hw.fOAccApproval(user,extension);
+            string retVal = hw.fOAccApproval(userLogin, extension);
             PtwEntity ptw = new PtwEntity(hw.id_ptw.Value, user);
             ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.HOTWORK.ToString());
             ptw.sendEmailRequestorClearance(fullUrl(), userLogin.token, userLogin, (int)PtwEntity.clearancePermit.HOTWORK, (int)PtwEntity.statusClearance.COMPLETE);
@@ -344,7 +346,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
-            string retVal = hw.fOAccReject(user, extension, comment);
+            string retVal = hw.fOAccReject(userLogin, extension, comment);
             if (extension == 0)
                 hw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, 0, comment);
             else
@@ -358,7 +360,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
-            string retVal = hw.requestorCan(user);
+            string retVal = hw.requestorCan(userLogin);
             hw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 0, 1);
             return Json(new { status = retVal });
         }
@@ -369,7 +371,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
-            string retVal = hw.supervisorCan(user);
+            string retVal = hw.supervisorCan(userLogin);
             PtwEntity ptw = new PtwEntity(hw.id_ptw.Value, user);
             ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.REQUESTORCANCELLED, PtwEntity.clearancePermit.HOTWORK.ToString());
             ptw.sendEmailRequestorClearance(fullUrl(), userLogin.token, userLogin, (int)PtwEntity.clearancePermit.HOTWORK, (int)PtwEntity.statusClearance.REQUESTORCANCELLED);
@@ -387,7 +389,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
-            string retVal = hw.supervisorCanReject(user, comment);
+            string retVal = hw.supervisorCanReject(userLogin, comment);
             hw.sendEmailRequestor(fullUrl(), userLogin.token, userLogin, 0, 1, 1, comment);
             return Json(new { status = retVal });
         }
@@ -398,7 +400,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
-            string retVal = hw.fireWatchCanApproval(user);
+            string retVal = hw.fireWatchCanApproval(userLogin);
             if (hw.can_fo == null)
             {
                 var a = "";
@@ -426,7 +428,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
-            string retVal = hw.fOCanApproval(user);
+            string retVal = hw.fOCanApproval(userLogin);
             PtwEntity ptw = new PtwEntity(hw.id_ptw.Value, user);
             ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.CLOSE, PtwEntity.clearancePermit.HOTWORK.ToString());
             ptw.sendEmailRequestorClearance(fullUrl(), userLogin.token, userLogin, (int)PtwEntity.clearancePermit.HOTWORK, (int)PtwEntity.statusClearance.CLOSE);
@@ -443,7 +445,7 @@ namespace PermitToWork.Controllers
             UserEntity userLogin = Session["user"] as UserEntity;
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
-            string retVal = hw.fOCanReject(user, comment);
+            string retVal = hw.fOCanReject(userLogin, comment);
             hw.sendEmailSupervisor(fullUrl(), userLogin.token, userLogin, 1, 1, comment);
             return Json(new { status = retVal });
         }

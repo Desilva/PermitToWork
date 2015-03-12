@@ -7,6 +7,7 @@ using System.Data;
 using System.Linq;
 using System.Web;
 using System.IO;
+using PermitToWork.Models.Workflow;
 
 namespace PermitToWork.Models.ClearancePermit
 {
@@ -31,6 +32,8 @@ namespace PermitToWork.Models.ClearancePermit
         public List<LotoComingHolderEntity> lotoComingHolder { get; set; }
         public List<LotoSuspensionEntity> lotoSuspension { get; set; }
         public Dictionary<string, List<string>> listDocumentUploaded { get; set; }
+
+        public WorkflowNodeServiceModel workflowNodeService { get; set; }
 
         public enum userInLOTO
         {
@@ -80,6 +83,7 @@ namespace PermitToWork.Models.ClearancePermit
             this.db = new star_energy_ptwEntities();
             this.listUserInLOTO = new Dictionary<string, UserEntity>();
             this.listDocumentUploaded = new Dictionary<string, List<string>>();
+            this.workflowNodeService = new WorkflowNodeServiceModel();
         }
 
         // constructor with id to get object from database
@@ -424,6 +428,9 @@ namespace PermitToWork.Models.ClearancePermit
                 loto.approval_supervisor_signature_date = DateTime.Now;
                 loto.status = (int)LOTOStatus.SPVSIGN;
                 loto.approval_notes = this.approval_notes;
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.LOTO.ToString(),
+                    WorkflowNodeServiceModel.LotoNodeName.SUPERVISOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                 this.db.Entry(loto).State = EntityState.Modified;
                 retVal = this.db.SaveChanges();
@@ -451,6 +458,9 @@ namespace PermitToWork.Models.ClearancePermit
                 loto.approval_date = loto.approval_fo_signature_date;
                 loto.approval_notes = this.approval_notes;
                 loto.status = (int)LOTOStatus.FOSIGN;
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.LOTO.ToString(),
+                    WorkflowNodeServiceModel.LotoNodeName.FACILITY_OWNER_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                 this.db.Entry(loto).State = EntityState.Modified;
                 retVal = this.db.SaveChanges();
@@ -613,6 +623,9 @@ namespace PermitToWork.Models.ClearancePermit
             if (loto != null)
             {
                 loto.status = (int)LOTOStatus.SENDTOFO;
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.LOTO.ToString(),
+                    WorkflowNodeServiceModel.LotoNodeName.SUPERVISOR_INPUT.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                 LotoPointEntity lotoPoint = new LotoPointEntity();
                 lotoPoint.id_loto = this.id;
@@ -632,6 +645,9 @@ namespace PermitToWork.Models.ClearancePermit
             if (loto != null)
             {
                 loto.status = (int)LOTOStatus.CREATE;
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.LOTO.ToString(),
+                    WorkflowNodeServiceModel.LotoNodeName.FACILITY_OWNER_APPLICATION.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
 
                 this.db.Entry(loto).State = EntityState.Modified;
                 retVal = this.db.SaveChanges();
@@ -646,6 +662,9 @@ namespace PermitToWork.Models.ClearancePermit
             if (loto != null)
             {
                 loto.status = (int)LOTOStatus.FOAPPLIED;
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.LOTO.ToString(),
+                    WorkflowNodeServiceModel.LotoNodeName.FACILITY_OWNER_APPLICATION.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                 this.db.Entry(loto).State = EntityState.Modified;
                 retVal = this.db.SaveChanges();
@@ -660,6 +679,9 @@ namespace PermitToWork.Models.ClearancePermit
             if (loto != null)
             {
                 loto.status = (int)LOTOStatus.INSPECTION;
+                //// create node
+                //workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.LOTO.ToString(),
+                //    WorkflowNodeServiceModel.LotoNodeName.SUPERVISOR_INSPECT.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                 this.db.Entry(loto).State = EntityState.Modified;
                 retVal = this.db.SaveChanges();
@@ -1407,6 +1429,9 @@ namespace PermitToWork.Models.ClearancePermit
                 {
                     this.status = (int)LOTOStatus.CANCELSPV;
                     loto.status = (int)LOTOStatus.CANCELSPV;
+                    // create node
+                    workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.LOTO.ToString(),
+                        WorkflowNodeServiceModel.LotoNodeName.CANCELLATION_SUPERVISOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                 }
 
                 this.db.Entry(loto).State = EntityState.Modified;
@@ -1445,6 +1470,9 @@ namespace PermitToWork.Models.ClearancePermit
                         {
                             this.status = (int)LOTOStatus.CANCELSPV;
                             loto.status = (int)LOTOStatus.CANCELSPV;
+                            // create node
+                            workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.LOTO.ToString(),
+                                WorkflowNodeServiceModel.LotoNodeName.CANCELLATION_SUPERVISOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         }
 
                         this.db.Entry(loto).State = EntityState.Modified;
@@ -1475,6 +1503,9 @@ namespace PermitToWork.Models.ClearancePermit
                 loto.cancellation_fo_signature_date = DateTime.Now;
                 loto.cancellation_notes = this.cancellation_notes;
                 loto.status = (int)LOTOStatus.LOTOCANCELLED;
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.LOTO.ToString(),
+                    WorkflowNodeServiceModel.LotoNodeName.CANCELLATION_FACILITY_OWNER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                 this.db.Entry(loto).State = EntityState.Modified;
                 retVal = this.db.SaveChanges();

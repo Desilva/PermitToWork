@@ -9,7 +9,7 @@
             url: '',
             ongoingColor: '#00FFFF ', //cyan
             finishColor: '#00FF00', //lime
-            cancellationSelector: '#workflow-cancellation',
+            cancellationSelector: '.workflow-cancellation',
         },
 
         //attributes
@@ -86,9 +86,9 @@
                 }
 
                 if (isCancellation) {
-                    $(self.options.cancellationSelector).show();
+                    self.element.find(self.options.cancellationSelector).show();
                 } else {
-                    $(self.options.cancellationSelector).hide();
+                    self.element.find(self.options.cancellationSelector).hide();
                 }
             }, 'json');
         },

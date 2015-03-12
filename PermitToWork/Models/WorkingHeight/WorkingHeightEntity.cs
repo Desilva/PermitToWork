@@ -1,6 +1,7 @@
 ﻿using PermitToWork.Models.Master;
 using PermitToWork.Models.Ptw;
 using PermitToWork.Models.User;
+using PermitToWork.Models.Workflow;
 using PermitToWork.Utilities;
 using System;
 using System.Collections.Generic;
@@ -46,6 +47,8 @@ namespace PermitToWork.Models.WorkingHeight
 
         public bool is_guest { get; set; }
         public bool isUser { get; set; }
+
+        public WorkflowNodeServiceModel workflowNodeService { get; set; }
 
         // HIRA Document related
         // public List<HiraEntity> hira_document { get; set; }
@@ -110,6 +113,7 @@ namespace PermitToWork.Models.WorkingHeight
 
             this.userInWorkingHeight = new Dictionary<string, UserEntity>();
             this.listDocumentUploaded = new Dictionary<string, List<string>>();
+            this.workflowNodeService = new WorkflowNodeServiceModel();
             //this.screening_fo_arr = new string[];
         }
 
@@ -403,6 +407,9 @@ namespace PermitToWork.Models.WorkingHeight
                 {
                     case 1 /* Requestor */:
                         wh.status = (int)WHStatus.EDITANDSEND;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.WORKINGATHEIGHT.ToString(),
+                            WorkflowNodeServiceModel.WorkingAtHeightNodeName.REQUESTOR_INPUT.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                         break;
                     case 2 /* Inspector */:
@@ -417,6 +424,9 @@ namespace PermitToWork.Models.WorkingHeight
                         }
                         wh.inspector_sign_date = DateTime.Now;
                         wh.status = (int)WHStatus.INSPECTORSIGN;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.WORKINGATHEIGHT.ToString(),
+                            WorkflowNodeServiceModel.WorkingAtHeightNodeName.INSPECTOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 3 /* Requestor / Erector */:
                         if (this.access.Contains('4') && (this.scaffolding == 1 || this.scaffolding == 3))
@@ -458,6 +468,9 @@ namespace PermitToWork.Models.WorkingHeight
                         }
                         wh.requestor_signature_date = DateTime.Now;
                         wh.status = (int)WHStatus.REQUESTORAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.WORKINGATHEIGHT.ToString(),
+                            WorkflowNodeServiceModel.WorkingAtHeightNodeName.ERECTOR_REQUESTOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 4 /* Supervisor */:
                         userWH = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()];
@@ -472,6 +485,9 @@ namespace PermitToWork.Models.WorkingHeight
                         }
                         wh.supervisor_signature_date = DateTime.Now;
                         wh.status = (int)WHStatus.SPVAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.WORKINGATHEIGHT.ToString(),
+                            WorkflowNodeServiceModel.WorkingAtHeightNodeName.SUPERVISOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 5 /* Facility Owner */:
                         userWH = this.userInWorkingHeight[UserInWorkingHeight.FACILITYOWNER.ToString()];
@@ -486,6 +502,9 @@ namespace PermitToWork.Models.WorkingHeight
                         }
                         wh.facility_owner_signature_date = DateTime.Now;
                         wh.status = (int)WHStatus.FOAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.WORKINGATHEIGHT.ToString(),
+                            WorkflowNodeServiceModel.WorkingAtHeightNodeName.FACILITY_OWNER_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                         this.ptw = new PtwEntity(wh.id_ptw.Value, user);
                         this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.WORKINGHEIGHT.ToString());
@@ -517,6 +536,9 @@ namespace PermitToWork.Models.WorkingHeight
                         break;
                     case 2 /* Inspector */:
                         wh.status = (int)WHStatus.CREATE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.WORKINGATHEIGHT.ToString(),
+                            WorkflowNodeServiceModel.WorkingAtHeightNodeName.INSPECTOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 3 /* Requestor / Erector */:
                         if (wh.inspector_sign_date != null)
@@ -527,6 +549,9 @@ namespace PermitToWork.Models.WorkingHeight
                         {
                             wh.status = (int)WHStatus.CREATE;
                         }
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.WORKINGATHEIGHT.ToString(),
+                            WorkflowNodeServiceModel.WorkingAtHeightNodeName.SUPERVISOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 4 /* Supervisor */:
                         wh.requestor_signature = null;
@@ -539,11 +564,17 @@ namespace PermitToWork.Models.WorkingHeight
                         {
                             wh.status = (int)WHStatus.EDITANDSEND;
                         }
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.WORKINGATHEIGHT.ToString(),
+                            WorkflowNodeServiceModel.WorkingAtHeightNodeName.SUPERVISOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 5 /* Facility Owner */:
                         wh.supervisor_signature = null;
                         wh.supervisor_delegate = null;
                         wh.status = (int)WHStatus.REQUESTORAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.WORKINGATHEIGHT.ToString(),
+                            WorkflowNodeServiceModel.WorkingAtHeightNodeName.FACILITY_OWNER_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                 }
 
@@ -1291,7 +1322,9 @@ namespace PermitToWork.Models.WorkingHeight
                 {
                     case 1 /* Requestor */:
                         wh.status = (int)WHStatus.CLOSING;
-
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.WORKINGATHEIGHT.ToString(),
+                            WorkflowNodeServiceModel.WorkingAtHeightNodeName.CANCELLATION_INPUT.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 2 /* Requestor / Erector */:
                         if (this.access.Contains('4') && (this.scaffolding == 1 || this.scaffolding == 3))
@@ -1333,6 +1366,9 @@ namespace PermitToWork.Models.WorkingHeight
                         }
                         wh.can_requestor_signature_date = DateTime.Now;
                         wh.status = (int)WHStatus.CANREQUESTORAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.WORKINGATHEIGHT.ToString(),
+                            WorkflowNodeServiceModel.WorkingAtHeightNodeName.CANCELLATION_ERECTOR_REQUESTOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 3 /* Supervisor */:
                         userWH = this.userInWorkingHeight[UserInWorkingHeight.SUPERVISOR.ToString()];
@@ -1347,6 +1383,9 @@ namespace PermitToWork.Models.WorkingHeight
                         }
                         wh.can_supervisor_signature_date = DateTime.Now;
                         wh.status = (int)WHStatus.CANSPVAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.WORKINGATHEIGHT.ToString(),
+                            WorkflowNodeServiceModel.WorkingAtHeightNodeName.CANCELLATION_SUPERVISOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                         this.ptw = new PtwEntity(wh.id_ptw.Value, user);
                         this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.REQUESTORCANCELLED, PtwEntity.clearancePermit.WORKINGHEIGHT.ToString());
@@ -1364,6 +1403,9 @@ namespace PermitToWork.Models.WorkingHeight
                         }
                         wh.can_facility_owner_signature_date = DateTime.Now;
                         wh.status = (int)WHStatus.CANFOAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.WORKINGATHEIGHT.ToString(),
+                            WorkflowNodeServiceModel.WorkingAtHeightNodeName.CANCELLATION_FACILITY_OWNER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                         this.ptw = new PtwEntity(wh.id_ptw.Value, user);
                         this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.CLOSE, PtwEntity.clearancePermit.WORKINGHEIGHT.ToString());
@@ -1400,11 +1442,17 @@ namespace PermitToWork.Models.WorkingHeight
                         wh.can_requestor_signature = null;
                         wh.can_requestor_delegate = null;
                         wh.status = (int)WHStatus.CLOSING;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.WORKINGATHEIGHT.ToString(),
+                            WorkflowNodeServiceModel.WorkingAtHeightNodeName.CANCELLATION_SUPERVISOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 4 /* Facility Owner */:
                         wh.can_supervisor_signature = null;
                         wh.can_supervisor_delegate = null;
                         wh.status = (int)WHStatus.CANREQUESTORAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.WORKINGATHEIGHT.ToString(),
+                            WorkflowNodeServiceModel.WorkingAtHeightNodeName.CANCELLATION_FACILITY_OWNER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                 }
 

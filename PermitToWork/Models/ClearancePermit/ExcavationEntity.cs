@@ -2,6 +2,7 @@
 using PermitToWork.Models.Master;
 using PermitToWork.Models.Ptw;
 using PermitToWork.Models.User;
+using PermitToWork.Models.Workflow;
 using PermitToWork.Utilities;
 using System;
 using System.Collections.Generic;
@@ -41,6 +42,8 @@ namespace PermitToWork.Models.ClearancePermit
 
         public bool is_guest { get; set; }
         public bool isUser { get; set; }
+
+        public WorkflowNodeServiceModel workflowNodeService { get; set; }
 
         private star_energy_ptwEntities db;
 
@@ -89,6 +92,7 @@ namespace PermitToWork.Models.ClearancePermit
             this.db = new star_energy_ptwEntities();
             this.userInExcavation = new Dictionary<string, UserEntity>();
             this.listDocumentUploaded = new Dictionary<string, List<string>>();
+            this.workflowNodeService = new WorkflowNodeServiceModel();
             //this.screening_fo_arr = new string[];
         }
 
@@ -353,6 +357,9 @@ namespace PermitToWork.Models.ClearancePermit
                 {
                     case 1 /* Requestor */:
                         ex.status = (int)ExStatus.EDITANDSEND;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.REQUESTOR_INPUT.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 2 /* Supervisor */:
                         userEx = this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()];
@@ -367,6 +374,9 @@ namespace PermitToWork.Models.ClearancePermit
                         }
                         ex.supervisor_signature_date = DateTime.Now;
                         ex.status = (int)ExStatus.SHEAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.SUPERVISOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 3 /* SHE */:
                         userEx = this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()];
@@ -394,6 +404,9 @@ namespace PermitToWork.Models.ClearancePermit
                             ex.facilities_delegate = user.id.ToString();
                         }
                         ex.facilities_signature_date = DateTime.Now;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.CIVIL_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         if (ex.ei_signature != null)
                         {
                             ex.status = (int)ExStatus.EIFACAPPROVE;
@@ -411,6 +424,9 @@ namespace PermitToWork.Models.ClearancePermit
                             ex.ei_delegate = user.id.ToString();
                         }
                         ex.ei_signature_date = DateTime.Now;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.EANDI_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         if (ex.facilities_signature != null)
                         {
                             ex.status = (int)ExStatus.EIFACAPPROVE;
@@ -438,6 +454,9 @@ namespace PermitToWork.Models.ClearancePermit
                         } 
                         ex.requestor_signature_date = DateTime.Now;
                         ex.status = (int)ExStatus.REQUESTORAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.REQUESTOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 7 /* Facility Owner */:
                         userEx = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()];
@@ -452,6 +471,9 @@ namespace PermitToWork.Models.ClearancePermit
                         }
                         ex.facility_owner_signature_date = DateTime.Now;
                         ex.status = (int)ExStatus.FOAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.FACILITY_OWNER_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                         this.ptw = new PtwEntity(ex.id_ptw.Value, user);
                         this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.EXCAVATION.ToString());
@@ -478,6 +500,9 @@ namespace PermitToWork.Models.ClearancePermit
                         break;
                     case 2 /* Supervisor */:
                         ex.status = (int)ExStatus.CREATE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.SUPERVISOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 3 /* SHE */:
                         ex.supervisor_signature = null;
@@ -488,11 +513,17 @@ namespace PermitToWork.Models.ClearancePermit
                         ex.safety_officer_signature = null;
                         ex.safety_officer_signature = null;
                         ex.status = (int)ExStatus.EDITANDSEND;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.CIVIL_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 5 /* E&I */:
                         ex.safety_officer_signature = null;
                         ex.safety_officer_signature = null;
                         ex.status = (int)ExStatus.EDITANDSEND;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.EANDI_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 6 /* Requestor */:
                         ex.ei_signature = null;
@@ -500,11 +531,17 @@ namespace PermitToWork.Models.ClearancePermit
                         ex.facilities_signature = null;
                         ex.facilities_delegate = null;
                         ex.status = (int)ExStatus.SHEAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.REQUESTOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 7 /* Facility Owner */:
                         ex.requestor_signature = null;
                         ex.requestor_delegate = null;
                         ex.status = (int)ExStatus.EIFACAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.FACILITY_OWNER_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                 }
 
@@ -1110,6 +1147,9 @@ namespace PermitToWork.Models.ClearancePermit
                         }
                         ex.can_requestor_signature_date = DateTime.Now;
                         ex.status = (int)ExStatus.CANREQUESTORAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_REQUESTOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 2 /* Supervisor */:
                         userEx = this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()];
@@ -1124,6 +1164,9 @@ namespace PermitToWork.Models.ClearancePermit
                         }
                         ex.can_supervisor_signature_date = DateTime.Now;
                         ex.status = (int)ExStatus.CANSPVAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_SUPERVISOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                         this.ptw = new PtwEntity(ex.id_ptw.Value, user);
                         this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.REQUESTORCANCELLED, PtwEntity.clearancePermit.EXCAVATION.ToString());
@@ -1140,6 +1183,9 @@ namespace PermitToWork.Models.ClearancePermit
                             ex.can_facilities_delegate = user.id.ToString();
                         }
                         ex.can_facilities_signature_date = DateTime.Now;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_CIVIL.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         if (ex.can_ei_signature != null)
                         {
                             ex.status = (int)ExStatus.CANSHEAPPROVE;
@@ -1157,6 +1203,9 @@ namespace PermitToWork.Models.ClearancePermit
                             ex.can_ei_delegate = user.id.ToString();
                         }
                         ex.can_ei_signature_date = DateTime.Now;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_EANDI.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         if (ex.can_facilities_signature != null)
                         {
                             ex.status = (int)ExStatus.CANSHEAPPROVE;
@@ -1189,6 +1238,9 @@ namespace PermitToWork.Models.ClearancePermit
                         }
                         ex.can_facility_owner_signature_date = DateTime.Now;
                         ex.status = (int)ExStatus.CANFOAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_FACILITY_OWNER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                         this.ptw = new PtwEntity(ex.id_ptw.Value, user);
                         this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.CLOSE, PtwEntity.clearancePermit.EXCAVATION.ToString());
@@ -1217,16 +1269,25 @@ namespace PermitToWork.Models.ClearancePermit
                         ex.can_requestor_signature = null;
                         ex.can_requestor_delegate = null;
                         ex.status = (int)ExStatus.CLOSING;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_SUPERVISOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 3 /* Facilities */:
                         ex.can_supervisor_signature = null;
                         ex.can_supervisor_delegate = null;
                         ex.status = (int)ExStatus.CANREQUESTORAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_CIVIL.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 4 /* E&I */:
                         ex.can_supervisor_signature = null;
                         ex.can_supervisor_delegate = null;
                         ex.status = (int)ExStatus.CANREQUESTORAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_EANDI.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 5 /* SHE */:
                         ex.can_facilities_signature = null;
@@ -1241,6 +1302,9 @@ namespace PermitToWork.Models.ClearancePermit
                         ex.can_ei_signature = null;
                         ex.can_ei_delegate = null;
                         ex.status = (int)ExStatus.CANSPVAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_FACILITY_OWNER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                 }
 

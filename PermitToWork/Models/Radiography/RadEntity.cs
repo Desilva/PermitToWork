@@ -1,6 +1,7 @@
 ﻿using PermitToWork.Models.Master;
 using PermitToWork.Models.Ptw;
 using PermitToWork.Models.User;
+using PermitToWork.Models.Workflow;
 using PermitToWork.Utilities;
 using System;
 using System.Collections.Generic;
@@ -45,6 +46,8 @@ namespace PermitToWork.Models.Radiography
         // public string hira_no { get; set; }
 
         public string rad_status { get; set; }
+
+        public WorkflowNodeServiceModel workflowNodeService { get; set; }
 
         private star_energy_ptwEntities db;
 
@@ -99,6 +102,7 @@ namespace PermitToWork.Models.Radiography
             this.db = new star_energy_ptwEntities();
             this.userInRadiography = new Dictionary<string, UserEntity>();
             this.listDocumentUploaded = new Dictionary<string, List<string>>();
+            this.workflowNodeService = new WorkflowNodeServiceModel();
             //this.screening_fo_arr = new string[];
         }
 
@@ -468,6 +472,9 @@ namespace PermitToWork.Models.Radiography
                 {
                     case 1 /* Requestor */:
                         rad.status = (int)RadStatus.EDITANDSEND;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString(),
+                            WorkflowNodeServiceModel.RadiographicNodeName.REQUESTOR_INPUT.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                         break;
                     case 2 /* Radiographic Operator (Level 1) */:
@@ -483,6 +490,9 @@ namespace PermitToWork.Models.Radiography
                         }
 
                         rad.status = (int)RadStatus.OPERATORAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString(),
+                            WorkflowNodeServiceModel.RadiographicNodeName.OPERATOR_1_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 3 /* Radiographic Level 2 */:
                         userRad = this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()];
@@ -497,6 +507,9 @@ namespace PermitToWork.Models.Radiography
                         }
 
                         rad.status = (int)RadStatus.RADAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString(),
+                            WorkflowNodeServiceModel.RadiographicNodeName.OPERATOR_2_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 4 /* Supervisor */:
                         userRad = this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()];
@@ -511,6 +524,9 @@ namespace PermitToWork.Models.Radiography
                         }
 
                         rad.status = (int)RadStatus.SPVAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString(),
+                            WorkflowNodeServiceModel.RadiographicNodeName.SUPERVISOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 5 /* SHE Officer */:
                         userRad = this.userInRadiography[UserInRadiography.SAFETYOFFICER.ToString()];
@@ -525,6 +541,9 @@ namespace PermitToWork.Models.Radiography
                         }
 
                         rad.status = (int)RadStatus.SOAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString(),
+                            WorkflowNodeServiceModel.RadiographicNodeName.SAFETY_OFFICER_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 6 /* Facility Owner */:
                         userRad = this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()];
@@ -542,6 +561,9 @@ namespace PermitToWork.Models.Radiography
                         this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.COMPLETE, PtwEntity.clearancePermit.RADIOGRAPHY.ToString());
 
                         rad.status = (int)RadStatus.FOAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString(),
+                            WorkflowNodeServiceModel.RadiographicNodeName.FACILITY_OWNER_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                 }
 
@@ -577,21 +599,33 @@ namespace PermitToWork.Models.Radiography
                         rad.operator_signature = null;
                         rad.operator_delegate = null;
                         rad.status = (int)RadStatus.EDITANDSEND;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString(),
+                            WorkflowNodeServiceModel.RadiographicNodeName.OPERATOR_2_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 4 /* Supervisor */:
                         rad.radiographer_2_signature = null;
                         rad.radiographer_2_delegate = null;
                         rad.status = (int)RadStatus.OPERATORAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString(),
+                            WorkflowNodeServiceModel.RadiographicNodeName.SUPERVISOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 5 /* SHE Officer */:
                         rad.safety_officer_signature = null;
                         rad.safety_officer_delegate = null;
                         rad.status = (int)RadStatus.RADAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString(),
+                            WorkflowNodeServiceModel.RadiographicNodeName.SAFETY_OFFICER_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 6 /* Facility Owner */:
                         rad.facility_owner_signature = null;
                         rad.facility_owner_delegate = null;
                         rad.status = (int)RadStatus.SPVAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString(),
+                            WorkflowNodeServiceModel.RadiographicNodeName.FACILITY_OWNER_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                 }
 
@@ -1347,7 +1381,9 @@ namespace PermitToWork.Models.Radiography
                 {
                     case 1 /* Requestor */:
                         rad.status = (int)RadStatus.CLOSING;
-
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString(),
+                            WorkflowNodeServiceModel.RadiographicNodeName.CANCELLATION_INPUT.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 2 /* Radiographic Operator (Level 1) */:
                         userRad = this.userInRadiography[UserInRadiography.RADIOGRAPHER1.ToString()];
@@ -1362,6 +1398,9 @@ namespace PermitToWork.Models.Radiography
                         }
 
                         rad.status = (int)RadStatus.CANOPERATORAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString(),
+                            WorkflowNodeServiceModel.RadiographicNodeName.CANCELLATION_OPERATOR_1.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 3 /* Radiographic Level 2 */:
                         userRad = this.userInRadiography[UserInRadiography.RADIOGRAPHER2.ToString()];
@@ -1376,6 +1415,9 @@ namespace PermitToWork.Models.Radiography
                         }
 
                         rad.status = (int)RadStatus.CANRADAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString(),
+                            WorkflowNodeServiceModel.RadiographicNodeName.CANCELLATION_OPERATOR_2.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 4 /* Supervisor */:
                         userRad = this.userInRadiography[UserInRadiography.SUPERVISOR.ToString()];
@@ -1390,6 +1432,9 @@ namespace PermitToWork.Models.Radiography
                         }
 
                         rad.status = (int)RadStatus.CANSPVAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString(),
+                            WorkflowNodeServiceModel.RadiographicNodeName.CANCELLATION_SUPERVISOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                         this.ptw = new PtwEntity(rad.id_ptw.Value, user);
                         this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.REQUESTORCANCELLED, PtwEntity.clearancePermit.RADIOGRAPHY.ToString());
@@ -1407,6 +1452,9 @@ namespace PermitToWork.Models.Radiography
                         }
 
                         rad.status = (int)RadStatus.CANSOAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString(),
+                            WorkflowNodeServiceModel.RadiographicNodeName.CANCELLATION_SAFETY_OFFICER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 6 /* Facility Owner */:
                         userRad = this.userInRadiography[UserInRadiography.FACILITYOWNER.ToString()];
@@ -1422,6 +1470,9 @@ namespace PermitToWork.Models.Radiography
 
                         this.ptw = new PtwEntity(rad.id_ptw.Value, user);
                         this.ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.CLOSE, PtwEntity.clearancePermit.RADIOGRAPHY.ToString());
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString(),
+                            WorkflowNodeServiceModel.RadiographicNodeName.CANCELLATION_FACILITY_OWNER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                         rad.status = (int)RadStatus.CANFOAPPROVE;
                         break;
@@ -1459,21 +1510,33 @@ namespace PermitToWork.Models.Radiography
                         rad.can_operator_signature = null;
                         rad.can_operator_delegate = null;
                         rad.status = (int)RadStatus.CLOSING;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString(),
+                            WorkflowNodeServiceModel.RadiographicNodeName.CANCELLATION_OPERATOR_2.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 4 /* Supervisor */:
                         rad.can_radiographer_2_signature = null;
                         rad.can_radiographer_2_delegate = null;
                         rad.status = (int)RadStatus.CANOPERATORAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString(),
+                            WorkflowNodeServiceModel.RadiographicNodeName.CANCELLATION_SUPERVISOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 5 /* SHE Officer */:
                         rad.can_safety_officer_signature = null;
                         rad.can_safety_officer_delegate = null;
                         rad.status = (int)RadStatus.CANRADAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString(),
+                            WorkflowNodeServiceModel.RadiographicNodeName.CANCELLATION_SAFETY_OFFICER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 6 /* Facility Owner */:
                         rad.can_fo_signature = null;
                         rad.can_fo_delegate = null;
                         rad.status = (int)RadStatus.CANSPVAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString(),
+                            WorkflowNodeServiceModel.RadiographicNodeName.CANCELLATION_FACILITY_OWNER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                 }
 
@@ -2550,6 +2613,9 @@ namespace PermitToWork.Models.Radiography
 
                 this.db.Entry(rad).State = EntityState.Modified;
                 retVal = this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString(),
+                    WorkflowNodeServiceModel.RadiographicNodeName.CHOOSING_SAFETY_OFFICER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                 // sending email
                 List<string> email = new List<string>();
@@ -2578,6 +2644,7 @@ namespace PermitToWork.Models.Radiography
                         sendEmail.Send(email, message, title);
                     }
                 }
+
             }
 
             return retVal;
