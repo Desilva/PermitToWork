@@ -9,6 +9,7 @@
             url: '',
             ongoingColor: '#00FFFF ', //cyan
             finishColor: '#00FF00', //lime
+            cancellationSelector: '#workflow-cancellation',
         },
 
         //attributes
@@ -51,19 +52,21 @@
             $.Widget.prototype.destroy.call(this);
         },
 
-        //menampilkan popup window berisi gambar workflow CSEP
+        //menampilkan popup window berisi gambar workflow
         show: function () {
             var self = this;
 
             self.element.data('kendoWindow').center().open();
         },
 
-        //reload data untuk gambar workflow CSEP
+        //reload data untuk gambar workflow
+        //kalau tidak ada cancellation node dari server (NodeName = CANCELLATION_*), hide $(cancellationSelector)
         //mengganti title
         reload: function (id, num) {
             //kamus
             var self = this;
             var status, selector;
+            var isCancellation = false;
 
             //algoritma
             self.element.data('kendoWindow').title(num);
@@ -77,6 +80,15 @@
                     } else if (status === 'FINISH') {
                         self.element.find(selector).css('background-color', self.options.finishColor);
                     }
+
+                    if (data[i].NodeName.indexOf('CANCELLATION') > -1)
+                        isCancellation = true;
+                }
+
+                if (isCancellation) {
+                    $(self.options.cancellationSelector).show();
+                } else {
+                    $(self.options.cancellationSelector).hide();
                 }
             }, 'json');
         },

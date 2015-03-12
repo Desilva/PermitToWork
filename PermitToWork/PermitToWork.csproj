@@ -703,6 +703,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Models\Workflow\CSEPModel.cs" />
+    <Compile Include="Models\Workflow\WorkflowHelper.cs" />
     <Compile Include="Models\Workflow\WorkflowNodePresentationStub.cs" />
     <Compile Include="Models\Workflow\WorkflowNodeServiceModel.cs" />
     <Compile Include="Models\Workflow\workflow_node.cs" />
@@ -1143,6 +1144,7 @@
     <Content Include="Views\MasterRequestedPtwNo\Index.cshtml" />
     <Content Include="Views\MasterDelegateFO\Index.cshtml" />
     <Content Include="Views\Home\Page.cshtml" />
+    <Content Include="Views\Workflow\HotWork.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

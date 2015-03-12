@@ -6,6 +6,8 @@
 .workflow-bridge { position: absolute; }
 
 /* COMMON LAYOUT FOR WORKFLOW NODES */
-.workflow-col-two { left: 252px; }
-.workflow-col-three { left: 504px; }
-.workflow-col-four { left: 756px; }
+.workflow-col-2 { left: 252px; }
+.workflow-col-3 { left: 504px; }
+.workflow-col-4 { left: 756px; }
+
+.workflow-row-2 { height: 260px; }
