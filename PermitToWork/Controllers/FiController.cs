@@ -30,57 +30,63 @@ namespace PermitToWork.Controllers
         {
 
             UserEntity user = Session["user"] as UserEntity;
-            FIEntity entity = new FIEntity(id, user);
+            ListUser listUser = new ListUser(user.token, user.id);
+            FIEntity entity = new FIEntity(id, user, listUser);
             entity.getPtw(user);
             entity.getHiraNo();
             bool[] isCanEdit = new bool[14];
 
-            isCanEdit[0] = entity.isCanEditFormRequestor(user);
-            isCanEdit[1] = entity.isCanEditAssign(user);
-            isCanEdit[2] = entity.isCanEditApproveFireWatch(user);
-            isCanEdit[3] = entity.isCanEditFormSPV(user);
-            isCanEdit[4] = entity.isCanEditApproveSO(user);
-            isCanEdit[5] = entity.isCanEditApproveFO(user);
-            isCanEdit[6] = entity.isCanEditApproveDeptHead(user);
-            isCanEdit[7] = entity.isCanEditCancel(user);
-            isCanEdit[8] = entity.isCanEditApproveRequestorCancel(user);
-            isCanEdit[9] = entity.isCanEditApproveFireWatchCancel(user);
-            isCanEdit[10] = entity.isCanEditFormSPVCancel(user);
-            isCanEdit[11] = entity.isCanEditApproveSOCancel(user);
-            isCanEdit[12] = entity.isCanEditApproveFOCancel(user);
-            isCanEdit[13] = entity.isCanEditApproveDeptHeadCancel(user);
+            isCanEdit[0] = entity.isCanEditFormRequestor(user, listUser);
+            isCanEdit[1] = entity.isCanEditAssign(user, listUser);
+            isCanEdit[2] = entity.isCanEditApproveFireWatch(user, listUser);
+            isCanEdit[3] = entity.isCanEditFormSPV(user, listUser);
+            isCanEdit[4] = entity.isCanEditApproveSO(user, listUser);
+            isCanEdit[5] = entity.isCanEditApproveFO(user, listUser);
+            isCanEdit[6] = entity.isCanEditApproveDeptHead(user, listUser);
+            isCanEdit[7] = entity.isCanEditCancel(user, listUser);
+            isCanEdit[8] = entity.isCanEditApproveRequestorCancel(user, listUser);
+            isCanEdit[9] = entity.isCanEditApproveFireWatchCancel(user, listUser);
+            isCanEdit[10] = entity.isCanEditFormSPVCancel(user, listUser);
+            isCanEdit[11] = entity.isCanEditApproveSOCancel(user, listUser);
+            isCanEdit[12] = entity.isCanEditApproveFOCancel(user, listUser);
+            isCanEdit[13] = entity.isCanEditApproveDeptHeadCancel(user, listUser);
 
             ViewBag.isCanEdit = isCanEdit;
 
             ViewBag.position = "Edit";
-            ViewBag.listUser = new ListUser(user.token, user.id);
+            ViewBag.listUser = listUser;
 
             var listSO = new List<SelectListItem>();
-            var listSOs = new MstSOEntity().getListMstSO(user);
-            foreach (MstSOEntity sect in listSOs)
-            {
-                listSO.Add(new SelectListItem
+            if (isCanEdit[1]) {
+                var listSOs = new MstSOEntity().getListMstSO(user, listUser);
+                foreach (MstSOEntity sect in listSOs)
                 {
-                    Text = sect.user.alpha_name,
-                    Value = sect.user.id.ToString(),
-                    Selected = false
-                });
+                    listSO.Add(new SelectListItem
+                    {
+                        Text = sect.user.alpha_name,
+                        Value = sect.user.id.ToString(),
+                        Selected = false
+                    });
+                }
             }
             ViewBag.listSO = listSO;
 
             var listDeptHead = new List<SelectListItem>();
-            var listDeptHeads = new MstDeptHeadEntity().getListMstDeptHead(user);
-            foreach (MstDeptHeadEntity sect in listDeptHeads)
+            if (isCanEdit[1])
             {
-                listDeptHead.Add(new SelectListItem
+                var listDeptHeads = new MstDeptHeadEntity().getListMstDeptHead(user, listUser);
+                foreach (MstDeptHeadEntity sect in listDeptHeads)
                 {
-                    Text = sect.user.alpha_name,
-                    Value = sect.user.id.ToString(),
-                    Selected = false
-                });
+                    listDeptHead.Add(new SelectListItem
+                    {
+                        Text = sect.user.alpha_name,
+                        Value = sect.user.id.ToString(),
+                        Selected = false
+                    });
+                }
             }
             ViewBag.listDeptHead = listDeptHead;
-            ViewBag.ptwStatus = new PtwEntity(entity.id_ptw.Value, user).status;
+            ViewBag.ptwStatus = entity.ptw_status;
             return PartialView("create", entity);
         }
 

@@ -42,6 +42,8 @@ namespace PermitToWork.Models
         public int ids { get; set; }
         public string statusText { get; set; }
 
+        public int? ptw_status { get; set; }
+
         public bool is_guest { get; set; }
         public bool isUser { get; set; }
 
@@ -114,6 +116,28 @@ namespace PermitToWork.Models
             this.statusText = getStatus();
 
             generateUserInFI(user);
+
+            this.hira_document = new ListHira(this.id_ptw.Value, this.db).listHira;
+        }
+
+        public FIEntity(int id, UserEntity user, ListUser listUser)
+            : this()
+        {
+            fire_impairment fi = this.db.fire_impairment.Find(id);
+            // this.ptw = new PtwEntity(fi.id_ptw.Value);
+            ModelUtilization.Clone(fi, this);
+            this.is_guest = fi.permit_to_work.is_guest == 1;
+            this.screening_fo_arr = this.screening_fo.Split('#');
+            this.screening_spv_arr = this.screening_spv.Split('#');
+            this.screening_so_arr = this.screening_so.Split('#');
+
+            this.can_screening_fo_arr = this.cancel_fo.Split('#');
+            this.can_screening_spv_arr = this.cancel_spv.Split('#');
+            this.can_screening_so_arr = this.cancel_so.Split('#');
+
+            this.statusText = getStatus();
+
+            generateUserInFI(user, listUser);
 
             this.hira_document = new ListHira(this.id_ptw.Value, this.db).listHira;
         }
@@ -2196,13 +2220,13 @@ namespace PermitToWork.Models
             return false;
         }
 
-        public bool isCanEditFormRequestor(UserEntity user)
+        public bool isCanEditFormRequestor(UserEntity user, ListUser listUser)
         {
             int requestorId = 0;
             if (this.ptw.is_guest == 1)
             {
                 Int32.TryParse(this.spv, out requestorId);
-                UserEntity requestor = new UserEntity(requestorId, user.token, user);
+                UserEntity requestor = listUser.listUser.Find(p => p.id == requestorId);
                 if ((user.id == requestor.id || user.id == requestor.employee_delegate) && this.status == (int)FIStatus.CREATE)
                 {
                     return true;
@@ -2211,7 +2235,7 @@ namespace PermitToWork.Models
             else
             {
                 Int32.TryParse(this.requestor, out requestorId);
-                UserEntity requestor = new UserEntity(requestorId, user.token, user);
+                UserEntity requestor = listUser.listUser.Find(p => p.id == requestorId);
                 if ((user.id == requestor.id || user.id == requestor.employee_delegate) && this.status == (int)FIStatus.CREATE)
                 {
                     return true;
@@ -2220,11 +2244,11 @@ namespace PermitToWork.Models
             return false;
         }
 
-        public bool isCanEditFormSPV(UserEntity user)
+        public bool isCanEditFormSPV(UserEntity user, ListUser listUser)
         {
             int spvId = 0;
             Int32.TryParse(this.spv, out spvId);
-            UserEntity spv = new UserEntity(spvId, user.token, user);
+            UserEntity spv = listUser.listUser.Find(p => p.id == spvId);
             if ((user.id == spv.id || user.id == spv.employee_delegate) && this.status == (int)FIStatus.FIREWATCHAPPROVE)
             {
                 return true;
@@ -2232,12 +2256,12 @@ namespace PermitToWork.Models
             return false;
         }
 
-        public bool isCanEditAssign(UserEntity user)
+        public bool isCanEditAssign(UserEntity user, ListUser listUser)
         {
             int foId = 0;
             Int32.TryParse(this.acc_fo, out foId);
-            UserEntity fo = new UserEntity(foId, user.token, user);
-            List<UserEntity> listDel = fo.GetDelegateFO(user);
+            UserEntity fo = listUser.listUser.Find(p => p.id == foId);
+            List<UserEntity> listDel = fo.GetDelegateFO(user, listUser);
             if ((user.id == fo.id || user.id == fo.employee_delegate) && (this.acc_so == null || this.acc_dept_head == null))
             {
                 return true;
@@ -2249,11 +2273,11 @@ namespace PermitToWork.Models
             return false;
         }
 
-        public bool isCanEditApproveFireWatch(UserEntity user)
+        public bool isCanEditApproveFireWatch(UserEntity user, ListUser listUser)
         {
             int fireWatchId = 0;
             Int32.TryParse(this.fire_watch, out fireWatchId);
-            UserEntity fireWatch = new UserEntity(fireWatchId, user.token, user);
+            UserEntity fireWatch = listUser.listUser.Find(p => p.id == fireWatchId);
             if ((user.id == fireWatch.id || user.id == fireWatch.employee_delegate) && this.status == (int)FIStatus.REQUESTORAPPROVE)
             {
                 return true;
@@ -2261,11 +2285,11 @@ namespace PermitToWork.Models
             return false;
         }
 
-        public bool isCanEditApproveSO(UserEntity user)
+        public bool isCanEditApproveSO(UserEntity user, ListUser listUser)
         {
             int sOId = 0;
             Int32.TryParse(this.acc_so, out sOId);
-            UserEntity sO = new UserEntity(sOId, user.token, user);
+            UserEntity sO = listUser.listUser.Find(p => p.id == sOId);
             if ((user.id == sO.id || user.id == sO.employee_delegate) && this.status == (int)FIStatus.SPVSCREENING)
             {
                 return true;
@@ -2273,12 +2297,12 @@ namespace PermitToWork.Models
             return false;
         }
 
-        public bool isCanEditApproveFO(UserEntity user)
+        public bool isCanEditApproveFO(UserEntity user, ListUser listUser)
         {
             int fOId = 0;
             Int32.TryParse(this.acc_fo, out fOId);
-            UserEntity fO = new UserEntity(fOId, user.token, user);
-            List<UserEntity> listDel = fO.GetDelegateFO(user);
+            UserEntity fO = listUser.listUser.Find(p => p.id == fOId);
+            List<UserEntity> listDel = fO.GetDelegateFO(user, listUser);
             if ((user.id == fO.id || user.id == fO.employee_delegate) && this.status == (int)FIStatus.SOAPPROVE)
             {
                 return true;
@@ -2290,11 +2314,11 @@ namespace PermitToWork.Models
             return false;
         }
 
-        public bool isCanEditApproveDeptHead(UserEntity user)
+        public bool isCanEditApproveDeptHead(UserEntity user, ListUser listUser)
         {
             int deptHeadId = 0;
             Int32.TryParse(this.acc_dept_head, out deptHeadId);
-            UserEntity deptHead = new UserEntity(deptHeadId, user.token, user);
+            UserEntity deptHead = listUser.listUser.Find(p => p.id == deptHeadId);
             if ((user.id == deptHead.id || user.id == deptHead.employee_delegate) && this.status == (int)FIStatus.FOAPPROVE)
             {
                 return true;
@@ -2302,13 +2326,13 @@ namespace PermitToWork.Models
             return false;
         }
 
-        public bool isCanEditCancel(UserEntity user)
+        public bool isCanEditCancel(UserEntity user, ListUser listUser)
         {
             int requestorId = 0;
             if (this.ptw.is_guest == 1)
             {
                 Int32.TryParse(this.spv, out requestorId);
-                UserEntity requestor = new UserEntity(requestorId, user.token, user);
+                UserEntity requestor = listUser.listUser.Find(p => p.id == requestorId);
                 if ((user.id == requestor.id || user.id == requestor.employee_delegate) && this.status == (int)FIStatus.DEPTFOAPPROVE)
                 {
                     return true;
@@ -2317,7 +2341,7 @@ namespace PermitToWork.Models
             else
             {
                 Int32.TryParse(this.requestor, out requestorId);
-                UserEntity requestor = new UserEntity(requestorId, user.token, user);
+                UserEntity requestor = listUser.listUser.Find(p => p.id == requestorId);
                 if ((user.id == requestor.id || user.id == requestor.employee_delegate) && this.status == (int)FIStatus.DEPTFOAPPROVE)
                 {
                     return true;
@@ -2326,11 +2350,11 @@ namespace PermitToWork.Models
             return false;
         }
 
-        public bool isCanEditFormSPVCancel(UserEntity user)
+        public bool isCanEditFormSPVCancel(UserEntity user, ListUser listUser)
         {
             int spvId = 0;
             Int32.TryParse(this.spv, out spvId);
-            UserEntity spv = new UserEntity(spvId, user.token, user);
+            UserEntity spv = listUser.listUser.Find(p => p.id == spvId);
             if ((user.id == spv.id || user.id == spv.employee_delegate) && this.status == (int)FIStatus.CANFIREWATCHAPPROVE)
             {
                 return true;
@@ -2362,13 +2386,13 @@ namespace PermitToWork.Models
         //    return false;
         //}
 
-        public bool isCanEditApproveRequestorCancel(UserEntity user)
+        public bool isCanEditApproveRequestorCancel(UserEntity user, ListUser listUser)
         {
             int requestorId = 0;
             if (this.ptw.is_guest == 1)
             {
                 Int32.TryParse(this.spv, out requestorId);
-                UserEntity requestor = new UserEntity(requestorId, user.token, user);
+                UserEntity requestor = listUser.listUser.Find(p => p.id == requestorId);
                 if ((user.id == requestor.id || user.id == requestor.employee_delegate) && this.status == (int)FIStatus.CLOSING)
                 {
                     return true;
@@ -2377,7 +2401,7 @@ namespace PermitToWork.Models
             else
             {
                 Int32.TryParse(this.requestor, out requestorId);
-                UserEntity requestor = new UserEntity(requestorId, user.token, user);
+                UserEntity requestor = listUser.listUser.Find(p => p.id == requestorId);
                 if ((user.id == requestor.id || user.id == requestor.employee_delegate) && this.status == (int)FIStatus.CLOSING)
                 {
                     return true;
@@ -2386,11 +2410,11 @@ namespace PermitToWork.Models
             return false;
         }
 
-        public bool isCanEditApproveFireWatchCancel(UserEntity user)
+        public bool isCanEditApproveFireWatchCancel(UserEntity user, ListUser listUser)
         {
             int fireWatchId = 0;
             Int32.TryParse(this.fire_watch, out fireWatchId);
-            UserEntity fireWatch = new UserEntity(fireWatchId, user.token, user);
+            UserEntity fireWatch = listUser.listUser.Find(p => p.id == fireWatchId);
             if ((user.id == fireWatch.id || user.id == fireWatch.employee_delegate) && this.status == (int)FIStatus.CANREQUESTORAPPROVE)
             {
                 return true;
@@ -2398,11 +2422,11 @@ namespace PermitToWork.Models
             return false;
         }
 
-        public bool isCanEditApproveSOCancel(UserEntity user)
+        public bool isCanEditApproveSOCancel(UserEntity user, ListUser listUser)
         {
             int sOId = 0;
             Int32.TryParse(this.acc_so, out sOId);
-            UserEntity sO = new UserEntity(sOId, user.token, user);
+            UserEntity sO = listUser.listUser.Find(p => p.id == sOId);
             if ((user.id == sO.id || user.id == sO.employee_delegate) && this.status == (int)FIStatus.CANSPVSCREENING)
             {
                 return true;
@@ -2410,12 +2434,12 @@ namespace PermitToWork.Models
             return false;
         }
 
-        public bool isCanEditApproveFOCancel(UserEntity user)
+        public bool isCanEditApproveFOCancel(UserEntity user, ListUser listUser)
         {
             int fOId = 0;
             Int32.TryParse(this.acc_fo, out fOId);
-            UserEntity fO = new UserEntity(fOId, user.token, user);
-            List<UserEntity> listDel = fO.GetDelegateFO(user);
+            UserEntity fO = listUser.listUser.Find(p => p.id == fOId);
+            List<UserEntity> listDel = fO.GetDelegateFO(user, listUser);
             if ((user.id == fO.id || user.id == fO.employee_delegate) && this.status == (int)FIStatus.CANSOAPPROVE)
             {
                 return true;
@@ -2427,11 +2451,11 @@ namespace PermitToWork.Models
             return false;
         }
 
-        public bool isCanEditApproveDeptHeadCancel(UserEntity user)
+        public bool isCanEditApproveDeptHeadCancel(UserEntity user, ListUser listUser)
         {
             int deptHeadId = 0;
             Int32.TryParse(this.acc_dept_head, out deptHeadId);
-            UserEntity deptHead = new UserEntity(deptHeadId, user.token, user);
+            UserEntity deptHead = listUser.listUser.Find(p => p.id == deptHeadId);
             if ((user.id == deptHead.id || user.id == deptHead.employee_delegate) && this.status == (int)FIStatus.CANFOAPPROVE)
             {
                 return true;
@@ -2616,6 +2640,7 @@ namespace PermitToWork.Models
         public void getPtw(UserEntity user)
         {
             this.ptw = new PtwEntity(this.id_ptw.Value, user);
+            this.ptw_status = this.ptw.status;
         }
 
         #endregion
