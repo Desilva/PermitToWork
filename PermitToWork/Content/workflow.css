@@ -1,7 +1,8 @@
 ﻿.workflow-container { position: relative; }
 .workflow-node { position: absolute; }
-    .workflow-node .workflow-box { float: left; width: 150px; height: 50px; border: solid 1px #000; text-align: center; }
+    .workflow-node .workflow-box { float: left; width: 150px; height: 50px; border: solid 1px #000; text-align: center; background: #fff; }
         .workflow-node .workflow-box .workflow-text { vertical-align: middle; padding: 0 5px; padding-top: 10px; }
+            .workflow-node .workflow-box .workflow-text.compact { padding-top: 0; }
     .workflow-node .workflow-line { float: left; margin-top: 10px; }
 .workflow-bridge { position: absolute; }
 
@@ -9,5 +10,7 @@
 .workflow-col-2 { left: 252px; }
 .workflow-col-3 { left: 504px; }
 .workflow-col-4 { left: 756px; }
+.workflow-col-5 { left: 1008px; }
+.workflow-col-6 { left: 1260px; }
 
 .workflow-row-2 { height: 260px; }

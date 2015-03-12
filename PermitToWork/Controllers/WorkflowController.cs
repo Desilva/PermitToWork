@@ -23,5 +23,12 @@ namespace PermitToWork.Controllers
 
             return new JavaScriptSerializer().Serialize(model.NodeList);
         }
+
+        public string FireImpairment(int id)
+        {
+            FireImpairmentModel model = new FireImpairmentModel(new workflow_node().FindAllNode(id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString()));
+
+            return new JavaScriptSerializer().Serialize(model.NodeList);
+        }
     }
 }
