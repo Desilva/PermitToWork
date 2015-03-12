@@ -392,13 +392,13 @@
 
         if (!workflowObject.length) { //create element if not exist
             workflowObject = $(document.createElement('div')).attr('id', 'workflow-hot-work').appendTo('body');
-            workflowObject.workflowHotWork({
+            workflowObject.workflowDiagram({
                 template: kendo.template($("#workflow-hot-work-template").html()),
                 url: '@Url.Action("HotWork", "Workflow")',
             });
         }
 
-        //workflowObject.workflowDiagram('reload', id, num);
+        workflowObject.workflowDiagram('reload', id, num);
         workflowObject.workflowDiagram('show');
     }
 </script>
