@@ -12,7 +12,7 @@ namespace PermitToWork.Controllers
     {
         public string CSEP(int id)
         {
-            CSEPModel model = new CSEPModel(new workflow_node().FindAllNode());
+            CSEPModel model = new CSEPModel(new workflow_node().FindAllNode(id,WorkflowNodeServiceModel.DocumentType.CSEP.ToString()));
 
             return new JavaScriptSerializer().Serialize(model.NodeList);
         }

@@ -1145,6 +1145,7 @@
     <Content Include="Views\MasterDelegateFO\Index.cshtml" />
     <Content Include="Views\Home\Page.cshtml" />
     <Content Include="Views\Workflow\HotWork.cshtml" />
+    <Content Include="Views\Workflow\CSEP.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

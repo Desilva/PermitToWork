@@ -287,6 +287,99 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
+      <xs:element name="GetUserNotification">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="request" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="userId" type="xs:int" />
+            <xs:element minOccurs="0" name="passKey" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetUserNotificationResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="GetUserNotificationResult" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetWorkflowNode">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="id_report" type="xs:int" />
+            <xs:element minOccurs="0" name="report_type" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetWorkflowNodeResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="GetWorkflowNodeResult" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="WorkflowNodeCreate">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="id_report" type="xs:int" />
+            <xs:element minOccurs="0" name="report_type" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="node_name" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="status" type="xs:unsignedByte" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="WorkflowNodeCreateResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="WorkflowNodeCreateResult" type="xs:boolean" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="WorkflowNodeUpdate">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="id_report" type="xs:int" />
+            <xs:element minOccurs="0" name="report_type" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="node_name" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="status" type="xs:unsignedByte" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="WorkflowNodeUpdateResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="WorkflowNodeUpdateResult" type="xs:boolean" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="WorkflowNodeCreateBulk">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="list" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="WorkflowNodeCreateBulkResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="WorkflowNodeCreateBulkResult" type="xs:boolean" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="WorkflowNodeUpdateBulk">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="list" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="WorkflowNodeUpdateBulkResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="WorkflowNodeUpdateBulkResult" type="xs:boolean" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
     </xs:schema>
     <xs:schema xmlns:tns="http://schemas.microsoft.com/2003/10/Serialization/" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://schemas.microsoft.com/2003/10/Serialization/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
       <xs:element name="anyType" nillable="true" type="xs:anyType" />
@@ -493,6 +586,42 @@
   <wsdl:message name="IUserService_NotifactionIsSeen_OutputMessage">
     <wsdl:part name="parameters" element="tns:NotifactionIsSeenResponse" />
   </wsdl:message>
+  <wsdl:message name="IUserService_GetUserNotification_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetUserNotification" />
+  </wsdl:message>
+  <wsdl:message name="IUserService_GetUserNotification_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetUserNotificationResponse" />
+  </wsdl:message>
+  <wsdl:message name="IUserService_GetWorkflowNode_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetWorkflowNode" />
+  </wsdl:message>
+  <wsdl:message name="IUserService_GetWorkflowNode_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetWorkflowNodeResponse" />
+  </wsdl:message>
+  <wsdl:message name="IUserService_WorkflowNodeCreate_InputMessage">
+    <wsdl:part name="parameters" element="tns:WorkflowNodeCreate" />
+  </wsdl:message>
+  <wsdl:message name="IUserService_WorkflowNodeCreate_OutputMessage">
+    <wsdl:part name="parameters" element="tns:WorkflowNodeCreateResponse" />
+  </wsdl:message>
+  <wsdl:message name="IUserService_WorkflowNodeUpdate_InputMessage">
+    <wsdl:part name="parameters" element="tns:WorkflowNodeUpdate" />
+  </wsdl:message>
+  <wsdl:message name="IUserService_WorkflowNodeUpdate_OutputMessage">
+    <wsdl:part name="parameters" element="tns:WorkflowNodeUpdateResponse" />
+  </wsdl:message>
+  <wsdl:message name="IUserService_WorkflowNodeCreateBulk_InputMessage">
+    <wsdl:part name="parameters" element="tns:WorkflowNodeCreateBulk" />
+  </wsdl:message>
+  <wsdl:message name="IUserService_WorkflowNodeCreateBulk_OutputMessage">
+    <wsdl:part name="parameters" element="tns:WorkflowNodeCreateBulkResponse" />
+  </wsdl:message>
+  <wsdl:message name="IUserService_WorkflowNodeUpdateBulk_InputMessage">
+    <wsdl:part name="parameters" element="tns:WorkflowNodeUpdateBulk" />
+  </wsdl:message>
+  <wsdl:message name="IUserService_WorkflowNodeUpdateBulk_OutputMessage">
+    <wsdl:part name="parameters" element="tns:WorkflowNodeUpdateBulkResponse" />
+  </wsdl:message>
   <wsdl:portType name="IUserService">
     <wsdl:operation name="listUser">
       <wsdl:input wsaw:Action="http://tempuri.org/IUserService/listUser" message="tns:IUserService_listUser_InputMessage" />
@@ -561,6 +690,30 @@
     <wsdl:operation name="NotifactionIsSeen">
       <wsdl:input wsaw:Action="http://tempuri.org/IUserService/NotifactionIsSeen" message="tns:IUserService_NotifactionIsSeen_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IUserService/NotifactionIsSeenResponse" message="tns:IUserService_NotifactionIsSeen_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetUserNotification">
+      <wsdl:input wsaw:Action="http://tempuri.org/IUserService/GetUserNotification" message="tns:IUserService_GetUserNotification_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IUserService/GetUserNotificationResponse" message="tns:IUserService_GetUserNotification_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetWorkflowNode">
+      <wsdl:input wsaw:Action="http://tempuri.org/IUserService/GetWorkflowNode" message="tns:IUserService_GetWorkflowNode_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IUserService/GetWorkflowNodeResponse" message="tns:IUserService_GetWorkflowNode_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="WorkflowNodeCreate">
+      <wsdl:input wsaw:Action="http://tempuri.org/IUserService/WorkflowNodeCreate" message="tns:IUserService_WorkflowNodeCreate_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IUserService/WorkflowNodeCreateResponse" message="tns:IUserService_WorkflowNodeCreate_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="WorkflowNodeUpdate">
+      <wsdl:input wsaw:Action="http://tempuri.org/IUserService/WorkflowNodeUpdate" message="tns:IUserService_WorkflowNodeUpdate_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IUserService/WorkflowNodeUpdateResponse" message="tns:IUserService_WorkflowNodeUpdate_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="WorkflowNodeCreateBulk">
+      <wsdl:input wsaw:Action="http://tempuri.org/IUserService/WorkflowNodeCreateBulk" message="tns:IUserService_WorkflowNodeCreateBulk_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IUserService/WorkflowNodeCreateBulkResponse" message="tns:IUserService_WorkflowNodeCreateBulk_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="WorkflowNodeUpdateBulk">
+      <wsdl:input wsaw:Action="http://tempuri.org/IUserService/WorkflowNodeUpdateBulk" message="tns:IUserService_WorkflowNodeUpdateBulk_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IUserService/WorkflowNodeUpdateBulkResponse" message="tns:IUserService_WorkflowNodeUpdateBulk_OutputMessage" />
     </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="BasicHttpBinding_IUserService" type="tns:IUserService">
@@ -711,6 +864,60 @@
     </wsdl:operation>
     <wsdl:operation name="NotifactionIsSeen">
       <soap:operation soapAction="http://tempuri.org/IUserService/NotifactionIsSeen" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUserNotification">
+      <soap:operation soapAction="http://tempuri.org/IUserService/GetUserNotification" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetWorkflowNode">
+      <soap:operation soapAction="http://tempuri.org/IUserService/GetWorkflowNode" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="WorkflowNodeCreate">
+      <soap:operation soapAction="http://tempuri.org/IUserService/WorkflowNodeCreate" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="WorkflowNodeUpdate">
+      <soap:operation soapAction="http://tempuri.org/IUserService/WorkflowNodeUpdate" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="WorkflowNodeCreateBulk">
+      <soap:operation soapAction="http://tempuri.org/IUserService/WorkflowNodeCreateBulk" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="WorkflowNodeUpdateBulk">
+      <soap:operation soapAction="http://tempuri.org/IUserService/WorkflowNodeUpdateBulk" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

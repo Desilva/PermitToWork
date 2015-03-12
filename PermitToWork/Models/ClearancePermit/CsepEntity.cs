@@ -8,6 +8,7 @@ using System.Data;
 using System.Linq;
 using System.Web;
 using System.IO;
+using PermitToWork.Models.Workflow;
 
 namespace PermitToWork.Models.ClearancePermit
 {
@@ -42,6 +43,8 @@ namespace PermitToWork.Models.ClearancePermit
 
         public Dictionary<string, UserEntity> userInCSEP { get; set; }
         public Dictionary<string, List<string>> listDocumentUploaded { get; set; }
+
+        public WorkflowNodeServiceModel workflowNodeService { get; set; }
 
         public enum CsepStatus
         {
@@ -99,6 +102,7 @@ namespace PermitToWork.Models.ClearancePermit
         {
             this.db = new star_energy_ptwEntities();
             this.listDocumentUploaded = new Dictionary<string, List<string>>();
+            this.workflowNodeService = new WorkflowNodeServiceModel();
         }
 
         // constructor with id to get object from database
@@ -1344,7 +1348,10 @@ namespace PermitToWork.Models.ClearancePermit
                 string message = serverUrl + "Home?p=Csep/edit/" + this.id;
 
                 sendEmail.Send(s, message, "Assigned as Confined Space Entry Permit (" + this.csep_no + ") Gas Tester");
-                sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please gas test and submit the result for Confined Space Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
+                sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please gas test and submit the result for Confined Space Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);//create node
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.CSEP.ToString(),
+                    WorkflowNodeServiceModel.CSEPNodeName.FACILITY_OWNER_SCREENING.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
             }
             else if (extension == 1)
             {
@@ -1528,7 +1535,7 @@ namespace PermitToWork.Models.ClearancePermit
                 subject = "Confined Space Entry Permit Approval Rejection";
                 if (cancel == 0)
                 {
-                    sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Confined Space Entry Permit No. " + this.csep_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Csep/edit/" + this.id);
+                    sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Confined Space Entry Permit No. " + this.csep_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Csep/edit/" + this.id);//create node
                 }
                 else if (cancel == 1)
                 {
@@ -1628,7 +1635,12 @@ namespace PermitToWork.Models.ClearancePermit
             string subject = "";
             message = serverUrl + "Home?p=Csep/edit/" + this.id;
             subject = "Confined Space Entry Permit Supervisor Screening";
+
+            //notification
             sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please Screening Confined Space Entry Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
+            // create node
+            workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.CSEP.ToString(),
+                WorkflowNodeServiceModel.CSEPNodeName.REQUESTOR_INPUT.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
             sendEmail.Send(s, message, subject);
 
@@ -1673,6 +1685,9 @@ namespace PermitToWork.Models.ClearancePermit
 
             sendEmail.Send(s, message, "Confined Space Entry Permit Facility Owner Screening");
             sendEmail.SendToNotificationCenter(userId, "Confined Space Entry Permit", "Please Screening Confined Space Entry Permit No. " + this.csep_no, serverUrl + "Home?p=Csep/edit/" + this.id);
+            // create node
+            workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.CSEP.ToString(),
+                WorkflowNodeServiceModel.CSEPNodeName.SUPERVISOR_SCREENING.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
             return "200";
         }
@@ -1889,6 +1904,9 @@ namespace PermitToWork.Models.ClearancePermit
             {
                 csep.acc_gas_tester_approve = "a" + user.signature;
                 csep.status = (int)CsepStatus.GASTESTER;
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.CSEP.ToString(),
+                    WorkflowNodeServiceModel.CSEPNodeName.GAS_TESTING.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
             }
             else if (extension == 1 && (user.id.ToString() == this.ext_gas_tester_1 || user.id.ToString() == this.ext_fo_1 || listDel.Exists(p => p.id == user.id)))
             {
@@ -1945,11 +1963,17 @@ namespace PermitToWork.Models.ClearancePermit
             {
                 csep.acc_work_leader_approve = "a" + user.signature;
                 csep.status = (int)CsepStatus.ACCWORKLEADER;
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.CSEP.ToString(),
+                    WorkflowNodeServiceModel.CSEPNodeName.REQUESTOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
             }
             else if (is_guest && extension == 0 && user.id.ToString() == this.acc_supervisor)
             {
                 csep.acc_work_leader_approve = csep.permit_to_work.acc_ptw_requestor_approve;
                 csep.status = (int)CsepStatus.ACCWORKLEADER;
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.CSEP.ToString(),
+                    WorkflowNodeServiceModel.CSEPNodeName.REQUESTOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
             } 
             else if (extension == 0 && random_pin != null && user.id.ToString() == this.acc_supervisor)
             {
@@ -1965,6 +1989,9 @@ namespace PermitToWork.Models.ClearancePermit
                         csep.acc_work_leader_approve = "a" + user.signature;
                     }
                     csep.status = (int)CsepStatus.ACCWORKLEADER;
+                    // create node
+                    workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.CSEP.ToString(),
+                        WorkflowNodeServiceModel.CSEPNodeName.REQUESTOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                 }
                 else
                 {
@@ -2099,6 +2126,9 @@ namespace PermitToWork.Models.ClearancePermit
                 csep.status = (int)CsepStatus.ACCSPV;
                 this.db.Entry(csep).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.CSEP.ToString(),
+                    WorkflowNodeServiceModel.CSEPNodeName.SUPERVISOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                 return "200";
             }
@@ -2113,6 +2143,9 @@ namespace PermitToWork.Models.ClearancePermit
                 csep.status = (int)CsepStatus.ACCSPV;
                 this.db.Entry(csep).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.CSEP.ToString(),
+                    WorkflowNodeServiceModel.CSEPNodeName.SUPERVISOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
 
                 return "201";
             }
@@ -2133,6 +2166,9 @@ namespace PermitToWork.Models.ClearancePermit
                 csep.status = (int)CsepStatus.GASTESTER;
                 this.db.Entry(csep).State = EntityState.Modified;
                 this.db.SaveChanges();
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.CSEP.ToString(),
+                    WorkflowNodeServiceModel.CSEPNodeName.SUPERVISOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
 
                 return "200";
             }
@@ -2219,6 +2255,9 @@ namespace PermitToWork.Models.ClearancePermit
                     this.db.Entry(csep).State = EntityState.Modified;
                     this.db.SaveChanges();
 
+                    // create node
+                    workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.CSEP.ToString(),
+                        WorkflowNodeServiceModel.CSEPNodeName.FACILITY_OWNER_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                     return "200";
                 }
                 else
@@ -2229,6 +2268,9 @@ namespace PermitToWork.Models.ClearancePermit
                     this.db.Entry(csep).State = EntityState.Modified;
                     this.db.SaveChanges();
 
+                    // create node
+                    workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.CSEP.ToString(),
+                        WorkflowNodeServiceModel.CSEPNodeName.FACILITY_OWNER_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                     return "201";
                 }
             }
@@ -2391,6 +2433,9 @@ namespace PermitToWork.Models.ClearancePermit
                 this.db.Entry(csep).State = EntityState.Modified;
                 this.db.SaveChanges();
 
+                // create node
+                workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.CSEP.ToString(),
+                    WorkflowNodeServiceModel.CSEPNodeName.FACILITY_OWNER_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                 return "200";
             }
             else if (extension == 1)

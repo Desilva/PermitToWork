@@ -525,6 +525,42 @@ namespace PermitToWork.WWUserService {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/NotifactionIsSeen", ReplyAction="http://tempuri.org/IUserService/NotifactionIsSeenResponse")]
         System.Threading.Tasks.Task<PermitToWork.WWUserService.ResponseModel> NotifactionIsSeenAsync(string passKey, int id, int idLogin);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/GetUserNotification", ReplyAction="http://tempuri.org/IUserService/GetUserNotificationResponse")]
+        string GetUserNotification(string request, int userId, string passKey);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/GetUserNotification", ReplyAction="http://tempuri.org/IUserService/GetUserNotificationResponse")]
+        System.Threading.Tasks.Task<string> GetUserNotificationAsync(string request, int userId, string passKey);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/GetWorkflowNode", ReplyAction="http://tempuri.org/IUserService/GetWorkflowNodeResponse")]
+        string GetWorkflowNode(int id_report, string report_type);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/GetWorkflowNode", ReplyAction="http://tempuri.org/IUserService/GetWorkflowNodeResponse")]
+        System.Threading.Tasks.Task<string> GetWorkflowNodeAsync(int id_report, string report_type);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/WorkflowNodeCreate", ReplyAction="http://tempuri.org/IUserService/WorkflowNodeCreateResponse")]
+        bool WorkflowNodeCreate(int id_report, string report_type, string node_name, byte status);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/WorkflowNodeCreate", ReplyAction="http://tempuri.org/IUserService/WorkflowNodeCreateResponse")]
+        System.Threading.Tasks.Task<bool> WorkflowNodeCreateAsync(int id_report, string report_type, string node_name, byte status);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/WorkflowNodeUpdate", ReplyAction="http://tempuri.org/IUserService/WorkflowNodeUpdateResponse")]
+        bool WorkflowNodeUpdate(int id_report, string report_type, string node_name, byte status);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/WorkflowNodeUpdate", ReplyAction="http://tempuri.org/IUserService/WorkflowNodeUpdateResponse")]
+        System.Threading.Tasks.Task<bool> WorkflowNodeUpdateAsync(int id_report, string report_type, string node_name, byte status);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/WorkflowNodeCreateBulk", ReplyAction="http://tempuri.org/IUserService/WorkflowNodeCreateBulkResponse")]
+        bool WorkflowNodeCreateBulk(string list);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/WorkflowNodeCreateBulk", ReplyAction="http://tempuri.org/IUserService/WorkflowNodeCreateBulkResponse")]
+        System.Threading.Tasks.Task<bool> WorkflowNodeCreateBulkAsync(string list);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/WorkflowNodeUpdateBulk", ReplyAction="http://tempuri.org/IUserService/WorkflowNodeUpdateBulkResponse")]
+        bool WorkflowNodeUpdateBulk(string list);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/WorkflowNodeUpdateBulk", ReplyAction="http://tempuri.org/IUserService/WorkflowNodeUpdateBulkResponse")]
+        System.Threading.Tasks.Task<bool> WorkflowNodeUpdateBulkAsync(string list);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -688,6 +724,54 @@ namespace PermitToWork.WWUserService {
         
         public System.Threading.Tasks.Task<PermitToWork.WWUserService.ResponseModel> NotifactionIsSeenAsync(string passKey, int id, int idLogin) {
             return base.Channel.NotifactionIsSeenAsync(passKey, id, idLogin);
+        }
+        
+        public string GetUserNotification(string request, int userId, string passKey) {
+            return base.Channel.GetUserNotification(request, userId, passKey);
+        }
+        
+        public System.Threading.Tasks.Task<string> GetUserNotificationAsync(string request, int userId, string passKey) {
+            return base.Channel.GetUserNotificationAsync(request, userId, passKey);
+        }
+        
+        public string GetWorkflowNode(int id_report, string report_type) {
+            return base.Channel.GetWorkflowNode(id_report, report_type);
+        }
+        
+        public System.Threading.Tasks.Task<string> GetWorkflowNodeAsync(int id_report, string report_type) {
+            return base.Channel.GetWorkflowNodeAsync(id_report, report_type);
+        }
+        
+        public bool WorkflowNodeCreate(int id_report, string report_type, string node_name, byte status) {
+            return base.Channel.WorkflowNodeCreate(id_report, report_type, node_name, status);
+        }
+        
+        public System.Threading.Tasks.Task<bool> WorkflowNodeCreateAsync(int id_report, string report_type, string node_name, byte status) {
+            return base.Channel.WorkflowNodeCreateAsync(id_report, report_type, node_name, status);
+        }
+        
+        public bool WorkflowNodeUpdate(int id_report, string report_type, string node_name, byte status) {
+            return base.Channel.WorkflowNodeUpdate(id_report, report_type, node_name, status);
+        }
+        
+        public System.Threading.Tasks.Task<bool> WorkflowNodeUpdateAsync(int id_report, string report_type, string node_name, byte status) {
+            return base.Channel.WorkflowNodeUpdateAsync(id_report, report_type, node_name, status);
+        }
+        
+        public bool WorkflowNodeCreateBulk(string list) {
+            return base.Channel.WorkflowNodeCreateBulk(list);
+        }
+        
+        public System.Threading.Tasks.Task<bool> WorkflowNodeCreateBulkAsync(string list) {
+            return base.Channel.WorkflowNodeCreateBulkAsync(list);
+        }
+        
+        public bool WorkflowNodeUpdateBulk(string list) {
+            return base.Channel.WorkflowNodeUpdateBulk(list);
+        }
+        
+        public System.Threading.Tasks.Task<bool> WorkflowNodeUpdateBulkAsync(string list) {
+            return base.Channel.WorkflowNodeUpdateBulkAsync(list);
         }
     }
 }
