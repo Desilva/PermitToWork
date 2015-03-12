@@ -753,7 +753,7 @@ namespace PermitToWork.Models.Hw
             {
                 UserEntity fo = listUser == null ? new UserEntity(foId, user.token, user) : listUser.listUser.Find(p => p.id == foId);
                 string user_id = user.id.ToString();
-                List<UserEntity> listDel = fo.GetDelegateFO(user);
+                List<UserEntity> listDel = fo.GetDelegateFO(user, listUser);
                 if ((this.acc_fo == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
                 {
                     retVal = true;
@@ -866,7 +866,7 @@ namespace PermitToWork.Models.Hw
             if (foId != 0)
             {
                 fo = listUser.listUser.Find(p => p.id == foId);
-                listDel = fo.GetDelegateFO(user);
+                listDel = fo.GetDelegateFO(user, listUser);
                 if ((this.ext_fo_1 == user_id || (fo.employee_delegate != null && fo.employee_delegate.ToString() == user_id)))
                 {
                     retVal = true;

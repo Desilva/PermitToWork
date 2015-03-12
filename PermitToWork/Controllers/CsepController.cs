@@ -84,8 +84,8 @@ namespace PermitToWork.Controllers
             ViewBag.isCanEditExt7 = entity.isCanEditExt(user, listUser, 7);
 
             ViewBag.position = "Edit";
-            ViewBag.listUser = new ListUser(user.token, user.id);
-            ViewBag.listGasTester = (ViewBag.listUser as ListUser).GetHotWorkGasTester();
+            ViewBag.listUser = listUser;
+            ViewBag.listGasTester = listUser.GetHotWorkGasTester();
             return PartialView("create", entity);
         }
 

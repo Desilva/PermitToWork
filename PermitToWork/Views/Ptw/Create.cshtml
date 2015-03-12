@@ -1393,15 +1393,9 @@
                                 }
                             }
                         }
-                        @if (Model.fireImpairments != null)
+                        @if (Model.fi_id != null)
                         {
-                            @*if (isCanExtend)
-                            {
-                                <button class="btn btn-small btn-warning" id="extend-fi">Extend FI</button><br />
-                            }*@
-                            foreach (PermitToWork.Models.FIEntity fi in Model.fireImpairments) {
-                                <button class="btn btn-small fi_id" id="fi_id" data-id="@fi.id">@fi.fi_no&nbsp;</button><br />
-                            }
+                            <button class="btn btn-small" id="fi_id" data-id="@Model.fi_id">@Model.fi_no</button>
                         }
                     </td>
                     <td class="small">@Html.Raw(Model.clearancePermitStatus(PtwEntity.clearancePermit.FIREIMPAIRMENT.ToString()))</td>

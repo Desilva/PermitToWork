@@ -82,7 +82,7 @@ namespace PermitToWork.Controllers
 
             ViewBag.position = "Edit";
             ViewBag.listUser = listUser;
-            ViewBag.listGasTester = (ViewBag.listUser as ListUser).GetHotWorkGasTester();
+            ViewBag.listGasTester = listUser.GetHotWorkGasTester();
             return PartialView("create", entity);
         }
 
