@@ -9,6 +9,7 @@
             url: '',
             ongoingColor: '#00FFFF ', //cyan
             finishColor: '#00FF00', //lime
+            emptyColor: '#FFFFFF',
             cancellationSelector: '.workflow-cancellation',
         },
 
@@ -79,6 +80,8 @@
                         self.element.find(selector).css('background-color', self.options.ongoingColor);
                     } else if (status === 'FINISH') {
                         self.element.find(selector).css('background-color', self.options.finishColor);
+                    } else {
+                        self.element.find(selector).css('background-color', self.options.emptyColor);
                     }
 
                     if (data[i].NodeName.indexOf('CANCELLATION') > -1)
