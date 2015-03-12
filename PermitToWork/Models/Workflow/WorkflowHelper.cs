@@ -31,11 +31,11 @@ namespace PermitToWork.Models.Workflow
             signals = signals.OrderBy(m => m.id).ToList(); //diurutkan dari paling lama ke paling baru
             foreach (workflow_node node in signals)
             {
-                if (node.status == (int)workflow_node.WorkflowNodeStatus.APPROVE) //approve signal
+                if (node.status == (int)WorkflowNodeServiceModel.NodeStatus.APPROVED) //approve signal
                 {
                     nodeNameStack.Push(node.node_name);
                 }
-                else if (node.status == (int)workflow_node.WorkflowNodeStatus.REJECT) //reject signal
+                else if (node.status == (int)WorkflowNodeServiceModel.NodeStatus.REJECTED) //reject signal
                 {
                     topStack = nodeNameStack.FirstOrDefault();
                     if (topStack != null)
