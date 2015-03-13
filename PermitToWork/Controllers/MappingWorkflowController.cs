@@ -36,5 +36,32 @@ namespace PermitToWork.Controllers
             bool result = mappingWorkflow.MappingFireImpairmentWorkflow();
             return result;
         }
+        public bool Excavation()
+        {
+            mappingWorkflow = new MappingWorkflowModel();
+            bool result = mappingWorkflow.MappingExcavationWorkflow();
+            return result;
+        }
+
+        public bool WorkingAtHeight()
+        {
+            mappingWorkflow = new MappingWorkflowModel();
+            bool result = mappingWorkflow.MappingWorkingAtHeightWorkflow();
+            return result;
+        }
+
+        public bool Radiographic()
+        {
+            mappingWorkflow = new MappingWorkflowModel();
+            bool result = mappingWorkflow.MappingRadiographicWorkflow();
+            return result;
+        }
+
+        public bool LOTO()
+        {
+            mappingWorkflow = new MappingWorkflowModel();
+            bool result = mappingWorkflow.MappingLOTOWorkflow();
+            return result;
+        }
     }
 }

@@ -44,7 +44,7 @@ namespace PermitToWork.Models.Ptw
             MstFOEntity prodFo = new MstFOEntity("PROD", user);
             List<MstDelegateFOEntity> listMstProdFO = new MstDelegateFOEntity().getListByFO(prodFo, user, listUser);
             bool isProd = false;
-            if (user.id == prodFo.id_employee || listMstProdFO.Exists(p => p.user_delegate_id == user.id))
+            if (user.id == prodFo.id_employee || user.id == prodFo.user.employee_delegate || listMstProdFO.Exists(p => p.user_delegate_id == user.id))
             {
                 isProd = true;
             }

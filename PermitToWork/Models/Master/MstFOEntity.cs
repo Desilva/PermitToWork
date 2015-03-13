@@ -60,7 +60,7 @@ namespace PermitToWork.Models.Master
             this.user = listUser.listUser.Find(p => p.id == this.id_employee.Value);
         }
 
-        public MstFOEntity(string fo_code, UserEntity user)
+        public MstFOEntity(string fo_code, UserEntity user, ListUser listUser = null)
         {
             this.db = new star_energy_ptwEntities();
             mst_facility_owner fac_owner = this.db.mst_facility_owner.Where(p => p.fo_code == fo_code).FirstOrDefault();
@@ -71,7 +71,7 @@ namespace PermitToWork.Models.Master
                 this.id_employee = fac_owner.id_employee;
                 this.fo_code = fac_owner.fo_code;
                 this.fo_name = fac_owner.fo_name;
-                this.user = new UserEntity(this.id_employee.Value, user.token, user);
+                this.user = listUser == null ? new UserEntity(this.id_employee.Value, user.token, user) : listUser.listUser.Find(p => p.id == this.id_employee);
             }
         }
 
