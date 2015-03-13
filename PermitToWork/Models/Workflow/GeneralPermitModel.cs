@@ -47,7 +47,8 @@ namespace PermitToWork.Models.Workflow
         {
             //kamus lokal
             List<string> approvedNodeNames = new List<string>(); //stack of node names
-            string lastApproved, prevNodeName;
+            List<string> prevNodeNames;
+            string lastApproved;
             int nodeNameIndex;
             List<WorkflowNodePresentationStub> nodeList;
             bool existOngoing = false;
@@ -68,23 +69,32 @@ namespace PermitToWork.Models.Workflow
                 }
                 else if (node.status == (int)WorkflowNodeServiceModel.NodeStatus.REJECTED) //reject signal
                 {
+                    prevNodeNames = new List<string>();
                     lastApproved = approvedNodeNames.LastOrDefault();
                     if (lastApproved != null)
                     {
                         //kasus khusus reject assessor
                         if (node.node_name == WorkflowNodeServiceModel.GeneralPermitNodeName.ASSESSOR_APPROVE.ToString())
                         {
-                            prevNodeName = WorkflowNodeServiceModel.GeneralPermitNodeName.SUPERVISOR_APPROVE.ToString();
+                            prevNodeNames.Add(WorkflowNodeServiceModel.GeneralPermitNodeName.SUPERVISOR_APPROVE.ToString());
+                        }
+                        else if (node.node_name == WorkflowNodeServiceModel.GeneralPermitNodeName.FACILITY_OWNER_APPROVE.ToString())
+                        {
+                            prevNodeNames.Add(WorkflowNodeServiceModel.GeneralPermitNodeName.ASSESSOR_APPROVE.ToString());
+                            prevNodeNames.Add(WorkflowNodeServiceModel.GeneralPermitNodeName.SUPERVISOR_APPROVE.ToString());
                         }
                         else
                         {
                             nodeNameIndex = nodeNames.FindIndex(a => a == node.node_name);
-                            prevNodeName = nodeNames[nodeNameIndex - 1];
+                            prevNodeNames.Add(nodeNames[nodeNameIndex - 1]);
                         }
 
-                        if (approvedNodeNames.Remove(prevNodeName) == false)
+                        foreach (string prevNodeName in prevNodeNames)
                         {
-                            throw new Exception("Kesalahan dalam fungsi pemrosesan signal.");
+                            if (approvedNodeNames.Remove(prevNodeName) == false)
+                            {
+                                throw new Exception("Kesalahan dalam fungsi pemrosesan signal.");
+                            }
                         }
                     }
                 }
