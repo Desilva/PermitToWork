@@ -702,6 +702,7 @@
       <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Models\Workflow\ExcavationModel.cs" />
     <Compile Include="Models\Workflow\GeneralPermitModel.cs" />
     <Compile Include="Models\Workflow\FireImpairmentModel.cs" />
     <Compile Include="Models\Workflow\HotWorkModel.cs" />
@@ -1165,6 +1166,7 @@
     <Content Include="Views\Workflow\HotWork.cshtml" />
     <Content Include="Views\Workflow\FireImpairment.cshtml" />
     <Content Include="Views\Workflow\GeneralPermit.cshtml" />
+    <Content Include="Views\Workflow\Excavation.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
