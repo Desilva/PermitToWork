@@ -9,7 +9,7 @@ namespace PermitToWork.Models
     {
         public bool isNeedInspector()
         {
-            if (this.access == null || this.scaffolding == null)
+            if (this.access != null && this.scaffolding != null)
             {
                 if (this.access.Contains('4') && this.scaffolding == 2)
                 {

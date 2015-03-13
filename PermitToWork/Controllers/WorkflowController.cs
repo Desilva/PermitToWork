@@ -1,4 +1,5 @@
-﻿using PermitToWork.Models.Workflow;
+﻿using PermitToWork.Models;
+using PermitToWork.Models.Workflow;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,8 @@ namespace PermitToWork.Controllers
 {
     public class WorkflowController : Controller
     {
+        private star_energy_ptwEntities db = new star_energy_ptwEntities();
+
         public string CSEP(int id)
         {
             CSEPModel model = new CSEPModel(new workflow_node().FindAllNode(id, WorkflowNodeServiceModel.DocumentType.CSEP.ToString()));
@@ -61,9 +64,24 @@ namespace PermitToWork.Controllers
 
         public string WorkingAtHeight(int id)
         {
-            WorkingAtHeightModel model = new WorkingAtHeightModel(new workflow_node().FindAllNode(id, WorkflowNodeServiceModel.DocumentType.WORKINGATHEIGHT.ToString()));
+            working_height wh = db.working_height.Find(id);
+
+            WorkingAtHeightModel model = new WorkingAtHeightModel(new workflow_node().FindAllNode(id, WorkflowNodeServiceModel.DocumentType.WORKINGATHEIGHT.ToString()), wh.isNeedInspector());
 
             return new JavaScriptSerializer().Serialize(model.NodeList);
+
+            //WorkingAtHeightModel model = new WorkingAtHeightModel(new workflow_node().FindAllNode(id, WorkflowNodeServiceModel.DocumentType.WORKINGATHEIGHT.ToString()), false);
+
+            //return new JavaScriptSerializer().Serialize(model.NodeList);
+        }
+
+        [HttpPost]
+        public bool WHShowInspector(int id)
+        {
+            working_height wh = db.working_height.Find(id);
+
+            return wh.isNeedInspector();
+            //return false;
         }
     }
 }
