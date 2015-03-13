@@ -83,11 +83,10 @@ namespace PermitToWork.Models.Workflow
             CIVIL_APPROVE,
             REQUESTOR_APPROVE,
             FACILITY_OWNER_APPROVE,
-            CANCELLATION_INPUT,
+            CANCELLATION_REQUESTOR,
             CANCELLATION_SUPERVISOR,
             CANCELLATION_EANDI,
             CANCELLATION_CIVIL,
-            CANCELLATION_REQUESTOR,
             CANCELLATION_FACILITY_OWNER
         }
 
