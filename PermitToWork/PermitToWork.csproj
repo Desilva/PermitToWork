@@ -715,6 +715,7 @@
     <Compile Include="Models\Workflow\WorkflowNodeServiceModel.cs" />
     <Compile Include="Models\Workflow\workflow_node.cs" />
     <Compile Include="Models\WorkingHeight\WorkingHeightEntity.cs" />
+    <Compile Include="Models\WorkingHeight\WorkingHeightModel.cs" />
     <Compile Include="Models\working_height.cs">
       <DependentUpon>StarEnergyPTW.tt</DependentUpon>
     </Compile>

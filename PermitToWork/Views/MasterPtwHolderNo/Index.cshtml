@@ -99,6 +99,7 @@
                                     } else {
                                         if (product[member] == null) {
                                             result[member] = "";
+                                        } else if (member == "id_employee" && operation !== "create") {
                                         } else {
                                             result[member] = product[member];
                                         }

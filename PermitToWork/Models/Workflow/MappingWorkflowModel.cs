@@ -457,6 +457,17 @@ namespace PermitToWork.Models.Workflow
                         node_name = WorkflowNodeServiceModel.FireImpairmentNodeName.REQUESTOR_APPROVE.ToString(),
                         status = (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED
                     });
+
+                    if (fireImpairment.acc_so != null)
+                    {
+                        nodes.Add(new workflow_node
+                        {
+                            id_report = fireImpairment.id,
+                            report_type = WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
+                            node_name = WorkflowNodeServiceModel.FireImpairmentNodeName.CHOOSING_SO_DEPT_HEAD_FO.ToString(),
+                            status = (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED
+                        });
+                    }
                 }
 
                 if (fireImpairment.status >= (int)FIEntity.FIStatus.FIREWATCHAPPROVE)
@@ -483,14 +494,6 @@ namespace PermitToWork.Models.Workflow
 
                 if (fireImpairment.status >= (int)FIEntity.FIStatus.SOAPPROVE)
                 {
-                    nodes.Add(new workflow_node
-                    {
-                        id_report = fireImpairment.id,
-                        report_type = WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
-                        node_name = WorkflowNodeServiceModel.FireImpairmentNodeName.CHOOSING_SO_DEPT_HEAD_FO.ToString(),
-                        status = (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED
-                    });
-
                     nodes.Add(new workflow_node
                     {
                         id_report = fireImpairment.id,
@@ -906,6 +909,17 @@ namespace PermitToWork.Models.Workflow
                         node_name = WorkflowNodeServiceModel.RadiographicNodeName.REQUESTOR_INPUT.ToString(),
                         status = (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED
                     });
+
+                    if (radiographic.safety_officer != null)
+                    {
+                        nodes.Add(new workflow_node
+                        {
+                            id_report = radiographic.id,
+                            report_type = WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString(),
+                            node_name = WorkflowNodeServiceModel.RadiographicNodeName.CHOOSING_SAFETY_OFFICER.ToString(),
+                            status = (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED
+                        });
+                    }
                 }
 
                 if (radiographic.status >= (int)RadEntity.RadStatus.OPERATORAPPROVE)
