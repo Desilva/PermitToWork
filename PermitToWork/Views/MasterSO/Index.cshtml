@@ -55,7 +55,6 @@
                     parameterMap: function (options, operation) {
                         if (operation !== "read" && options.models) {
                             var result = {};
-
                             for (var i = 0; i < options.models.length; i++) {
                                 var product = options.models[i];
                                 console.log(product);
@@ -70,6 +69,7 @@
                                     } else {
                                         if (product[member] == null) {
                                             result[member] = "";
+                                        } else if (member == "id_so" && operation !== "create") {
                                         } else {
                                             result[member] = product[member];
                                         }

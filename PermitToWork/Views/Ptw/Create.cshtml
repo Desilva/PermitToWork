@@ -970,7 +970,7 @@
         var area = "";
         var checkBoxes = $("input[name='area']");
         $.each(checkBoxes, function () {
-            if ($(this).attr('checked')) {
+            if ($(this).is(':checked')) {
                 area = $(this).val();
             }
         });

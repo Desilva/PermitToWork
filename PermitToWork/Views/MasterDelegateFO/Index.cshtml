@@ -69,6 +69,7 @@
                                     } else {
                                         if (product[member] == null) {
                                             result[member] = "";
+                                        } else if (member == "user_delegate_id" && operation !== "create") {
                                         } else {
                                             result[member] = product[member];
                                         }
