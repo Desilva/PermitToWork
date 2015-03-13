@@ -2577,9 +2577,9 @@ namespace PermitToWork.Models.Radiography
             }
         }
 
-        public void GetPtw(UserEntity user)
+        public void GetPtw(UserEntity user, ListUser listUser)
         {
-            this.ptw = new PtwEntity(this.id_ptw.Value, user);
+            this.ptw = new PtwEntity(this.id_ptw.Value, user, listUser);
         }
 
         #endregion

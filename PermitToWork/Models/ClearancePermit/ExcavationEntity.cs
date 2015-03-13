@@ -149,12 +149,12 @@ namespace PermitToWork.Models.ClearancePermit
 
             if (Int32.TryParse(this.facilities, out userId))
             {
-                facilitiesUser = new MstFacilitiesEntity(userId, user);
+                facilitiesUser = new MstFacilitiesEntity(userId, user, listUser);
             }
 
             if (Int32.TryParse(this.ei, out userId))
             {
-                eiUser = new MstEIEntity(userId, user);
+                eiUser = new MstEIEntity(userId, user, listUser);
             }
 
             generateUserInExcavation(ex, user, listUser);

@@ -31,7 +31,7 @@ namespace PermitToWork.Controllers
             UserEntity user = Session["user"] as UserEntity;
             ListUser listUser = new ListUser(user.token, user.id);
             RadEntity entity = new RadEntity(id, user, listUser);
-            entity.GetPtw(user);
+            entity.GetPtw(user, listUser);
             bool[] isCanEdit = new bool[19];
 
             isCanEdit[0] = entity.isCanEditGeneralInformation(user);
@@ -145,7 +145,7 @@ namespace PermitToWork.Controllers
             }
             ViewBag.listSafetyOfficer = listSafetyOfficer;
 
-            ViewBag.ptwStatus = new PtwEntity(entity.id_ptw.Value, user).status;
+            // ViewBag.ptwStatus = new PtwEntity(entity.id_ptw.Value, user).status;
             return PartialView("create", entity);
         }
 
