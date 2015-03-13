@@ -189,6 +189,72 @@ namespace PermitToWork.Models.ClearancePermit
             this.listDocumentUploaded.Add("ATTACHMENT", Files.Select(p => p.Name).ToList());
         }
 
+        public LotoEntity(int id, UserEntity user, string ptw_requestor_id, ListUser listUser)
+            : this()
+        {
+            loto_permit loto = this.db.loto_permit.Find(id);
+            // this.ptw = new PtwEntity(fi.id_ptw.Value);
+            ModelUtilization.Clone(loto, this);
+            this.lotoPoint = new LotoPointEntity().getList(user, this.id);
+            this.lotoComingHolder = new LotoComingHolderEntity().getList(user, this.id);
+            this.work_description = "";
+            foreach (permit_to_work permit in loto.permit_to_work)
+            {
+                this.work_description += permit.work_description + ", ";
+            }
+            if (this.work_description.Length != 0)
+            {
+                this.work_description = this.work_description.Substring(0, this.work_description.Length - 2);
+            }
+            if (this.supervisor != null)
+            {
+                this.supervisorUser = listUser.listUser.Find(p => p.id == Int32.Parse(this.supervisor));
+            }
+
+            this.lotoSuspension = new LotoSuspensionEntity().getList(user, this.id);
+            getUserInLOTO(user,listUser);
+
+            if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER2.ToString()] != null && this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER2.ToString()].id.ToString() == ptw_requestor_id)
+            {
+                this.id_glarf = this.holder_2_glarf;
+            }
+
+            if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER3.ToString()] != null && this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER3.ToString()].id.ToString() == ptw_requestor_id)
+            {
+                this.id_glarf = this.holder_3_glarf;
+            }
+
+            if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER4.ToString()] != null && this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER4.ToString()].id.ToString() == ptw_requestor_id)
+            {
+                this.id_glarf = this.holder_4_glarf;
+            }
+
+            if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER5.ToString()] != null && this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER5.ToString()].id.ToString() == ptw_requestor_id)
+            {
+                this.id_glarf = this.holder_5_glarf;
+            }
+
+            if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER6.ToString()] != null && this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER6.ToString()].id.ToString() == ptw_requestor_id)
+            {
+                this.id_glarf = this.holder_6_glarf;
+            }
+
+            if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER7.ToString()] != null && this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER7.ToString()].id.ToString() == ptw_requestor_id)
+            {
+                this.id_glarf = this.holder_7_glarf;
+            }
+
+            string path = HttpContext.Current.Server.MapPath("~/Upload/Loto/Attachment/" + this.id + "");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            DirectoryInfo d = new DirectoryInfo(path);//Assuming Test is your Folder
+            FileInfo[] Files = d.GetFiles(); //Getting Text files
+
+            this.listDocumentUploaded.Add("ATTACHMENT", Files.Select(p => p.Name).ToList());
+        }
+
         public LotoEntity(loto_permit loto, UserEntity user, string ptw_requestor_id, ListUser listUser)
             : this()
         {

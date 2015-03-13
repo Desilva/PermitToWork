@@ -13,25 +13,31 @@ namespace PermitToWork.Models.User
         public ListUser() { }
         public ListUser(string token, int curLoginId)
         {
-            WWUserService.UserServiceClient client = new WWUserService.UserServiceClient();
-            int count = 0;
-            List<UserEntity> listUser = new List<UserEntity>();
-            WWUserService.ResponseModel response = client.listUser(token, curLoginId, 50, 1000);
+            if (HttpContext.Current.Application["listUser"] == null) {
+                WWUserService.UserServiceClient client = new WWUserService.UserServiceClient();
+                int count = 0;
+                List<UserEntity> listUser = new List<UserEntity>();
+                WWUserService.ResponseModel response = client.listUser(token, curLoginId, 50, 1000);
 
-            while (response.status && count < response.results.count + 50)
-            {
-                foreach (WWUserService.UserModel us in response.results.listUserModel)
+                while (response.status && count < response.results.count + 50)
                 {
-                    listUser.Add(new UserEntity().clone(us));
+                    foreach (WWUserService.UserModel us in response.results.listUserModel)
+                    {
+                        listUser.Add(new UserEntity().clone(us));
+                    }
+
+                    response = client.listUser(token, curLoginId, 50, count);
+                    count += 50;
                 }
 
-                response = client.listUser(token, curLoginId, 50, count);
-                count += 50;
+                client.Close();
+                //this.listUser = new HashSet<UserEntity>(listUser.OrderBy(p => p.alpha_name));
+                this.listUser = listUser.OrderBy(p => p.alpha_name).ToList();
+                HttpContext.Current.Application["listUser"] = listUser.OrderBy(p => p.alpha_name).ToList();
+            } else {
+                this.listUser = ((ListUser)HttpContext.Current.Application["listUser"]).listUser;
             }
-
-            client.Close();
-            //this.listUser = new HashSet<UserEntity>(listUser.OrderBy(p => p.alpha_name));
-            this.listUser = listUser.OrderBy(p => p.alpha_name).ToList();
+            
         }
 
         public List<UserEntity> GetSupervisor(UserEntity requestor)

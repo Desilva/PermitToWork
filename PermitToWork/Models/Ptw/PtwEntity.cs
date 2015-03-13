@@ -360,7 +360,7 @@ namespace PermitToWork.Models.Ptw
                 this.lotoPermit = new List<LotoEntity>();
                 foreach (loto_permit loto in ptw.loto_permit)
                 {
-                    this.lotoPermit.Add(new LotoEntity(loto.id, user, this.acc_ptw_requestor));
+                    this.lotoPermit.Add(new LotoEntity(loto.id, user, this.acc_ptw_requestor, listUser));
                 }
                 this.loto_no = "";
                 this.loto_statusText = this.loto_status == 0 ? "LOTO Permit is being edited by Requestor" : (this.loto_status == 1 ? "LOTO Permit is Approved" : (this.loto_status == 2 ? "LOTO Permit is Cancelled" : ""));
@@ -376,7 +376,7 @@ namespace PermitToWork.Models.Ptw
             this.ptw_status = getPtwStatus();
             if (this.acc_ptw_requestor != null || this.acc_supervisor != null)
             {
-                var ptwRequestor = this.is_guest != 1 ? new UserEntity(Int32.Parse(this.acc_ptw_requestor), user.token, user) : new UserEntity(Int32.Parse(this.acc_supervisor), user.token, user);
+                var ptwRequestor = this.is_guest != 1 ? listUser.listUser.Find(p => p.id == Int32.Parse(this.acc_ptw_requestor)) : listUser.listUser.Find(p => p.id == Int32.Parse(this.acc_supervisor));
                 this.isNeedClose = this.status == (int)statusPtw.ACCFO && this.validity_period_end != null && this.validity_period_end.Value.CompareTo(DateTime.Now) < 0 && this.is_extend != 1 && (ptwRequestor.id == user.id || ptwRequestor.employee_delegate == user.id) ? true : false;
             }
 
