@@ -11,6 +11,7 @@
             //finishColor: '#00FF00', //lime
             //emptyColor: '#FFFFFF',
             cancellationSelector: '.workflow-cancellation',
+            callback: null, //dipanggil setiap selesai reload
         },
 
         //attributes
@@ -102,6 +103,10 @@
                     self.element.find(self.options.cancellationSelector).show();
                 } else {
                     self.element.find(self.options.cancellationSelector).hide();
+                }
+
+                if (self.options.callback !== null) {
+                    self.options.callback(self, data);
                 }
             }, 'json');
         },

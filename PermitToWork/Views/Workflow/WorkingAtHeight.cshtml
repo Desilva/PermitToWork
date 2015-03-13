@@ -1,0 +1,74 @@
+﻿@{
+    string top = "";
+    string left = "";
+    string style = "";
+}
+<div class="workflow-container workflow-row-3">
+    <div data-node-name="REQUESTOR_INPUT" class="workflow-node workflow-col-1">
+	    <div class="workflow-box">
+            <div class="workflow-text">Requestor Creation</div>
+	    </div>
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+        </div>
+    </div>
+    <div data-node-name="INSPECTOR_APPROVE" class="workflow-node workflow-col-2">
+	    <div class="workflow-box">
+            <div class="workflow-text">Inspector Approve</div>
+        </div>
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+        </div>
+    </div>
+    <div data-node-name="ERECTOR_REQUESTOR_APPROVE" class="workflow-node workflow-col-3">
+	    <div class="workflow-box">
+            <div class="workflow-text">Erector / Requestor Approve</div>
+        </div>
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+        </div>
+    </div>
+    <div data-node-name="SUPERVISOR_APPROVE" class="workflow-node workflow-col-4">
+	    <div class="workflow-box">
+            <div class="workflow-text">Supervisor Approve</div>
+        </div>
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+        </div>
+    </div>
+    <div data-node-name="FACILITY_OWNER_APPROVE" class="workflow-node workflow-col-5">
+	    <div class="workflow-box">
+            <div class="workflow-text">Facility Owner Approve</div>
+        </div>
+    </div>
+</div>
+
+<!-- CANCELLATION WORKFLOW -->
+<div class="workflow-cancellation">
+    <div class="workflow-container">
+        <hr />
+
+        <h3>Cancellation</h3>
+        <div data-node-name="CANCELLATION_INITIATOR" class="workflow-node workflow-col-1">
+            <div class="workflow-box">
+                <div class="workflow-text">Requestor Approve</div>
+            </div>
+            <div class="workflow-line">
+                @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+            </div>
+        </div>
+        <div data-node-name="CANCELLATION_SUPERVISOR" class="workflow-node workflow-col-2">
+            <div class="workflow-box">
+                <div class="workflow-text">Supervisor Approve</div>
+            </div>
+            <div class="workflow-line">
+                @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+            </div>
+        </div>
+        <div data-node-name="CANCELLATION_FACILITY_OWNER" class="workflow-node workflow-col-3">
+            <div class="workflow-box">
+                <div class="workflow-text">Facility Owner Approve</div>
+            </div>
+        </div>
+    </div>
+</div>
