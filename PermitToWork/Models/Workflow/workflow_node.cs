@@ -7,7 +7,7 @@ namespace PermitToWork.Models.Workflow
 {
     public class workflow_node
     {
-        public int id { get; set; }
+        public long id { get; set; }
         public int id_report { get; set; }
         public string node_name { get; set; }
         public int status { get; set; }

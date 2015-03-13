@@ -128,6 +128,7 @@
     <Compile Include="Controllers\LogController.cs" />
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\LotoController.cs" />
+    <Compile Include="Controllers\MappingWorkflowController.cs" />
     <Compile Include="Controllers\MasterAreaCodeController.cs" />
     <Compile Include="Controllers\MasterAssessorController.cs" />
     <Compile Include="Controllers\MasterDelegateFOController.cs" />
@@ -708,6 +709,7 @@
     <Compile Include="Models\Workflow\FireImpairmentModel.cs" />
     <Compile Include="Models\Workflow\HotWorkModel.cs" />
     <Compile Include="Models\Workflow\CSEPModel.cs" />
+    <Compile Include="Models\Workflow\MappingWorkflowModel.cs" />
     <Compile Include="Models\Workflow\WorkflowHelper.cs" />
     <Compile Include="Models\Workflow\WorkflowNodePresentationStub.cs" />
     <Compile Include="Models\Workflow\WorkflowNodeServiceModel.cs" />
