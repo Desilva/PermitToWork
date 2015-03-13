@@ -1,0 +1,58 @@
+﻿@{
+    string top = "";
+    string left = "";
+    string style = "";
+}
+<div class="workflow-container workflow-row-1">
+    <div data-node-name="SUPERVISOR_INPUT" class="workflow-node workflow-row-1">
+	    <div class="workflow-box">
+            <div class="workflow-text">Supervisor Input</div>
+	    </div>
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+        </div>
+    </div>
+    <div data-node-name="FACILITY_OWNER_APPLICATION" class="workflow-node workflow-col-2">
+	    <div class="workflow-box">
+            <div class="workflow-text">FO Application</div>
+        </div>
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+        </div>
+    </div>
+    <div data-node-name="SUPERVISOR_APPROVE" class="workflow-node workflow-col-3">
+	    <div class="workflow-box">
+            <div class="workflow-text">Supervisor Approve</div>
+        </div>
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+        </div>
+    </div>
+    <div data-node-name="FACILITY_OWNER_APPROVE" class="workflow-node workflow-col-4">
+	    <div class="workflow-box">
+            <div class="workflow-text">FO Approve</div>
+        </div>
+    </div>
+</div>
+
+<!-- CANCELLATION WORKFLOW -->
+<div class="workflow-cancellation">
+    <div class="workflow-container">
+        <hr />
+
+        <h3>Cancellation</h3>
+        <div data-node-name="CANCELLATION_SUPERVISOR" class="workflow-node workflow-col-1">
+            <div class="workflow-box">
+                <div class="workflow-text">Supervisor Approve</div>
+            </div>
+            <div class="workflow-line">
+                @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+            </div>
+        </div>
+        <div data-node-name="CANCELLATION_FACILITY_OWNER" class="workflow-node workflow-col-2">
+            <div class="workflow-box">
+                <div class="workflow-text">FO Approve</div>
+            </div>
+        </div>
+    </div>
+</div>

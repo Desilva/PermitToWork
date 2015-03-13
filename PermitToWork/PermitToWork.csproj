@@ -703,6 +703,7 @@
       <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Models\Workflow\LOTOModel.cs" />
     <Compile Include="Models\Workflow\RadiographyModel.cs" />
     <Compile Include="Models\Workflow\ExcavationModel.cs" />
     <Compile Include="Models\Workflow\GeneralPermitModel.cs" />
@@ -1171,6 +1172,7 @@
     <Content Include="Views\Workflow\GeneralPermit.cshtml" />
     <Content Include="Views\Workflow\Excavation.cshtml" />
     <Content Include="Views\Workflow\Radiography.cshtml" />
+    <Content Include="Views\Workflow\LOTO.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
