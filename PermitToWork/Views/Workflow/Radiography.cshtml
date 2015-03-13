@@ -1,0 +1,161 @@
+﻿@{
+    string top = "";
+    string left = "";
+    string style = "";
+}
+<div class="workflow-container workflow-row-2">
+    <div data-node-name="REQUESTOR_INPUT" class="workflow-node workflow-col-1">
+	    <div class="workflow-box">
+            <div class="workflow-text">Requestor Input</div>
+	    </div>
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+        </div>
+    </div>
+    <div data-node-name="OPERATOR_1_APPROVE" class="workflow-node workflow-col-2">
+	    <div class="workflow-box">
+            <div class="workflow-text">Operator Level 1 Approve</div>
+        </div>
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+        </div>
+    </div>
+    <div data-node-name="OPERATOR_2_APPROVE" class="workflow-node workflow-col-3">
+	    <div class="workflow-box">
+            <div class="workflow-text">Operator Level 2 Approve</div>
+        </div>
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+        </div>
+    </div>
+    <div data-node-name="SUPERVISOR_APPROVE" class="workflow-node workflow-col-4">
+	    <div class="workflow-box">
+            <div class="workflow-text">Supervisor Approve</div>
+        </div>
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+        </div>
+    </div>
+    <div data-node-name="SAFETY_OFFICER_APPROVE" class="workflow-node workflow-col-5">
+	    <div class="workflow-box">
+            <div class="workflow-text">Safety Officer Approve</div>
+        </div>
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+        </div>
+    </div>
+    <div data-node-name="FACILITY_OWNER_APPROVE" class="workflow-node workflow-col-6">
+	    <div class="workflow-box">
+            <div class="workflow-text">Facility Owner Approve</div>
+        </div>
+    </div>
+
+    <!-- paralel: choosing safety officer -->
+    @{
+        top = "26px";
+        left = "189px";
+        style = string.Format("top: {0}; left: {1};", top, left);
+    }
+    <div class="workflow-bridge" style="@style">
+        @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-vertical.svg")))
+    </div>
+    
+    @{
+        top = "115px";
+        left = "189px";
+        style = string.Format("top: {0}; left: {1};", top, left);
+    }
+    <div class="workflow-bridge" style="@style">
+        @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-horizontal-3x.svg")))
+    </div>
+    
+    @{
+        left = "404px";
+        style = string.Format("top: {0}; left: {1};", top, left);
+    }
+    <div class="workflow-bridge" style="@style">
+        @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+    </div>
+    
+    @{
+        top = "112px";
+        left = "647px";
+        style = string.Format("top: {0}; left: {1};", top, left);
+    }
+    <div class="workflow-bridge" style="@style">
+        @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-horizontal-3x.svg")))
+    </div>
+
+    @{
+        top = "26px";
+        left = "946px";
+        style = string.Format("top: {0}; left: {1};", top, left);
+    }
+    <div class="workflow-bridge" style="@style">
+        @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-vertical.svg")))
+    </div>
+    
+    @{
+        top = "102px";
+        style = string.Format("top: {0};", top);
+    }
+    <div data-node-name="CHOOSING_SAFETY_OFFICER" class="workflow-node workflow-col-3" style="@style">
+	    <div class="workflow-box">
+            <div class="workflow-text">Choosing Safety Officer</div>
+        </div>
+    </div>
+</div>
+
+<!-- CANCELLATION WORKFLOW -->
+<div class="workflow-cancellation">
+    <hr />
+    <h3>Cancellation</h3>
+
+    <div class="workflow-container workflow-row-2">
+        <div data-node-name="CANCELLATION_INPUT" class="workflow-node workflow-col-1">
+	        <div class="workflow-box">
+                <div class="workflow-text">Requestor Cancellation</div>
+	        </div>
+            <div class="workflow-line">
+                @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+            </div>
+        </div>
+        <div data-node-name="CANCELLATION_OPERATOR_1" class="workflow-node workflow-col-2">
+	        <div class="workflow-box">
+                <div class="workflow-text">Operator Level 1 Approve</div>
+            </div>
+            <div class="workflow-line">
+                @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+            </div>
+        </div>
+        <div data-node-name="CANCELLATION_OPERATOR_2" class="workflow-node workflow-col-3">
+	        <div class="workflow-box">
+                <div class="workflow-text">Operator Level 2 Approve</div>
+            </div>
+            <div class="workflow-line">
+                @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+            </div>
+        </div>
+        <div data-node-name="CANCELLATION_SUPERVISOR" class="workflow-node workflow-col-4">
+	        <div class="workflow-box">
+                <div class="workflow-text">Supervisor Approve</div>
+            </div>
+            <div class="workflow-line">
+                @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+            </div>
+        </div>
+        <div data-node-name="CANCELLATION_SAFETY_OFFICER" class="workflow-node workflow-col-5">
+	        <div class="workflow-box">
+                <div class="workflow-text">Safety Officer Approve</div>
+            </div>
+            <div class="workflow-line">
+                @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+            </div>
+        </div>
+        <div data-node-name="CANCELLATION_FACILITY_OWNER" class="workflow-node workflow-col-6">
+	        <div class="workflow-box">
+                <div class="workflow-text">Facility Owner Approve</div>
+            </div>
+        </div>
+    </div>
+</div>
