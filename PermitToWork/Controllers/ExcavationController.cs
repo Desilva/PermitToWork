@@ -29,8 +29,9 @@ namespace PermitToWork.Controllers
         {
 
             UserEntity user = Session["user"] as UserEntity;
-            ExcavationEntity entity = new ExcavationEntity(id, user);
-            entity.getPtw(user);
+            ListUser listUser = new ListUser(user.token, user.id);
+            ExcavationEntity entity = new ExcavationEntity(id, user, listUser);
+            entity.getPtw(user, listUser);
             entity.getHiraNo();
             bool[] isCanEdit = new bool[15];
 
@@ -59,10 +60,10 @@ namespace PermitToWork.Controllers
             ViewBag.isCanEdit = isCanEdit;
 
             ViewBag.position = "Edit";
-            ViewBag.listUser = new ListUser(user.token, user.id);
+            ViewBag.listUser = listUser;
 
             var listSO = new List<SelectListItem>();
-            var listSOs = new MstSOEntity().getListMstSO(user);
+            var listSOs = new MstSOEntity().getListMstSO(user, listUser);
             foreach (MstSOEntity sect in listSOs)
             {
                 listSO.Add(new SelectListItem
@@ -75,7 +76,7 @@ namespace PermitToWork.Controllers
             ViewBag.listSO = listSO;
 
             var listFAC = new List<SelectListItem>();
-            var listFacilities = new MstFacilitiesEntity().getListFacilities(user);
+            var listFacilities = new MstFacilitiesEntity().getListFacilities(user, listUser);
             foreach (MstFacilitiesEntity sect in listFacilities)
             {
                 listFAC.Add(new SelectListItem
@@ -88,7 +89,7 @@ namespace PermitToWork.Controllers
             ViewBag.listFAC = listFAC;
 
             var listEI = new List<SelectListItem>();
-            var listEIs = new MstEIEntity().getListFacilities(user);
+            var listEIs = new MstEIEntity().getListFacilities(user, listUser);
             foreach (MstEIEntity sect in listEIs)
             {
                 listEI.Add(new SelectListItem
@@ -112,7 +113,7 @@ namespace PermitToWork.Controllers
             }
             ViewBag.listTotalCrew = listTotalCrew;
 
-            ViewBag.ptwStatus = new PtwEntity(entity.id_ptw.Value, user).status;
+            //ViewBag.ptwStatus = new PtwEntity(entity.id_ptw.Value, user).status;
             return PartialView("create", entity);
         }
 

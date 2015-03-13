@@ -44,6 +44,14 @@ namespace PermitToWork.Models.Master
             this.user = new UserEntity(this.id_employee.Value, user.token, user);
         }
 
+        public MstFacilitiesEntity(mst_facilities fac, UserEntity user, ListUser listUser)
+            : this()
+        {
+            ModelUtilization.Clone(fac, this);
+
+            this.user = listUser.listUser.Find(p => p.id == this.id_employee.Value);
+        }
+
         public List<MstFacilitiesEntity> getListFacilities(UserEntity user)
         {
             var list = this.db.mst_facilities.ToList();
@@ -51,6 +59,18 @@ namespace PermitToWork.Models.Master
             foreach (mst_facilities i in list)
             {
                 ret.Add(new MstFacilitiesEntity(i, user));
+            }
+
+            return ret;
+        }
+
+        public List<MstFacilitiesEntity> getListFacilities(UserEntity user, ListUser listUser)
+        {
+            var list = this.db.mst_facilities.ToList();
+            List<MstFacilitiesEntity> ret = new List<MstFacilitiesEntity>();
+            foreach (mst_facilities i in list)
+            {
+                ret.Add(new MstFacilitiesEntity(i, user, listUser));
             }
 
             return ret;

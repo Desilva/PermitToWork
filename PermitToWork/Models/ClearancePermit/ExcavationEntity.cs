@@ -130,6 +130,40 @@ namespace PermitToWork.Models.ClearancePermit
             this.hira_document = new ListHira(this.id_ptw.Value, this.db).listHira;
         }
 
+        // constructor with id to get object from database
+        public ExcavationEntity(int id, UserEntity user, ListUser listUser)
+            : this()
+        {
+            excavation ex = this.db.excavations.Find(id);
+            // this.ptw = new PtwEntity(fi.id_ptw.Value);
+            ModelUtilization.Clone(ex, this);
+
+            this.is_guest = ex.permit_to_work.is_guest == null ? false : ex.permit_to_work.is_guest == 1;
+
+            this.pre_screening_fo_arr = this.pre_screening_fo.Split('#');
+            this.pre_screening_spv_arr = this.pre_screening_spv.Split('#');
+            this.pre_screening_fac_arr = this.pre_screening_fac.Split('#');
+            this.pre_screening_ei_arr = this.pre_screening_ei.Split('#'); ;
+
+            int userId = 0;
+
+            if (Int32.TryParse(this.facilities, out userId))
+            {
+                facilitiesUser = new MstFacilitiesEntity(userId, user);
+            }
+
+            if (Int32.TryParse(this.ei, out userId))
+            {
+                eiUser = new MstEIEntity(userId, user);
+            }
+
+            generateUserInExcavation(ex, user, listUser);
+
+            this.statusText = getStatus();
+
+            this.hira_document = new ListHira(this.id_ptw.Value, this.db).listHira;
+        }
+
         public ExcavationEntity(excavation ex, ListUser listUser, UserEntity user)
             : this()
         {
@@ -2235,6 +2269,11 @@ namespace PermitToWork.Models.ClearancePermit
         {
 
             this.ptw = new PtwEntity(this.id_ptw.Value, user);
+        }
+        public void getPtw(UserEntity user, ListUser listUser)
+        {
+
+            this.ptw = new PtwEntity(this.id_ptw.Value, user, listUser);
         }
     }
 }
