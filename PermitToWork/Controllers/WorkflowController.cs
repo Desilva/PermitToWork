@@ -51,5 +51,12 @@ namespace PermitToWork.Controllers
 
             return new JavaScriptSerializer().Serialize(model.NodeList);
         }
+
+        public string LOTO(int id)
+        {
+            LOTOModel model = new LOTOModel(new workflow_node().FindAllNode(id, WorkflowNodeServiceModel.DocumentType.LOTO.ToString()));
+
+            return new JavaScriptSerializer().Serialize(model.NodeList);
+        }
     }
 }
