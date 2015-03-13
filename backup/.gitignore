@@ -1,5 +1,8 @@
+*.csproj
 PermitToWork/bin/Microsoft.Web.Infrastructure.xml
 PermitToWork/obj/
 packages/
-1312-Form Permit/
+Rotativa/obj/
 PermitToWork/Upload/
+1312-Form Permit/
+Backup1/

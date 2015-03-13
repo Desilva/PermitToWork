@@ -1523,16 +1523,16 @@ namespace PermitToWork.Models.Radiography
                             WorkflowNodeServiceModel.RadiographicNodeName.CANCELLATION_SUPERVISOR.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 5 /* SHE Officer */:
-                        rad.can_safety_officer_signature = null;
-                        rad.can_safety_officer_delegate = null;
+                        rad.can_supervisor_signature = null;
+                        rad.can_supervisor_delegate = null;
                         rad.status = (int)RadStatus.CANRADAPPROVE;
                         // create node
                         workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString(),
                             WorkflowNodeServiceModel.RadiographicNodeName.CANCELLATION_SAFETY_OFFICER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 6 /* Facility Owner */:
-                        rad.can_fo_signature = null;
-                        rad.can_fo_delegate = null;
+                        rad.can_safety_officer_signature = null;
+                        rad.can_safety_officer_delegate = null;
                         rad.status = (int)RadStatus.CANSPVAPPROVE;
                         // create node
                         workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString(),

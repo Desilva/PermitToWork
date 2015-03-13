@@ -369,10 +369,11 @@ namespace PermitToWork.Controllers
         public JsonResult supervisorCan(int id, int user_id)
         {
             UserEntity userLogin = Session["user"] as UserEntity;
+            ListUser listUser = new ListUser(userLogin.token, userLogin.id);
             UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
             HwEntity hw = new HwEntity(id);
             string retVal = hw.supervisorCan(userLogin);
-            PtwEntity ptw = new PtwEntity(hw.id_ptw.Value, user);
+            PtwEntity ptw = new PtwEntity(hw.id_ptw.Value, user, listUser);
             ptw.setClerancePermitStatus((int)PtwEntity.statusClearance.REQUESTORCANCELLED, PtwEntity.clearancePermit.HOTWORK.ToString());
             ptw.sendEmailRequestorClearance(fullUrl(), userLogin.token, userLogin, (int)PtwEntity.clearancePermit.HOTWORK, (int)PtwEntity.statusClearance.REQUESTORCANCELLED);
             if (ptw.isAllClearanceClose())

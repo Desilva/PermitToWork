@@ -55,7 +55,7 @@ namespace PermitToWork.Controllers
 
             ViewBag.supervisor = listUser.GetSupervisor(userLogin);
 
-            ViewBag.listSpv = GetSpvLists(spvSelectItem != null ? Int32.Parse(spvSelectItem.Value) : listDept.FirstOrDefault().id, null);
+            ViewBag.listSpv = GetSpvLists(spvSelectItem != null ? Int32.Parse(spvSelectItem.Value) : listDept.FirstOrDefault().id, null, listUser);
 
             var listSection = new List<SelectListItem>();
             var listSect = new MstSectionEntity().getListMstSection();
@@ -131,7 +131,7 @@ namespace PermitToWork.Controllers
             ViewBag.listFO = new MstFOEntity().getListMstFO();
             ViewBag.listAssessor = new MstAssessorEntity().getListAssessor(user.id);
 
-            ViewBag.listSpv = GetSpvLists(entity.dept_requestor.Value, entity.is_guest != 1 ? Int32.Parse(entity.acc_ptw_requestor) : 0);
+            ViewBag.listSpv = GetSpvLists(entity.dept_requestor.Value, entity.is_guest != 1 ? Int32.Parse(entity.acc_ptw_requestor) : 0, listUser);
 
             var listDepartment = new List<SelectListItem>();
             var listDept = new MstDepartmentEntity().getListMstDepartment();
@@ -1212,11 +1212,11 @@ namespace PermitToWork.Controllers
             return Json(users);
         }
 
-        public List<UserEntity> GetSpvLists(int deptId, int? ptwRequestor)
+        public List<UserEntity> GetSpvLists(int deptId, int? ptwRequestor, ListUser listUser)
         {
             UserEntity userLogin = Session["user"] as UserEntity;
             MstDepartmentEntity dept = new MstDepartmentEntity(deptId);
-            List<UserEntity> users = new ListUser(userLogin.token, userLogin.id).GetListEmployeeInDepartment(dept.department);
+            List<UserEntity> users = listUser.GetListEmployeeInDepartment(dept.department);
 
             UserEntity user = ptwRequestor != null ? users.Find(p => p.id == ptwRequestor) : users.Find(p => p.id == userLogin.id);
             if (user != null)
