@@ -44,5 +44,12 @@ namespace PermitToWork.Controllers
 
             return new JavaScriptSerializer().Serialize(model.NodeList);
         }
+
+        public string Radiography(int id)
+        {
+            RadiographyModel model = new RadiographyModel(new workflow_node().FindAllNode(id, WorkflowNodeServiceModel.DocumentType.RADIOGRAPHIC.ToString()));
+
+            return new JavaScriptSerializer().Serialize(model.NodeList);
+        }
     }
 }
