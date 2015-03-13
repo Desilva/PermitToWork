@@ -1526,7 +1526,7 @@ namespace PermitToWork.Models.Ptw
                 this.db.SaveChanges();
                 // create node
                 workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.GENERALPERMIT.ToString(),
-                    WorkflowNodeServiceModel.GeneralPermitNodeName.SUPERVISOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
+                    WorkflowNodeServiceModel.GeneralPermitNodeName.ASSESSOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
 
                 return "200";
             }

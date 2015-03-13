@@ -550,6 +550,12 @@ namespace PermitToWork.WWUserService {
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/WorkflowNodeUpdate", ReplyAction="http://tempuri.org/IUserService/WorkflowNodeUpdateResponse")]
         System.Threading.Tasks.Task<bool> WorkflowNodeUpdateAsync(int id_report, string report_type, string node_name, byte status);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/WorkflowNodeDeleteByReportType", ReplyAction="http://tempuri.org/IUserService/WorkflowNodeDeleteByReportTypeResponse")]
+        bool WorkflowNodeDeleteByReportType(string token, string report_type);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/WorkflowNodeDeleteByReportType", ReplyAction="http://tempuri.org/IUserService/WorkflowNodeDeleteByReportTypeResponse")]
+        System.Threading.Tasks.Task<bool> WorkflowNodeDeleteByReportTypeAsync(string token, string report_type);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IUserService/WorkflowNodeCreateBulk", ReplyAction="http://tempuri.org/IUserService/WorkflowNodeCreateBulkResponse")]
         bool WorkflowNodeCreateBulk(string list);
         
@@ -756,6 +762,14 @@ namespace PermitToWork.WWUserService {
         
         public System.Threading.Tasks.Task<bool> WorkflowNodeUpdateAsync(int id_report, string report_type, string node_name, byte status) {
             return base.Channel.WorkflowNodeUpdateAsync(id_report, report_type, node_name, status);
+        }
+        
+        public bool WorkflowNodeDeleteByReportType(string token, string report_type) {
+            return base.Channel.WorkflowNodeDeleteByReportType(token, report_type);
+        }
+        
+        public System.Threading.Tasks.Task<bool> WorkflowNodeDeleteByReportTypeAsync(string token, string report_type) {
+            return base.Channel.WorkflowNodeDeleteByReportTypeAsync(token, report_type);
         }
         
         public bool WorkflowNodeCreateBulk(string list) {

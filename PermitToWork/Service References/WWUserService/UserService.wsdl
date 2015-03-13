@@ -352,6 +352,21 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
+      <xs:element name="WorkflowNodeDeleteByReportType">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="token" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="report_type" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="WorkflowNodeDeleteByReportTypeResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="WorkflowNodeDeleteByReportTypeResult" type="xs:boolean" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
       <xs:element name="WorkflowNodeCreateBulk">
         <xs:complexType>
           <xs:sequence>
@@ -610,6 +625,12 @@
   <wsdl:message name="IUserService_WorkflowNodeUpdate_OutputMessage">
     <wsdl:part name="parameters" element="tns:WorkflowNodeUpdateResponse" />
   </wsdl:message>
+  <wsdl:message name="IUserService_WorkflowNodeDeleteByReportType_InputMessage">
+    <wsdl:part name="parameters" element="tns:WorkflowNodeDeleteByReportType" />
+  </wsdl:message>
+  <wsdl:message name="IUserService_WorkflowNodeDeleteByReportType_OutputMessage">
+    <wsdl:part name="parameters" element="tns:WorkflowNodeDeleteByReportTypeResponse" />
+  </wsdl:message>
   <wsdl:message name="IUserService_WorkflowNodeCreateBulk_InputMessage">
     <wsdl:part name="parameters" element="tns:WorkflowNodeCreateBulk" />
   </wsdl:message>
@@ -706,6 +727,10 @@
     <wsdl:operation name="WorkflowNodeUpdate">
       <wsdl:input wsaw:Action="http://tempuri.org/IUserService/WorkflowNodeUpdate" message="tns:IUserService_WorkflowNodeUpdate_InputMessage" />
       <wsdl:output wsaw:Action="http://tempuri.org/IUserService/WorkflowNodeUpdateResponse" message="tns:IUserService_WorkflowNodeUpdate_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="WorkflowNodeDeleteByReportType">
+      <wsdl:input wsaw:Action="http://tempuri.org/IUserService/WorkflowNodeDeleteByReportType" message="tns:IUserService_WorkflowNodeDeleteByReportType_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IUserService/WorkflowNodeDeleteByReportTypeResponse" message="tns:IUserService_WorkflowNodeDeleteByReportType_OutputMessage" />
     </wsdl:operation>
     <wsdl:operation name="WorkflowNodeCreateBulk">
       <wsdl:input wsaw:Action="http://tempuri.org/IUserService/WorkflowNodeCreateBulk" message="tns:IUserService_WorkflowNodeCreateBulk_InputMessage" />
@@ -900,6 +925,15 @@
     </wsdl:operation>
     <wsdl:operation name="WorkflowNodeUpdate">
       <soap:operation soapAction="http://tempuri.org/IUserService/WorkflowNodeUpdate" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="WorkflowNodeDeleteByReportType">
+      <soap:operation soapAction="http://tempuri.org/IUserService/WorkflowNodeDeleteByReportType" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>

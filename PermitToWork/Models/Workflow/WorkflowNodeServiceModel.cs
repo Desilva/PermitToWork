@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using PermitToWork.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -162,6 +163,24 @@ namespace PermitToWork.Models.Workflow
             serviceClient.Close();
 
             return serviceDataParsed;
+        }
+
+        public void DeleteNode(string permitName)
+        {
+            serviceClient = new WWUserService.UserServiceClient();
+
+            serviceClient.WorkflowNodeDeleteByReportTypeAsync(Base64.MD5Seal("starenergyww"), permitName);
+            serviceClient.Close();
+        }
+
+        public bool CreateNodeBulk(string dataToBeSent)
+        {
+            serviceClient = new WWUserService.UserServiceClient();
+
+            bool result = serviceClient.WorkflowNodeCreateBulk(dataToBeSent);
+            serviceClient.Close();
+
+            return result;
         }
     }
 }
