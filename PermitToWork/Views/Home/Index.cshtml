@@ -105,7 +105,7 @@
             #if(hw_id != null){#<li>Hot Work: <a href="\#" onclick="event.preventDefault();goToHotWork(#= cPermit['HOTWORK'].ids #)" class="btn btn-primary">#= hw_no #</a> <a class="btn btn-default" href="javascript:" onclick="showWorkflowHotWork(#= cPermit['HOTWORK'].ids #, '#= hw_no #')"><img class="btn-image" src="@Url.Content("~/Content/Images/glyphicons-427-git-merge.png")" alt="workflow" /></a><br />Status : #= cPermit['HOTWORK'].statusText #<br />Log / Print : <a href="\#" onclick="event.preventDefault();goToLog(#= cPermit['HOTWORK'].ids #, 3)" class="btn btn-success">HW Log</a> / <a class="btn btn-primary" href='@Url.Action("Index", "Print")?id=#= cPermit['HOTWORK'].ids #&type=5&no=#= hw_no #'>Print</a></li>#}#
             #if(fi_id != null){#<li>Fire Impairment: <a href="\#" onclick="event.preventDefault();goToFireImpairment(#= cPermit['FIREIMPAIRMENT'].ids #)" class="btn btn-primary">#= fi_no #</a> <a class="btn btn-default" href="javascript:" onclick="showWorkflowFireImpairment(#= cPermit['FIREIMPAIRMENT'].ids #, '#= fi_no #')"><img class="btn-image" src="@Url.Content("~/Content/Images/glyphicons-427-git-merge.png")" alt="workflow" /></a><br />Status : #= cPermit['FIREIMPAIRMENT'].statusText #<br />Log / Print : <a href="\#" onclick="event.preventDefault();goToLog(#= cPermit['FIREIMPAIRMENT'].ids #, 4)" class="btn btn-success">FI Log</a> / <a class="btn btn-primary" href='@Url.Action("Index", "Print")?id=#= cPermit['FIREIMPAIRMENT'].ids #&type=7&no=#= fi_no #'>Print</a></li>#}#
             #if(ex_id != null){#<li>Excavation: <a href="\#" onclick="event.preventDefault();goToExcavation(#= cPermit['EXCAVATION'].ids #)" class="btn btn-primary">#= ex_no #</a> <a class="btn btn-default" href="javascript:" onclick="showWorkflowExcavation(#= cPermit['EXCAVATION'].ids #, '#= ex_no #')"><img class="btn-image" src="@Url.Content("~/Content/Images/glyphicons-427-git-merge.png")" alt="workflow" /></a><br />Status : #= cPermit['EXCAVATION'].statusText #</li><br />Log / Print : <a href="\#" onclick="event.preventDefault();goToLog(#= cPermit['EXCAVATION'].ids #, 5)" class="btn btn-success">EX Log</a> / <a class="btn btn-primary" href='@Url.Action("Index", "Print")?id=#= cPermit['EXCAVATION'].ids #&type=6&no=#= ex_no #'>Print</a>#}#
-            #if(wh_id != null){#<li>Working at Height: <a href="\#" onclick="event.preventDefault();goToWorkingHeight(#= cPermit['WORKINGHEIGHT'].ids #)" class="btn btn-primary">#= wh_no #</a><br />Status : #= cPermit['WORKINGHEIGHT'].statusText #</li><br />Log / Print : <a href="\#" onclick="event.preventDefault();goToLog(#= cPermit['WORKINGHEIGHT'].ids #, 6)" class="btn btn-success">WH Log</a> / <a class="btn btn-primary" href='@Url.Action("Index", "Print")?id=#= cPermit['WORKINGHEIGHT'].ids #&type=8&no=#= wh_no #'>Print</a>#}#
+            #if(wh_id != null){#<li>Working at Height: <a href="\#" onclick="event.preventDefault();goToWorkingHeight(#= cPermit['WORKINGHEIGHT'].ids #)" class="btn btn-primary">#= wh_no #</a> <a class="btn btn-default" href="javascript:" onclick="showWorkflowWorkingAtHeight(#= cPermit['WORKINGHEIGHT'].ids #, '#= wh_no #')"><img class="btn-image" src="@Url.Content("~/Content/Images/glyphicons-427-git-merge.png")" alt="workflow" /></a><br />Status : #= cPermit['WORKINGHEIGHT'].statusText #</li><br />Log / Print : <a href="\#" onclick="event.preventDefault();goToLog(#= cPermit['WORKINGHEIGHT'].ids #, 6)" class="btn btn-success">WH Log</a> / <a class="btn btn-primary" href='@Url.Action("Index", "Print")?id=#= cPermit['WORKINGHEIGHT'].ids #&type=8&no=#= wh_no #'>Print</a>#}#
             #if(rad_id != null){#<li>Radiography: <a href="\#" onclick="event.preventDefault();goToRadiography(#= cPermit['RADIOGRAPHY'].ids #)" class="btn btn-primary">#= rad_no #</a> <a class="btn btn-default" href="javascript:" onclick="showWorkflowRadiography(#= cPermit['RADIOGRAPHY'].ids #, '#= rad_no #')"><img class="btn-image" src="@Url.Content("~/Content/Images/glyphicons-427-git-merge.png")" alt="workflow" /></a><br />Status : #= cPermit['RADIOGRAPHY'].statusText #</li><br />Log / Print : <a href="\#" onclick="event.preventDefault();goToLog(#= cPermit['RADIOGRAPHY'].ids #, 7)" class="btn btn-success">Rad Log</a> / <a class="btn btn-primary" href='@Url.Action("Index", "Print")?id=#= cPermit['RADIOGRAPHY'].ids #&type=9&no=#= rad_no #'>Print</a>#}#
         </ul>
     </div>
@@ -137,6 +137,10 @@
     
 <script id="workflow-radiography-template" type="text/x-kendo-template">
      @{ Html.RenderPartial("~/Views/Workflow/Radiography.cshtml"); }
+</script>
+    
+<script id="workflow-wh-template" type="text/x-kendo-template">
+     @{ Html.RenderPartial("~/Views/Workflow/WorkingAtHeight.cshtml"); }
 </script>
     
 <script>
@@ -483,5 +487,24 @@
         workflowObject.workflowDiagram('reload', id, num);
         workflowObject.workflowDiagram('show');
     }
+
+    //working at height workflow
+    function showWorkflowWorkingAtHeight(id, num) {
+        var workflowObject = $('#workflow-wh');
+
+        if (!workflowObject.length) { //create element if not exist
+            workflowObject = $(document.createElement('div')).attr('id', 'workflow-wh').appendTo('body');
+            workflowObject.workflowDiagram({
+                template: kendo.template($("#workflow-wh-template").html()),
+                url: '@Url.Action("WorkingAtHeight", "Workflow")',
+                callback: function (self, data) {
+
+                },
+            });
+        }
+
+        workflowObject.workflowDiagram('reload', id, num);
+        workflowObject.workflowDiagram('show');
+    }    
 </script>
 }

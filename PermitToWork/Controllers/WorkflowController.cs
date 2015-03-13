@@ -58,5 +58,12 @@ namespace PermitToWork.Controllers
 
             return new JavaScriptSerializer().Serialize(model.NodeList);
         }
+
+        public string WorkingAtHeight(int id)
+        {
+            WorkingAtHeightModel model = new WorkingAtHeightModel(new workflow_node().FindAllNode(id, WorkflowNodeServiceModel.DocumentType.WORKINGATHEIGHT.ToString()));
+
+            return new JavaScriptSerializer().Serialize(model.NodeList);
+        }
     }
 }
