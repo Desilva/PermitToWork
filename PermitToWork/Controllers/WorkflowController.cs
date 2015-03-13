@@ -9,6 +9,7 @@ using System.Web.Script.Serialization;
 
 namespace PermitToWork.Controllers
 {
+    [PermitToWork.Utilities.AuthorizeUser]
     public class WorkflowController : Controller
     {
         private star_energy_ptwEntities db = new star_energy_ptwEntities();
