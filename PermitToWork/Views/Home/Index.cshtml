@@ -498,7 +498,31 @@
                 template: kendo.template($("#workflow-wh-template").html()),
                 url: '@Url.Action("WorkingAtHeight", "Workflow")',
                 callback: function (self, data) {
+                    $.post('@Url.Action("WHShowInspector", "Workflow")', { id: id }, function (isInspectorExist) {
+                        if (isInspectorExist === 'False') { //hide inspector approve
+                            self.element.find('div[data-node-name=INSPECTOR_APPROVE]').hide();
 
+                            self.element.find('div[data-node-name=ERECTOR_REQUESTOR_APPROVE]').removeClass('workflow-col-3');
+                            self.element.find('div[data-node-name=ERECTOR_REQUESTOR_APPROVE]').addClass('workflow-col-2');
+
+                            self.element.find('div[data-node-name=SUPERVISOR_APPROVE]').removeClass('workflow-col-4');
+                            self.element.find('div[data-node-name=SUPERVISOR_APPROVE]').addClass('workflow-col-3');
+
+                            self.element.find('div[data-node-name=FACILITY_OWNER_APPROVE]').removeClass('workflow-col-5');
+                            self.element.find('div[data-node-name=FACILITY_OWNER_APPROVE]').addClass('workflow-col-4');
+                        } else {
+                            self.element.find('div[data-node-name=INSPECTOR_APPROVE]').show();
+
+                            self.element.find('div[data-node-name=ERECTOR_REQUESTOR_APPROVE]').removeClass('workflow-col-2');
+                            self.element.find('div[data-node-name=ERECTOR_REQUESTOR_APPROVE]').addClass('workflow-col-3');
+
+                            self.element.find('div[data-node-name=SUPERVISOR_APPROVE]').removeClass('workflow-col-3');
+                            self.element.find('div[data-node-name=SUPERVISOR_APPROVE]').addClass('workflow-col-4');
+
+                            self.element.find('div[data-node-name=FACILITY_OWNER_APPROVE]').removeClass('workflow-col-4');
+                            self.element.find('div[data-node-name=FACILITY_OWNER_APPROVE]').addClass('workflow-col-5');
+                        }
+                    });
                 },
             });
         }

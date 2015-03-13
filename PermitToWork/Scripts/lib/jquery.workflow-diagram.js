@@ -72,6 +72,7 @@
 
             //algoritma
             self.element.data('kendoWindow').title(num);
+            self.showLoading();
             $.post(self.options.url + '?id=' + id, function (data) {
                 for (var i in data) {
                     status = data[i].StatusString;
@@ -108,7 +109,29 @@
                 if (self.options.callback !== null) {
                     self.options.callback(self, data);
                 }
+
+                self.hideLoading();
             }, 'json');
+        },
+
+        showLoading: function () {
+            var self = this;
+            self.getHideElement().show();
+        },
+
+        hideLoading: function () {
+            var self = this;
+            self.getHideElement().hide();
+        },
+
+        getHideElement: function () {
+            var self = this;
+            var loadingObject = self.element.find('.workflow-loading');
+            if (!loadingObject.length) {
+                loadingObject = $('<div class="workflow-loading"><div class="loading-animation"></div></div>').appendTo(self.element);
+            }
+
+            return loadingObject;
         },
 	});
 })(jQuery, window, document);
