@@ -31,8 +31,9 @@ namespace PermitToWork.Controllers
         {
 
             UserEntity user = Session["user"] as UserEntity;
-            WorkingHeightEntity entity = new WorkingHeightEntity(id, user);
-            entity.getPtw(user);
+            ListUser listUser = new ListUser(user.token, user.id);
+            WorkingHeightEntity entity = new WorkingHeightEntity(id, user, listUser);
+            entity.getPtw(user, listUser);
             bool[] isCanEdit = new bool[13];
 
             isCanEdit[0] = entity.isCanEditFormRequestor(user);
@@ -48,10 +49,10 @@ namespace PermitToWork.Controllers
             ViewBag.isCanEdit = isCanEdit;
 
             ViewBag.position = "Edit";
-            ViewBag.listUser = new ListUser(user.token, user.id);
+            ViewBag.listUser = listUser;
 
             var listErector = new List<SelectListItem>();
-            var listErectors = new MstErectorEntity().getListErector(user);
+            var listErectors = new MstErectorEntity().getListErector(user, listUser);
             listErector.Add(new SelectListItem
             {
                 Text = "",
@@ -71,7 +72,7 @@ namespace PermitToWork.Controllers
 
 
             var listInspector = new List<SelectListItem>();
-            var listInspectors = new MstInspectorEntity().getListInspector(user);
+            var listInspectors = new MstInspectorEntity().getListInspector(user, listUser);
             listInspector.Add(new SelectListItem
             {
                 Text = "",
@@ -101,7 +102,7 @@ namespace PermitToWork.Controllers
             ViewBag.listTotalCrew = listTotalCrew;
 
             var listNoInspection = new List<SelectListItem>();
-            var listNoInspections = new MstNoInspectionEntity().getListMstNoInspectionByUser(user);
+            var listNoInspections = new MstNoInspectionEntity().getListMstNoInspectionByUser(user, listUser);
             listNoInspection.Add(new SelectListItem
             {
                 Text = "",
@@ -118,7 +119,7 @@ namespace PermitToWork.Controllers
             }
             ViewBag.listNoInspection = listNoInspection;
 
-            ViewBag.ptwStatus = new PtwEntity(entity.id_ptw.Value, user).status;
+            //ViewBag.ptwStatus = new PtwEntity(entity.id_ptw.Value, user).status;
             return PartialView("create", entity);
         }
 
@@ -145,9 +146,10 @@ namespace PermitToWork.Controllers
         public JsonResult saveAndSend(WorkingHeightEntity wh, int who, int? c)
         {
             UserEntity user = Session["user"] as UserEntity;
+            ListUser listUser = new ListUser(user.token, user.id);
             int retVal = 1;
             retVal = retVal & wh.saveAsDraft(who);
-            wh = new WorkingHeightEntity(wh.id, user);
+            wh = new WorkingHeightEntity(wh.id, user, listUser);
             retVal = retVal & wh.signClearance(who, user, c != null ? c.Value : 0);
             retVal = retVal & wh.sendToUser(who, 1, fullUrl(), user);
             return Json(new { status = retVal > 0 ? "200" : "404" });
@@ -157,9 +159,10 @@ namespace PermitToWork.Controllers
         public JsonResult rejectPermit(WorkingHeightEntity wh, int who, string comment)
         {
             UserEntity user = Session["user"] as UserEntity;
+            ListUser listUser = new ListUser(user.token, user.id);
             int retVal = 1;
             retVal = retVal & wh.saveAsDraft(who);
-            wh = new WorkingHeightEntity(wh.id, user);
+            wh = new WorkingHeightEntity(wh.id, user, listUser);
             retVal = retVal & wh.rejectClearance(who);
             retVal = retVal & wh.sendToUser(who, 2, fullUrl(), user, 0, comment);
             return Json(new { status = retVal > 0 ? "200" : "404" });
@@ -169,9 +172,10 @@ namespace PermitToWork.Controllers
         public JsonResult inspectorSign(WorkingHeightEntity wh)
         {
             UserEntity user = Session["user"] as UserEntity;
+            ListUser listUser = new ListUser(user.token, user.id);
             int retVal = 1;
             wh.saveInspector();
-            wh = new WorkingHeightEntity(wh.id, user);
+            wh = new WorkingHeightEntity(wh.id, user, listUser);
             retVal = retVal & wh.signClearance(2, user);
             retVal = retVal & wh.sendToUser(2, 1, fullUrl(), user);
             return Json(new { status = retVal > 0 ? "200" : "404" });
@@ -190,9 +194,10 @@ namespace PermitToWork.Controllers
         public JsonResult saveAndSendCancel(WorkingHeightEntity wh, int who, int? c)
         {
             UserEntity user = Session["user"] as UserEntity;
+            ListUser listUser = new ListUser(user.token, user.id);
             int retVal = 1;
             retVal = retVal & wh.saveAsDraftCancel(who);
-            wh = new WorkingHeightEntity(wh.id, user);
+            wh = new WorkingHeightEntity(wh.id, user, listUser);
             retVal = retVal & wh.signClearanceCancel(who, user);
             retVal = retVal & wh.sendToUserCancel(who, 1, fullUrl(), user);
             return Json(new { status = retVal > 0 ? "200" : "404" });
@@ -202,9 +207,10 @@ namespace PermitToWork.Controllers
         public JsonResult rejectPermitCancel(WorkingHeightEntity wh, int who, string comment)
         {
             UserEntity user = Session["user"] as UserEntity;
+            ListUser listUser = new ListUser(user.token, user.id);
             int retVal = 1;
             retVal = retVal & wh.saveAsDraftCancel(who);
-            wh = new WorkingHeightEntity(wh.id, user);
+            wh = new WorkingHeightEntity(wh.id, user, listUser);
             retVal = retVal & wh.rejectClearanceCancel(who);
             retVal = retVal & wh.sendToUserCancel(who, 2, fullUrl(), user, 0, comment);
             return Json(new { status = retVal > 0 ? "200" : "404" });
@@ -264,7 +270,8 @@ namespace PermitToWork.Controllers
         public JsonResult cancelWHPermit(int id)
         {
             UserEntity user = Session["user"] as UserEntity;
-            WorkingHeightEntity wh = new WorkingHeightEntity(id, user);
+            ListUser listUser = new ListUser(user.token, user.id);
+            WorkingHeightEntity wh = new WorkingHeightEntity(id, user, listUser);
             int retVal = wh.signClearanceCancel(1, user);
             retVal = retVal & wh.sendToUserCancel(1, 1, fullUrl(), user);
 
@@ -306,7 +313,8 @@ namespace PermitToWork.Controllers
             UserEntity user = Session["user"] as UserEntity;
             int status = 0;
             status = wh.saveCancelScreening(who);
-            wh = new WorkingHeightEntity(wh.id, user);
+            ListUser listUser = new ListUser(user.token, user.id);
+            wh = new WorkingHeightEntity(wh.id, user, listUser);
             status = wh.completeCancelScreening(who, fullUrl(), user);
             return Json(new { status = status == 1 ? "200" : (status == 2 ? "201" : "404") });
         }
@@ -317,7 +325,8 @@ namespace PermitToWork.Controllers
             UserEntity user = Session["user"] as UserEntity;
             int status = 0;
             status = wh.saveCancelScreening(2);
-            wh = new WorkingHeightEntity(wh.id, user);
+            ListUser listUser = new ListUser(user.token, user.id);
+            wh = new WorkingHeightEntity(wh.id, user, listUser);
             status = wh.rejectCancelScreening(2, fullUrl(), user, comment);
             return Json(new { status = status == 1 ? "200" : (status == 2 ? "201" : "404") });
         }
@@ -326,7 +335,8 @@ namespace PermitToWork.Controllers
         public JsonResult signCancelPermit(int id, int who)
         {
             UserEntity user = Session["user"] as UserEntity;
-            WorkingHeightEntity wh = new WorkingHeightEntity(id, user);
+            ListUser listUser = new ListUser(user.token, user.id);
+            WorkingHeightEntity wh = new WorkingHeightEntity(id, user, listUser);
             string message = "";
             int retVal = wh.signPermitCancel(user, who, fullUrl(), out message);
 
@@ -404,7 +414,8 @@ namespace PermitToWork.Controllers
         public JsonResult CheckAttachment(int id)
         {
             UserEntity user = Session["user"] as UserEntity;
-            WorkingHeightEntity wh = new WorkingHeightEntity(id, user);
+            ListUser listUser = new ListUser(user.token, user.id);
+            WorkingHeightEntity wh = new WorkingHeightEntity(id, user, listUser);
             return Json(new { status = wh.listDocumentUploaded[WorkingHeightEntity.DocumentUploaded.ATTACHMENT.ToString()].Count > 0 ? "200" : "404" });
         }
     }

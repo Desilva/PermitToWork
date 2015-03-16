@@ -179,6 +179,67 @@ namespace PermitToWork.Models.WorkingHeight
             }
         }
 
+        public WorkingHeightEntity(int id, UserEntity user, ListUser listUser)
+            : this()
+        {
+            working_height rad = this.db.working_height.Find(id);
+            if (rad != null)
+            {
+                // this.ptw = new PtwEntity(fi.id_ptw.Value);
+                ModelUtilization.Clone(rad, this);
+
+                this.is_guest = rad.permit_to_work.is_guest == 1;
+
+                this.workbox_access_arr = this.workbox_access.Split('#');
+                this.ladder_access_arr = this.ladder_access.Split('#');
+                this.elevated_access_arr = this.elevated_access.Split('#');
+                this.scaffold_access_arr = this.scaffold_access.Split('#');
+
+                this.screening_req_arr = this.pre_screening_req.Split('#');
+                this.screening_fo_arr = this.pre_screening_fo.Split('#');
+
+                this.can_screening_req_arr = this.can_screening_req.Split('#');
+                this.can_screening_fo_arr = this.can_screening_fo.Split('#');
+
+                if (this.access == null)
+                {
+                    this.access = "";
+                }
+
+                this.mandatory_fall_prevention_arr = this.mandatory_fall_prevention != null ? this.mandatory_fall_prevention.Split('#') : new string[0];
+
+                this.fall_prevention_assess_arr = this.fall_prevention_assess.Split('#');
+
+                if (this.erector.HasValue)
+                {
+                    this.erectorUser = new MstErectorEntity(this.erector.Value, user, listUser);
+                }
+
+                if (this.inspector.HasValue)
+                {
+                    this.inspectorUser = new MstInspectorEntity(this.inspector.Value, user, listUser);
+                }
+
+                generateUserInWorkingHeight(rad, user, listUser);
+
+                string path = HttpContext.Current.Server.MapPath("~/Upload/WorkingHeight/" + this.id + "/Attachment");
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                DirectoryInfo d = new DirectoryInfo(path);//Assuming Test is your Folder
+                FileInfo[] Files = d.GetFiles(); //Getting Text files
+
+                this.listDocumentUploaded.Add(DocumentUploaded.ATTACHMENT.ToString(), Files.Select(p => p.Name).ToList());
+
+                this.statusText = getStatus();
+
+                // generateUserInWorkingHeight(rad, user);
+
+                // this.hira_document = new ListHira(this.id_ptw.Value, this.db).listHira;
+            }
+        }
+
 
         public WorkingHeightEntity(working_height rad, ListUser listUser, UserEntity user)
             : this()
@@ -543,7 +604,7 @@ namespace PermitToWork.Models.WorkingHeight
                     case 3 /* Requestor / Erector */:
                         if (wh.inspector_sign_date != null)
                         {
-                            wh.status = (int)WHStatus.INSPECTORSIGN;
+                            wh.status = (int)WHStatus.EDITANDSEND;
                         }
                         else
                         {
@@ -551,7 +612,7 @@ namespace PermitToWork.Models.WorkingHeight
                         }
                         // create node
                         workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.WORKINGATHEIGHT.ToString(),
-                            WorkflowNodeServiceModel.WorkingAtHeightNodeName.SUPERVISOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
+                            WorkflowNodeServiceModel.WorkingAtHeightNodeName.ERECTOR_REQUESTOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 4 /* Supervisor */:
                         wh.requestor_signature = null;
@@ -2433,6 +2494,11 @@ namespace PermitToWork.Models.WorkingHeight
         public void getPtw(UserEntity user)
         {
             this.ptw = new PtwEntity(this.id_ptw.Value, user);
+        }
+
+        public void getPtw(UserEntity user, ListUser listUser)
+        {
+            this.ptw = new PtwEntity(this.id_ptw.Value, user, listUser);
         }
     }
 }

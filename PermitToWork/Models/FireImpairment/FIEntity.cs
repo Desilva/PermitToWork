@@ -1484,7 +1484,7 @@ namespace PermitToWork.Models
                         fi.status = (int)FIStatus.CANFIREWATCHAPPROVE;
                         // create node
                         workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.FIREIMPAIRMENT.ToString(),
-                            WorkflowNodeServiceModel.FireImpairmentNodeName.CANCELLATION_FIREWATCH.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
+                            WorkflowNodeServiceModel.FireImpairmentNodeName.CANCELLATION_SAFETY_OFFICER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 5 /* Facility Owner */:
                         fi.cancel_so_signature = null;

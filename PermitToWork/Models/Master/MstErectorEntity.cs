@@ -44,6 +44,14 @@ namespace PermitToWork.Models.Master
             this.user = new UserEntity(this.id_employee.Value, user.token, user);
         }
 
+        public MstErectorEntity(mst_erector erector, UserEntity user, ListUser listUser)
+            : this()
+        {
+            ModelUtilization.Clone(erector, this);
+
+            this.user = listUser.listUser.Find(p => p.id == this.id_employee.Value);
+        }
+
         public List<MstErectorEntity> getListErector(UserEntity user)
         {
             var list = this.db.mst_erector.ToList();
@@ -53,6 +61,21 @@ namespace PermitToWork.Models.Master
                 if (i.valid_date.Value.CompareTo(DateTime.Now) >= 0)
                 {
                     ret.Add(new MstErectorEntity(i, user));
+                }
+            }
+
+            return ret;
+        }
+
+        public List<MstErectorEntity> getListErector(UserEntity user, ListUser listUser)
+        {
+            var list = this.db.mst_erector.ToList();
+            List<MstErectorEntity> ret = new List<MstErectorEntity>();
+            foreach (mst_erector i in list)
+            {
+                if (i.valid_date.Value.CompareTo(DateTime.Now) >= 0)
+                {
+                    ret.Add(new MstErectorEntity(i, user, listUser));
                 }
             }
 

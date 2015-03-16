@@ -123,6 +123,42 @@ namespace PermitToWork.Models.ClearancePermit
             this.listDocumentUploaded.Add("ATTACHMENT", Files.Select(p => p.Name).ToList());
         }
 
+        public LotoEntity(int id, UserEntity user, ListUser listUser)
+            : this()
+        {
+            loto_permit loto = this.db.loto_permit.Find(id);
+            // this.ptw = new PtwEntity(fi.id_ptw.Value);
+            ModelUtilization.Clone(loto, this);
+            this.lotoPoint = new LotoPointEntity().getList(user, this.id);
+            this.lotoComingHolder = new LotoComingHolderEntity().getList(user, this.id);
+            this.work_description = "";
+            foreach (permit_to_work permit in loto.permit_to_work)
+            {
+                this.work_description += permit.work_description + ", ";
+            }
+            if (this.work_description.Length != 0)
+            {
+                this.work_description = this.work_description.Substring(0, this.work_description.Length - 2);
+            }
+            if (this.supervisor != null)
+            {
+                this.supervisorUser = listUser.listUser.Find(p => p.id == Int32.Parse(this.supervisor));
+            }
+
+            this.lotoSuspension = new LotoSuspensionEntity().getList(user, this.id);
+            getUserInLOTO(user, listUser);
+
+            string path = HttpContext.Current.Server.MapPath("~/Upload/Loto/Attachment/" + this.id + "");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            DirectoryInfo d = new DirectoryInfo(path);//Assuming Test is your Folder
+            FileInfo[] Files = d.GetFiles(); //Getting Text files
+
+            this.listDocumentUploaded.Add("ATTACHMENT", Files.Select(p => p.Name).ToList());
+        }
+
         public LotoEntity(int id, UserEntity user, string ptw_requestor_id)
             : this()
         {
@@ -1503,11 +1539,11 @@ namespace PermitToWork.Models.ClearancePermit
                 this.db.Entry(loto).State = EntityState.Modified;
                 retVal = this.db.SaveChanges();
 
-                if (!complete)
-                {
+                //if (!complete)
+                //{
                     PtwEntity ptw = new PtwEntity(id_loto, user);
                     ptw.checkLotoCancellationComplete(user);
-                }
+                //}
             }
 
             return retVal;
@@ -1544,11 +1580,11 @@ namespace PermitToWork.Models.ClearancePermit
                         this.db.Entry(loto).State = EntityState.Modified;
                         retVal = this.db.SaveChanges();
 
-                        if (!complete)
-                        {
+                        //if (complete)
+                        //{
                             PtwEntity ptw = new PtwEntity(id_loto, user);
                             ptw.checkLotoCancellationComplete(user);
-                        }
+                        //}
                     }
                 }
             }
@@ -1786,11 +1822,11 @@ namespace PermitToWork.Models.ClearancePermit
             return false;
         }
 
-        public bool isCanAgreedApplied(UserEntity user)
+        public bool isCanAgreedApplied(UserEntity user, ListUser listUser)
         {
             if (this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()] != null)
             {
-                List<UserEntity> listDel = this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].GetDelegateFO(user);
+                List<UserEntity> listDel = this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].GetDelegateFO(user, listUser);
                 if ((user.id == this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].employee_delegate) && this.status == (int)LOTOStatus.SENDTOFO)
                 {
                     return true;
@@ -1824,11 +1860,11 @@ namespace PermitToWork.Models.ClearancePermit
             return false;
         }
 
-        public bool isCanApproveFO(UserEntity user)
+        public bool isCanApproveFO(UserEntity user, ListUser listUser)
         {
             if (this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()] != null)
             {
-                List<UserEntity> listDel = this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].GetDelegateFO(user);
+                List<UserEntity> listDel = this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].GetDelegateFO(user, listUser);
                 if ((user.id == this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].employee_delegate) && this.status == (int)LOTOStatus.SPVSIGN)
                 {
                     return true;
@@ -1928,11 +1964,9 @@ namespace PermitToWork.Models.ClearancePermit
             return false;
         }
 
-        public bool isFOCanAgreedAndAppliedChange(UserEntity user)
+        public bool isFOCanAgreedAndAppliedChange(UserEntity user, ListUser listUser)
         {
-
-            ListUser listUser = new ListUser(user.token, user.id);
-            List<UserEntity> listDel = this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].GetDelegateFO(user);
+            List<UserEntity> listDel = this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].GetDelegateFO(user, listUser);
 
             if ((this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].id == user.id || listDel.Exists(p => p.id == user.id)) && this.status == (int)LOTOStatus.CHGSENDTOFO)
             {
@@ -2063,11 +2097,11 @@ namespace PermitToWork.Models.ClearancePermit
             return false;
         }
 
-        public bool isCanApproveFOChange(UserEntity user)
+        public bool isCanApproveFOChange(UserEntity user, ListUser listUser)
         {
             if (this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()] != null)
             {
-                List<UserEntity> listDel = this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].GetDelegateFO(user);
+                List<UserEntity> listDel = this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].GetDelegateFO(user, listUser);
                 if ((user.id == this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].employee_delegate) && this.status == (int)LOTOStatus.CHGSPVSIGN)
                 {
                     return true;
@@ -2146,14 +2180,14 @@ namespace PermitToWork.Models.ClearancePermit
             return false;
         }
 
-        public bool isCanSetAgreedRemovedFO(UserEntity user) {
+        public bool isCanSetAgreedRemovedFO(UserEntity user, ListUser listUser)
+        {
             if (this.status == (int)LOTOStatus.LOTOSUSPENSION)
             {
                 LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
                 if (suspension != null)
                 {
-                    ListUser listUser = new ListUser(user.token, user.id);
-                    List<UserEntity> listDel = this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].GetDelegateFO(user);
+                    List<UserEntity> listDel = this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].GetDelegateFO(user, listUser);
 
                     if ((this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].id == user.id || listDel.Exists(p => p.id == user.id)) && suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONAPPROVE)
                     {
@@ -2261,7 +2295,7 @@ namespace PermitToWork.Models.ClearancePermit
             return false;
         }
 
-        public bool isCanApproveFOSuspension(UserEntity user)
+        public bool isCanApproveFOSuspension(UserEntity user, ListUser listUser)
         {
             if (this.status == (int)LOTOStatus.LOTOSUSPENSION)
             {
@@ -2269,7 +2303,7 @@ namespace PermitToWork.Models.ClearancePermit
                 if (suspension != null)
                 {
 
-                    List<UserEntity> listDel = suspension.foUser.GetDelegateFO(user);
+                    List<UserEntity> listDel = suspension.foUser.GetDelegateFO(user, listUser);
                     if (suspension.foUser != null && (suspension.foUser.id == user.id || listDel.Exists(p => p.id == user.id)) && suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONINSPECTION)
                     {
                         return true;
@@ -2330,14 +2364,14 @@ namespace PermitToWork.Models.ClearancePermit
             return false;
         }
 
-        public bool isCanSetAppliedCompleteSuspension(UserEntity user)
+        public bool isCanSetAppliedCompleteSuspension(UserEntity user, ListUser listUser)
         {
             if (this.status == (int)LOTOStatus.LOTOSUSPENSION)
             {
                 LotoSuspensionEntity suspension = this.lotoSuspension.LastOrDefault();
                 if (suspension != null && suspension.foUser != null)
                 {
-                    List<UserEntity> listDel = suspension.foUser.GetDelegateFO(user);
+                    List<UserEntity> listDel = suspension.foUser.GetDelegateFO(user, listUser);
 
                     if ((listDel.Exists(p => p.id == user.id) || suspension.foUser.id == user.id) && suspension.status == (int)LotoSuspensionEntity.SuspensionStatus.SUSPENSIONCOMPLETEAGREED)
                     {
@@ -2479,9 +2513,9 @@ namespace PermitToWork.Models.ClearancePermit
             return false;
         }
 
-        public bool isCanCancelFO(UserEntity user)
+        public bool isCanCancelFO(UserEntity user, ListUser listUser)
         {
-            List<UserEntity> listDel = this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].GetDelegateFO(user);
+            List<UserEntity> listDel = this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].GetDelegateFO(user, listUser);
 
             if ((listDel.Exists(p => p.id == user.id) || this.listUserInLOTO[userInLOTO.APPROVALFACILITYOWNER.ToString()].id == user.id) && this.status == (int)LOTOStatus.CANCELSPV)
             {

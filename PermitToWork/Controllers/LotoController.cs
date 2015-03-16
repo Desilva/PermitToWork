@@ -63,36 +63,37 @@ namespace PermitToWork.Controllers
         public ActionResult Edit(int id, int? id_loto)
         {
             UserEntity user = Session["user"] as UserEntity;
-            LotoEntity entity = new LotoEntity(id, user);
+            ListUser listUser = new ListUser(user.token, user.id);
+            LotoEntity entity = new LotoEntity(id, user, listUser);
 
             bool[] isCanEdit = new bool[27];
 
             isCanEdit[0] = entity.isCanEditFirstRequestor(user);
-            isCanEdit[1] = entity.isCanAgreedApplied(user);
+            isCanEdit[1] = entity.isCanAgreedApplied(user, listUser);
             isCanEdit[2] = entity.isCanInspect(user);
             isCanEdit[3] = entity.isCanApproveSpv(user);
-            isCanEdit[4] = entity.isCanApproveFO(user);
+            isCanEdit[4] = entity.isCanApproveFO(user, listUser);
             isCanEdit[5] = entity.isCanApproveChangeComingHolder(user);
             isCanEdit[6] = entity.isCanEditComingHolder(user);
             isCanEdit[7] = entity.isCanApproveOtherHolder(user);
-            isCanEdit[8] = entity.isFOCanAgreedAndAppliedChange(user);
+            isCanEdit[8] = entity.isFOCanAgreedAndAppliedChange(user, listUser);
             isCanEdit[9] = entity.isCanInspectChange(user);
             isCanEdit[10] = entity.isCanApproveSpvChange(user);
-            isCanEdit[11] = entity.isCanApproveFOChange(user);
+            isCanEdit[11] = entity.isCanApproveFOChange(user, listUser);
             isCanEdit[12] = entity.isCanApprovingOtherHolder(user);
             isCanEdit[13] = entity.isCanCancel(user);
             isCanEdit[14] = entity.isCanCancelSpv(user);
-            isCanEdit[15] = entity.isCanCancelFO(user);
+            isCanEdit[15] = entity.isCanCancelFO(user, listUser);
             isCanEdit[16] = entity.isCanSuspend(user);
             isCanEdit[17] = entity.isCanEditOnSuspension(user);
             isCanEdit[18] = entity.isCanApproveChangeSuspension(user);
-            isCanEdit[19] = entity.isCanSetAgreedRemovedFO(user);
+            isCanEdit[19] = entity.isCanSetAgreedRemovedFO(user, listUser);
             isCanEdit[20] = entity.isCanInspectChangeHolder(user);
-            isCanEdit[21] = entity.isCanApproveFOSuspension(user);
+            isCanEdit[21] = entity.isCanApproveFOSuspension(user, listUser);
             isCanEdit[22] = entity.isCanCompleteSuspension(user);
             isCanEdit[23] = entity.isCanAddPointOnCompleteSuspension(user);
             isCanEdit[24] = entity.isCanAgreedNewLotoPointCompleteSuspension(user);
-            isCanEdit[25] = entity.isCanSetAppliedCompleteSuspension(user);
+            isCanEdit[25] = entity.isCanSetAppliedCompleteSuspension(user, listUser);
             isCanEdit[26] = entity.isCanInspectHolderCompleteSuspension(user);
 
 
@@ -101,7 +102,7 @@ namespace PermitToWork.Controllers
             ViewBag.id_loto = id_loto == null ? id : id_loto;
 
             ViewBag.listLotoPoint = new star_energy_ptwEntities().mst_loto_point.ToList();
-            ViewBag.listUser = new ListUser(user.token, user.id).listUser;
+            ViewBag.listUser = listUser.listUser;
 
             return PartialView("Create2", entity);
         }

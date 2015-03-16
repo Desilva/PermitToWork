@@ -53,6 +53,14 @@ namespace PermitToWork.Models.Master
             this.user = new UserEntity(this.id_employee.Value, user.token, user);
         }
 
+        public MstInspectorEntity(mst_inspector inspector, UserEntity user, ListUser listUser)
+            : this()
+        {
+            ModelUtilization.Clone(inspector, this);
+
+            this.user = listUser.listUser.Find(p => p.id == this.id_employee.Value);
+        }
+
         public List<MstInspectorEntity> getListInspector(UserEntity user)
         {
             var list = this.db.mst_inspector.ToList();
@@ -62,6 +70,21 @@ namespace PermitToWork.Models.Master
                 if (i.valid_date.Value.CompareTo(DateTime.Now) >= 0)
                 {
                     ret.Add(new MstInspectorEntity(i, user));
+                }
+            }
+
+            return ret;
+        }
+
+        public List<MstInspectorEntity> getListInspector(UserEntity user, ListUser listUser)
+        {
+            var list = this.db.mst_inspector.ToList();
+            List<MstInspectorEntity> ret = new List<MstInspectorEntity>();
+            foreach (mst_inspector i in list)
+            {
+                if (i.valid_date.Value.CompareTo(DateTime.Now) >= 0)
+                {
+                    ret.Add(new MstInspectorEntity(i, user, listUser));
                 }
             }
 

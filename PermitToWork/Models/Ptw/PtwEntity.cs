@@ -311,7 +311,7 @@ namespace PermitToWork.Models.Ptw
 
             if (this.fi_id != null)
             {
-                IClearancePermitEntity fi = (IClearancePermitEntity)new FIEntity(this.fi_id.Value, user);
+                IClearancePermitEntity fi = (IClearancePermitEntity)new FIEntity(this.fi_id.Value, user, listUser);
                 fi.ids = this.fi_id.Value;
                 fi.statusText = ((FIEntity)fi).getStatus();
                 this.cPermit.Add(clearancePermit.FIREIMPAIRMENT.ToString(), fi);
@@ -321,7 +321,7 @@ namespace PermitToWork.Models.Ptw
 
             if (this.rad_id != null)
             {
-                IClearancePermitEntity rad = (IClearancePermitEntity)new RadEntity(this.rad_id.Value, user);
+                IClearancePermitEntity rad = (IClearancePermitEntity)new RadEntity(this.rad_id.Value, user, listUser);
                 rad.ids = this.rad_id.Value;
                 this.cPermit.Add(clearancePermit.RADIOGRAPHY.ToString(), rad);
                 this.rad_no = ptw.radiographies.ElementAt(0).rg_no;
@@ -330,7 +330,7 @@ namespace PermitToWork.Models.Ptw
 
             if (this.wh_id != null)
             {
-                IClearancePermitEntity wh = (IClearancePermitEntity)new WorkingHeightEntity(this.wh_id.Value, user);
+                IClearancePermitEntity wh = (IClearancePermitEntity)new WorkingHeightEntity(this.wh_id.Value, user, listUser);
                 wh.ids = this.wh_id.Value;
                 this.cPermit.Add(clearancePermit.WORKINGHEIGHT.ToString(), wh);
                 this.wh_no = ptw.working_height.ElementAt(0).wh_no;
@@ -339,7 +339,7 @@ namespace PermitToWork.Models.Ptw
 
             if (this.ex_id != null)
             {
-                IClearancePermitEntity ex = (IClearancePermitEntity)new ExcavationEntity(this.ex_id.Value, user);
+                IClearancePermitEntity ex = (IClearancePermitEntity)new ExcavationEntity(this.ex_id.Value, user, listUser);
                 ex.ids = this.ex_id.Value;
                 this.cPermit.Add(clearancePermit.EXCAVATION.ToString(), ex);
                 this.ex_no = ptw.excavations.ElementAt(0).ex_no;

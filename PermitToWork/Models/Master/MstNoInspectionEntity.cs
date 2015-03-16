@@ -42,6 +42,17 @@ namespace PermitToWork.Models.Master
             this.user = new UserEntity(Int32.Parse(this.inspector_id), user.token, user);
         }
 
+        public MstNoInspectionEntity(mst_no_inspection mst_no_inspection, UserEntity user, ListUser listUser)
+            : this()
+        {
+            ModelUtilization.Clone(mst_no_inspection, this);
+            if (mst_no_inspection.id_inspection != null && mst_no_inspection.id_inspection != 0)
+            {
+                s = new ScaffoldingInspectionModel(mst_no_inspection.id_inspection.Value);
+            }
+            this.user = listUser.listUser.Find(p => p.id == Int32.Parse(this.inspector_id));
+        }
+
         public List<MstNoInspectionEntity> getListMstNoInspection(UserEntity user)
         {
             var userId = user.id.ToString();
@@ -63,6 +74,19 @@ namespace PermitToWork.Models.Master
             foreach (mst_no_inspection i in list)
             {
                 ret.Add(new MstNoInspectionEntity(i, user));
+            }
+
+            return ret;
+        }
+
+        public List<MstNoInspectionEntity> getListMstNoInspectionByUser(UserEntity user, ListUser listUser)
+        {
+            var userId = user.id.ToString();
+            var list = this.db.mst_no_inspection.Where(p => p.inspector_id == userId).ToList();
+            List<MstNoInspectionEntity> ret = new List<MstNoInspectionEntity>();
+            foreach (mst_no_inspection i in list)
+            {
+                ret.Add(new MstNoInspectionEntity(i, user, listUser));
             }
 
             return ret;

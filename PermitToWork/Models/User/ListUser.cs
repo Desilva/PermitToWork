@@ -13,7 +13,11 @@ namespace PermitToWork.Models.User
         public ListUser() { }
         public ListUser(string token, int curLoginId)
         {
-            if (HttpContext.Current.Application["listUser"] == null) {
+            DateTime lastUpdate = DateTime.Now;
+            if (HttpContext.Current.Application["listUserLastUpdate"] != null) {
+                lastUpdate = (HttpContext.Current.Application["listUserLastUpdate"] as DateTime?).Value;
+            }
+            if (HttpContext.Current.Application["listUser"] == null || DateTime.Now.Subtract(lastUpdate).TotalHours > 1) {
                 WWUserService.UserServiceClient client = new WWUserService.UserServiceClient();
                 int count = 0;
                 List<UserEntity> listUser = new List<UserEntity>();
@@ -34,8 +38,10 @@ namespace PermitToWork.Models.User
                 //this.listUser = new HashSet<UserEntity>(listUser.OrderBy(p => p.alpha_name));
                 this.listUser = listUser.OrderBy(p => p.alpha_name).ToList();
                 HttpContext.Current.Application["listUser"] = listUser.OrderBy(p => p.alpha_name).ToList();
+                HttpContext.Current.Application["listUserLastUpdate"] = DateTime.Now;
             } else {
                 this.listUser = ((ListUser)HttpContext.Current.Application["listUser"]).listUser;
+                HttpContext.Current.Application["listUserLastUpdate"] = lastUpdate;
             }
             
         }

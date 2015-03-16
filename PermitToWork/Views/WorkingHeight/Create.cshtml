@@ -1567,8 +1567,8 @@
             if (isCanEdit[0] || isCanEdit[2] || isCanEdit[4]) {
             <button class="btn btn-default" id="save-as-draft" data-who="@(isCanEdit[0] ? 1 : (isCanEdit[2] ? 3 : (isCanEdit[3] ? 4 : (isCanEdit[4] ? 5 : 0))))">Save as Draft</button>
             }
-            if (isCanEdit[2] || isCanEdit[3] || isCanEdit[4]) {
-            <button class="btn btn-danger" id="reject" data-who="@(isCanEdit[0] ? 1 : (isCanEdit[2] ? 3 : (isCanEdit[3] ? 4 : (isCanEdit[4] ? 5 : 0))))">Reject to Requestor</button>
+            if (isCanEdit[1] || isCanEdit[2] || isCanEdit[3] || isCanEdit[4]) {
+            <button class="btn btn-danger" id="reject" data-who="@(isCanEdit[0] ? 1 : (isCanEdit[2] ? 3 : (isCanEdit[3] ? 4 : (isCanEdit[4] ? 5 : 0))))">Reject</button>
             }
             }
             @if (isCanEdit[5])
@@ -1586,6 +1586,9 @@
                 {
             <button class="btn btn-danger" id="reject-2" data-who="@(isCanEdit[6] ? 2 : (isCanEdit[7] ? 3 : (isCanEdit[8] ? 4 : 0)))">Reject</button>
                 }
+            }
+            @if (isCanEdit[1]) {
+            <button class="btn btn-danger" id="reject" data-who="@(isCanEdit[1] ? 2 : 0)">Reject</button>
             }
             <button class="btn btn-primary" id="back">Back</button>
             <span id="loading_gif" style="display:none"><img src="/Content/Images/loading.gif" alt="loading" width="24" height="24" /> Sending Email.. Please Wait..</span>
