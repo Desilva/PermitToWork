@@ -101,7 +101,11 @@ namespace PermitToWork.Models.Workflow
                 {
                     if (node.NodeName == WorkflowNodeServiceModel.RadiographicNodeName.CHOOSING_SAFETY_OFFICER.ToString())
                     {
-                        node.Status = WorkflowNodePresentationStub.NodeStatus.ONGOING;
+                        if (approvedNodeNames.Contains(WorkflowNodeServiceModel.RadiographicNodeName.REQUESTOR_INPUT.ToString())){
+                            node.Status = WorkflowNodePresentationStub.NodeStatus.ONGOING;
+                            if (approvedNodeNames.Contains(WorkflowNodeServiceModel.RadiographicNodeName.SUPERVISOR_APPROVE.ToString()))
+                                existOngong = true;
+                        }
                     }
                     else
                     {
