@@ -5,7 +5,7 @@
 }
 <script>
     $(document).ready(function () {
-        addHandlerMenu();
+        // addHandlerMenu();
         if ('@isRedirect' == 'True') {
             $('#content').load('@p');
         }
@@ -19,6 +19,9 @@
 	<a href="#" title="Go to Home" class="tip-bottom home"><i class="icon-home"></i> Home</a>
 	<a href="#" class="current">Dashboard</a>
 </div>
+
+@{ Html.RenderAction("Index", "KPI"); }
+
 <div id="content-hazard">
     <div class="container-fluid">
         <div class="row-fluid">
@@ -114,6 +117,8 @@
 @section scripts
 {
 <script src="@Url.Content("~/Scripts/lib/jquery.workflow-diagram.js")"></script>
+
+<script src="@Url.Content("~/Scripts/lib/jquery.kpi-widget.js")"></script>
 
 <script id="workflow-csep-template" type="text/x-kendo-template">
      @{ Html.RenderPartial("~/Views/Workflow/CSEP.cshtml"); }

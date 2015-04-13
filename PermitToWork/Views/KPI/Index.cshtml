@@ -1,0 +1,94 @@
+﻿@model PermitToWork.Models.KPI.KPIFormStub
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#home-kpi').kpiWidget({
+            url: '@Url.Action("AjaxCalculateKPI", "KPI")',
+        });
+    });
+</script>
+
+<section id="home-kpi" class="container-fluid">
+    <div class="widget-box">
+        <div class="widget-title"><h5>KPI</h5></div>
+        <div class="widget-content">
+            <form class="form-inline">
+                @Html.DropDownListFor(m => m.Year, new SelectList(Model.GetYearOptions(), "Value", "Text"), "Select All")
+                <button type="submit" class="btn">Filter</button>
+            </form>
+
+            <div class="row-fluid">
+                <div class="span6">
+                    <div class="span3">
+                        KPI Requestor
+                    </div>
+                    <div class="span4">
+                        Ontime Closing
+                    </div>
+                    <div class="span5" data-kpi-type="requestor-ontime"></div>
+                </div>
+                <div class="span6">
+                    <div class="span3">
+                        KPI Assessor
+                    </div>
+                    <div class="span4">
+                        Average Response Time
+                    </div>
+                    <div class="span5" data-kpi-type="assessor-response-time"></div>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span6">
+                    <div class="span3">
+                        &nbsp;
+                    </div>
+                    <div class="span4">
+                        Overdue Closing
+                    </div>
+                    <div class="span5" data-kpi-type="requestor-overdue"></div>
+                </div>
+                <div class="span6">
+                    <div class="span3">
+                        KPI FO
+                    </div>
+                    <div class="span4">
+                        Closing Permit
+                    </div>
+                    <div class="span5" data-kpi-type="fo-closing-permit"></div>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span6">
+                    <div class="span3">
+                        &nbsp;
+                    </div>
+                    <div class="span4">
+                        Impromptu Permit
+                    </div>
+                    <div class="span5" data-kpi-type="requestor-impromptu"></div>
+                </div>
+                <div class="span6">
+                    <div class="span3">
+                        &nbsp;
+                    </div>
+                    <div class="span4">
+                        Average Closing Time
+                    </div>
+                    <div class="span5" data-kpi-type="fo-closing-time"></div>
+                </div>
+            </div>
+            <div class="row-fluid">
+                <div class="span6">
+                    <div class="span3">
+                        KPI Supervisor
+                    </div>
+                    <div class="span4">
+                        Average Response Time
+                    </div>
+                    <div class="span5" data-kpi-type="supervisor-response-time"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
