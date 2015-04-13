@@ -6,7 +6,6 @@
     <edmx:Diagrams>
       <Diagram DiagramId="4fe3ff4ca7ec49498721a3fc5164e108" Name="Diagram1" ZoomLevel="49">
         <EntityTypeShape EntityType="star_energy_ptwModel.confined_space" Width="1.5" PointX="3.0732568516737113" PointY="31.47382590150173" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.excavation" Width="1.5" PointX="10.99118989659063" PointY="25.736168098513115" />
         <EntityTypeShape EntityType="star_energy_ptwModel.fire_impairment" Width="1.5" PointX="10.67208455068622" PointY="7.7296180612079883" />
         <EntityTypeShape EntityType="star_energy_ptwModel.hira_document" Width="1.5" PointX="0.23919887479357369" PointY="7.4229673330779038" />
         <EntityTypeShape EntityType="star_energy_ptwModel.hot_work" Width="1.5" PointX="9.4459653205452323" PointY="25.546478596304766" />
@@ -42,7 +41,6 @@
         <EntityTypeShape EntityType="star_energy_ptwModel.loto_coming_holder" Width="1.5" PointX="11.021435150420961" PointY="25.488357451506126" />
         <EntityTypeShape EntityType="star_energy_ptwModel.permit_to_work" Width="1.5" PointX="9.3624632644292269" PointY="16.267339818304098" />
         <AssociationConnector Association="star_energy_ptwModel.FK_confined_space_permit_to_work" />
-        <AssociationConnector Association="star_energy_ptwModel.FK_excavation_permit_to_work" />
         <AssociationConnector Association="star_energy_ptwModel.FK_fire_impairment_permit_to_work" />
         <AssociationConnector Association="star_energy_ptwModel.FK_hira_document_permit_to_work" />
         <AssociationConnector Association="star_energy_ptwModel.FK_hot_work_permit_to_work" />
@@ -66,6 +64,13 @@
         <AssociationConnector Association="star_energy_ptwModel.loto_permit_to_work" />
         <EntityTypeShape EntityType="star_energy_ptwModel.working_height" Width="1.5" PointX="6.0674158400238571" PointY="15.012423790531431" />
         <AssociationConnector Association="star_energy_ptwModel.FK_working_height_permit_to_work" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_ex_disposal_location" Width="1.5" PointX="0.75" PointY="0.75" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.mst_enviro_officer" Width="1.5" PointX="4.375" PointY="3.75" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.excavation" Width="1.5" PointX="11.625" PointY="57.375" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_excavation_permit_to_work" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.excavation_disposal_location" Width="1.5" PointX="13.875" PointY="34.875" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_excavation_disposal_location_excavation" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_excavation_disposal_location_mst_ex_disposal_location" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

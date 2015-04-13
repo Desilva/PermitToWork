@@ -6,11 +6,22 @@
 <script>
     $(document).ready(function () {
         addHandlerMenu();
+
+        $('#screening_spv_9').change(function () {
+            var value = $(this).val();
+            console.log(value);
+            if (value == "1") {
+                $('.disposal-location').show();
+            } else {
+                $('.disposal-location').hide();
+            }
+        });
+
         $('[name="excavation-method"]').change(function () {
             if ($(this).val() == '0') {
                 $('#excavation-method').removeAttr('disabled');
             } else {
-                $('#excavation-method').attr('disabled','disabled');
+                $('#excavation-method').attr('disabled', 'disabled');
             }
         });
 
@@ -93,6 +104,7 @@
             //values.safety_officer = $('#safety-officer').val();
             values.facilities = $('#facilities').val();
             values.ei = $('#ei').val();
+            values.enviro_officer = $('#enviro_officer').val();
             values.who = $(this).data('who');
             if (values.who == "1") {
                 var all = true;
@@ -276,9 +288,9 @@
             values.excavation_performed = $('input[name="excavation-performed"]:checked').val();
             values.excavation_method = $('input[name="excavation-method"]:checked').val() == "0" ? $('#excavation-method').val() : $('input[name="excavation-method"]:checked').val();
             values.equipment = $('input[name="equipment"]:checked').val() == "0" ? $('#equipment').val() : $('input[name="equipment"]:checked').val();
-            values.soil_volume = $('#soil-volume').val();
-            values.disposal_location = $('#disposal-location').val();
-            values.disposal_type = $('input[name="excavation-performed"]:checked').val();
+            //values.soil_volume = $('#soil-volume').val();
+            //values.disposal_location = $('#disposal-location').val();
+            //values.disposal_type = $('input[name="excavation-performed"]:checked').val();
 
             values.approval_note = $('#approval-note').val();
             return values;
@@ -353,6 +365,144 @@
 
             return values;
         }
+
+        var dataSourceIn = new kendo.data.DataSource({
+            transport: {
+                read: {
+                    url: '@Url.Action("BindingDisposalLocation", "Excavation", new { id_permit = Model.id })',
+                    type: "POST"
+                },
+                create: {
+                    url: '@Url.Action("Add", "Excavation", new { id_permit = Model.id })',
+                    type: "POST",
+                    complete: function (e) {
+                        $("#grid-disposal").data("kendoGrid").dataSource.read();
+                    }
+                },
+                update: {
+                    url: '@Url.Action("Edit", "Excavation", new { id_permit = Model.id })',
+                    type: "POST",
+                    complete: function (e) {
+                        $("#grid-disposal").data("kendoGrid").dataSource.read();
+                    }
+                },
+                destroy: {
+                    url: '@Url.Action("Delete", "Excavation", new { id_permit = Model.id })',
+                    type: "POST",
+                    complete: function (e) {
+                        $("#grid-disposal").data("kendoGrid").dataSource.read();
+                    }
+                },
+                parameterMap: function (options, operation) {
+                    if (operation !== "read" && options.models) {
+                        var result = {};
+
+                        for (var i = 0; i < options.models.length; i++) {
+                            var product = options.models[i];
+                            console.log(product);
+                            for (var member in product) {
+                                if (member == "user") {
+                                    result["id_user"] = product[member]["id"];
+                                } else if (member == "DisposalLocation") {
+                                    if (typeof (product[member]) == typeof ({}) && product[member] != null) {
+                                        result["id_disposal_location"] = product[member]["id"];
+                                    } else {
+                                        result["id_disposal_location"] = product[member];
+                                    }
+                                } else if (member == "loto_point_agreed") {
+                                    if (typeof (product[member]) == typeof ({}) && product[member] != null) {
+                                        result["loto_point_agreed"] = product[member]["code"];
+                                    } else {
+                                        result["loto_point_agreed"] = product[member];
+                                    }
+                                } else if (member == "applied_by_time") {
+                                    var date = product[member];
+                                    if (date != null) {
+                                        result["applied_by_time"] = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes();
+                                    }
+                                } else {
+                                    if (product[member] == null) {
+                                        result[member] = "";
+                                    } else {
+                                        result[member] = product[member];
+                                    }
+                                }
+                            }
+                            result["id_permit"] = '@Model.id';
+                        }
+
+                        return result;
+                    }
+                },
+            },
+            batch: true,
+            schema: {
+                model: {
+                    id: "id_disposal_location",
+                    fields: {
+                        id_disposal_location: { editable: true, nullable: false },
+                        volume: { type: "number", validation: { required: true } },
+                        DisposalLocation: { nullable: true },
+                    }
+                }
+            },
+        });
+
+        $("#grid-disposal").kendoGrid({
+            dataSource: dataSourceIn,
+            pageable: false,
+            sortable: true,
+            filterable: true,
+            @if (isCanEdit[3])
+            { <text>toolbar: ["create"],</text> }
+            columns: [
+                { field: "DisposalLocation", title: "Disposal Location", editor: appliedEditor, template: "#=DisposalLocation#" },
+                { field: "volume", title: "Estimated Volume (m3)", type: "number", width: 250 },
+                {
+                    command: ["edit", "destroy"], title: "Command", width: "200px"
+                },
+            ],
+            editable: "inline"
+        });
+
+        if ('@(Model.pre_screening_spv_arr[8] == "1")' == 'True') {
+            $('.disposal-location').show();
+            $('.approval-header').attr('colspan', '4');
+            $('.approval-title-form').attr('colspan', '6');
+        } else {
+            $('.disposal-location').hide();
+            $('.approval-header').attr('colspan', '3');
+            $('.approval-title-form').attr('colspan', '5');
+        }
+
+        $('#screening_spv_9').change(function () {
+            var value = $(this).val();
+            console.log(value);
+            if (value == "1") {
+                $('.disposal-location').show();
+                $('.approval-header').attr('colspan', '4');
+                $('.approval-title-form').attr('colspan', '6');
+            } else {
+                $('.disposal-location').hide();
+                $('.approval-header').attr('colspan', '3');
+                $('.approval-title-form').attr('colspan', '5');
+            }
+        });
+
+        function appliedEditor(container, options) {
+            $('<input data-text-field="name" data-value-field="id" data-bind="value:' + options.field + '" />')
+                .appendTo(container)
+                .kendoComboBox({
+                    autoBind: true,
+                    dataSource: {
+                        transport: {
+                            dataType: "json",
+                            read: '@Url.Action("ListingDisposalLocation", "Excavation")'
+                        }
+                    },
+                    optionLabel: "--Select One--",
+                });
+        }
     })
 </script>
 
@@ -406,9 +556,9 @@
                 </tr>
                 <tr>
                     <td>Estimate Date  <small id="estimate_start_date_valid" style="color:red;display:none"><br />Estimate Date can not be empty.</small></td>
-                    <td>: <input class="table-input table-input-160" id="estimate-date-start" type="text" value="@(Model.estimate_start_date != null ? Model.estimate_start_date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")" @(isCanEdit[0] ? "" : "disabled")></td>
+                    <td>: <input class="table-input-160" id="estimate-date-start" type="text" value="@(Model.estimate_start_date != null ? Model.estimate_start_date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")" @(isCanEdit[0] ? "" : "disabled")></td>
                     <td>To  <small id="estimate_end_date_valid" style="color:red;display:none"><br />Estimate Date To can not be empty.</small></td>
-                    <td>: <input class="table-input table-input-160" id="estimate-date-end" type="text" value="@(Model.estimate_end_date != null ? Model.estimate_end_date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")" @(isCanEdit[0] ? "" : "disabled")></td>
+                    <td>: <input class="table-input-160" id="estimate-date-end" type="text" value="@(Model.estimate_end_date != null ? Model.estimate_end_date.Value.ToString("MM/dd/yyyy hh:mm tt") : "")" @(isCanEdit[0] ? "" : "disabled")></td>
                 </tr>
             </tbody>
         </table>
@@ -689,7 +839,7 @@
                 </tr>
                 <tr>
                     <td>9</td>
-                    <td colspan="2">Disposal site need permit from enviroment official</td>
+                    <td colspan="2">Material movement to another location is required</td>
                     <td>
                         <select class="radiography-select screening-spv" data-id="9" id="screening_spv_9" @(isCanEdit[2] ? "" : "disabled")>
                             <option value="1" @(Model.pre_screening_spv_arr[8] == "1" ? "selected" : "")>Yes</option>
@@ -717,6 +867,12 @@
                             <option value="2" @(Model.pre_screening_fo_arr[8] == "2" ? "selected" : "")>No</option>
                             <option value="0" @(Model.pre_screening_fo_arr[8] == "0" || Model.pre_screening_fo_arr[8] == "" ? "selected" : "")>N/A</option>
                         </select>
+                    </td>
+                </tr>
+                <tr class="disposal-location" style="display:none">
+                    <td>9a</td>
+                    <td colspan="6">
+                        <div id="grid-disposal"></div>
                     </td>
                 </tr>
                 <tr>
@@ -821,7 +977,7 @@
                         </ul>
                     </td>
                 </tr>
-                <tr>
+                @*<tr>
                     <td>15</td>
                     <td>Estimated soil volume <small id="soil_volume_valid" style="color:red;display:none"><br />Estimate Soil Volume must be chosen.</small></td>
                     <td colspan="5">
@@ -840,7 +996,7 @@
                             <li> <label class="radio"><input name="disposal-location" type="radio" value="2" @(isCanEdit[0] ? "" : "disabled") @(Model.disposal_type == "2" ? "checked" : "")/>Temporary</label></li>
                         </ul>
                     </td>
-                </tr>
+                </tr>*@
                 <tr>
                     <td colspan="7">
                         <h6>Note :</h6>
@@ -860,14 +1016,14 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th colspan="5" class="title-form">
+                    <th colspan="@(Model != null && Model.IsDisposalMoved() ? "6" : "5")" class="title-form approval-title-form">
                         <b>3. APPROVAL</b>
                     </th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td colspan="3" class="td-centre">
+                    <td colspan="@(Model != null && Model.IsDisposalMoved() ? "4" : "3")" class="td-centre approval-header">
                         <strong>Verified by</strong>
                     </td>
                     <td colspan="2" class="td-centre">
@@ -881,12 +1037,6 @@
                         <img id="img_approve_supervisor" width="50" height="50" @(Model.supervisor_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.supervisor_signature == null ? "" : Model.supervisor_signature.Substring(1))"/><br />
                         }
                     </td>
-                    @*<td class="td-centre">
-                        @if (Model.safety_officer_signature != null)
-                        {
-                        <img id="img_approve_so" width="50" height="50" @(Model.safety_officer_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.safety_officer_signature == null ? "" : Model.safety_officer_signature.Substring(1))"/><br />
-                        }
-                    </td>*@
                     <td class="td-centre">
                         @if (Model.ei_signature != null)
                         {
@@ -897,6 +1047,12 @@
                         @if (Model.facilities_signature != null)
                         {
                         <img id="img_approve_fac" width="50" height="50" @(Model.facilities_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.facilities_signature == null ? "" : Model.facilities_signature.Substring(1))"/><br />
+                        }
+                    </td>
+                    <td class="td-centre disposal-location">
+                        @if (Model.enviro_officer_signature != null)
+                        {
+                        <img id="img_approve_so" width="50" height="50" @(Model.enviro_officer_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.enviro_officer_signature == null ? "" : Model.enviro_officer_signature.Substring(1))"/><br />
                         }
                     </td>
                     <td class="td-centre">
@@ -982,6 +1138,26 @@
                             @(Model.userInExcavation.Keys.ToList().Exists(p => p == PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIES.ToString()) ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIES.ToString()].alpha_name : "")
                         }
                         <br /><b>Civil</b>
+                    </td>
+
+                    <td class="td-centre disposal-location">
+                        @if (isCanEdit[2])
+                        {
+                            @(Html.DropDownList("enviro_officer", ViewBag.listEO as List<SelectListItem>, (isCanEdit[2] ? new { @class = "table-input-170" } as object : new { @class = "table-input-170", disabled = "disabled" } as object)));
+                        }
+                        else
+                        {
+                            if ((Model.enviro_officer_signature == null && isCanEdit[3] && Model.userInExcavation.Keys.ToList().Exists(p => p == PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.ENVIROOFFICER.ToString()) && requestor.id != Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.ENVIROOFFICER.ToString()].id))
+                            {
+                                <text>@requestor.alpha_name<br />a/n </text>
+                            }
+                            else if ((Model.enviro_officer_signature != null && Model.enviro_officer_signature.Substring(0, 1) == "d"))
+                            {
+                                <text>@Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.ENVIROOFFICERDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            }
+                            @(Model.userInExcavation.Keys.ToList().Exists(p => p == PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.ENVIROOFFICER.ToString()) ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.ENVIROOFFICER.ToString()].alpha_name : "")
+                        }
+                        <br /><b>Environmental Officer</b>
                     </td>
                     <td class="td-centre">
                         @if ((Model.requestor_signature == null && isCanEdit[6] && requestor.id != Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.REQUESTOR.ToString()].id))

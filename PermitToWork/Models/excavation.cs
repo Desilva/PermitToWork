@@ -14,6 +14,11 @@ namespace PermitToWork.Models
     
     public partial class excavation
     {
+        public excavation()
+        {
+            this.excavation_disposal_location = new HashSet<excavation_disposal_location>();
+        }
+    
         public int id { get; set; }
         public Nullable<int> id_ptw { get; set; }
         public string ex_no { get; set; }
@@ -37,10 +42,10 @@ namespace PermitToWork.Models
         public string supervisor_signature { get; set; }
         public string supervisor_delegate { get; set; }
         public Nullable<System.DateTime> supervisor_signature_date { get; set; }
-        public string safety_officer { get; set; }
-        public string safety_officer_signature { get; set; }
-        public string safety_officer_delegate { get; set; }
-        public Nullable<System.DateTime> safety_officer_signature_date { get; set; }
+        public string enviro_officer { get; set; }
+        public string enviro_officer_signature { get; set; }
+        public string enviro_officer_delegate { get; set; }
+        public Nullable<System.DateTime> enviro_officer_signature_date { get; set; }
         public string facilities { get; set; }
         public string facilities_signature { get; set; }
         public string facilities_delegate { get; set; }
@@ -58,9 +63,9 @@ namespace PermitToWork.Models
         public Nullable<System.DateTime> facility_owner_signature_date { get; set; }
         public string screening_remark { get; set; }
         public string approval_note { get; set; }
-        public string can_safety_officer_signature { get; set; }
-        public string can_safety_officer_delegate { get; set; }
-        public Nullable<System.DateTime> can_safety_officer_signature_date1 { get; set; }
+        public string can_enviro_officer_signature { get; set; }
+        public string can_enviro_officer_delegate { get; set; }
+        public Nullable<System.DateTime> can_enviro_officer_signature_date1 { get; set; }
         public string can_facilities_signature { get; set; }
         public string can_facilities_delegate { get; set; }
         public Nullable<System.DateTime> can_facilities_signature_date { get; set; }
@@ -80,5 +85,6 @@ namespace PermitToWork.Models
         public Nullable<System.DateTime> can_supervisor_signature_date { get; set; }
     
         public virtual permit_to_work permit_to_work { get; set; }
+        public virtual ICollection<excavation_disposal_location> excavation_disposal_location { get; set; }
     }
 }

@@ -62,18 +62,18 @@ namespace PermitToWork.Controllers
             ViewBag.position = "Edit";
             ViewBag.listUser = listUser;
 
-            var listSO = new List<SelectListItem>();
-            var listSOs = new MstSOEntity().getListMstSO(user, listUser);
-            foreach (MstSOEntity sect in listSOs)
+            var listEO = new List<SelectListItem>();
+            var listEOs = new MstEnviroOfficerEntity().getListEnviroOfficer(user, listUser);
+            foreach (MstEnviroOfficerEntity sect in listEOs)
             {
-                listSO.Add(new SelectListItem
+                listEO.Add(new SelectListItem
                 {
                     Text = sect.user.alpha_name,
                     Value = sect.user.id.ToString(),
-                    Selected = entity.safety_officer == sect.user.id.ToString() ? true : false
+                    Selected = entity.enviro_officer == sect.user.id.ToString() ? true : false
                 });
             }
-            ViewBag.listSO = listSO;
+            ViewBag.listEO = listEO;
 
             var listFAC = new List<SelectListItem>();
             var listFacilities = new MstFacilitiesEntity().getListFacilities(user, listUser);
@@ -122,11 +122,11 @@ namespace PermitToWork.Controllers
         {
             UserEntity user = Session["user"] as UserEntity;
             int retVal = 1;
-            if (ex.safety_officer != null)
-            {
-                int a = ex.assignSO(fullUrl(), user);
-                retVal = retVal & a;
-            }
+            //if (ex.safety_officer != null)
+            //{
+            //    int a = ex.assignSO(fullUrl(), user);
+            //    retVal = retVal & a;
+            //}
 
             if (ex.facilities != null)
             {
@@ -146,9 +146,9 @@ namespace PermitToWork.Controllers
         {
             UserEntity user = Session["user"] as UserEntity;
             int retVal = 1;
-            if (ex.safety_officer != null)
+            if (ex.enviro_officer != null)
             {
-                int a = ex.assignSO(fullUrl(), user);
+                int a = ex.assignEnviroOfficer(fullUrl(), user);
                 retVal = retVal & a;
             }
 
@@ -190,11 +190,11 @@ namespace PermitToWork.Controllers
             UserEntity user = Session["user"] as UserEntity;
             int retVal = 1;
 
-            if (ex.safety_officer != null)
-            {
-                int a = ex.assignSO(fullUrl(), user);
-                retVal = retVal & a;
-            }
+            //if (ex.safety_officer != null)
+            //{
+            //    int a = ex.assignSO(fullUrl(), user);
+            //    retVal = retVal & a;
+            //}
 
             if (ex.facilities != null)
             {
@@ -254,6 +254,58 @@ namespace PermitToWork.Controllers
 
             string fullUrl = "http://" + url + applicationPath;
             return fullUrl;
+        }
+
+        #endregion
+
+        # region Disposal Location
+
+        [HttpPost]
+        public JsonResult BindingDisposalLocation(int id_permit)
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            List<ExcavationDisposalEntity> result = new ExcavationDisposalEntity().getList(user, id_permit);
+            return Json(result);
+        }
+
+        [HttpPost]
+        public JsonResult Add(int id_permit, int id_disposal_location, double volume)
+        {
+            ExcavationDisposalEntity disposalLocation = new ExcavationDisposalEntity();
+            disposalLocation.id_permit = id_permit;
+            disposalLocation.id_disposal_location = id_disposal_location;
+            disposalLocation.volume = volume;
+            disposalLocation.add();
+            return Json(true);
+        }
+
+        [HttpPost]
+        public JsonResult Edit(int id_permit, int id_disposal_location, double volume)
+        {
+            ExcavationDisposalEntity disposalLocation = new ExcavationDisposalEntity();
+            disposalLocation.id_permit = id_permit;
+            disposalLocation.id_disposal_location = id_disposal_location;
+            disposalLocation.volume = volume;
+            disposalLocation.edit();
+            return Json(true);
+        }
+
+        [HttpPost]
+        public JsonResult Delete(int id_permit, int id_disposal_location, double volume)
+        {
+            ExcavationDisposalEntity disposalLocation = new ExcavationDisposalEntity();
+            disposalLocation.id_permit = id_permit;
+            disposalLocation.id_disposal_location = id_disposal_location;
+            disposalLocation.volume = volume;
+            disposalLocation.delete();
+            return Json(true);
+        }
+
+        public JsonResult ListingDisposalLocation()
+        {
+            UserEntity user = Session["user"] as UserEntity;
+            List<MstDisposalLocationEntity> result = new MstDisposalLocationEntity().getListDisposalLocation();
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         #endregion

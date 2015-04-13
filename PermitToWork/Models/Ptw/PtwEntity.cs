@@ -1887,6 +1887,11 @@ namespace PermitToWork.Models.Ptw
         {
             permit_to_work ptw = this.db.permit_to_work.Find(this.id);
 
+            if (ptw.id_parent_ptw != null)
+            {
+                ptw.id_parent_ptw = null;
+            }
+
             ptw.status = (int)statusPtw.CANCELLED;
             this.db.Entry(ptw).State = EntityState.Modified;
             this.db.SaveChanges();
