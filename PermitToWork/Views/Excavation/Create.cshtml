@@ -3,6 +3,14 @@
     bool[] isCanEdit = ViewBag.isCanEdit as bool[];
     PermitToWork.Models.User.UserEntity requestor = Session["user"] as PermitToWork.Models.User.UserEntity;
 }
+<script type="text/x-kendo-template" id="command-template">
+    <div class="row-command">
+        # if('@isCanEdit[3]' == 'True') { #
+        <a class="k-button k-button-icontext k-grid-edit" href="\#" title="Edit"><span class="k-icon k-edit"></span>Edit</a>
+        <a class="k-button k-button-icontext k-grid-delete" href="\#" title="Delete"><span class="k-icon k-delete"></span>Delete</a>
+        # } #
+    </div>
+</script>
 <script>
     $(document).ready(function () {
         // addHandlerMenu();
@@ -459,7 +467,7 @@
                 { field: "DisposalLocation", title: "Disposal Location", editor: appliedEditor, template: "#=DisposalLocation#" },
                 { field: "volume", title: "Estimated Volume (m3)", type: "number", width: 250 },
                 {
-                    command: ["edit", "destroy"], title: "Command", width: "200px"
+                    template: kendo.template($("#command-template").html()), title: "Command", width: "200px"
                 },
             ],
             editable: "inline"
@@ -1199,7 +1207,7 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th colspan="5" class="title-form">
+                    <th colspan="5" class="title-form approval-title-form">
                         <b>4. CANCELLATION</b>
                     </th>
                 </tr>
@@ -1230,12 +1238,12 @@
                         <img id="img_approve_fac_can" width="50" height="50" @(Model.can_facilities_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_facilities_signature == null ? "" : Model.can_facilities_signature.Substring(1))"/><br />
                         }
                     </td>
-                    @*<td class="td-centre">
-                        @if (Model.can_safety_officer_signature != null)
+                    <td class="td-centre disposal-location">
+                        @if (Model.can_enviro_officer_signature != null)
                         {
-                        <img id="img_approve_she_can" width="50" height="50" @(Model.can_safety_officer_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_safety_officer_signature == null ? "" : Model.can_safety_officer_signature.Substring(1))"/><br />
+                        <img id="img_approve_she_can" width="50" height="50" @(Model.can_enviro_officer_signature == null ? "style=display:none;" : "style=display:inline-block;")  src="@(Model.can_enviro_officer_signature == null ? "" : Model.can_enviro_officer_signature.Substring(1))"/><br />
                         }
-                    </td>*@
+                    </td>
                     <td class="td-centre">
                         @if (Model.can_facility_owner_signature != null)
                         {
@@ -1293,18 +1301,18 @@
                         @(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIES.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITIES.ToString()].alpha_name : "")
                         <br /><b>Civil</b>
                     </td>
-                    @*<td class="td-centre">
-                        @if ((Model.can_safety_officer_signature == null && isCanEdit[13] && requestor.id != Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SAFETYOFFICER.ToString()].id))
+                    <td class="td-centre disposal-location">
+                        @if ((Model.can_enviro_officer_signature == null && isCanEdit[13] && requestor.id != Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.ENVIROOFFICER.ToString()].id))
                         {
                             <text>@requestor.alpha_name<br />a/n </text>
                         }
-                        else if ((Model.can_safety_officer_signature != null && Model.can_safety_officer_signature.Substring(0, 1) == "d"))
+                        else if ((Model.can_enviro_officer_signature != null && Model.can_enviro_officer_signature.Substring(0, 1) == "d"))
                         {
-                            <text>@Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.CANSAFETYOFFICERDELEGATE.ToString()].alpha_name<br />a/n </text>
+                            <text>@Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.CANENVIROOFFICERDELEGATE.ToString()].alpha_name<br />a/n </text>
                         }
-                        @(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SAFETYOFFICER.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.SAFETYOFFICER.ToString()].alpha_name : "")
-                        <br /><b>SHE</b>
-                    </td>*@
+                        @(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.ENVIROOFFICER.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.ENVIROOFFICER.ToString()].alpha_name : "")
+                        <br /><b>Environmental Officer</b>
+                    </td>
                     <td class="td-centre">
                         @if ((Model.can_facility_owner_signature == null && isCanEdit[14] && requestor.id != Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.FACILITYOWNER.ToString()].id))
                         {

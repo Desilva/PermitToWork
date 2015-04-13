@@ -23,6 +23,12 @@
     </div>
 </div>
 <script>
+    filterInt = function (value) {
+        if (/^(\-|\+)?([0-9]+|Infinity)$/.test(value))
+            return Number(value);
+        return NaN;
+    }
+
     $(document).ready(function () {
         var crudServiceBaseUrl = "Home",
             dataSourceIn = new kendo.data.DataSource({
@@ -89,7 +95,21 @@
                         id: "id",
                         fields: {
                             id: { type: "number", editable: false },
-                            user: { },
+                            user: {
+                                validation: {
+                                    required: true,
+                                    uservalidation: function (input) {
+                                        console.log(input.val());
+                                        if (input.is("[data-bind='value:user']") && input.val() != "") {
+                                            console.log(input);
+                                            input.attr("data-uservalidation-msg", "Employee not found.");
+                                            return !isNaN(filterInt(input.val()));
+                                        }
+
+                                        return true;
+                                    }
+                                }
+                            },
                         }
                     }
                 },
@@ -107,7 +127,12 @@
                     field: "user", title: "Environmental Officer", editor: userEditor, template: "#=getName(user)#",
                     filterable: {
                         extra: false,
-                        field: "user.alpha_name"
+                        field: "user.alpha_name",
+                        operators: {
+                            string: {
+                                contains: "contains"
+                            }
+                        }
                     },
                     sortable: {
                         compare: function (a, b) {
@@ -139,7 +164,7 @@
         });
 
         function userEditor(container, options) {
-            $('<input data-text-field="alpha_name" data-value-field="id" data-bind="value:' + options.field + '"/>')
+            $('<input data-text-field="alpha_name" name="user" data-value-field="id" data-bind="value:' + options.field + '"/>')
                 .appendTo(container)
                 .kendoComboBox({
                     autoBind: true,
@@ -151,7 +176,8 @@
                     },
                     optionLabel: "--Select One--",
                 });
-            }
+            $('<span class="k-invalid-msg" data-for="user"></span>').appendTo(container);
+        }
     });
 
     function getName(user) {
