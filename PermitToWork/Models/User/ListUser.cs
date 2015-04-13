@@ -41,7 +41,8 @@ namespace PermitToWork.Models.User
                 HttpContext.Current.Session["listUser"] = listUser.OrderBy(p => p.alpha_name).ToList();
                 HttpContext.Current.Session["listUserLastUpdate"] = DateTime.Now;
             } else {
-                this.listUser = HttpContext.Current.Session["listUser"] as List<UserEntity>;
+                //this.listUser = ((ListUser)HttpContext.Current.Session["listUser"]).listUser;
+                this.listUser = (List<UserEntity>)HttpContext.Current.Session["listUser"];
                 HttpContext.Current.Session["listUserLastUpdate"] = lastUpdate;
             }
             

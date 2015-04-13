@@ -118,6 +118,7 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controllers\KPIController.cs" />
     <Compile Include="Controllers\CsepController.cs" />
     <Compile Include="Controllers\ExcavationController.cs" />
     <Compile Include="Controllers\FiController.cs" />
@@ -356,6 +357,9 @@
       <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Models\KPI\KPIResult.cs" />
+    <Compile Include="Models\KPI\KPIModel.cs" />
+    <Compile Include="Models\KPI\KPIFormStub.cs" />
     <Compile Include="Models\Log\LogEntity.cs" />
     <Compile Include="Models\long_term_actions.cs">
       <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
@@ -895,8 +899,6 @@
     <Content Include="Img\close.png" />
     <Content Include="Img\coloricons-sprite.png" />
     <Content Include="Img\warning.gif" />
-    <Content Include="Log\penting.log" />
-    <Content Include="Log\penting20131216.log" />
     <Content Include="Log\penting20131218.log" />
     <Content Include="Content\template\scaffolding_inspection.xls" />
     <Content Include="packages.config" />
@@ -1060,6 +1062,7 @@
     <Content Include="Scripts\jquery.wizard.js" />
     <Content Include="Scripts\kendo.all.min.js" />
     <Content Include="Scripts\kendo.web.min.js" />
+    <Content Include="Scripts\lib\jquery.kpi-widget.js" />
     <Content Include="Scripts\lib\jquery.workflow-diagram.js" />
     <Content Include="Scripts\modernizr-2.5.3.js" />
     <Content Include="Scripts\select2.js" />
@@ -1192,6 +1195,7 @@
     <Content Include="Views\Workflow\LOTO.cshtml" />
     <Content Include="Views\Workflow\WorkingAtHeight.cshtml" />
     <Content Include="Views\MasterDisposalLocation\Index.cshtml" />
+    <Content Include="Views\KPI\Index.cshtml" />
     <Content Include="Views\MasterEnviroOfficer\Index.cshtml" />
     <None Include="Views\Excavation\Create.cshtml.bak" />
   </ItemGroup>

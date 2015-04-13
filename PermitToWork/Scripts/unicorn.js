@@ -3,7 +3,6 @@
  * Diablo9983 -> diablo9983@gmail.com
 **/
 $(document).ready(function(){
-
     addHandlerMenu();
 	
 	// === Sidebar navigation === //
@@ -203,11 +202,17 @@ function addHandlerMenu() {
         $('#content').load('WorkingHeight/ScaffoldingInspection');
         setActiveMenu('submenu-ptw')
     });
+
+    //$('#kpi-menu').click(function () {
+    //    $('#content').load($(this).data('url'));
+    //    setActiveMenu('kpi-menu');
+    //});
 }
 
 function setActiveMenu(id) {
     $('#submenu-ptw').removeClass('active');
     $('#home').removeClass('active');
+    $('#kpi-menu').removeClass('active');
     $('#loto-point').removeClass('active');
     $('#delegate-fo').removeClass('active');
     $('#master-data').removeClass('active');
