@@ -44,11 +44,6 @@
         <AssociationConnector Association="star_energy_ptwModel.FK_mst_delegate_fo_mst_facility_owner" />
         <EntityTypeShape EntityType="star_energy_ptwModel.loto_suspension" Width="1.5" PointX="1.5965414427204716" PointY="4.489267425839448" />
         <AssociationConnector Association="star_energy_ptwModel.FK_Table_1_loto_suspension" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.loto_permit" Width="1.5" PointX="9.2154654139724865" PointY="19.482919672263282" />
-        <AssociationConnector Association="star_energy_ptwModel.FK_loto_coming_holder_loto_permit" />
-        <AssociationConnector Association="star_energy_ptwModel.FK_loto_permit_loto_glarf" />
-        <AssociationConnector Association="star_energy_ptwModel.FK_loto_point_loto_permit" />
-        <AssociationConnector Association="star_energy_ptwModel.FK_loto_suspension_loto_permit" />
         <EntityTypeShape EntityType="star_energy_ptwModel.working_height" Width="1.5" PointX="6.0674158400238571" PointY="15.012423790531431" />
         <EntityTypeShape EntityType="star_energy_ptwModel.mst_ex_disposal_location" Width="1.5" PointX="0.75" PointY="0.75" />
         <EntityTypeShape EntityType="star_energy_ptwModel.mst_enviro_officer" Width="1.5" PointX="4.375" PointY="3.75" />
@@ -56,13 +51,15 @@
         <EntityTypeShape EntityType="star_energy_ptwModel.excavation_disposal_location" Width="1.5" PointX="13.875" PointY="34.875" />
         <AssociationConnector Association="star_energy_ptwModel.FK_excavation_disposal_location_excavation" />
         <AssociationConnector Association="star_energy_ptwModel.FK_excavation_disposal_location_mst_ex_disposal_location" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.permit_to_work" Width="1.5" PointX="14.375" PointY="9.625" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.loto_permit_to_work" Width="1.5" PointX="16.625" PointY="19.125" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.permit_to_work" Width="1.5" PointX="14.375" PointY="4.375" />
         <AssociationConnector Association="star_energy_ptwModel.FK_confined_space_permit_to_work" />
         <AssociationConnector Association="star_energy_ptwModel.FK_excavation_permit_to_work" />
         <AssociationConnector Association="star_energy_ptwModel.FK_fire_impairment_permit_to_work" />
         <AssociationConnector Association="star_energy_ptwModel.FK_hira_document_permit_to_work" />
         <AssociationConnector Association="star_energy_ptwModel.FK_hot_work_permit_to_work" />
         <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_loto_permit" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_loto_permit_to_work_permit_to_work" />
         <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_mst_department" />
         <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_mst_ptw_holder_no" />
         <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_mst_section" />
@@ -70,7 +67,12 @@
         <AssociationConnector Association="star_energy_ptwModel.FK_radiography_permit_to_work" />
         <AssociationConnector Association="star_energy_ptwModel.FK_safety_briefing_permit_to_work" />
         <AssociationConnector Association="star_energy_ptwModel.FK_working_height_permit_to_work" />
-        <AssociationConnector Association="star_energy_ptwModel.loto_permit_to_work" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.loto_permit" Width="1.5" PointX="6.875" PointY="48.625" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_loto_coming_holder_loto_permit" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_loto_permit_loto_glarf" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_loto_permit_to_work_loto_permit" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_loto_point_loto_permit" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_loto_suspension_loto_permit" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

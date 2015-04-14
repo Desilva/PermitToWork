@@ -767,14 +767,6 @@ namespace PermitToWork.Controllers
             return Json(result,JsonRequestBehavior.AllowGet);
         }
 
-        [HttpPost]
-        public JsonResult BindingListLoto()
-        {
-            UserEntity userLogin = Session["user"] as UserEntity;
-            List<LotoEntity> listLoto = new LotoEntity().listLoto(userLogin);
-            return Json(listLoto);
-        }
-
         #region extends PTW
 
         [HttpPost]
@@ -875,105 +867,105 @@ namespace PermitToWork.Controllers
         #region setSupervisor
 
         // url to set who is the supervisor
-        public ActionResult SetSupervisor(string a, string b, string c)
-        {
-            UserEntity userLogin = Session["user"] as UserEntity;
-            string salt = "susahbangetmencarisaltyangpalingbaikdanbenar";
-            string val = "emailsupervisor";
+        //public ActionResult SetSupervisor(string a, string b, string c)
+        //{
+        //    UserEntity userLogin = Session["user"] as UserEntity;
+        //    string salt = "susahbangetmencarisaltyangpalingbaikdanbenar";
+        //    string val = "emailsupervisor";
 
-            string countSeal = Base64.MD5Seal(a + salt + val);
+        //    string countSeal = Base64.MD5Seal(a + salt + val);
 
-            if (countSeal == b)
-            {
-                string decodeElement = Base64.Base64Decode(c);
+        //    if (countSeal == b)
+        //    {
+        //        string decodeElement = Base64.Base64Decode(c);
 
-                if (decodeElement.Contains(salt) && decodeElement.Contains(val))
-                {
-                    decodeElement = decodeElement.Replace(salt, "#");
-                    decodeElement = decodeElement.Replace(val, "#");
+        //        if (decodeElement.Contains(salt) && decodeElement.Contains(val))
+        //        {
+        //            decodeElement = decodeElement.Replace(salt, "#");
+        //            decodeElement = decodeElement.Replace(val, "#");
 
-                    string[] s = decodeElement.Split('#');
+        //            string[] s = decodeElement.Split('#');
 
-                    int user_id = Int32.Parse(s[1]);
-                    int ptw_id = Int32.Parse(s[2]);
+        //            int user_id = Int32.Parse(s[1]);
+        //            int ptw_id = Int32.Parse(s[2]);
 
-                    PtwEntity ptw = new PtwEntity(ptw_id, userLogin);
-                    UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
+        //            PtwEntity ptw = new PtwEntity(ptw_id, userLogin);
+        //            UserEntity user = new UserEntity(user_id, userLogin.token, userLogin);
 
-                    if (ptw.acc_supervisor == null)
-                    {
-                        ptw.assignSupervisor(user);
-                        if (ptw.hw_id != null)
-                        {
-                            HwEntity hw = new HwEntity(ptw.hw_id.Value);
-                            if (hw.acc_supervisor == null)
-                                hw.assignSupervisor(user);
-                        }
+        //            if (ptw.acc_supervisor == null)
+        //            {
+        //                ptw.assignSupervisor(user);
+        //                if (ptw.hw_id != null)
+        //                {
+        //                    HwEntity hw = new HwEntity(ptw.hw_id.Value);
+        //                    if (hw.acc_supervisor == null)
+        //                        hw.assignSupervisor(user);
+        //                }
 
-                        if (ptw.fi_id != null)
-                        {
-                            FIEntity fi = new FIEntity(ptw.fi_id.Value, user);
-                            if (fi.spv == null)
-                                fi.assignSupervisor(user);
-                        }
+        //                if (ptw.fi_id != null)
+        //                {
+        //                    FIEntity fi = new FIEntity(ptw.fi_id.Value, user);
+        //                    if (fi.spv == null)
+        //                        fi.assignSupervisor(user);
+        //                }
 
-                        if (ptw.rad_id != null)
-                        {
-                            RadEntity radiography = new RadEntity(ptw.rad_id.Value, user);
-                            if (radiography.supervisor == null)
-                                radiography.assignSupervisor(user);
-                        }
+        //                if (ptw.rad_id != null)
+        //                {
+        //                    RadEntity radiography = new RadEntity(ptw.rad_id.Value, user);
+        //                    if (radiography.supervisor == null)
+        //                        radiography.assignSupervisor(user);
+        //                }
 
-                        if (ptw.wh_id != null)
-                        {
-                            WorkingHeightEntity wh = new WorkingHeightEntity(ptw.wh_id.Value, user);
-                            if (wh.supervisor == null)
-                                wh.assignSupervisor(user);
-                        }
+        //                if (ptw.wh_id != null)
+        //                {
+        //                    WorkingHeightEntity wh = new WorkingHeightEntity(ptw.wh_id.Value, user);
+        //                    if (wh.supervisor == null)
+        //                        wh.assignSupervisor(user);
+        //                }
 
-                        if (ptw.ex_id != null)
-                        {
-                            ExcavationEntity ex = new ExcavationEntity(ptw.ex_id.Value, user);
-                            if (ex.supervisor == null)
-                                ex.assignSpv(fullUrl(),user);
-                        }
+        //                if (ptw.ex_id != null)
+        //                {
+        //                    ExcavationEntity ex = new ExcavationEntity(ptw.ex_id.Value, user);
+        //                    if (ex.supervisor == null)
+        //                        ex.assignSpv(fullUrl(),user);
+        //                }
 
-                        if (ptw.csep_id != null)
-                        {
-                            CsepEntity csep = new CsepEntity(ptw.csep_id.Value, user);
-                            if (csep.acc_supervisor == null)
-                                csep.assignSupervisor(user);
-                        }
+        //                if (ptw.csep_id != null)
+        //                {
+        //                    CsepEntity csep = new CsepEntity(ptw.csep_id.Value, user);
+        //                    if (csep.acc_supervisor == null)
+        //                        csep.assignSupervisor(user);
+        //                }
 
-                        if (ptw.loto_id != null)
-                        {
-                            LotoGlarfEntity loto = new LotoGlarfEntity(ptw.loto_id.Value, user);
-                            if (loto.supervisor == null)
-                                loto.assignSupervisor(user);
-                        }
+        //                if (ptw.loto_id != null)
+        //                {
+        //                    LotoGlarfEntity loto = new LotoGlarfEntity(ptw.loto_id.Value, user, listUser);
+        //                    if (loto.supervisor == null)
+        //                        loto.assignSupervisor(user);
+        //                }
 
-                        if (ptw.id_safety_briefing != null)
-                        {
-                            SafetyBriefingEntity sb = new SafetyBriefingEntity(ptw.id_safety_briefing.Value, userLogin);
-                            sb.assignSupervisor(user);
-                        }
-                        return RedirectToAction("Index", "Home", new { p = Url.Action("Edit", "Ptw", new { id = ptw.id }) });
-                    }
-                    else
-                    {
-                        return RedirectToAction("Index", "Home", new { e = "401" });
-                    }
-                }
-                else
-                {
-                    return RedirectToAction("Index", "Home", new { e = "404" });
-                }
-            }
-            else
-            {
-                return RedirectToAction("Index", "Home", new { e = "404" });
-            }
-        }
+        //                if (ptw.id_safety_briefing != null)
+        //                {
+        //                    SafetyBriefingEntity sb = new SafetyBriefingEntity(ptw.id_safety_briefing.Value, userLogin);
+        //                    sb.assignSupervisor(user);
+        //                }
+        //                return RedirectToAction("Index", "Home", new { p = Url.Action("Edit", "Ptw", new { id = ptw.id }) });
+        //            }
+        //            else
+        //            {
+        //                return RedirectToAction("Index", "Home", new { e = "401" });
+        //            }
+        //        }
+        //        else
+        //        {
+        //            return RedirectToAction("Index", "Home", new { e = "404" });
+        //        }
+        //    }
+        //    else
+        //    {
+        //        return RedirectToAction("Index", "Home", new { e = "404" });
+        //    }
+        //}
 
         // url to set who is the supervisor
         public ActionResult SetFacilityOwner(string a, string b, string c)
@@ -1152,7 +1144,7 @@ namespace PermitToWork.Controllers
             glarf.assignLotoForm(loto.id, loto.loto_no);
             loto.addNewHolder(userLogin.id.ToString(), ptw.acc_supervisor, 0);
 
-            List<LotoGlarfEntity> listGlarf = new LotoGlarfEntity().listLotoGlarfWithSameLotoPermit(prevLoto.id, userLogin);
+            List<LotoGlarfEntity> listGlarf = new LotoGlarfEntity().listLotoGlarfWithSameLotoPermit(prevLoto.id, userLogin, listUser);
             foreach (LotoGlarfEntity gl in listGlarf)
             {
                 gl.assignLotoForm(loto.id, loto.loto_no);

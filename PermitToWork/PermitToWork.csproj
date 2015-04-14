@@ -378,6 +378,9 @@
     <Compile Include="Models\loto_permit.cs">
       <DependentUpon>StarEnergyPTW.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\loto_permit_to_work.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\loto_point.cs">
       <DependentUpon>StarEnergyPTW.tt</DependentUpon>
     </Compile>

@@ -1203,7 +1203,7 @@
                     $('#loading').hide();
                     if (resp.status == "200") {
                         alert('Save success. Facility Owner has been informed to choose agreed LOTO Point Position & apply it.');
-                        $('#content').load('@Url.Action("Edit", "Loto")');
+                        $('#content').load('@Url.Action("Edit", "Loto")/' + values.id);
                     }
                 });
             }
@@ -1224,7 +1224,7 @@
                 $('#loading').hide();
                 if (resp.status == "200") {
                     alert('Save success. Requestor has been informed to inspect and verify applied LOTO Point Position.');
-                    $('#content').load('@Url.Action("Edit", "Loto")/' + values.id);
+                    $('#content').load('@Url.Action("Edit", "Loto", new { area = "" })');
                 }
             });
         });
@@ -1239,7 +1239,7 @@
                 $('#loading').hide();
                 if (resp.status == "200") {
                     alert('Save success. Supervisor has been informed to approve.');
-                    $('#content').load('@Url.Action("Edit", "Loto")/' + values.id);
+                    $('#content').load('@Url.Action("Edit", "Loto")');
                 }
             });
         });
@@ -1249,6 +1249,7 @@
                 id: '@Model.id',
                 who: $(this).data('who'),
                 approval_notes: $('#approval-notes').val(),
+                id_loto: $('#id_loto').val(),
             }
 
             $('#loading').show();
@@ -1256,7 +1257,7 @@
                 $('#loading').hide();
                 if (resp.status == "200") {
                     alert('LOTO Permit is approved.');
-                    $('#content').load('@Url.Action("Edit", "Loto")/' + values.id);
+                    $('#content').load('@Url.Action("Edit", "Loto")');
                 }
             });
         });
@@ -1265,6 +1266,7 @@
             var values = {
                 id: '@Model.id',
                 approval_notes: $('#approval-notes').val(),
+                id_loto: $('#id_loto').val(),
             }
 
             $('#loading').show();
@@ -1272,7 +1274,7 @@
                 $('#loading').hide();
                 if (resp.status == "200") {
                     alert('LOTO Permit is approved.');
-                    $('#content').load('@Url.Action("Edit", "Loto")/' + values.id);
+                    $('#content').load('@Url.Action("Edit", "Loto", new { area = "" })/' + values.id);
                 }
             });
         });
@@ -1285,7 +1287,7 @@
             $.post('@Url.Action("requestLotoChange", "Loto")', values, function (resp) {
                 if (resp.status == "200") {
                     alert('LOTO Permit is requested for changing.');
-                    $('#content').load('@Url.Action("Edit", "Loto")/' + values.id);
+                    $('#content').load('@Url.Action("Edit", "Loto", new { area = "" })/' + values.id);
                 }
             });
         });
@@ -1300,7 +1302,7 @@
                 $('#loading').hide();
                 if (resp.status == "200") {
                     alert('LOTO Permit is approved.');
-                    $('#content').load('@Url.Action("Edit", "Loto")/' + values.id);
+                    $('#content').load('@Url.Action("Edit", "Loto", new { area = "" })/' + values.id);
                 }
             });
         });
@@ -1315,7 +1317,7 @@
                 $('#loading').hide();
                 if (resp.status == "200") {
                     alert('Save success. Requestor and others Permit Holder has been informed to inspect and verify applied LOTO Point Position.');
-                    $('#content').load('@Url.Action("Edit", "Loto")/' + values.id);
+                    $('#content').load('@Url.Action("Edit", "Loto", new { area = "" })/' + values.id);
                 }
             });
         });
@@ -1332,7 +1334,7 @@
                 $('#loading').hide();
                 if (resp.status == "200") {
                     alert('LOTO Permit is approved.');
-                    $('#content').load('@Url.Action("Edit", "Loto")/' + values.id);
+                    $('#content').load('@Url.Action("Edit", "Loto", new { area = "" })/' + values.id);
                 }
             });
         });

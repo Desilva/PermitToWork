@@ -17,9 +17,9 @@ namespace PermitToWork.Models
         public loto_permit()
         {
             this.loto_coming_holder = new HashSet<loto_coming_holder>();
+            this.loto_permit_to_work = new HashSet<loto_permit_to_work>();
             this.loto_point = new HashSet<loto_point>();
             this.loto_suspension = new HashSet<loto_suspension>();
-            this.permit_to_work = new HashSet<permit_to_work>();
         }
     
         public int id { get; set; }
@@ -100,8 +100,8 @@ namespace PermitToWork.Models
     
         public virtual ICollection<loto_coming_holder> loto_coming_holder { get; set; }
         public virtual loto_glarf loto_glarf { get; set; }
+        public virtual ICollection<loto_permit_to_work> loto_permit_to_work { get; set; }
         public virtual ICollection<loto_point> loto_point { get; set; }
         public virtual ICollection<loto_suspension> loto_suspension { get; set; }
-        public virtual ICollection<permit_to_work> permit_to_work { get; set; }
     }
 }

@@ -37,7 +37,7 @@ namespace PermitToWork.Utilities
                 System.Net.NetworkCredential nc = new System.Net.NetworkCredential(ConfigurationManager.AppSettings["smtpuser"], ConfigurationManager.AppSettings["smtppassword"]);
                 smtp.Credentials = (System.Net.ICredentialsByHost)nc.GetCredential(ConfigurationManager.AppSettings["smtp"], Int32.Parse(ConfigurationManager.AppSettings["smtpport"]), "Basic");
                 smtp.Port = Int32.Parse(ConfigurationManager.AppSettings["smtpport"]);
-#if DEBUG
+#if !DEBUG
                 smtp.EnableSsl = true;
 #endif
                 try

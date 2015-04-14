@@ -597,6 +597,7 @@
           </Key>
           <Property Name="id_loto" Type="int" Nullable="false" />
           <Property Name="id_permit" Type="int" Nullable="false" />
+          <Property Name="holder_no" Type="int" />
         </EntityType>
         <EntityType Name="loto_point">
           <Key>
@@ -1827,23 +1828,6 @@
             <End Role="loto_suspension" EntitySet="loto_suspension" />
             <End Role="loto_suspension_holder" EntitySet="loto_suspension_holder" />
           </AssociationSet>
-          <EntitySet Name="loto_permit" EntityType="star_energy_ptwModel.loto_permit" />
-          <AssociationSet Name="FK_loto_coming_holder_loto_permit" Association="star_energy_ptwModel.FK_loto_coming_holder_loto_permit">
-            <End Role="loto_permit" EntitySet="loto_permit" />
-            <End Role="loto_coming_holder" EntitySet="loto_coming_holder" />
-          </AssociationSet>
-          <AssociationSet Name="FK_loto_permit_loto_glarf" Association="star_energy_ptwModel.FK_loto_permit_loto_glarf">
-            <End Role="loto_glarf" EntitySet="loto_glarf" />
-            <End Role="loto_permit" EntitySet="loto_permit" />
-          </AssociationSet>
-          <AssociationSet Name="FK_loto_point_loto_permit" Association="star_energy_ptwModel.FK_loto_point_loto_permit">
-            <End Role="loto_permit" EntitySet="loto_permit" />
-            <End Role="loto_point" EntitySet="loto_point" />
-          </AssociationSet>
-          <AssociationSet Name="FK_loto_suspension_loto_permit" Association="star_energy_ptwModel.FK_loto_suspension_loto_permit">
-            <End Role="loto_permit" EntitySet="loto_permit" />
-            <End Role="loto_suspension" EntitySet="loto_suspension" />
-          </AssociationSet>
           <EntitySet Name="working_height" EntityType="star_energy_ptwModel.working_height" />
           <EntitySet Name="mst_ex_disposal_location" EntityType="star_energy_ptwModel.mst_ex_disposal_location" />
           <EntitySet Name="mst_enviro_officer" EntityType="star_energy_ptwModel.mst_enviro_officer" />
@@ -1857,6 +1841,7 @@
             <End Role="mst_ex_disposal_location" EntitySet="mst_ex_disposal_location" />
             <End Role="excavation_disposal_location" EntitySet="excavation_disposal_location" />
           </AssociationSet>
+          <EntitySet Name="loto_permit_to_work" EntityType="star_energy_ptwModel.loto_permit_to_work" />
           <EntitySet Name="permit_to_work" EntityType="star_energy_ptwModel.permit_to_work" />
           <AssociationSet Name="FK_confined_space_permit_to_work" Association="star_energy_ptwModel.FK_confined_space_permit_to_work">
             <End Role="permit_to_work" EntitySet="permit_to_work" />
@@ -1881,6 +1866,10 @@
           <AssociationSet Name="FK_permit_to_work_loto_permit" Association="star_energy_ptwModel.FK_permit_to_work_loto_permit">
             <End Role="loto_glarf" EntitySet="loto_glarf" />
             <End Role="permit_to_work" EntitySet="permit_to_work" />
+          </AssociationSet>
+          <AssociationSet Name="FK_loto_permit_to_work_permit_to_work" Association="star_energy_ptwModel.FK_loto_permit_to_work_permit_to_work">
+            <End Role="permit_to_work" EntitySet="permit_to_work" />
+            <End Role="loto_permit_to_work" EntitySet="loto_permit_to_work" />
           </AssociationSet>
           <AssociationSet Name="FK_permit_to_work_mst_department" Association="star_energy_ptwModel.FK_permit_to_work_mst_department">
             <End Role="mst_department" EntitySet="mst_department" />
@@ -1910,9 +1899,26 @@
             <End Role="permit_to_work" EntitySet="permit_to_work" />
             <End Role="working_height" EntitySet="working_height" />
           </AssociationSet>
-          <AssociationSet Name="loto_permit_to_work" Association="star_energy_ptwModel.loto_permit_to_work">
+          <EntitySet Name="loto_permit" EntityType="star_energy_ptwModel.loto_permit" />
+          <AssociationSet Name="FK_loto_coming_holder_loto_permit" Association="star_energy_ptwModel.FK_loto_coming_holder_loto_permit">
             <End Role="loto_permit" EntitySet="loto_permit" />
-            <End Role="permit_to_work" EntitySet="permit_to_work" />
+            <End Role="loto_coming_holder" EntitySet="loto_coming_holder" />
+          </AssociationSet>
+          <AssociationSet Name="FK_loto_permit_loto_glarf" Association="star_energy_ptwModel.FK_loto_permit_loto_glarf">
+            <End Role="loto_glarf" EntitySet="loto_glarf" />
+            <End Role="loto_permit" EntitySet="loto_permit" />
+          </AssociationSet>
+          <AssociationSet Name="FK_loto_permit_to_work_loto_permit" Association="star_energy_ptwModel.FK_loto_permit_to_work_loto_permit">
+            <End Role="loto_permit" EntitySet="loto_permit" />
+            <End Role="loto_permit_to_work" EntitySet="loto_permit_to_work" />
+          </AssociationSet>
+          <AssociationSet Name="FK_loto_point_loto_permit" Association="star_energy_ptwModel.FK_loto_point_loto_permit">
+            <End Role="loto_permit" EntitySet="loto_permit" />
+            <End Role="loto_point" EntitySet="loto_point" />
+          </AssociationSet>
+          <AssociationSet Name="FK_loto_suspension_loto_permit" Association="star_energy_ptwModel.FK_loto_suspension_loto_permit">
+            <End Role="loto_permit" EntitySet="loto_permit" />
+            <End Role="loto_suspension" EntitySet="loto_suspension" />
           </AssociationSet>
           </EntityContainer>
         <EntityType Name="confined_space">
@@ -2307,8 +2313,8 @@
           <Property Type="String" Name="loto_no" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Type="Int32" Name="status" />
           <NavigationProperty Name="loto_glarf_user" Relationship="star_energy_ptwModel.FK_loto_glarf_user_loto_glarf" FromRole="loto_glarf" ToRole="loto_glarf_user" />
-          <NavigationProperty Name="loto_permit" Relationship="star_energy_ptwModel.FK_loto_permit_loto_glarf" FromRole="loto_glarf" ToRole="loto_permit" />
           <NavigationProperty Name="permit_to_work" Relationship="star_energy_ptwModel.FK_permit_to_work_loto_permit" FromRole="loto_glarf" ToRole="permit_to_work" />
+          <NavigationProperty Name="loto_permit" Relationship="star_energy_ptwModel.FK_loto_permit_loto_glarf" FromRole="loto_glarf" ToRole="loto_permit" />
         </EntityType>
         <EntityType Name="loto_glarf_user">
           <Key>
@@ -2959,145 +2965,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityType Name="loto_permit">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Type="Int32" Name="id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Type="Int32" Name="id_glarf" />
-          <Property Type="String" Name="loto_no" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="requestor" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="supervisor" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="work_location" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="lock_box_no" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="Int32" Name="initial_pad_lock" />
-          <Property Type="Int32" Name="qty_pad_lock_usage" />
-          <Property Type="Int32" Name="balance" />
-          <Property Type="DateTime" Name="approval_date" Precision="3" />
-          <Property Type="String" Name="approval_facility_owner" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="approval_supervisor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="approval_supervisor_signature_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="approval_supervisor_signature_date" Precision="3" />
-          <Property Type="String" Name="approval_fo_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="approval_fo_signature_date" Precision="3" />
-          <Property Type="String" Name="approval_fo_signature_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="oncoming_holder_1" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="oncoming_holder_2" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="oncoming_holder_3" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="oncoming_holder_4" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="oncoming_holder_5" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="oncoming_holder_6" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="oncoming_holder_7" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="approval_holder_1_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="approval_holder_2_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="approval_holder_3_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="approval_holder_4_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="approval_holder_5_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="approval_holder_6_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="approval_holder_7_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="approval_holder_1_datetime" Precision="3" />
-          <Property Type="DateTime" Name="approval_holder_2_datetime" Precision="3" />
-          <Property Type="DateTime" Name="approval_holder_3_datetime" Precision="3" />
-          <Property Type="DateTime" Name="approval_holder_4_datetime" Precision="3" />
-          <Property Type="DateTime" Name="approval_holder_5_datetime" Precision="3" />
-          <Property Type="DateTime" Name="approval_holder_6_datetime" Precision="3" />
-          <Property Type="DateTime" Name="approval_holder_7_datetime" Precision="3" />
-          <Property Type="String" Name="approval_notes" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Type="Int32" Name="status" />
-          <Property Type="String" Name="new_coming_holder" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="Byte" Name="requestor_ok" />
-          <Property Type="Byte" Name="holder_2_ok" />
-          <Property Type="Byte" Name="holder_3_ok" />
-          <Property Type="Byte" Name="holder_4_ok" />
-          <Property Type="Byte" Name="holder_5_ok" />
-          <Property Type="Byte" Name="holder_6_ok" />
-          <Property Type="Byte" Name="holder_7_ok" />
-          <Property Type="String" Name="cancellation_supervisor_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="cancellation_supervisor_signature_date" Precision="3" />
-          <Property Type="String" Name="cancellation_holder_2_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="cancellation_holder_2_signature_date" Precision="3" />
-          <Property Type="String" Name="cancellation_holder_3_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="cancellation_holder_3_signature_date" Precision="3" />
-          <Property Type="String" Name="cancellation_holder_4_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="cancellation_holder_4_signature_date" Precision="3" />
-          <Property Type="String" Name="cancellation_holder_5_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="cancellation_holder_5_signature_date" Precision="3" />
-          <Property Type="String" Name="cancellation_holder_6_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="cancellation_holder_6_signature_date" Precision="3" />
-          <Property Type="String" Name="cancellation_holder_7_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="cancellation_holder_7_signature_date" Precision="3" />
-          <Property Type="String" Name="cancellation_fo_signature" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Type="DateTime" Name="cancellation_fo_signature_date" Precision="3" />
-          <Property Type="String" Name="cancellation_fo_signature_delegate" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="cancellation_notes" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Type="String" Name="cancellation_facility_owner" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Type="Int32" Name="holder_1_glarf" />
-          <Property Type="Int32" Name="holder_2_glarf" />
-          <Property Type="Int32" Name="holder_3_glarf" />
-          <Property Type="Int32" Name="holder_4_glarf" />
-          <Property Type="Int32" Name="holder_5_glarf" />
-          <Property Type="Int32" Name="holder_6_glarf" />
-          <Property Type="Int32" Name="holder_7_glarf" />
-          <NavigationProperty Name="loto_coming_holder" Relationship="star_energy_ptwModel.FK_loto_coming_holder_loto_permit" FromRole="loto_permit" ToRole="loto_coming_holder" />
-          <NavigationProperty Name="loto_glarf" Relationship="star_energy_ptwModel.FK_loto_permit_loto_glarf" FromRole="loto_permit" ToRole="loto_glarf" />
-          <NavigationProperty Name="loto_point" Relationship="star_energy_ptwModel.FK_loto_point_loto_permit" FromRole="loto_permit" ToRole="loto_point" />
-          <NavigationProperty Name="loto_suspension" Relationship="star_energy_ptwModel.FK_loto_suspension_loto_permit" FromRole="loto_permit" ToRole="loto_suspension" />
-          <NavigationProperty Name="permit_to_work" Relationship="star_energy_ptwModel.loto_permit_to_work" FromRole="loto_permit" ToRole="permit_to_work" />
-        </EntityType>
-        <Association Name="FK_loto_coming_holder_loto_permit">
-          <End Type="star_energy_ptwModel.loto_permit" Role="loto_permit" Multiplicity="0..1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="star_energy_ptwModel.loto_coming_holder" Role="loto_coming_holder" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="loto_permit">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="loto_coming_holder">
-              <PropertyRef Name="id_loto" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_loto_permit_loto_glarf">
-          <End Type="star_energy_ptwModel.loto_glarf" Role="loto_glarf" Multiplicity="0..1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="star_energy_ptwModel.loto_permit" Role="loto_permit" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="loto_glarf">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="loto_permit">
-              <PropertyRef Name="id_glarf" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_loto_point_loto_permit">
-          <End Type="star_energy_ptwModel.loto_permit" Role="loto_permit" Multiplicity="0..1" />
-          <End Type="star_energy_ptwModel.loto_point" Role="loto_point" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="loto_permit">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="loto_point">
-              <PropertyRef Name="id_loto" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_loto_suspension_loto_permit">
-          <End Type="star_energy_ptwModel.loto_permit" Role="loto_permit" Multiplicity="0..1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Type="star_energy_ptwModel.loto_suspension" Role="loto_suspension" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="loto_permit">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="loto_suspension">
-              <PropertyRef Name="id_loto" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="working_height">
           <Key>
             <PropertyRef Name="id" />
@@ -3282,6 +3149,17 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="loto_permit_to_work">
+          <Key>
+            <PropertyRef Name="id_loto" />
+            <PropertyRef Name="id_permit" />
+          </Key>
+          <Property Name="id_loto" Type="Int32" Nullable="false" />
+          <Property Name="id_permit" Type="Int32" Nullable="false" />
+          <Property Name="holder_no" Type="Int32" />
+          <NavigationProperty Name="permit_to_work" Relationship="star_energy_ptwModel.FK_loto_permit_to_work_permit_to_work" FromRole="loto_permit_to_work" ToRole="permit_to_work" />
+          <NavigationProperty Name="loto_permit" Relationship="star_energy_ptwModel.FK_loto_permit_to_work_loto_permit" FromRole="loto_permit_to_work" ToRole="loto_permit" />
+        </EntityType>
         <EntityType Name="permit_to_work">
           <Key>
             <PropertyRef Name="id" />
@@ -3386,6 +3264,7 @@
           <NavigationProperty Name="hira_document" Relationship="star_energy_ptwModel.FK_hira_document_permit_to_work" FromRole="permit_to_work" ToRole="hira_document" />
           <NavigationProperty Name="hot_work" Relationship="star_energy_ptwModel.FK_hot_work_permit_to_work" FromRole="permit_to_work" ToRole="hot_work" />
           <NavigationProperty Name="loto_glarf" Relationship="star_energy_ptwModel.FK_permit_to_work_loto_permit" FromRole="permit_to_work" ToRole="loto_glarf" />
+          <NavigationProperty Name="loto_permit_to_work" Relationship="star_energy_ptwModel.FK_loto_permit_to_work_permit_to_work" FromRole="permit_to_work" ToRole="loto_permit_to_work" />
           <NavigationProperty Name="mst_department" Relationship="star_energy_ptwModel.FK_permit_to_work_mst_department" FromRole="permit_to_work" ToRole="mst_department" />
           <NavigationProperty Name="mst_ptw_holder_no" Relationship="star_energy_ptwModel.FK_permit_to_work_mst_ptw_holder_no" FromRole="permit_to_work" ToRole="mst_ptw_holder_no" />
           <NavigationProperty Name="mst_section" Relationship="star_energy_ptwModel.FK_permit_to_work_mst_section" FromRole="permit_to_work" ToRole="mst_section" />
@@ -3394,7 +3273,6 @@
           <NavigationProperty Name="radiographies" Relationship="star_energy_ptwModel.FK_radiography_permit_to_work" FromRole="permit_to_work" ToRole="radiography" />
           <NavigationProperty Name="safety_briefing" Relationship="star_energy_ptwModel.FK_safety_briefing_permit_to_work" FromRole="permit_to_work" ToRole="safety_briefing" />
           <NavigationProperty Name="working_height" Relationship="star_energy_ptwModel.FK_working_height_permit_to_work" FromRole="permit_to_work" ToRole="working_height" />
-          <NavigationProperty Name="loto_permit" Relationship="star_energy_ptwModel.loto_permit_to_work" FromRole="permit_to_work" ToRole="loto_permit" />
         </EntityType>
         <Association Name="FK_confined_space_permit_to_work">
           <End Type="star_energy_ptwModel.permit_to_work" Role="permit_to_work" Multiplicity="0..1" />
@@ -3469,6 +3347,20 @@
             </Principal>
             <Dependent Role="permit_to_work">
               <PropertyRef Name="loto_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_loto_permit_to_work_permit_to_work">
+          <End Type="star_energy_ptwModel.permit_to_work" Role="permit_to_work" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="star_energy_ptwModel.loto_permit_to_work" Role="loto_permit_to_work" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="permit_to_work">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="loto_permit_to_work">
+              <PropertyRef Name="id_permit" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3560,9 +3452,158 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="loto_permit_to_work">
+        <EntityType Name="loto_permit">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="id_glarf" Type="Int32" />
+          <Property Name="loto_no" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="requestor" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="supervisor" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="work_location" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="lock_box_no" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="initial_pad_lock" Type="Int32" />
+          <Property Name="qty_pad_lock_usage" Type="Int32" />
+          <Property Name="balance" Type="Int32" />
+          <Property Name="approval_date" Type="DateTime" Precision="3" />
+          <Property Name="approval_facility_owner" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="approval_supervisor_signature" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="approval_supervisor_signature_delegate" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="approval_supervisor_signature_date" Type="DateTime" Precision="3" />
+          <Property Name="approval_fo_signature" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="approval_fo_signature_date" Type="DateTime" Precision="3" />
+          <Property Name="approval_fo_signature_delegate" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="oncoming_holder_1" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="oncoming_holder_2" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="oncoming_holder_3" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="oncoming_holder_4" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="oncoming_holder_5" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="oncoming_holder_6" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="oncoming_holder_7" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="approval_holder_1_signature" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="approval_holder_2_signature" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="approval_holder_3_signature" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="approval_holder_4_signature" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="approval_holder_5_signature" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="approval_holder_6_signature" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="approval_holder_7_signature" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="approval_holder_1_datetime" Type="DateTime" Precision="3" />
+          <Property Name="approval_holder_2_datetime" Type="DateTime" Precision="3" />
+          <Property Name="approval_holder_3_datetime" Type="DateTime" Precision="3" />
+          <Property Name="approval_holder_4_datetime" Type="DateTime" Precision="3" />
+          <Property Name="approval_holder_5_datetime" Type="DateTime" Precision="3" />
+          <Property Name="approval_holder_6_datetime" Type="DateTime" Precision="3" />
+          <Property Name="approval_holder_7_datetime" Type="DateTime" Precision="3" />
+          <Property Name="approval_notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="status" Type="Int32" />
+          <Property Name="new_coming_holder" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="requestor_ok" Type="Byte" />
+          <Property Name="holder_2_ok" Type="Byte" />
+          <Property Name="holder_3_ok" Type="Byte" />
+          <Property Name="holder_4_ok" Type="Byte" />
+          <Property Name="holder_5_ok" Type="Byte" />
+          <Property Name="holder_6_ok" Type="Byte" />
+          <Property Name="holder_7_ok" Type="Byte" />
+          <Property Name="cancellation_supervisor_signature" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="cancellation_supervisor_signature_date" Type="DateTime" Precision="3" />
+          <Property Name="cancellation_holder_2_signature" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="cancellation_holder_2_signature_date" Type="DateTime" Precision="3" />
+          <Property Name="cancellation_holder_3_signature" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="cancellation_holder_3_signature_date" Type="DateTime" Precision="3" />
+          <Property Name="cancellation_holder_4_signature" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="cancellation_holder_4_signature_date" Type="DateTime" Precision="3" />
+          <Property Name="cancellation_holder_5_signature" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="cancellation_holder_5_signature_date" Type="DateTime" Precision="3" />
+          <Property Name="cancellation_holder_6_signature" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="cancellation_holder_6_signature_date" Type="DateTime" Precision="3" />
+          <Property Name="cancellation_holder_7_signature" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="cancellation_holder_7_signature_date" Type="DateTime" Precision="3" />
+          <Property Name="cancellation_fo_signature" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="cancellation_fo_signature_date" Type="DateTime" Precision="3" />
+          <Property Name="cancellation_fo_signature_delegate" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="cancellation_notes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="cancellation_facility_owner" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="holder_1_glarf" Type="Int32" />
+          <Property Name="holder_2_glarf" Type="Int32" />
+          <Property Name="holder_3_glarf" Type="Int32" />
+          <Property Name="holder_4_glarf" Type="Int32" />
+          <Property Name="holder_5_glarf" Type="Int32" />
+          <Property Name="holder_6_glarf" Type="Int32" />
+          <Property Name="holder_7_glarf" Type="Int32" />
+          <NavigationProperty Name="loto_coming_holder" Relationship="star_energy_ptwModel.FK_loto_coming_holder_loto_permit" FromRole="loto_permit" ToRole="loto_coming_holder" />
+          <NavigationProperty Name="loto_glarf" Relationship="star_energy_ptwModel.FK_loto_permit_loto_glarf" FromRole="loto_permit" ToRole="loto_glarf" />
+          <NavigationProperty Name="loto_permit_to_work" Relationship="star_energy_ptwModel.FK_loto_permit_to_work_loto_permit" FromRole="loto_permit" ToRole="loto_permit_to_work" />
+          <NavigationProperty Name="loto_point" Relationship="star_energy_ptwModel.FK_loto_point_loto_permit" FromRole="loto_permit" ToRole="loto_point" />
+          <NavigationProperty Name="loto_suspension" Relationship="star_energy_ptwModel.FK_loto_suspension_loto_permit" FromRole="loto_permit" ToRole="loto_suspension" />
+        </EntityType>
+        <Association Name="FK_loto_coming_holder_loto_permit">
+          <End Type="star_energy_ptwModel.loto_permit" Role="loto_permit" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="star_energy_ptwModel.loto_coming_holder" Role="loto_coming_holder" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="loto_permit">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="loto_coming_holder">
+              <PropertyRef Name="id_loto" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_loto_permit_loto_glarf">
+          <End Type="star_energy_ptwModel.loto_glarf" Role="loto_glarf" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Type="star_energy_ptwModel.loto_permit" Role="loto_permit" Multiplicity="*" />
-          <End Type="star_energy_ptwModel.permit_to_work" Role="permit_to_work" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="loto_glarf">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="loto_permit">
+              <PropertyRef Name="id_glarf" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_loto_permit_to_work_loto_permit">
+          <End Type="star_energy_ptwModel.loto_permit" Role="loto_permit" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="star_energy_ptwModel.loto_permit_to_work" Role="loto_permit_to_work" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="loto_permit">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="loto_permit_to_work">
+              <PropertyRef Name="id_loto" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_loto_point_loto_permit">
+          <End Type="star_energy_ptwModel.loto_permit" Role="loto_permit" Multiplicity="0..1" />
+          <End Type="star_energy_ptwModel.loto_point" Role="loto_point" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="loto_permit">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="loto_point">
+              <PropertyRef Name="id_loto" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_loto_suspension_loto_permit">
+          <End Type="star_energy_ptwModel.loto_permit" Role="loto_permit" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="star_energy_ptwModel.loto_suspension" Role="loto_suspension" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="loto_permit">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="loto_suspension">
+              <PropertyRef Name="id_loto" />
+            </Dependent>
+          </ReferentialConstraint>
         </Association>
         </Schema>
     </edmx:ConceptualModels>
@@ -4558,87 +4599,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="loto_permit">
-            <EntityTypeMapping TypeName="star_energy_ptwModel.loto_permit">
-              <MappingFragment StoreEntitySet="loto_permit">
-                <ScalarProperty Name="holder_7_glarf" ColumnName="holder_7_glarf" />
-                <ScalarProperty Name="holder_6_glarf" ColumnName="holder_6_glarf" />
-                <ScalarProperty Name="holder_5_glarf" ColumnName="holder_5_glarf" />
-                <ScalarProperty Name="holder_4_glarf" ColumnName="holder_4_glarf" />
-                <ScalarProperty Name="holder_3_glarf" ColumnName="holder_3_glarf" />
-                <ScalarProperty Name="holder_2_glarf" ColumnName="holder_2_glarf" />
-                <ScalarProperty Name="holder_1_glarf" ColumnName="holder_1_glarf" />
-                <ScalarProperty Name="cancellation_facility_owner" ColumnName="cancellation_facility_owner" />
-                <ScalarProperty Name="cancellation_notes" ColumnName="cancellation_notes" />
-                <ScalarProperty Name="cancellation_fo_signature_delegate" ColumnName="cancellation_fo_signature_delegate" />
-                <ScalarProperty Name="cancellation_fo_signature_date" ColumnName="cancellation_fo_signature_date" />
-                <ScalarProperty Name="cancellation_fo_signature" ColumnName="cancellation_fo_signature" />
-                <ScalarProperty Name="cancellation_holder_7_signature_date" ColumnName="cancellation_holder_7_signature_date" />
-                <ScalarProperty Name="cancellation_holder_7_signature" ColumnName="cancellation_holder_7_signature" />
-                <ScalarProperty Name="cancellation_holder_6_signature_date" ColumnName="cancellation_holder_6_signature_date" />
-                <ScalarProperty Name="cancellation_holder_6_signature" ColumnName="cancellation_holder_6_signature" />
-                <ScalarProperty Name="cancellation_holder_5_signature_date" ColumnName="cancellation_holder_5_signature_date" />
-                <ScalarProperty Name="cancellation_holder_5_signature" ColumnName="cancellation_holder_5_signature" />
-                <ScalarProperty Name="cancellation_holder_4_signature_date" ColumnName="cancellation_holder_4_signature_date" />
-                <ScalarProperty Name="cancellation_holder_4_signature" ColumnName="cancellation_holder_4_signature" />
-                <ScalarProperty Name="cancellation_holder_3_signature_date" ColumnName="cancellation_holder_3_signature_date" />
-                <ScalarProperty Name="cancellation_holder_3_signature" ColumnName="cancellation_holder_3_signature" />
-                <ScalarProperty Name="cancellation_holder_2_signature_date" ColumnName="cancellation_holder_2_signature_date" />
-                <ScalarProperty Name="cancellation_holder_2_signature" ColumnName="cancellation_holder_2_signature" />
-                <ScalarProperty Name="cancellation_supervisor_signature_date" ColumnName="cancellation_supervisor_signature_date" />
-                <ScalarProperty Name="cancellation_supervisor_signature" ColumnName="cancellation_supervisor_signature" />
-                <ScalarProperty Name="holder_7_ok" ColumnName="holder_7_ok" />
-                <ScalarProperty Name="holder_6_ok" ColumnName="holder_6_ok" />
-                <ScalarProperty Name="holder_5_ok" ColumnName="holder_5_ok" />
-                <ScalarProperty Name="holder_4_ok" ColumnName="holder_4_ok" />
-                <ScalarProperty Name="holder_3_ok" ColumnName="holder_3_ok" />
-                <ScalarProperty Name="holder_2_ok" ColumnName="holder_2_ok" />
-                <ScalarProperty Name="requestor_ok" ColumnName="requestor_ok" />
-                <ScalarProperty Name="new_coming_holder" ColumnName="new_coming_holder" />
-                <ScalarProperty Name="status" ColumnName="status" />
-                <ScalarProperty Name="approval_notes" ColumnName="approval_notes" />
-                <ScalarProperty Name="approval_holder_7_datetime" ColumnName="approval_holder_7_datetime" />
-                <ScalarProperty Name="approval_holder_6_datetime" ColumnName="approval_holder_6_datetime" />
-                <ScalarProperty Name="approval_holder_5_datetime" ColumnName="approval_holder_5_datetime" />
-                <ScalarProperty Name="approval_holder_4_datetime" ColumnName="approval_holder_4_datetime" />
-                <ScalarProperty Name="approval_holder_3_datetime" ColumnName="approval_holder_3_datetime" />
-                <ScalarProperty Name="approval_holder_2_datetime" ColumnName="approval_holder_2_datetime" />
-                <ScalarProperty Name="approval_holder_1_datetime" ColumnName="approval_holder_1_datetime" />
-                <ScalarProperty Name="approval_holder_7_signature" ColumnName="approval_holder_7_signature" />
-                <ScalarProperty Name="approval_holder_6_signature" ColumnName="approval_holder_6_signature" />
-                <ScalarProperty Name="approval_holder_5_signature" ColumnName="approval_holder_5_signature" />
-                <ScalarProperty Name="approval_holder_4_signature" ColumnName="approval_holder_4_signature" />
-                <ScalarProperty Name="approval_holder_3_signature" ColumnName="approval_holder_3_signature" />
-                <ScalarProperty Name="approval_holder_2_signature" ColumnName="approval_holder_2_signature" />
-                <ScalarProperty Name="approval_holder_1_signature" ColumnName="approval_holder_1_signature" />
-                <ScalarProperty Name="oncoming_holder_7" ColumnName="oncoming_holder_7" />
-                <ScalarProperty Name="oncoming_holder_6" ColumnName="oncoming_holder_6" />
-                <ScalarProperty Name="oncoming_holder_5" ColumnName="oncoming_holder_5" />
-                <ScalarProperty Name="oncoming_holder_4" ColumnName="oncoming_holder_4" />
-                <ScalarProperty Name="oncoming_holder_3" ColumnName="oncoming_holder_3" />
-                <ScalarProperty Name="oncoming_holder_2" ColumnName="oncoming_holder_2" />
-                <ScalarProperty Name="oncoming_holder_1" ColumnName="oncoming_holder_1" />
-                <ScalarProperty Name="approval_fo_signature_delegate" ColumnName="approval_fo_signature_delegate" />
-                <ScalarProperty Name="approval_fo_signature_date" ColumnName="approval_fo_signature_date" />
-                <ScalarProperty Name="approval_fo_signature" ColumnName="approval_fo_signature" />
-                <ScalarProperty Name="approval_supervisor_signature_date" ColumnName="approval_supervisor_signature_date" />
-                <ScalarProperty Name="approval_supervisor_signature_delegate" ColumnName="approval_supervisor_signature_delegate" />
-                <ScalarProperty Name="approval_supervisor_signature" ColumnName="approval_supervisor_signature" />
-                <ScalarProperty Name="approval_facility_owner" ColumnName="approval_facility_owner" />
-                <ScalarProperty Name="approval_date" ColumnName="approval_date" />
-                <ScalarProperty Name="balance" ColumnName="balance" />
-                <ScalarProperty Name="qty_pad_lock_usage" ColumnName="qty_pad_lock_usage" />
-                <ScalarProperty Name="initial_pad_lock" ColumnName="initial_pad_lock" />
-                <ScalarProperty Name="lock_box_no" ColumnName="lock_box_no" />
-                <ScalarProperty Name="work_location" ColumnName="work_location" />
-                <ScalarProperty Name="supervisor" ColumnName="supervisor" />
-                <ScalarProperty Name="requestor" ColumnName="requestor" />
-                <ScalarProperty Name="loto_no" ColumnName="loto_no" />
-                <ScalarProperty Name="id_glarf" ColumnName="id_glarf" />
-                <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="working_height">
             <EntityTypeMapping TypeName="star_energy_ptwModel.working_height">
               <MappingFragment StoreEntitySet="working_height">
@@ -4795,6 +4755,15 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="loto_permit_to_work">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.loto_permit_to_work">
+              <MappingFragment StoreEntitySet="loto_permit_to_work">
+                <ScalarProperty Name="holder_no" ColumnName="holder_no" />
+                <ScalarProperty Name="id_permit" ColumnName="id_permit" />
+                <ScalarProperty Name="id_loto" ColumnName="id_loto" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="permit_to_work">
             <EntityTypeMapping TypeName="star_energy_ptwModel.permit_to_work">
               <MappingFragment StoreEntitySet="permit_to_work">
@@ -4895,14 +4864,87 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <AssociationSetMapping Name="loto_permit_to_work" TypeName="star_energy_ptwModel.loto_permit_to_work" StoreEntitySet="loto_permit_to_work">
-            <EndProperty Name="permit_to_work">
-              <ScalarProperty Name="id" ColumnName="id_permit" />
-            </EndProperty>
-            <EndProperty Name="loto_permit">
-              <ScalarProperty Name="id" ColumnName="id_loto" />
-            </EndProperty>
-          </AssociationSetMapping>
+          <EntitySetMapping Name="loto_permit">
+            <EntityTypeMapping TypeName="star_energy_ptwModel.loto_permit">
+              <MappingFragment StoreEntitySet="loto_permit">
+                <ScalarProperty Name="holder_7_glarf" ColumnName="holder_7_glarf" />
+                <ScalarProperty Name="holder_6_glarf" ColumnName="holder_6_glarf" />
+                <ScalarProperty Name="holder_5_glarf" ColumnName="holder_5_glarf" />
+                <ScalarProperty Name="holder_4_glarf" ColumnName="holder_4_glarf" />
+                <ScalarProperty Name="holder_3_glarf" ColumnName="holder_3_glarf" />
+                <ScalarProperty Name="holder_2_glarf" ColumnName="holder_2_glarf" />
+                <ScalarProperty Name="holder_1_glarf" ColumnName="holder_1_glarf" />
+                <ScalarProperty Name="cancellation_facility_owner" ColumnName="cancellation_facility_owner" />
+                <ScalarProperty Name="cancellation_notes" ColumnName="cancellation_notes" />
+                <ScalarProperty Name="cancellation_fo_signature_delegate" ColumnName="cancellation_fo_signature_delegate" />
+                <ScalarProperty Name="cancellation_fo_signature_date" ColumnName="cancellation_fo_signature_date" />
+                <ScalarProperty Name="cancellation_fo_signature" ColumnName="cancellation_fo_signature" />
+                <ScalarProperty Name="cancellation_holder_7_signature_date" ColumnName="cancellation_holder_7_signature_date" />
+                <ScalarProperty Name="cancellation_holder_7_signature" ColumnName="cancellation_holder_7_signature" />
+                <ScalarProperty Name="cancellation_holder_6_signature_date" ColumnName="cancellation_holder_6_signature_date" />
+                <ScalarProperty Name="cancellation_holder_6_signature" ColumnName="cancellation_holder_6_signature" />
+                <ScalarProperty Name="cancellation_holder_5_signature_date" ColumnName="cancellation_holder_5_signature_date" />
+                <ScalarProperty Name="cancellation_holder_5_signature" ColumnName="cancellation_holder_5_signature" />
+                <ScalarProperty Name="cancellation_holder_4_signature_date" ColumnName="cancellation_holder_4_signature_date" />
+                <ScalarProperty Name="cancellation_holder_4_signature" ColumnName="cancellation_holder_4_signature" />
+                <ScalarProperty Name="cancellation_holder_3_signature_date" ColumnName="cancellation_holder_3_signature_date" />
+                <ScalarProperty Name="cancellation_holder_3_signature" ColumnName="cancellation_holder_3_signature" />
+                <ScalarProperty Name="cancellation_holder_2_signature_date" ColumnName="cancellation_holder_2_signature_date" />
+                <ScalarProperty Name="cancellation_holder_2_signature" ColumnName="cancellation_holder_2_signature" />
+                <ScalarProperty Name="cancellation_supervisor_signature_date" ColumnName="cancellation_supervisor_signature_date" />
+                <ScalarProperty Name="cancellation_supervisor_signature" ColumnName="cancellation_supervisor_signature" />
+                <ScalarProperty Name="holder_7_ok" ColumnName="holder_7_ok" />
+                <ScalarProperty Name="holder_6_ok" ColumnName="holder_6_ok" />
+                <ScalarProperty Name="holder_5_ok" ColumnName="holder_5_ok" />
+                <ScalarProperty Name="holder_4_ok" ColumnName="holder_4_ok" />
+                <ScalarProperty Name="holder_3_ok" ColumnName="holder_3_ok" />
+                <ScalarProperty Name="holder_2_ok" ColumnName="holder_2_ok" />
+                <ScalarProperty Name="requestor_ok" ColumnName="requestor_ok" />
+                <ScalarProperty Name="new_coming_holder" ColumnName="new_coming_holder" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="approval_notes" ColumnName="approval_notes" />
+                <ScalarProperty Name="approval_holder_7_datetime" ColumnName="approval_holder_7_datetime" />
+                <ScalarProperty Name="approval_holder_6_datetime" ColumnName="approval_holder_6_datetime" />
+                <ScalarProperty Name="approval_holder_5_datetime" ColumnName="approval_holder_5_datetime" />
+                <ScalarProperty Name="approval_holder_4_datetime" ColumnName="approval_holder_4_datetime" />
+                <ScalarProperty Name="approval_holder_3_datetime" ColumnName="approval_holder_3_datetime" />
+                <ScalarProperty Name="approval_holder_2_datetime" ColumnName="approval_holder_2_datetime" />
+                <ScalarProperty Name="approval_holder_1_datetime" ColumnName="approval_holder_1_datetime" />
+                <ScalarProperty Name="approval_holder_7_signature" ColumnName="approval_holder_7_signature" />
+                <ScalarProperty Name="approval_holder_6_signature" ColumnName="approval_holder_6_signature" />
+                <ScalarProperty Name="approval_holder_5_signature" ColumnName="approval_holder_5_signature" />
+                <ScalarProperty Name="approval_holder_4_signature" ColumnName="approval_holder_4_signature" />
+                <ScalarProperty Name="approval_holder_3_signature" ColumnName="approval_holder_3_signature" />
+                <ScalarProperty Name="approval_holder_2_signature" ColumnName="approval_holder_2_signature" />
+                <ScalarProperty Name="approval_holder_1_signature" ColumnName="approval_holder_1_signature" />
+                <ScalarProperty Name="oncoming_holder_7" ColumnName="oncoming_holder_7" />
+                <ScalarProperty Name="oncoming_holder_6" ColumnName="oncoming_holder_6" />
+                <ScalarProperty Name="oncoming_holder_5" ColumnName="oncoming_holder_5" />
+                <ScalarProperty Name="oncoming_holder_4" ColumnName="oncoming_holder_4" />
+                <ScalarProperty Name="oncoming_holder_3" ColumnName="oncoming_holder_3" />
+                <ScalarProperty Name="oncoming_holder_2" ColumnName="oncoming_holder_2" />
+                <ScalarProperty Name="oncoming_holder_1" ColumnName="oncoming_holder_1" />
+                <ScalarProperty Name="approval_fo_signature_delegate" ColumnName="approval_fo_signature_delegate" />
+                <ScalarProperty Name="approval_fo_signature_date" ColumnName="approval_fo_signature_date" />
+                <ScalarProperty Name="approval_fo_signature" ColumnName="approval_fo_signature" />
+                <ScalarProperty Name="approval_supervisor_signature_date" ColumnName="approval_supervisor_signature_date" />
+                <ScalarProperty Name="approval_supervisor_signature_delegate" ColumnName="approval_supervisor_signature_delegate" />
+                <ScalarProperty Name="approval_supervisor_signature" ColumnName="approval_supervisor_signature" />
+                <ScalarProperty Name="approval_facility_owner" ColumnName="approval_facility_owner" />
+                <ScalarProperty Name="approval_date" ColumnName="approval_date" />
+                <ScalarProperty Name="balance" ColumnName="balance" />
+                <ScalarProperty Name="qty_pad_lock_usage" ColumnName="qty_pad_lock_usage" />
+                <ScalarProperty Name="initial_pad_lock" ColumnName="initial_pad_lock" />
+                <ScalarProperty Name="lock_box_no" ColumnName="lock_box_no" />
+                <ScalarProperty Name="work_location" ColumnName="work_location" />
+                <ScalarProperty Name="supervisor" ColumnName="supervisor" />
+                <ScalarProperty Name="requestor" ColumnName="requestor" />
+                <ScalarProperty Name="loto_no" ColumnName="loto_no" />
+                <ScalarProperty Name="id_glarf" ColumnName="id_glarf" />
+                <ScalarProperty Name="id" ColumnName="id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

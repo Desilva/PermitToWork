@@ -222,25 +222,31 @@
                         </div>
                         <div class="span9">
                             <input type="button" class="btn btn-success loto-form" value="LOTO Permit Form" id="loto-form-@loto.id" data-id="@loto.id" />
-                            @if (loto.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER2.ToString()] != null && (Model.acc_supervisor == loto.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER2.ToString()].id.ToString()))
+                            @if (loto.no_holder == 2)
                             {
                                 <input type="button" class="btn btn-success glarf-form" value="GLARF" id="glarf-form-@loto.id" data-id="@loto.holder_2_glarf" />
-                            } else if (loto.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER3.ToString()] != null && (Model.acc_supervisor == loto.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER3.ToString()].id.ToString()))
+                            }
+                            else if (loto.no_holder == 3)
                             {
                                 <input type="button" class="btn btn-success glarf-form" value="GLARF" id="glarf-form-@loto.id" data-id="@loto.holder_3_glarf" />
-                            } else if (loto.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER4.ToString()] != null && (Model.acc_supervisor == loto.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER4.ToString()].id.ToString()))
+                            }
+                            else if (loto.no_holder == 4)
                             {
                                 <input type="button" class="btn btn-success glarf-form" value="GLARF" id="glarf-form-@loto.id" data-id="@loto.holder_4_glarf" />
-                            } else if (loto.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER5.ToString()] != null && (Model.acc_supervisor == loto.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER5.ToString()].id.ToString()))
+                            }
+                            else if (loto.no_holder == 5)
                             {
                                 <input type="button" class="btn btn-success glarf-form" value="GLARF" id="glarf-form-@loto.id" data-id="@loto.holder_5_glarf" />
-                            } else if (loto.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER6.ToString()] != null && (Model.acc_supervisor == loto.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER6.ToString()].id.ToString()))
+                            }
+                            else if (loto.no_holder == 6)
                             {
                                 <input type="button" class="btn btn-success glarf-form" value="GLARF" id="glarf-form-@loto.id" data-id="@loto.holder_6_glarf" />
-                            } else if (loto.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER7.ToString()] != null && (Model.acc_supervisor == loto.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER7.ToString()].id.ToString()))
+                            }
+                            else if (loto.no_holder == 7)
                             {
                                 <input type="button" class="btn btn-success glarf-form" value="GLARF" id="glarf-form-@loto.id" data-id="@loto.holder_7_glarf" />
-                            } else {
+                            } 
+                            else {
                             <input type="button" class="btn btn-success glarf-form" value="GLARF" id="glarf-form-@loto.id" data-id="@loto.id_glarf" />
                             }
                             @if (isCanCancel == true)
@@ -250,26 +256,27 @@
                             <br />
                             <input type="button" class="btn btn-success loto-log" value="LOTO Log" id="log-log-@loto.id" data-id="@loto.id" />
                             <a href="@Url.Action("Index", "Print", new { id = loto.id, type = 2, no = loto.loto_no})" class="btn btn-primary">Print LOTO Form</a>
-                            @if (loto.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER2.ToString()] != null && (Model.acc_supervisor == loto.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER2.ToString()].id.ToString()))
+                            @if (loto.no_holder == 2)
                             {
                                 <a href="@Url.Action("Index", "Print", new { id = loto.holder_2_glarf, type = 3, no = loto.loto_no})" class="btn btn-primary">Print GLARF</a>
-                            } else if (loto.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER3.ToString()] != null && (Model.acc_supervisor == loto.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER3.ToString()].id.ToString()))
+                            }
+                            else if (loto.no_holder == 3)
                             {
                                 <a href="@Url.Action("Index", "Print", new { id = loto.holder_3_glarf, type = 3, no = loto.loto_no})" class="btn btn-primary">Print GLARF</a>
                             }
-                            else if (loto.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER4.ToString()] != null && (Model.acc_supervisor == loto.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER4.ToString()].id.ToString()))
+                            else if (loto.no_holder == 4)
                             {
                                 <a href="@Url.Action("Index", "Print", new { id = loto.holder_4_glarf, type = 3, no = loto.loto_no })" class="btn btn-primary">Print GLARF</a>
                             }
-                            else if (loto.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER5.ToString()] != null && (Model.acc_supervisor == loto.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER5.ToString()].id.ToString()))
+                            else if (loto.no_holder == 5)
                             {
                                 <a href="@Url.Action("Index", "Print", new { id = loto.holder_5_glarf, type = 3, no = loto.loto_no})" class="btn btn-primary">Print GLARF</a>
                             }
-                            else if (loto.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER6.ToString()] != null && (Model.acc_supervisor == loto.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER6.ToString()].id.ToString()))
+                            else if (loto.no_holder == 6)
                             {
                                 <a href="@Url.Action("Index", "Print", new { id = loto.holder_6_glarf, type = 3, no = loto.loto_no})" class="btn btn-primary">Print GLARF</a>
                             }
-                            else if (loto.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER7.ToString()] != null && (Model.acc_supervisor == loto.listUserInLOTO[PermitToWork.Models.ClearancePermit.LotoEntity.userInLOTO.ONCOMINGHOLDER7.ToString()].id.ToString()))
+                            else if (loto.no_holder == 7)
                             {
                                 <a href="@Url.Action("Index", "Print", new { id = loto.holder_7_glarf, type = 3, no = loto.loto_no})" class="btn btn-primary">Print GLARF</a>
                             }

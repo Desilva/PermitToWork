@@ -36,7 +36,7 @@ namespace PermitToWork.Models.Ptw
         public override ICollection<radiography> radiographies { get { return null; } set { } }
         public override ICollection<safety_briefing> safety_briefing { get { return null; } set { } }
         public override ICollection<working_height> working_height { get { return null; } set { } }
-        public override ICollection<loto_permit> loto_permit { get { return null; } set { } }
+        public override ICollection<loto_permit_to_work> loto_permit_to_work { get { return null; } set { } }
 
 
         public byte is_extend { get; set; }
@@ -237,9 +237,9 @@ namespace PermitToWork.Models.Ptw
             if (this.loto_need != null && this.loto_need != 0)
             {
                 this.lotoPermit = new List<LotoEntity>();
-                foreach (loto_permit loto in ptw.loto_permit)
+                foreach (loto_permit_to_work loto in ptw.loto_permit_to_work)
                 {
-                    this.lotoPermit.Add(new LotoEntity(loto.id, user, this.acc_ptw_requestor));
+                    this.lotoPermit.Add(new LotoEntity(loto.id_loto, user, this.acc_ptw_requestor, loto.holder_no));
                 }
                 this.loto_no = "";
                 this.loto_statusText = this.loto_status == 0 ? "LOTO Permit is being edited by Requestor" : (this.loto_status == 1 ? "LOTO Permit is Approved" : (this.loto_status == 2 ? "LOTO Permit is Cancelled" : ""));
@@ -358,9 +358,9 @@ namespace PermitToWork.Models.Ptw
             if (this.loto_need != null && this.loto_need != 0)
             {
                 this.lotoPermit = new List<LotoEntity>();
-                foreach (loto_permit loto in ptw.loto_permit)
+                foreach (loto_permit_to_work loto in ptw.loto_permit_to_work)
                 {
-                    this.lotoPermit.Add(new LotoEntity(loto.id, user, this.acc_ptw_requestor, listUser));
+                    this.lotoPermit.Add(new LotoEntity(loto.id_loto, user, this.acc_ptw_requestor, loto.holder_no));
                 }
                 this.loto_no = "";
                 this.loto_statusText = this.loto_status == 0 ? "LOTO Permit is being edited by Requestor" : (this.loto_status == 1 ? "LOTO Permit is Approved" : (this.loto_status == 2 ? "LOTO Permit is Cancelled" : ""));
@@ -1144,6 +1144,52 @@ namespace PermitToWork.Models.Ptw
             //this.can_supervisor_delegate = supervisor.employee_delegate.ToString();
 
             permit_to_work ptw = this.db.permit_to_work.Find(this.id);
+
+            if (ptw.acc_supervisor != this.acc_supervisor)
+            {
+                if (ptw.loto_need == 1)
+                {
+                    //ptw.loto_permit.
+                }
+
+                if (ptw.csep_id != null)
+                {
+                    confined_space data = ptw.confined_space.Where(p => p.id == ptw.csep_id).FirstOrDefault();
+                    data.acc_supervisor = this.acc_supervisor;
+                    data.can_supervisor = this.acc_supervisor;
+                }
+
+                if (ptw.hw_id != null)
+                {
+                    hot_work data = ptw.hot_work.Where(p => p.id == ptw.hw_id).FirstOrDefault();
+                    data.acc_supervisor = this.acc_supervisor;
+                    data.can_supervisor = this.acc_supervisor;
+                }
+
+                if (ptw.fi_id != null)
+                {
+                    fire_impairment data = ptw.fire_impairment.Where(p => p.id == ptw.fi_id).FirstOrDefault();
+                    data.spv = this.acc_supervisor;
+                }
+
+                if (ptw.ex_id != null)
+                {
+                    excavation data = ptw.excavations.Where(p => p.id == ptw.ex_id).FirstOrDefault();
+                    data.supervisor = this.acc_supervisor;
+                }
+
+                if (ptw.wh_id != null)
+                {
+                    working_height data = ptw.working_height.Where(p => p.id == ptw.wh_id).FirstOrDefault();
+                    data.supervisor = this.acc_supervisor;
+                }
+
+                if (ptw.rad_id != null)
+                {
+                    radiography data = ptw.radiographies.Where(p => p.id == ptw.rad_id).FirstOrDefault();
+                    data.supervisor = this.acc_supervisor;
+                }
+            }
             ptw.acc_supervisor = this.acc_supervisor;
             ptw.can_supervisor = this.can_supervisor;
             //ptw.acc_supervisor_delegate = this.acc_supervisor_delegate;
@@ -2673,52 +2719,44 @@ namespace PermitToWork.Models.Ptw
 
         #endregion
 
-        internal void addLoto(LotoEntity loto)
+        internal void addLoto(LotoEntity loto, int holderNo)
         {
             permit_to_work ptw = this.db.permit_to_work.Find(this.id);
             if (ptw != null)
             {
-                loto_permit lot = this.db.loto_permit.Find(loto.id);
-                ptw.loto_permit.Add(lot);
+                loto_permit_to_work lot = new loto_permit_to_work
+                {
+                    id_loto = loto.id,
+                    holder_no = holderNo,
+                };
+                ptw.loto_permit_to_work.Add(lot);
 
                 this.db.Entry(ptw).State = EntityState.Modified;
                 this.db.SaveChanges();
             }
         }
 
-        internal void checkLotoCancellationComplete(UserEntity user)
+        internal void checkLotoCancellationComplete(UserEntity user, ListUser listUser)
         {
             bool complete = true;
             foreach (LotoEntity loto in this.lotoPermit)
             {
-                if (user.id == loto.listUserInLOTO[LotoEntity.userInLOTO.SUPERVISOR.ToString()].id || user.id == loto.listUserInLOTO[LotoEntity.userInLOTO.SUPERVISOR.ToString()].employee_delegate)
+                if (loto.no_holder == 1)
                 {
-                    if (loto.cancellation_supervisor_signature != null)
+                    if (user.id == loto.listUserInLOTO[LotoEntity.userInLOTO.SUPERVISOR.ToString()].id || user.id == loto.listUserInLOTO[LotoEntity.userInLOTO.SUPERVISOR.ToString()].employee_delegate)
                     {
-                        complete = complete && true; //  && loto.status != (int)LotoEntity.LOTOStatus.CANCELSPV;
+                        if (loto.cancellation_supervisor_signature != null)
+                        {
+                            complete = complete && true; //  && loto.status != (int)LotoEntity.LOTOStatus.CANCELSPV;
+                        }
+                        else
+                        {
+                            complete = complete && false;
+                        }
                     }
-                    else
+                    else if (user.id == loto.listUserInLOTO[LotoEntity.userInLOTO.CANCELLATIONFACILITYOWNER.ToString()].id || user.id == loto.listUserInLOTO[LotoEntity.userInLOTO.CANCELLATIONFACILITYOWNER.ToString()].employee_delegate)
                     {
-                        complete = complete && false;
-                    }
-                }
-                else if (user.id == loto.listUserInLOTO[LotoEntity.userInLOTO.CANCELLATIONFACILITYOWNER.ToString()].id || user.id == loto.listUserInLOTO[LotoEntity.userInLOTO.CANCELLATIONFACILITYOWNER.ToString()].employee_delegate)
-                {
-                    if (loto.cancellation_supervisor_signature != null)
-                    {
-                        complete = complete && loto.status != (int)LotoEntity.LOTOStatus.CANCELSPV;
-                    }
-                    else
-                    {
-                        complete = complete && false;
-                    }
-                }
-
-                foreach (LotoComingHolderEntity comingHolder in loto.lotoComingHolder)
-                {
-                    if (user.id == comingHolder.userEntity.id || user.id == comingHolder.userEntity.employee_delegate)
-                    {
-                        if (comingHolder.isCancel())
+                        if (loto.cancellation_supervisor_signature != null)
                         {
                             complete = complete && loto.status != (int)LotoEntity.LOTOStatus.CANCELSPV;
                         }
@@ -2728,11 +2766,118 @@ namespace PermitToWork.Models.Ptw
                         }
                     }
                 }
+                else
+                {
+                    foreach (LotoComingHolderEntity comingHolder in loto.lotoComingHolder)
+                    {
+                        if (loto.no_holder == comingHolder.no_holder)
+                        {
+                            if (comingHolder.isCancel())
+                            {
+                                LotoGlarfEntity glarf;
+                                switch (loto.no_holder)
+                                {
+                                    case 2:
+                                        glarf = new LotoGlarfEntity(loto.holder_2_glarf.Value, user, listUser);
+                                        complete = complete && glarf.status == (int)LotoGlarfEntity.GlarfStatus.CANCELLATIONSIGNCOMPLETE;
+                                        break;
+                                    case 3:
+                                        glarf = new LotoGlarfEntity(loto.holder_3_glarf.Value, user, listUser);
+                                        complete = complete && glarf.status == (int)LotoGlarfEntity.GlarfStatus.CANCELLATIONSIGNCOMPLETE;
+                                        break;
+                                    case 4:
+                                        glarf = new LotoGlarfEntity(loto.holder_4_glarf.Value, user, listUser);
+                                        complete = complete && glarf.status == (int)LotoGlarfEntity.GlarfStatus.CANCELLATIONSIGNCOMPLETE;
+                                        break;
+                                    case 5:
+                                        glarf = new LotoGlarfEntity(loto.holder_5_glarf.Value, user, listUser);
+                                        complete = complete && glarf.status == (int)LotoGlarfEntity.GlarfStatus.CANCELLATIONSIGNCOMPLETE;
+                                        break;
+                                    case 6:
+                                        glarf = new LotoGlarfEntity(loto.holder_6_glarf.Value, user, listUser);
+                                        complete = complete && glarf.status == (int)LotoGlarfEntity.GlarfStatus.CANCELLATIONSIGNCOMPLETE;
+                                        break;
+                                    case 7:
+                                        glarf = new LotoGlarfEntity(loto.holder_7_glarf.Value, user, listUser);
+                                        complete = complete && glarf.status == (int)LotoGlarfEntity.GlarfStatus.CANCELLATIONSIGNCOMPLETE;
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                complete = complete && false;
+                            }
+                        }
+                    }
+                }
             }
 
             if (complete)
             {
                 setClerancePermitStatus((int)statusClearance.CLOSE, clearancePermit.LOCKOUTTAGOUT.ToString());
+            }
+        }
+
+        internal void checkLOTOComplete(UserEntity user, ListUser listUser)
+        {
+            bool complete = true;
+            foreach (LotoEntity loto in this.lotoPermit)
+            {
+                if (loto.no_holder == 1)
+                {
+                    complete = complete && loto.approval_fo_signature != null;
+                    LotoGlarfEntity glarf = new LotoGlarfEntity(loto.id_glarf.Value, user, listUser);
+                    complete = complete && glarf.status == (int)LotoGlarfEntity.GlarfStatus.SIGNING;
+                }
+                else
+                {
+                    foreach (LotoComingHolderEntity comingHolder in loto.lotoComingHolder)
+                    {
+                        if (loto.no_holder == comingHolder.no_holder)
+                        {
+                            if (comingHolder.isApprove())
+                            {
+                                LotoGlarfEntity glarf;
+                                switch (loto.no_holder)
+                                {
+                                    case 2:
+                                        glarf = new LotoGlarfEntity(loto.holder_2_glarf.Value, user, listUser);
+                                        complete = complete && glarf.status == (int)LotoGlarfEntity.GlarfStatus.SIGNING;
+                                        break;
+                                    case 3:
+                                        glarf = new LotoGlarfEntity(loto.holder_3_glarf.Value, user, listUser);
+                                        complete = complete && glarf.status == (int)LotoGlarfEntity.GlarfStatus.SIGNING;
+                                        break;
+                                    case 4:
+                                        glarf = new LotoGlarfEntity(loto.holder_4_glarf.Value, user, listUser);
+                                        complete = complete && glarf.status == (int)LotoGlarfEntity.GlarfStatus.SIGNING;
+                                        break;
+                                    case 5:
+                                        glarf = new LotoGlarfEntity(loto.holder_5_glarf.Value, user, listUser);
+                                        complete = complete && glarf.status == (int)LotoGlarfEntity.GlarfStatus.SIGNING;
+                                        break;
+                                    case 6:
+                                        glarf = new LotoGlarfEntity(loto.holder_6_glarf.Value, user, listUser);
+                                        complete = complete && glarf.status == (int)LotoGlarfEntity.GlarfStatus.SIGNING;
+                                        break;
+                                    case 7:
+                                        glarf = new LotoGlarfEntity(loto.holder_7_glarf.Value, user, listUser);
+                                        complete = complete && glarf.status == (int)LotoGlarfEntity.GlarfStatus.SIGNING;
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                complete = complete && false;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (complete)
+            {
+                setClerancePermitStatus((int)statusClearance.COMPLETE, clearancePermit.LOCKOUTTAGOUT.ToString());
             }
         }
     }

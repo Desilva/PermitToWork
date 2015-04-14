@@ -23,7 +23,8 @@ namespace PermitToWork.Models.ClearancePermit
             this.db = new star_energy_ptwEntities();
         }
 
-        public LotoComingHolderEntity(int id, UserEntity user) : this()
+        public LotoComingHolderEntity(int id, UserEntity user)
+            : this()
         {
             loto_coming_holder LotoComingHolder = this.db.loto_coming_holder.Find(id);
             // this.ptw = new PtwEntity(fi.id_ptw.Value);
@@ -42,6 +43,29 @@ namespace PermitToWork.Models.ClearancePermit
             if (this.holder_sign_delegate_cancellation != null)
             {
                 this.userCancellationDelegate = new UserEntity(Int32.Parse(this.holder_sign_delegate_cancellation), user.token, user);
+            }
+        }
+
+        public LotoComingHolderEntity(int id, UserEntity user, ListUser listUser)
+            : this()
+        {
+            loto_coming_holder LotoComingHolder = this.db.loto_coming_holder.Find(id);
+            // this.ptw = new PtwEntity(fi.id_ptw.Value);
+            ModelUtilization.Clone(LotoComingHolder, this);
+
+            if (this.holder_spv != null)
+            {
+                this.userEntity = listUser.listUser.Find(p => p.id == Int32.Parse(this.holder_spv));
+            }
+
+            if (this.holder_sign_delegate_approval != null)
+            {
+                this.userApprovalDelegate = listUser.listUser.Find(p => p.id == Int32.Parse(this.holder_sign_delegate_approval));
+            }
+
+            if (this.holder_sign_delegate_cancellation != null)
+            {
+                this.userCancellationDelegate = listUser.listUser.Find(p => p.id == Int32.Parse(this.holder_sign_delegate_cancellation));
             }
         }
 
@@ -125,6 +149,17 @@ namespace PermitToWork.Models.ClearancePermit
             foreach (int id in listId)
             {
                 result.Add(new LotoComingHolderEntity(id, user));
+            }
+            return result.OrderBy(p => p.no_holder).ToList();
+        }
+
+        public List<LotoComingHolderEntity> getList(UserEntity user, int id_loto, ListUser listUser)
+        {
+            List<int> listId = this.db.loto_coming_holder.Where(p => p.id_loto == id_loto).Select(p => p.id).ToList();
+            List<LotoComingHolderEntity> result = new List<LotoComingHolderEntity>();
+            foreach (int id in listId)
+            {
+                result.Add(new LotoComingHolderEntity(id, user, listUser));
             }
             return result.OrderBy(p => p.no_holder).ToList();
         }
