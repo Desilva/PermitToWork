@@ -12,6 +12,11 @@ namespace PermitToWork.Models.KPI
 
         public int? Year { get; set; }
 
+        public KPIFilterFormStub()
+        {
+            Year = DateTime.Now.Year;
+        }
+
         #region options
 
         private List<SelectListItem> YearOptions;
