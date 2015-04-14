@@ -152,6 +152,7 @@
     <Compile Include="Controllers\MasterDepartmentController.cs" />
     <Compile Include="Controllers\MasterDeptHeadController.cs" />
     <Compile Include="Controllers\MasterEIController.cs" />
+    <Compile Include="Controllers\MasterEnviroOfficerController.cs" />
     <Compile Include="Controllers\MasterErectorController.cs" />
     <Compile Include="Controllers\MasterFacilitiesController.cs" />
     <Compile Include="Controllers\MasterFOController.cs" />
@@ -163,6 +164,7 @@
     <Compile Include="Controllers\MasterRequestedPtwNoController.cs" />
     <Compile Include="Controllers\MasterSectionController.cs" />
     <Compile Include="Controllers\MasterSOController.cs" />
+    <Compile Include="Controllers\MasterDisposalLocationController.cs" />
     <Compile Include="Controllers\PrintController.cs" />
     <Compile Include="Controllers\PtwController.cs" />
     <Compile Include="Controllers\RadiographyController.cs" />
@@ -185,6 +187,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Models\ClearancePermit\CsepEntity.cs" />
+    <Compile Include="Models\ClearancePermit\ExcavationDisposalEntity.cs" />
     <Compile Include="Models\ClearancePermit\ExcavationEntity.cs" />
     <Compile Include="Models\ClearancePermit\LotoComingHolderEntity.cs" />
     <Compile Include="Models\ClearancePermit\LotoEntity.cs" />
@@ -193,6 +196,7 @@
     <Compile Include="Models\ClearancePermit\LotoPointEntity.cs" />
     <Compile Include="Models\ClearancePermit\LotoSuspensionEntity.cs" />
     <Compile Include="Models\ClearancePermit\LotoSuspensionHolderEntity.cs" />
+    <Compile Include="Models\ClearancePermit\ExcavationModel.cs" />
     <Compile Include="Models\comms_rbi.cs">
       <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
       <SubType>Code</SubType>
@@ -302,6 +306,9 @@
     <Compile Include="Models\excavation.cs">
       <DependentUpon>StarEnergyPTW.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\excavation_disposal_location.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\failure_causes.cs">
       <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
       <SubType>Code</SubType>
@@ -409,7 +416,9 @@
     <Compile Include="Models\Master\MstDelegateFOEntity.cs" />
     <Compile Include="Models\Master\MstDepartmentEntity.cs" />
     <Compile Include="Models\Master\MstDeptHeadEntity.cs" />
+    <Compile Include="Models\Master\MstDisposalLocationEntity.cs" />
     <Compile Include="Models\Master\MstEIEntity.cs" />
+    <Compile Include="Models\Master\MstEnviroOfficerEntity.cs" />
     <Compile Include="Models\Master\MstErectorEntity.cs" />
     <Compile Include="Models\Master\MstFacilitiesEntity.cs" />
     <Compile Include="Models\Master\MstFOEntity.cs" />
@@ -457,7 +466,13 @@
     <Compile Include="Models\mst_ei.cs">
       <DependentUpon>StarEnergyPTW.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\mst_enviro_officer.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\mst_erector.cs">
+      <DependentUpon>StarEnergyPTW.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\mst_ex_disposal_location.cs">
       <DependentUpon>StarEnergyPTW.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\mst_facilities.cs">
@@ -1200,7 +1215,10 @@
     <Content Include="Views\Workflow\Radiography.cshtml" />
     <Content Include="Views\Workflow\LOTO.cshtml" />
     <Content Include="Views\Workflow\WorkingAtHeight.cshtml" />
+    <Content Include="Views\MasterDisposalLocation\Index.cshtml" />
     <Content Include="Views\KPI\Index.cshtml" />
+    <Content Include="Views\MasterEnviroOfficer\Index.cshtml" />
+    <None Include="Views\Excavation\Create.cshtml.bak" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

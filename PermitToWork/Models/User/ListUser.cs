@@ -43,7 +43,7 @@ namespace PermitToWork.Models.User
             } else {
                 //this.listUser = ((ListUser)HttpContext.Current.Session["listUser"]).listUser;
                 this.listUser = (List<UserEntity>)HttpContext.Current.Session["listUser"];
-                HttpContext.Current.Session["listUserLastUpdate"] = lastUpdate;
+                //HttpContext.Current.Session["listUserLastUpdate"] = lastUpdate;
             }
             
         }

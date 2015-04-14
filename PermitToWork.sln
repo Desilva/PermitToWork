@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PermitToWork", "PermitToWork\PermitToWork.csproj", "{AFA47568-EF5F-4BCA-89EE-4810988BD2CB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectLog", "..\..\ProjectLog\ProjectLog\ProjectLog\ProjectLog.csproj", "{D929CE4F-8B73-450B-9ACB-9A9C659B49E1}"

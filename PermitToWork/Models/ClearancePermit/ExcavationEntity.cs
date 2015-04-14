@@ -15,6 +15,7 @@ namespace PermitToWork.Models.ClearancePermit
     public class ExcavationEntity : excavation, IClearancePermitEntity
     {
         public override permit_to_work permit_to_work { get { return null; } set { } }
+        public override ICollection<excavation_disposal_location> excavation_disposal_location { get { return null; } set { } }
 
         // ptw entity for PTW reference
         private PtwEntity ptw { get; set; }
@@ -30,6 +31,8 @@ namespace PermitToWork.Models.ClearancePermit
         public MstEIEntity eiUser { get; set; }
 
         public Dictionary<string, List<string>> listDocumentUploaded { get; set; }
+
+        public List<ExcavationDisposalEntity> DisposalLocations { get; set; }
 
         public int ids { get; set; }
         public string statusText { get; set; }
@@ -68,19 +71,19 @@ namespace PermitToWork.Models.ClearancePermit
         {
             REQUESTOR,
             SUPERVISOR,
-            SAFETYOFFICER,
+            ENVIROOFFICER,
             FACILITYOWNER,
             FACILITIES,
             EI,
             REQUESTORDELEGATE,
             SUPERVISORDELEGATE,
-            SAFETYOFFICERDELEGATE,
+            ENVIROOFFICERDELEGATE,
             FACILITYOWNERDELEGATE,
             FACILITIESDELEGATE,
             EIDELEGATE,
             CANREQUESTORDELEGATE,
             CANSUPERVISORDELEGATE,
-            CANSAFETYOFFICERDELEGATE,
+            CANENVIROOFFICERDELEGATE,
             CANFACILITYOWNERDELEGATE,
             CANFACILITIESDELEGATE,
             CANEIDELEGATE,
@@ -109,7 +112,7 @@ namespace PermitToWork.Models.ClearancePermit
             this.pre_screening_fo_arr = this.pre_screening_fo.Split('#');
             this.pre_screening_spv_arr = this.pre_screening_spv.Split('#');
             this.pre_screening_fac_arr = this.pre_screening_fac.Split('#');
-            this.pre_screening_ei_arr = this.pre_screening_ei.Split('#');;
+            this.pre_screening_ei_arr = this.pre_screening_ei.Split('#');
 
             int userId = 0;
 
@@ -170,6 +173,11 @@ namespace PermitToWork.Models.ClearancePermit
             // this.ptw = new PtwEntity(fi.id_ptw.Value);
             ModelUtilization.Clone(ex, this);
 
+            this.pre_screening_fo_arr = this.pre_screening_fo.Split('#');
+            this.pre_screening_spv_arr = this.pre_screening_spv.Split('#');
+            this.pre_screening_fac_arr = this.pre_screening_fac.Split('#');
+            this.pre_screening_ei_arr = this.pre_screening_ei.Split('#');
+
             this.is_guest = ex.permit_to_work.is_guest == 1;
             this.isUser = false;
             int userId = 0;
@@ -199,15 +207,15 @@ namespace PermitToWork.Models.ClearancePermit
                 //case (int)FIStatus.SPVSCREENING: retVal = "Waiting for SO Pre-job Screening"; break;
                 //case (int)FIStatus.SOSCREENING: retVal = "Waiting for FO Pre-job Screening"; break;
                 //case (int)FIStatus.FOSCREENING: retVal = "Waiting for Approval by Requestor"; break;
-                case (int)ExStatus.SPVAPPROVE: retVal = "Waiting for SHE Official Approval"; break;
-                case (int)ExStatus.SHEAPPROVE: retVal = "Waiting for E&I and Facilities Screening and Approval"; break;
-                case (int)ExStatus.EIFACAPPROVE: retVal = "Waiting for Requestor Approval"; break;
+                case (int)ExStatus.SPVAPPROVE: retVal = "Waiting for E&I and Civil Screening Approval"; break;
+                case (int)ExStatus.SHEAPPROVE: retVal = "Waiting for Requestor and Approval"; break;
+                case (int)ExStatus.EIFACAPPROVE: if (IsDisposalMoved()) { retVal = "Waiting for Environmental Officer Approval"; } else { retVal = "Waiting for Requestor Approval"; }; break;
                 case (int)ExStatus.REQUESTORAPPROVE: retVal = "Waiting for Facility Owner Screening and Approval"; break;
                 case (int)ExStatus.FOAPPROVE: retVal = "Completed. Excavation Permit has been approved by Facility Owner"; break;
                 case (int)ExStatus.CLOSING: retVal = "Radiography Permit is cancelled by Requestor. Waiting for Requestor Cancellation Approval"; break;
                 case (int)ExStatus.CANREQUESTORAPPROVE: retVal = "Waiting for Supervisor Cancellation Approval"; break;
                 case (int)ExStatus.CANSPVAPPROVE: retVal = "Waiting for E&I and Facilities Cancellation Approval"; break;
-                case (int)ExStatus.CANEIFACAPPROVE: retVal = "Waiting for SHE Official Cancellation Approval"; break;
+                case (int)ExStatus.CANEIFACAPPROVE: if (IsDisposalMoved()) { retVal = "Waiting for Environmental Officer Cancellation Approval"; } else { retVal = "Waiting for Facility Owner Cancellation Approval"; }; break;
                 case (int)ExStatus.CANSHEAPPROVE: retVal = "Waiting for Facility Owner Cancellation Approval"; break;
                 case (int)ExStatus.CANFOAPPROVE: retVal = "Cancelled. Excavation Permit has been cancelled"; break;
             };
@@ -407,24 +415,27 @@ namespace PermitToWork.Models.ClearancePermit
                             ex.supervisor_delegate = user.id.ToString();
                         }
                         ex.supervisor_signature_date = DateTime.Now;
-                        ex.status = (int)ExStatus.SHEAPPROVE;
+                        ex.status = (int)ExStatus.SPVAPPROVE;
                         // create node
                         workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
                             WorkflowNodeServiceModel.ExcavationNodeName.SUPERVISOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
-                    case 3 /* SHE */:
-                        userEx = this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()];
+                    case 3 /* Environmental Officer */:
+                        userEx = this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()];
                         if (user.id == userEx.id)
                         {
-                            ex.safety_officer_signature = "a" + user.signature;
+                            ex.enviro_officer_signature = "a" + user.signature;
                         }
                         else if (user.id == userEx.employee_delegate)
                         {
-                            ex.safety_officer_signature = "d" + user.signature;
-                            ex.safety_officer_delegate = user.id.ToString();
+                            ex.enviro_officer_signature = "d" + user.signature;
+                            ex.enviro_officer_delegate = user.id.ToString();
                         }
-                        ex.safety_officer_signature_date = DateTime.Now;
+                        ex.enviro_officer_signature_date = DateTime.Now;
                         ex.status = (int)ExStatus.SHEAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.ENVIRO_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         break;
                     case 4 /* Facilities */:
                         userEx = this.userInExcavation[UserInExcavation.FACILITIES.ToString()];
@@ -538,33 +549,48 @@ namespace PermitToWork.Models.ClearancePermit
                         workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
                             WorkflowNodeServiceModel.ExcavationNodeName.SUPERVISOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
-                    case 3 /* SHE */:
-                        ex.supervisor_signature = null;
-                        ex.supervisor_delegate = null;
-                        ex.status = (int)ExStatus.EDITANDSEND;
+                    case 3 /* Enviro */:
+                        ex.ei_signature = null;
+                        ex.ei_delegate = null;
+                        ex.facilities_signature = null;
+                        ex.facilities_delegate = null;
+                        ex.status = (int)ExStatus.SPVAPPROVE;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.ENVIRO_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 4 /* Facilities */:
-                        ex.safety_officer_signature = null;
-                        ex.safety_officer_signature = null;
+                        ex.supervisor_signature = null;
+                        ex.supervisor_signature = null;
                         ex.status = (int)ExStatus.EDITANDSEND;
                         // create node
                         workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
                             WorkflowNodeServiceModel.ExcavationNodeName.CIVIL_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 5 /* E&I */:
-                        ex.safety_officer_signature = null;
-                        ex.safety_officer_signature = null;
+                        ex.supervisor_signature = null;
+                        ex.supervisor_signature = null;
                         ex.status = (int)ExStatus.EDITANDSEND;
                         // create node
                         workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
                             WorkflowNodeServiceModel.ExcavationNodeName.EANDI_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 6 /* Requestor */:
-                        ex.ei_signature = null;
-                        ex.ei_delegate = null;
-                        ex.facilities_signature = null;
-                        ex.facilities_delegate = null;
-                        ex.status = (int)ExStatus.SHEAPPROVE;
+                        if (IsDisposalMoved())
+                        {
+                            ex.enviro_officer_signature = null;
+                            ex.enviro_officer_delegate = null;
+                            ex.status = (int)ExStatus.EIFACAPPROVE;
+                        }
+                        else
+                        {
+
+                            ex.ei_signature = null;
+                            ex.ei_delegate = null;
+                            ex.facilities_signature = null;
+                            ex.facilities_delegate = null;
+                            ex.status = (int)ExStatus.SPVAPPROVE;
+                        }
                         // create node
                         workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
                             WorkflowNodeServiceModel.ExcavationNodeName.REQUESTOR_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
@@ -572,7 +598,14 @@ namespace PermitToWork.Models.ClearancePermit
                     case 7 /* Facility Owner */:
                         ex.requestor_signature = null;
                         ex.requestor_delegate = null;
-                        ex.status = (int)ExStatus.EIFACAPPROVE;
+                        if (IsDisposalMoved())
+                        {
+                            ex.status = (int)ExStatus.SHEAPPROVE;
+                        }
+                        else
+                        {
+                            ex.status = (int)ExStatus.EIFACAPPROVE;
+                        }
                         // create node
                         workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
                             WorkflowNodeServiceModel.ExcavationNodeName.FACILITY_OWNER_APPROVE.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
@@ -603,7 +636,7 @@ namespace PermitToWork.Models.ClearancePermit
 #endif
                 switch (who)
                 {
-                    case 1:
+                    case 1: /* Requestor */
                         if (stat == 1)
                         {
 #if !DEBUG
@@ -630,7 +663,7 @@ namespace PermitToWork.Models.ClearancePermit
                         }
                         retVal = 1;
                         break;
-                    case 2:
+                    case 2: /* Supervisor */
                         if (stat == 1)
                         {
                             if (this.userInExcavation.Keys.ToList().Exists(p => p == UserInExcavation.FACILITIES.ToString()) && this.userInExcavation.Keys.ToList().Exists(p => p == UserInExcavation.EI.ToString()))
@@ -723,88 +756,11 @@ namespace PermitToWork.Models.ClearancePermit
                         }
                         retVal = 1;
                         break;
-                    case 3:
+                    case 3: /* Enviro */
                         if (stat == 1)
                         {
-                            if (this.userInExcavation.Keys.ToList().Exists(p => p == UserInExcavation.FACILITIES.ToString() && p == UserInExcavation.EI.ToString()))
-                            {
 #if !DEBUG
-                                listEmail.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].email);
-                                userIds.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].id);
-                                if ((userId = this.userInExcavation[UserInExcavation.FACILITIES.ToString()].employee_delegate) != null)
-                                {
-                                    userEx = new UserEntity(userId.Value, user.token, user);
-                                    listEmail.Add(userEx.email);
-                                    userIds.Add(userEx.id);
-                                }
-
-                                listEmail.Add(this.userInExcavation[UserInExcavation.EI.ToString()].email);
-                                userIds.Add(this.userInExcavation[UserInExcavation.EI.ToString()].id);
-                                if ((userId = this.userInExcavation[UserInExcavation.EI.ToString()].employee_delegate) != null)
-                                {
-                                    userEx = new UserEntity(userId.Value, user.token, user);
-                                    listEmail.Add(userEx.email);
-                                    userIds.Add(userEx.id);
-                                }
-#endif
-                                title = "Excavation Clearance Permit (" + this.ex_no + ") Need Review and Approval from E&I and Civil";
-                                message = serverUrl + "Home?p=Excavation/edit/" + this.id;
-                                sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Please approve Excavation Permit No. " + this.ex_no, serverUrl + "Home?p=Excavation/edit/" + this.id);
-                            }
-                            else
-                            {
-#if !DEBUG
-                                if (this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()] != null)
-                                {
-                                    listEmail.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].email);
-                                    userIds.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].id);
-                                    if ((userId = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].employee_delegate) != null)
-                                    {
-                                        userEx = new UserEntity(userId.Value, user.token, user);
-                                        listEmail.Add(userEx.email);
-                                        userIds.Add(userEx.id);
-                                    }
-                                    List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user);
-                                    foreach (UserEntity u in listDel)
-                                    {
-                                        listEmail.Add(u.email);
-                                        userIds.Add(u.id);
-                                    }
-                                }
-#endif
-                                title = "[URGENT] Excavation Clearance Permit (" + this.ex_no + ") E&I and Civil hasn't been Chosen";
-                                message = serverUrl + "Home?p=Excavation/edit/" + this.id;
-                                sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Please choose E&I and Civil for Excavation Permit No. " + this.ex_no, serverUrl + "Home?p=Excavation/edit/" + this.id);
-                            }
-                        }
-                        else if (stat == 2)
-                        {
-#if !DEBUG
-                            if (this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()] != null)
-                            {
-                                listEmail.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].email);
-                                userIds.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].id);
-                                if ((userId = this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].employee_delegate) != null)
-                                {
-                                    userEx = new UserEntity(userId.Value, user.token, user);
-                                    listEmail.Add(userEx.email);
-                                    userIds.Add(userEx.id);
-                                }
-                            }
-#endif
-                            title = "Excavation Clearance Permit (" + this.ex_no + ") Rejected from SHE";
-                            message = serverUrl + "Home?p=Excavation/edit/" + this.id + "<br />Comment: " + comment;
-                            sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Excavation Permit No. " + this.ex_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Excavation/edit/" + this.id);
-                        }
-                        retVal = 1;
-                        break;
-                    case 4:
-                        if (stat == 1)
-                        {
-                            if (ex.ei_signature != null)
-                            {
-#if !DEBUG
-                                if (is_guest)
+                            if (is_guest)
                                 {
                                     if (this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()] != null)
                                     {
@@ -829,6 +785,88 @@ namespace PermitToWork.Models.ClearancePermit
                                             userEx = new UserEntity(userId.Value, user.token, user);
                                             listEmail.Add(userEx.email);
                                             userIds.Add(userEx.id);
+                                        }
+                                    }
+                                }
+#endif
+                                title = "Excavation Clearance Permit (" + this.ex_no + ") Need Review and Approval from Requestor";
+                                message = serverUrl + "Home?p=Excavation/edit/" + this.id;
+                                sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Please approve Excavation Permit No. " + this.ex_no, serverUrl + "Home?p=Excavation/edit/" + this.id);
+                        }
+                        else if (stat == 2)
+                        {
+#if !DEBUG
+                            if (this.userInExcavation[UserInExcavation.FACILITIES.ToString()] != null)
+                            {
+                                listEmail.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].email);
+                                userIds.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].id);
+                                if ((userId = this.userInExcavation[UserInExcavation.FACILITIES.ToString()].employee_delegate) != null)
+                                {
+                                    userEx = new UserEntity(userId.Value, user.token, user);
+                                    listEmail.Add(userEx.email);
+                                    userIds.Add(userEx.id);
+                                }
+                                listEmail.Add(this.userInExcavation[UserInExcavation.EI.ToString()].email);
+                                userIds.Add(this.userInExcavation[UserInExcavation.EI.ToString()].id);
+                                if ((userId = this.userInExcavation[UserInExcavation.EI.ToString()].employee_delegate) != null)
+                                {
+                                    userEx = new UserEntity(userId.Value, user.token, user);
+                                    listEmail.Add(userEx.email);
+                                    userIds.Add(userEx.id);
+                                }
+                            }
+#endif
+                            title = "Excavation Clearance Permit (" + this.ex_no + ") Rejected from Requestor";
+                            message = serverUrl + "Home?p=Excavation/edit/" + this.id + "<br />Comment: " + comment;
+                            sendEmail.SendToNotificationCenter(userIds, "Excavation Permit", "Excavation Permit No. " + this.ex_no + "is rejected with comment: " + comment, serverUrl + "Home?p=Excavation/edit/" + this.id);
+                        }
+                        retVal = 1;
+                        break;
+                    case 4: /* E&I */
+                        if (stat == 1)
+                        {
+                            if (ex.ei_signature != null)
+                            {
+#if !DEBUG
+                                if (IsDisposalMoved()) {
+                                    if (this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()] != null)
+                                    {
+                                        listEmail.Add(this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].email);
+                                        userIds.Add(this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].id);
+                                        if ((userId = this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].employee_delegate) != null)
+                                        {
+                                            userEx = new UserEntity(userId.Value, user.token, user);
+                                            listEmail.Add(userEx.email);
+                                            userIds.Add(userEx.id);
+                                        }
+                                    }
+                                } else {
+                                    if (is_guest)
+                                    {
+                                        if (this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()] != null)
+                                        {
+                                            listEmail.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].email);
+                                            userIds.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].id);
+                                            if ((userId = this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].employee_delegate) != null)
+                                            {
+                                                userEx = new UserEntity(userId.Value, user.token, user);
+                                                listEmail.Add(userEx.email);
+                                                userIds.Add(userEx.id);
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (this.userInExcavation[UserInExcavation.REQUESTOR.ToString()] != null)
+                                        {
+                                            listEmail.Add(this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].email);
+                                            userIds.Add(this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].id);
+                                            if ((userId = this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].employee_delegate) != null)
+                                            {
+                                                userEx = new UserEntity(userId.Value, user.token, user);
+                                                listEmail.Add(userEx.email);
+                                                userIds.Add(userEx.id);
+                                            }
                                         }
                                     }
                                 }
@@ -903,37 +941,51 @@ namespace PermitToWork.Models.ClearancePermit
                         }
                         retVal = 1;
                         break;
-                    case 5:
+                    case 5:/* Civil */
                         if (stat == 1)
                         {
                             if (ex.facilities_signature != null)
                             {
 #if !DEBUG
-                                if (is_guest)
-                                {
-                                    if (this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()] != null)
+                                if (IsDisposalMoved()) {
+                                    if (this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()] != null)
                                     {
-                                        listEmail.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].email);
-                                        userIds.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].id);
-                                        if ((userId = this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].employee_delegate) != null)
+                                        listEmail.Add(this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].email);
+                                        userIds.Add(this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].id);
+                                        if ((userId = this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].employee_delegate) != null)
                                         {
                                             userEx = new UserEntity(userId.Value, user.token, user);
                                             listEmail.Add(userEx.email);
                                             userIds.Add(userEx.id);
                                         }
                                     }
-                                }
-                                else
-                                {
-                                    if (this.userInExcavation[UserInExcavation.REQUESTOR.ToString()] != null)
+                                } else {
+                                    if (is_guest)
                                     {
-                                        listEmail.Add(this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].email);
-                                        userIds.Add(this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].id);
-                                        if ((userId = this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].employee_delegate) != null)
+                                        if (this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()] != null)
                                         {
-                                            userEx = new UserEntity(userId.Value, user.token, user);
-                                            listEmail.Add(userEx.email);
-                                            userIds.Add(userEx.id);
+                                            listEmail.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].email);
+                                            userIds.Add(this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].id);
+                                            if ((userId = this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].employee_delegate) != null)
+                                            {
+                                                userEx = new UserEntity(userId.Value, user.token, user);
+                                                listEmail.Add(userEx.email);
+                                                userIds.Add(userEx.id);
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (this.userInExcavation[UserInExcavation.REQUESTOR.ToString()] != null)
+                                        {
+                                            listEmail.Add(this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].email);
+                                            userIds.Add(this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].id);
+                                            if ((userId = this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].employee_delegate) != null)
+                                            {
+                                                userEx = new UserEntity(userId.Value, user.token, user);
+                                                listEmail.Add(userEx.email);
+                                                userIds.Add(userEx.id);
+                                            }
                                         }
                                     }
                                 }
@@ -1008,7 +1060,7 @@ namespace PermitToWork.Models.ClearancePermit
                         }
                         retVal = 1;
                         break;
-                    case 6:
+                    case 6: /* Requestor */
                         if (stat == 1)
                         {
 #if !DEBUG
@@ -1037,23 +1089,37 @@ namespace PermitToWork.Models.ClearancePermit
                         else if (stat == 2)
                         {
 #if !DEBUG
-                            if (this.userInExcavation[UserInExcavation.FACILITIES.ToString()] != null)
-                            {
-                                listEmail.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].email);
-                                userIds.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].id);
-                                if ((userId = this.userInExcavation[UserInExcavation.FACILITIES.ToString()].employee_delegate) != null)
+                            if (IsDisposalMoved()) {
+                                if (this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()] != null)
                                 {
-                                    userEx = new UserEntity(userId.Value, user.token, user);
-                                    listEmail.Add(userEx.email);
-                                    userIds.Add(userEx.id);
+                                    listEmail.Add(this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].id);
+                                    if ((userId = this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].employee_delegate) != null)
+                                    {
+                                        userEx = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
+                                    }
                                 }
-                                listEmail.Add(this.userInExcavation[UserInExcavation.EI.ToString()].email);
-                                userIds.Add(this.userInExcavation[UserInExcavation.EI.ToString()].id);
-                                if ((userId = this.userInExcavation[UserInExcavation.EI.ToString()].employee_delegate) != null)
+                            } else {
+                                if (this.userInExcavation[UserInExcavation.FACILITIES.ToString()] != null)
                                 {
-                                    userEx = new UserEntity(userId.Value, user.token, user);
-                                    listEmail.Add(userEx.email);
-                                    userIds.Add(userEx.id);
+                                    listEmail.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].id);
+                                    if ((userId = this.userInExcavation[UserInExcavation.FACILITIES.ToString()].employee_delegate) != null)
+                                    {
+                                        userEx = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
+                                    }
+                                    listEmail.Add(this.userInExcavation[UserInExcavation.EI.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.EI.ToString()].id);
+                                    if ((userId = this.userInExcavation[UserInExcavation.EI.ToString()].employee_delegate) != null)
+                                    {
+                                        userEx = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
+                                    }
                                 }
                             }
 #endif
@@ -1064,7 +1130,7 @@ namespace PermitToWork.Models.ClearancePermit
                         }
                         retVal = 1;
                         break;
-                    case 7:
+                    case 7: /* FO */
                         if (stat == 1)
                         {
 #if !DEBUG
@@ -1222,7 +1288,7 @@ namespace PermitToWork.Models.ClearancePermit
                             WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_CIVIL.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         if (ex.can_ei_signature != null)
                         {
-                            ex.status = (int)ExStatus.CANSHEAPPROVE;
+                            ex.status = (int)ExStatus.CANEIFACAPPROVE;
                         }
                         break;
                     case 4 /* E&I */:
@@ -1242,21 +1308,24 @@ namespace PermitToWork.Models.ClearancePermit
                             WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_EANDI.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         if (ex.can_facilities_signature != null)
                         {
-                            ex.status = (int)ExStatus.CANSHEAPPROVE;
+                            ex.status = (int)ExStatus.CANEIFACAPPROVE;
                         }
                         break;
                     case 5 /* SHE */:
-                        userEx = this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()];
+                        userEx = this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()];
                         if (user.id == userEx.id)
                         {
-                            ex.can_safety_officer_signature = "a" + user.signature;
+                            ex.can_enviro_officer_signature = "a" + user.signature;
                         }
                         else if (user.id == userEx.employee_delegate)
                         {
-                            ex.can_safety_officer_signature = "d" + user.signature;
-                            ex.can_safety_officer_delegate = user.id.ToString();
+                            ex.can_enviro_officer_signature = "d" + user.signature;
+                            ex.can_enviro_officer_delegate = user.id.ToString();
                         }
-                        ex.can_safety_officer_signature_date1 = DateTime.Now;
+                        ex.can_enviro_officer_signature_date1 = DateTime.Now;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_ENVIRO.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         ex.status = (int)ExStatus.CANSHEAPPROVE;
                         break;
                     case 6 /* Facility Owner */:
@@ -1329,13 +1398,24 @@ namespace PermitToWork.Models.ClearancePermit
                         ex.can_ei_signature = null;
                         ex.can_ei_delegate = null;
                         ex.status = (int)ExStatus.CANSPVAPPROVE;
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_ENVIRO.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 6 /* Facility Owner */:
-                        ex.can_facilities_signature = null;
-                        ex.can_facilities_delegate = null;
-                        ex.can_ei_signature = null;
-                        ex.can_ei_delegate = null;
-                        ex.status = (int)ExStatus.CANSPVAPPROVE;
+                        if (IsDisposalMoved())
+                        {
+                            ex.can_enviro_officer_delegate = null;
+                            ex.can_enviro_officer_signature = null;
+                            ex.status = (int)ExStatus.CANEIFACAPPROVE;
+                        }
+                        else
+                        {
+                            ex.can_facilities_signature = null;
+                            ex.can_facilities_delegate = null;
+                            ex.can_ei_signature = null;
+                            ex.can_ei_delegate = null;
+                            ex.status = (int)ExStatus.CANSPVAPPROVE;
+                        }
                         // create node
                         workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
                             WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_FACILITY_OWNER.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
@@ -1466,21 +1546,38 @@ namespace PermitToWork.Models.ClearancePermit
                             if (ex.can_ei_signature != null)
                             {
 #if !DEBUG
-                                if (this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()] != null)
+                                if (IsDisposalMoved())
                                 {
-                                    listEmail.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].email);
-                                    userIds.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].id);
-                                    if ((userId = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].employee_delegate) != null)
+                                    if (this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()] != null)
                                     {
-                                        userEx = new UserEntity(userId.Value, user.token, user);
-                                        listEmail.Add(userEx.email);
-                                        userIds.Add(userEx.id);
+                                        listEmail.Add(this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].email);
+                                        userIds.Add(this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].id);
+                                        if ((userId = this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].employee_delegate) != null)
+                                        {
+                                            userEx = new UserEntity(userId.Value, user.token, user);
+                                            listEmail.Add(userEx.email);
+                                            userIds.Add(userEx.id);
+                                        }
                                     }
                                 }
-                                List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user);
-                                foreach (UserEntity u in listDel)
+                                else
                                 {
-                                    listEmail.Add(u.email);
+                                    if (this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()] != null)
+                                    {
+                                        listEmail.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].email);
+                                        userIds.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].id);
+                                        if ((userId = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].employee_delegate) != null)
+                                        {
+                                            userEx = new UserEntity(userId.Value, user.token, user);
+                                            listEmail.Add(userEx.email);
+                                            userIds.Add(userEx.id);
+                                        }
+                                    }
+                                    List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user);
+                                    foreach (UserEntity u in listDel)
+                                    {
+                                        listEmail.Add(u.email);
+                                    }
                                 }
 #endif
                                 title = "Excavation Clearance Permit (" + this.ex_no + ") Cancellation Need Review and Approval from Facility Owner";
@@ -1534,22 +1631,40 @@ namespace PermitToWork.Models.ClearancePermit
                             if (ex.can_facilities_signature != null)
                             {
 #if !DEBUG
-                                if (this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()] != null)
+                                if (IsDisposalMoved())
                                 {
-                                    listEmail.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].email);
-                                    userIds.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].id);
-                                    if ((userId = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].employee_delegate) != null)
+                                    if (this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()] != null)
                                     {
-                                        userEx = new UserEntity(userId.Value, user.token, user);
-                                        listEmail.Add(userEx.email);
-                                        userIds.Add(userEx.id);
+                                        listEmail.Add(this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].email);
+                                        userIds.Add(this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].id);
+                                        if ((userId = this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].employee_delegate) != null)
+                                        {
+                                            userEx = new UserEntity(userId.Value, user.token, user);
+                                            listEmail.Add(userEx.email);
+                                            userIds.Add(userEx.id);
+                                        }
                                     }
                                 }
-                                List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user);
-                                foreach (UserEntity u in listDel)
+                                else
                                 {
-                                    listEmail.Add(u.email);
-                                    userIds.Add(u.id);
+
+                                    if (this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()] != null)
+                                    {
+                                        listEmail.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].email);
+                                        userIds.Add(this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].id);
+                                        if ((userId = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].employee_delegate) != null)
+                                        {
+                                            userEx = new UserEntity(userId.Value, user.token, user);
+                                            listEmail.Add(userEx.email);
+                                            userIds.Add(userEx.id);
+                                        }
+                                    }
+                                    List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user);
+                                    foreach (UserEntity u in listDel)
+                                    {
+                                        listEmail.Add(u.email);
+                                        userIds.Add(u.id);
+                                    }
                                 }
 #endif
                                 title = "Excavation Clearance Permit (" + this.ex_no + ") Cancellation Need Review and Approval from Facility Owner";
@@ -1693,23 +1808,40 @@ namespace PermitToWork.Models.ClearancePermit
                         else if (stat == 2)
                         {
 #if !DEBUG
-                            if (this.userInExcavation[UserInExcavation.FACILITIES.ToString()] != null)
+                            if (IsDisposalMoved())
                             {
-                                listEmail.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].email);
-                                userIds.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].id);
-                                if ((userId = this.userInExcavation[UserInExcavation.FACILITIES.ToString()].employee_delegate) != null)
+                                if (this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()] != null)
                                 {
-                                    userEx = new UserEntity(userId.Value, user.token, user);
-                                    listEmail.Add(userEx.email);
-                                    userIds.Add(userEx.id);
+                                    listEmail.Add(this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].id);
+                                    if ((userId = this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].employee_delegate) != null)
+                                    {
+                                        userEx = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
+                                    }
                                 }
-                                listEmail.Add(this.userInExcavation[UserInExcavation.EI.ToString()].email);
-                                userIds.Add(this.userInExcavation[UserInExcavation.EI.ToString()].id);
-                                if ((userId = this.userInExcavation[UserInExcavation.EI.ToString()].employee_delegate) != null)
+                            }
+                            else
+                            {
+                                if (this.userInExcavation[UserInExcavation.FACILITIES.ToString()] != null)
                                 {
-                                    userEx = new UserEntity(userId.Value, user.token, user);
-                                    listEmail.Add(userEx.email);
-                                    userIds.Add(userEx.id);
+                                    listEmail.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.FACILITIES.ToString()].id);
+                                    if ((userId = this.userInExcavation[UserInExcavation.FACILITIES.ToString()].employee_delegate) != null)
+                                    {
+                                        userEx = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
+                                    }
+                                    listEmail.Add(this.userInExcavation[UserInExcavation.EI.ToString()].email);
+                                    userIds.Add(this.userInExcavation[UserInExcavation.EI.ToString()].id);
+                                    if ((userId = this.userInExcavation[UserInExcavation.EI.ToString()].employee_delegate) != null)
+                                    {
+                                        userEx = new UserEntity(userId.Value, user.token, user);
+                                        listEmail.Add(userEx.email);
+                                        userIds.Add(userEx.id);
+                                    }
                                 }
                             }
 #endif
@@ -1765,9 +1897,12 @@ namespace PermitToWork.Models.ClearancePermit
             }
 
             userId = 0;
-            Int32.TryParse(this.safety_officer, out userId);
-            this.isUser = this.isUser || userId == user.id;
-            this.userInExcavation.Add(UserInExcavation.SAFETYOFFICER.ToString(), listUser.listUser.Find(p => p.id == userId));
+            Int32.TryParse(this.enviro_officer, out userId);
+            if (userId != 0)
+            {
+                this.isUser = this.isUser || userId == user.id;
+                this.userInExcavation.Add(UserInExcavation.ENVIROOFFICER.ToString(), listUser.listUser.Find(p => p.id == userId));
+            }
 
             userId = 0;
             Int32.TryParse(this.facility_owner, out userId);
@@ -1781,11 +1916,11 @@ namespace PermitToWork.Models.ClearancePermit
                 this.userInExcavation.Add(UserInExcavation.SUPERVISORDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
-            if (this.safety_officer_delegate != null) {
+            if (this.enviro_officer_delegate != null) {
                 userId = 0;
-                Int32.TryParse(this.safety_officer_delegate, out userId);
+                Int32.TryParse(this.enviro_officer_delegate, out userId);
                 this.isUser = this.isUser || userId == user.id;
-                this.userInExcavation.Add(UserInExcavation.SAFETYOFFICERDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
+                this.userInExcavation.Add(UserInExcavation.ENVIROOFFICERDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
             if (this.facilities_delegate != null) {
@@ -1823,11 +1958,11 @@ namespace PermitToWork.Models.ClearancePermit
                 this.userInExcavation.Add(UserInExcavation.CANSUPERVISORDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
-            if (this.can_safety_officer_delegate != null) {
+            if (this.can_enviro_officer_delegate != null) {
                 userId = 0;
-                Int32.TryParse(this.can_safety_officer_delegate, out userId);
+                Int32.TryParse(this.can_enviro_officer_delegate, out userId);
                 this.isUser = this.isUser || userId == user.id;
-                this.userInExcavation.Add(UserInExcavation.CANSAFETYOFFICERDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
+                this.userInExcavation.Add(UserInExcavation.CANENVIROOFFICERDELEGATE.ToString(), listUser.listUser.Find(p => p.id == userId));
             }
 
             if (this.can_facilities_delegate != null) {
@@ -1901,9 +2036,9 @@ namespace PermitToWork.Models.ClearancePermit
 
         public bool isCanApproveSHE(UserEntity user)
         {
-            if (this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()] != null)
+            if (this.userInExcavation.Keys.ToList().Exists(p => p == UserInExcavation.ENVIROOFFICER.ToString()))
             {
-                if ((this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()].id == user.id || this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()].employee_delegate == user.id) && this.status == (int)ExStatus.SPVAPPROVE)
+                if ((this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].id == user.id || this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].employee_delegate == user.id) && this.IsDisposalMoved() && this.status == (int)ExStatus.EIFACAPPROVE)
                 {
                     return true;
                 }
@@ -1915,7 +2050,7 @@ namespace PermitToWork.Models.ClearancePermit
         {
             if (this.userInExcavation.Keys.ToList().Exists(p => p ==  UserInExcavation.EI.ToString()))
             {
-                if ((this.userInExcavation[UserInExcavation.EI.ToString()].id == user.id || this.userInExcavation[UserInExcavation.EI.ToString()].employee_delegate == user.id) && this.status == (int)ExStatus.SHEAPPROVE)
+                if ((this.userInExcavation[UserInExcavation.EI.ToString()].id == user.id || this.userInExcavation[UserInExcavation.EI.ToString()].employee_delegate == user.id) && this.status == (int)ExStatus.SPVAPPROVE)
                 {
                     return true;
                 }
@@ -1927,7 +2062,7 @@ namespace PermitToWork.Models.ClearancePermit
         {
             if (this.userInExcavation.Keys.ToList().Exists(p => p == UserInExcavation.FACILITIES.ToString()))
             {
-                if ((this.userInExcavation[UserInExcavation.FACILITIES.ToString()].id == user.id || this.userInExcavation[UserInExcavation.FACILITIES.ToString()].employee_delegate == user.id) && this.status == (int)ExStatus.SHEAPPROVE)
+                if ((this.userInExcavation[UserInExcavation.FACILITIES.ToString()].id == user.id || this.userInExcavation[UserInExcavation.FACILITIES.ToString()].employee_delegate == user.id) && this.status == (int)ExStatus.SPVAPPROVE)
                 {
                     return true;
                 }
@@ -1941,7 +2076,7 @@ namespace PermitToWork.Models.ClearancePermit
             {
                 if (this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()] != null)
                 {
-                    if ((this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].id == user.id || this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].employee_delegate == user.id) && this.status == (int)ExStatus.EIFACAPPROVE)
+                    if ((this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].id == user.id || this.userInExcavation[UserInExcavation.SUPERVISOR.ToString()].employee_delegate == user.id) && ((IsDisposalMoved() && this.status == (int)ExStatus.SHEAPPROVE) || (!IsDisposalMoved() && this.status == (int)ExStatus.EIFACAPPROVE)))
                     {
                         return true;
                     }
@@ -1951,7 +2086,7 @@ namespace PermitToWork.Models.ClearancePermit
             {
                 if (this.userInExcavation.Keys.ToList().Exists(p => p == UserInExcavation.REQUESTOR.ToString()))
                 {
-                    if ((this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].id == user.id || this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].employee_delegate == user.id) && this.status == (int)ExStatus.EIFACAPPROVE)
+                    if ((this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].id == user.id || this.userInExcavation[UserInExcavation.REQUESTOR.ToString()].employee_delegate == user.id) && ((IsDisposalMoved() && this.status == (int)ExStatus.SHEAPPROVE) || (!IsDisposalMoved() && this.status == (int)ExStatus.EIFACAPPROVE)))
                     {
                         return true;
                     }
@@ -1960,11 +2095,11 @@ namespace PermitToWork.Models.ClearancePermit
             return false;
         }
 
-        public bool isCanApproveFO(UserEntity user)
+        public bool isCanApproveFO(UserEntity user, ListUser listUser)
         {
             if (this.userInExcavation.Keys.ToList().Exists(p => p == UserInExcavation.FACILITYOWNER.ToString()))
             {
-                List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user);
+                List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user, listUser);
                 if ((this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].id == user.id || this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].employee_delegate == user.id) && this.status == (int)ExStatus.REQUESTORAPPROVE)
                 {
                     return true;
@@ -1977,11 +2112,11 @@ namespace PermitToWork.Models.ClearancePermit
             return false;
         }
 
-        public bool isCanAssign(UserEntity user)
+        public bool isCanAssign(UserEntity user, ListUser listUser)
         {
             if (this.userInExcavation.Keys.ToList().Exists(p => p == UserInExcavation.FACILITYOWNER.ToString()))
             {
-                List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user);
+                List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user, listUser);
                 if ((this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].id == user.id || this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].employee_delegate == user.id) && this.status <= (int)ExStatus.SPVAPPROVE)
                 {
                     return true;
@@ -2033,9 +2168,9 @@ namespace PermitToWork.Models.ClearancePermit
 
         public bool isCanApproveSHECancel(UserEntity user)
         {
-            if (this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()] != null)
+            if (this.userInExcavation.Keys.ToList().Exists(p => p == UserInExcavation.ENVIROOFFICER.ToString()))
             {
-                if ((this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()].id == user.id || this.userInExcavation[UserInExcavation.SAFETYOFFICER.ToString()].employee_delegate == user.id) && this.status == (int)ExStatus.CANEIFACAPPROVE)
+                if ((this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].id == user.id || this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].employee_delegate == user.id) && this.IsDisposalMoved() && this.status == (int)ExStatus.CANEIFACAPPROVE)
                 {
                     return true;
                 }
@@ -2092,16 +2227,16 @@ namespace PermitToWork.Models.ClearancePermit
             return false;
         }
 
-        public bool isCanApproveFOCancel(UserEntity user)
+        public bool isCanApproveFOCancel(UserEntity user, ListUser listUser)
         {
             if (this.userInExcavation.Keys.ToList().Exists(p => p == UserInExcavation.FACILITYOWNER.ToString()))
             {
-                List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user);
-                if ((this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].id == user.id || this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].employee_delegate == user.id) && this.status == (int)ExStatus.CANSHEAPPROVE)
+                List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user, listUser);
+                if ((this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].id == user.id || this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].employee_delegate == user.id) && ((this.IsDisposalMoved() && this.status == (int)ExStatus.CANSHEAPPROVE) || (!this.IsDisposalMoved() && this.status == (int)ExStatus.CANEIFACAPPROVE)))
                 {
                     return true;
                 }
-                else if (listDel.Exists(p => p.id == user.id) && this.status == (int)ExStatus.CANSHEAPPROVE)
+                else if (listDel.Exists(p => p.id == user.id) && ((this.IsDisposalMoved() && this.status == (int)ExStatus.CANSHEAPPROVE) || (!this.IsDisposalMoved() && this.status == (int)ExStatus.CANEIFACAPPROVE)))
                 {
                     return true;
                 }
@@ -2113,19 +2248,19 @@ namespace PermitToWork.Models.ClearancePermit
 
         #region assignment
 
-        internal int assignSO(string serverUrl, UserEntity user)
+        internal int assignEnviroOfficer(string serverUrl, UserEntity user)
         {
             int retVal = 0;
             excavation ex = this.db.excavations.Find(this.id);
             if (ex != null)
             {
-                ex.safety_officer = this.safety_officer;
+                ex.enviro_officer = this.enviro_officer;
 
                 this.db.Entry(ex).State = EntityState.Modified;
                 retVal = this.db.SaveChanges();
 
                 // sending email
-                UserEntity userSO = new UserEntity(Int32.Parse(this.safety_officer), user.token, user);
+                UserEntity userSO = new UserEntity(Int32.Parse(this.enviro_officer), user.token, user);
                 List<string> email = new List<string>();
                 email.Add(userSO.email);
                 // email.Add("septujamasoka@gmail.com");
@@ -2133,7 +2268,7 @@ namespace PermitToWork.Models.ClearancePermit
 
                 string message = serverUrl + "Home?p=Excavation/edit/" + this.id;
 
-                sendEmail.Send(email, message, "Assigned as SHE Official for Excavation Clearance Permit (" + ex.ex_no + ")");
+                sendEmail.Send(email, message, "Assigned as Enviromental Officer for Excavation Clearance Permit (" + ex.ex_no + ")");
             }
 
             return retVal;
@@ -2274,6 +2409,11 @@ namespace PermitToWork.Models.ClearancePermit
         {
 
             this.ptw = new PtwEntity(this.id_ptw.Value, user, listUser);
+        }
+
+        public bool IsDisposalMoved()
+        {
+            return this.pre_screening_spv_arr[8] == "1";
         }
     }
 }

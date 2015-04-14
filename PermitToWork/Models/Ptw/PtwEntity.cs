@@ -588,7 +588,7 @@ namespace PermitToWork.Models.Ptw
                 ptw.can_fo = can_fo;
                 ptw.can_fo_delegate = can_fo_delegate;
             }
-
+            ptw.create_date = DateTime.Now;
             db.permit_to_work.Add(ptw);
             int retVal = this.db.SaveChanges();
             this.id = ptw.id;
@@ -1886,6 +1886,11 @@ namespace PermitToWork.Models.Ptw
         public string CancelPTWRequest(UserEntity user)
         {
             permit_to_work ptw = this.db.permit_to_work.Find(this.id);
+
+            if (ptw.id_parent_ptw != null)
+            {
+                ptw.id_parent_ptw = null;
+            }
 
             ptw.status = (int)statusPtw.CANCELLED;
             this.db.Entry(ptw).State = EntityState.Modified;

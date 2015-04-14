@@ -182,7 +182,7 @@
             $('#history').val('@Url.Action("Edit","Ptw", new { id = Model.id })');
             changeContent('@Url.Action("Edit","Hw")/' + $(this).attr('data-id'));
         })
-        $('.fi_id').click(function () {
+        $('#fi_id').click(function () {
             //changeContent('fi/create');
             $('#history').val('@Url.Action("Edit","Ptw", new { id = Model.id })');
             changeContent('@Url.Action("Edit","Fi")/' + $(this).attr('data-id'));
@@ -2067,7 +2067,7 @@
         {
         <button class="btn" onclick="save()">@(Model.status == (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.ACCSPV ? "Save" : "Save as Draft")</button>
         }
-        @if ((isCanEdit == true && Model.status < (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.ACCFO && !Model.has_extend && Model.id_parent_ptw == null))
+        @if ((isCanEdit == true && Model.status < (int)PermitToWork.Models.Ptw.PtwEntity.statusPtw.ACCFO /* && !Model.has_extend && Model.id_parent_ptw == null */))
         {
         <button class="btn btn-danger" id="ptw-cancelled">Cancel PTW Request</button>
         }

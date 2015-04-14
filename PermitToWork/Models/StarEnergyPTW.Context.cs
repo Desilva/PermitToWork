@@ -26,7 +26,6 @@ namespace PermitToWork.Models
         }
     
         public DbSet<confined_space> confined_space { get; set; }
-        public DbSet<excavation> excavations { get; set; }
         public DbSet<fire_impairment> fire_impairment { get; set; }
         public DbSet<hira_document> hira_document { get; set; }
         public DbSet<hot_work> hot_work { get; set; }
@@ -57,11 +56,15 @@ namespace PermitToWork.Models
         public DbSet<mst_facility_owner> mst_facility_owner { get; set; }
         public DbSet<mst_area_code> mst_area_code { get; set; }
         public DbSet<loto_coming_holder> loto_coming_holder { get; set; }
-        public DbSet<permit_to_work> permit_to_work { get; set; }
         public DbSet<email_error> email_error { get; set; }
         public DbSet<mst_delegate_fo> mst_delegate_fo { get; set; }
         public DbSet<loto_suspension> loto_suspension { get; set; }
         public DbSet<loto_permit> loto_permit { get; set; }
         public DbSet<working_height> working_height { get; set; }
+        public DbSet<mst_ex_disposal_location> mst_ex_disposal_location { get; set; }
+        public DbSet<mst_enviro_officer> mst_enviro_officer { get; set; }
+        public DbSet<excavation> excavations { get; set; }
+        public DbSet<excavation_disposal_location> excavation_disposal_location { get; set; }
+        public DbSet<permit_to_work> permit_to_work { get; set; }
     }
 }
