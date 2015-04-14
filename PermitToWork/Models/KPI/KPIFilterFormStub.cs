@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace PermitToWork.Models.KPI
 {
-    public class KPIFormStub
+    public class KPIFilterFormStub
     {
         private star_energy_ptwEntities db = new star_energy_ptwEntities();
 

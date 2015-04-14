@@ -13,26 +13,47 @@ namespace PermitToWork.Controllers
     {
         public PartialViewResult Index()
         {
-            KPIFormStub model = new KPIFormStub();
+            KPIFilterFormStub model = new KPIFilterFormStub();
             model.SetYearOptions();
 
             return PartialView(model);
         }
 
-        public JsonResult AjaxCalculateKPI(KPIFormStub model)
+        public JsonResult AjaxCalculateKPI(KPIFilterFormStub model)
         {
             UserEntity user = (UserEntity)Session["user"];
             int userId = user.id;
-            KPIModel kpi = new KPIModel(userId, model.Year);
+            KPIUserModel kpi = new KPIUserModel(userId, model.Year);
 
             KPIResult result = new KPIResult 
             { 
                 RequestorOntimeClosing = kpi.CalculateRequestorOntimeClosing(), 
                 RequestorOverdueClosing = kpi.CalculateRequestorOverdueClosing(),
+                SupervisorAverageResponseTime = kpi.CalculateSupervisorAverageResponseTimeInHours(),
+                AssessorAverageResponseTime = kpi.CalculateAssessorAverageResponseTimeInHours(),
+                FOClosingApprove = kpi.CalculateFOClosing(),
+                FOAverageClosingTime = kpi.CalculateFOAverageClosingTimeInHours(),
                 status = "200" 
             };
 
             return Json(result);
         }
+
+        public ActionResult DownloadReport(KPIFilterFormStub form)
+        {
+            byte[] excel = new KPIReport().GenerateExcelReport(form.Year);
+            string filename = string.Format("Star Energy Wayang Windu - PTW KPI Report{0}.xlsx", (form.Year == null ? "" : " " + form.Year.Value.ToString()));
+
+            return File(excel, "application/vns.ms-excel", filename);
+        }
+
+        //public int Test()
+        //{
+        //    KPIDepartmentModel kpi = new KPIDepartmentModel(null);
+        //    kpi.CalculateDepartmentClosing();
+        //    int i = 1;
+
+        //    return i;
+        //}
     }
 }
