@@ -2033,7 +2033,7 @@ namespace PermitToWork.Models.ClearancePermit
         {
             if (this.userInExcavation.Keys.ToList().Exists(p => p == UserInExcavation.ENVIROOFFICER.ToString()))
             {
-                if ((this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].id == user.id || this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].employee_delegate == user.id) && this.status == (int)ExStatus.EIFACAPPROVE)
+                if ((this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].id == user.id || this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].employee_delegate == user.id) && this.IsDisposalMoved() && this.status == (int)ExStatus.EIFACAPPROVE)
                 {
                     return true;
                 }
@@ -2165,7 +2165,7 @@ namespace PermitToWork.Models.ClearancePermit
         {
             if (this.userInExcavation.Keys.ToList().Exists(p => p == UserInExcavation.ENVIROOFFICER.ToString()))
             {
-                if ((this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].id == user.id || this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].employee_delegate == user.id) && this.status == (int)ExStatus.CANEIFACAPPROVE)
+                if ((this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].id == user.id || this.userInExcavation[UserInExcavation.ENVIROOFFICER.ToString()].employee_delegate == user.id) && this.IsDisposalMoved() && this.status == (int)ExStatus.CANEIFACAPPROVE)
                 {
                     return true;
                 }

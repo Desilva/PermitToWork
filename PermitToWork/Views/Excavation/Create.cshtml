@@ -112,7 +112,9 @@
             //values.safety_officer = $('#safety-officer').val();
             values.facilities = $('#facilities').val();
             values.ei = $('#ei').val();
-            values.enviro_officer = $('#enviro_officer').val();
+            if ($('#screening_spv_9').val() == "1") {
+                values.enviro_officer = $('#enviro_officer').val();
+            }
             values.who = $(this).data('who');
             if (values.who == "1") {
                 var all = true;
