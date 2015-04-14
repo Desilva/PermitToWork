@@ -39,18 +39,6 @@
         <EntityTypeShape EntityType="star_energy_ptwModel.mst_facility_owner" Width="1.5" PointX="9.1041540694908019" PointY="0.038339644688339738" />
         <EntityTypeShape EntityType="star_energy_ptwModel.mst_area_code" Width="1.5" PointX="3.7203754725495237" PointY="11.105180432603312" />
         <EntityTypeShape EntityType="star_energy_ptwModel.loto_coming_holder" Width="1.5" PointX="11.021435150420961" PointY="25.488357451506126" />
-        <EntityTypeShape EntityType="star_energy_ptwModel.permit_to_work" Width="1.5" PointX="9.3624632644292269" PointY="16.267339818304098" />
-        <AssociationConnector Association="star_energy_ptwModel.FK_confined_space_permit_to_work" />
-        <AssociationConnector Association="star_energy_ptwModel.FK_fire_impairment_permit_to_work" />
-        <AssociationConnector Association="star_energy_ptwModel.FK_hira_document_permit_to_work" />
-        <AssociationConnector Association="star_energy_ptwModel.FK_hot_work_permit_to_work" />
-        <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_loto_permit" />
-        <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_mst_department" />
-        <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_mst_ptw_holder_no" />
-        <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_mst_section" />
-        <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_permit_to_work" />
-        <AssociationConnector Association="star_energy_ptwModel.FK_radiography_permit_to_work" />
-        <AssociationConnector Association="star_energy_ptwModel.FK_safety_briefing_permit_to_work" />
         <EntityTypeShape EntityType="star_energy_ptwModel.email_error" Width="1.5" PointX="4.6347063782786515" PointY="14.635260424872516" />
         <EntityTypeShape EntityType="star_energy_ptwModel.mst_delegate_fo" Width="1.5" PointX="0.883050470092823" PointY="28.996555416377522" />
         <AssociationConnector Association="star_energy_ptwModel.FK_mst_delegate_fo_mst_facility_owner" />
@@ -61,16 +49,28 @@
         <AssociationConnector Association="star_energy_ptwModel.FK_loto_permit_loto_glarf" />
         <AssociationConnector Association="star_energy_ptwModel.FK_loto_point_loto_permit" />
         <AssociationConnector Association="star_energy_ptwModel.FK_loto_suspension_loto_permit" />
-        <AssociationConnector Association="star_energy_ptwModel.loto_permit_to_work" />
         <EntityTypeShape EntityType="star_energy_ptwModel.working_height" Width="1.5" PointX="6.0674158400238571" PointY="15.012423790531431" />
-        <AssociationConnector Association="star_energy_ptwModel.FK_working_height_permit_to_work" />
         <EntityTypeShape EntityType="star_energy_ptwModel.mst_ex_disposal_location" Width="1.5" PointX="0.75" PointY="0.75" />
         <EntityTypeShape EntityType="star_energy_ptwModel.mst_enviro_officer" Width="1.5" PointX="4.375" PointY="3.75" />
         <EntityTypeShape EntityType="star_energy_ptwModel.excavation" Width="1.5" PointX="11.625" PointY="57.375" />
-        <AssociationConnector Association="star_energy_ptwModel.FK_excavation_permit_to_work" />
         <EntityTypeShape EntityType="star_energy_ptwModel.excavation_disposal_location" Width="1.5" PointX="13.875" PointY="34.875" />
         <AssociationConnector Association="star_energy_ptwModel.FK_excavation_disposal_location_excavation" />
         <AssociationConnector Association="star_energy_ptwModel.FK_excavation_disposal_location_mst_ex_disposal_location" />
+        <EntityTypeShape EntityType="star_energy_ptwModel.permit_to_work" Width="1.5" PointX="14.375" PointY="9.625" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_confined_space_permit_to_work" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_excavation_permit_to_work" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_fire_impairment_permit_to_work" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_hira_document_permit_to_work" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_hot_work_permit_to_work" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_loto_permit" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_mst_department" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_mst_ptw_holder_no" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_mst_section" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_permit_to_work_permit_to_work" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_radiography_permit_to_work" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_safety_briefing_permit_to_work" />
+        <AssociationConnector Association="star_energy_ptwModel.FK_working_height_permit_to_work" />
+        <AssociationConnector Association="star_energy_ptwModel.loto_permit_to_work" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

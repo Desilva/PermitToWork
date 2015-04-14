@@ -588,7 +588,7 @@ namespace PermitToWork.Models.Ptw
                 ptw.can_fo = can_fo;
                 ptw.can_fo_delegate = can_fo_delegate;
             }
-
+            ptw.create_date = DateTime.Now;
             db.permit_to_work.Add(ptw);
             int retVal = this.db.SaveChanges();
             this.id = ptw.id;

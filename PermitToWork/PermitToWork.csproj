@@ -180,6 +180,7 @@
     <Compile Include="Models\ClearancePermit\LotoPointEntity.cs" />
     <Compile Include="Models\ClearancePermit\LotoSuspensionEntity.cs" />
     <Compile Include="Models\ClearancePermit\LotoSuspensionHolderEntity.cs" />
+    <Compile Include="Models\ClearancePermit\ExcavationModel.cs" />
     <Compile Include="Models\comms_rbi.cs">
       <DependentUpon>StarEnergyFRACAS.tt</DependentUpon>
       <SubType>Code</SubType>

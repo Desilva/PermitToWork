@@ -36,20 +36,20 @@ namespace PermitToWork.Controllers
             bool[] isCanEdit = new bool[15];
 
             isCanEdit[0] = entity.isCanEditFormRequestor(user);
-            isCanEdit[1] = entity.isCanAssign(user);
+            isCanEdit[1] = entity.isCanAssign(user, listUser);
             isCanEdit[2] = entity.isCanApproveSpv(user);
             isCanEdit[3] = entity.isCanApproveSHE(user);
             isCanEdit[4] = entity.isCanApproveFacilities(user);
             isCanEdit[5] = entity.isCanApproveEI(user);
             isCanEdit[6] = entity.isCanApproveRequestor(user);
-            isCanEdit[7] = entity.isCanApproveFO(user);
+            isCanEdit[7] = entity.isCanApproveFO(user, listUser);
             isCanEdit[8] = entity.isCanCancel(user);
             isCanEdit[9] = entity.isCanApproveRequestorCancel(user);
             isCanEdit[10] = entity.isCanApproveSpvCancel(user);
             isCanEdit[11] = entity.isCanApproveFacilitiesCancel(user);
             isCanEdit[12] = entity.isCanApproveEICancel(user);
             isCanEdit[13] = entity.isCanApproveSHECancel(user);
-            isCanEdit[14] = entity.isCanApproveFOCancel(user);
+            isCanEdit[14] = entity.isCanApproveFOCancel(user, listUser);
             //isCanEdit[8] = entity.isCanEditApproveRequestorCancel(user);
             //isCanEdit[9] = entity.isCanEditApproveFireWatchCancel(user);
             //isCanEdit[10] = entity.isCanEditFormSPVCancel(user);

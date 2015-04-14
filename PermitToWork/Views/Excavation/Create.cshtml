@@ -208,6 +208,15 @@
                 }
             }
 
+            if (values.who == "3") {
+                var total = $('#grid-disposal').data('kendoGrid').dataSource.total();
+                console.log(total);
+                if (total == 0) {
+                    alert('Disposal Location and Disposal estimated volume (point 9a) must be input.');
+                    return;
+                }
+            }
+
             $('#loading_gif').show();
             $.post('@Url.Action("SaveComplete", "Excavation")', values, function (resp) {
                 $('#loading_gif').hide();
@@ -472,7 +481,11 @@
                     template: kendo.template($("#command-template").html()), title: "Command", width: "200px"
                 },
             ],
-            editable: "inline"
+            editable: "inline",
+            edit: function (e) {
+                console.log(e.container.find('.row-command'));
+                e.container.find('.row-command').html('<a class="k-button k-button-icontext k-grid-update" href="#" title="Update"><span class="k-icon k-update"></span>Update</a><a class="k-button k-button-icontext k-grid-cancel" href="#" title="Cancel"><span class="k-icon k-cancel"></span>Cancel</a>');
+            }
         });
 
         if ('@(Model.pre_screening_spv_arr[8] == "1")' == 'True') {
@@ -1312,7 +1325,7 @@
                         {
                             <text>@Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.CANENVIROOFFICERDELEGATE.ToString()].alpha_name<br />a/n </text>
                         }
-                        @(Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.ENVIROOFFICER.ToString()] != null ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.ENVIROOFFICER.ToString()].alpha_name : "")
+                        @(Model.userInExcavation.Keys.ToList().Exists(p => p == PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.ENVIROOFFICER.ToString()) ? Model.userInExcavation[PermitToWork.Models.ClearancePermit.ExcavationEntity.UserInExcavation.ENVIROOFFICER.ToString()].alpha_name : "")
                         <br /><b>Environmental Officer</b>
                     </td>
                     <td class="td-centre">

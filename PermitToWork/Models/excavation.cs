@@ -84,7 +84,7 @@ namespace PermitToWork.Models
         public string can_supervisor_delegate { get; set; }
         public Nullable<System.DateTime> can_supervisor_signature_date { get; set; }
     
-        public virtual permit_to_work permit_to_work { get; set; }
         public virtual ICollection<excavation_disposal_location> excavation_disposal_location { get; set; }
+        public virtual permit_to_work permit_to_work { get; set; }
     }
 }

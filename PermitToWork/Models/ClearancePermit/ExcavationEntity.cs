@@ -1323,6 +1323,9 @@ namespace PermitToWork.Models.ClearancePermit
                             ex.can_enviro_officer_delegate = user.id.ToString();
                         }
                         ex.can_enviro_officer_signature_date1 = DateTime.Now;
+                        // create node
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_ENVIRO.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.APPROVED);
                         ex.status = (int)ExStatus.CANSHEAPPROVE;
                         break;
                     case 6 /* Facility Owner */:
@@ -1395,6 +1398,8 @@ namespace PermitToWork.Models.ClearancePermit
                         ex.can_ei_signature = null;
                         ex.can_ei_delegate = null;
                         ex.status = (int)ExStatus.CANSPVAPPROVE;
+                        workflowNodeService.CreateNode(this.id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString(),
+                            WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_ENVIRO.ToString(), (byte)WorkflowNodeServiceModel.NodeStatus.REJECTED);
                         break;
                     case 6 /* Facility Owner */:
                         if (IsDisposalMoved())
@@ -2090,11 +2095,11 @@ namespace PermitToWork.Models.ClearancePermit
             return false;
         }
 
-        public bool isCanApproveFO(UserEntity user)
+        public bool isCanApproveFO(UserEntity user, ListUser listUser)
         {
             if (this.userInExcavation.Keys.ToList().Exists(p => p == UserInExcavation.FACILITYOWNER.ToString()))
             {
-                List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user);
+                List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user, listUser);
                 if ((this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].id == user.id || this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].employee_delegate == user.id) && this.status == (int)ExStatus.REQUESTORAPPROVE)
                 {
                     return true;
@@ -2107,11 +2112,11 @@ namespace PermitToWork.Models.ClearancePermit
             return false;
         }
 
-        public bool isCanAssign(UserEntity user)
+        public bool isCanAssign(UserEntity user, ListUser listUser)
         {
             if (this.userInExcavation.Keys.ToList().Exists(p => p == UserInExcavation.FACILITYOWNER.ToString()))
             {
-                List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user);
+                List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user, listUser);
                 if ((this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].id == user.id || this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].employee_delegate == user.id) && this.status <= (int)ExStatus.SPVAPPROVE)
                 {
                     return true;
@@ -2222,11 +2227,11 @@ namespace PermitToWork.Models.ClearancePermit
             return false;
         }
 
-        public bool isCanApproveFOCancel(UserEntity user)
+        public bool isCanApproveFOCancel(UserEntity user, ListUser listUser)
         {
             if (this.userInExcavation.Keys.ToList().Exists(p => p == UserInExcavation.FACILITYOWNER.ToString()))
             {
-                List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user);
+                List<UserEntity> listDel = this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].GetDelegateFO(user, listUser);
                 if ((this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].id == user.id || this.userInExcavation[UserInExcavation.FACILITYOWNER.ToString()].employee_delegate == user.id) && ((this.IsDisposalMoved() && this.status == (int)ExStatus.CANSHEAPPROVE) || (!this.IsDisposalMoved() && this.status == (int)ExStatus.CANEIFACAPPROVE)))
                 {
                     return true;

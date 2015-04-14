@@ -17,15 +17,15 @@ namespace PermitToWork.Models
         public permit_to_work()
         {
             this.confined_space = new HashSet<confined_space>();
+            this.excavations = new HashSet<excavation>();
             this.fire_impairment = new HashSet<fire_impairment>();
             this.hira_document = new HashSet<hira_document>();
             this.hot_work = new HashSet<hot_work>();
             this.permit_to_work1 = new HashSet<permit_to_work>();
             this.radiographies = new HashSet<radiography>();
             this.safety_briefing = new HashSet<safety_briefing>();
-            this.loto_permit = new HashSet<loto_permit>();
             this.working_height = new HashSet<working_height>();
-            this.excavations = new HashSet<excavation>();
+            this.loto_permit = new HashSet<loto_permit>();
         }
     
         public int id { get; set; }
@@ -121,8 +121,10 @@ namespace PermitToWork.Models
         public Nullable<byte> is_guest { get; set; }
         public string guest_holder_no { get; set; }
         public Nullable<byte> requested_no { get; set; }
+        public Nullable<System.DateTime> create_date { get; set; }
     
         public virtual ICollection<confined_space> confined_space { get; set; }
+        public virtual ICollection<excavation> excavations { get; set; }
         public virtual ICollection<fire_impairment> fire_impairment { get; set; }
         public virtual ICollection<hira_document> hira_document { get; set; }
         public virtual ICollection<hot_work> hot_work { get; set; }
@@ -134,8 +136,7 @@ namespace PermitToWork.Models
         public virtual permit_to_work permit_to_work2 { get; set; }
         public virtual ICollection<radiography> radiographies { get; set; }
         public virtual ICollection<safety_briefing> safety_briefing { get; set; }
-        public virtual ICollection<loto_permit> loto_permit { get; set; }
         public virtual ICollection<working_height> working_height { get; set; }
-        public virtual ICollection<excavation> excavations { get; set; }
+        public virtual ICollection<loto_permit> loto_permit { get; set; }
     }
 }
