@@ -1,9 +1,13 @@
-﻿@model PermitToWork.Models.KPI.KPIFormStub
+﻿@model PermitToWork.Models.KPI.KPIFilterFormStub
+@{
+    PermitToWork.Models.User.UserEntity user = Session["user"] as PermitToWork.Models.User.UserEntity;
+}
 
 <script type="text/javascript">
     $(document).ready(function () {
         $('#home-kpi').kpiWidget({
             url: '@Url.Action("AjaxCalculateKPI", "KPI")',
+            downloadUrl: '@Url.Action("DownloadReport", "KPI")',
         });
     });
 </script>
@@ -14,7 +18,12 @@
         <div class="widget-content">
             <form class="form-inline">
                 @Html.DropDownListFor(m => m.Year, new SelectList(Model.GetYearOptions(), "Value", "Text"), "Select All")
-                <button type="submit" class="btn">Filter</button>
+                <a href="javascript:" id="filter-report" class="btn">Filter</a>
+                @if(user.roles.Exists(p => p == (int)PermitToWork.Models.User.UserEntity.role.ADMINMASTERSHE))
+                {
+                <a href="javascript:" id="download-report" class="btn">Download Report</a>
+                }
+                <span class="loading"><img src="@Url.Content("~/Content/Images/loading.gif")" alt="Loading" /></span>
             </form>
 
             <div class="row-fluid">
