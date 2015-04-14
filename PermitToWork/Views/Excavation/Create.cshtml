@@ -117,7 +117,7 @@
             if (values.who == "1") {
                 var all = true;
                 for (var a in values) {
-                    if (a != "approval_note") {
+                    if (a != "approval_note" && a != "enviro_officer") {
                         if (values[a] == null || values[a] == "") {
                             $('#' + a + '_valid').show();
                             all = false;
