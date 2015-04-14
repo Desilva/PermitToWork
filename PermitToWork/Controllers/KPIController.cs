@@ -33,6 +33,7 @@ namespace PermitToWork.Controllers
                 AssessorAverageResponseTime = kpi.CalculateAssessorAverageResponseTimeInHours(),
                 FOClosingApprove = kpi.CalculateFOClosing(),
                 FOAverageClosingTime = kpi.CalculateFOAverageClosingTimeInHours(),
+                RequestorImpromptuPermit = kpi.CalculateRequestorImpromptuPermit(),
                 status = "200" 
             };
 

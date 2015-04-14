@@ -10,6 +10,7 @@ namespace PermitToWork.Models.KPI
     {
         public int RequestorOntimeClosing { get; set; }
         public int RequestorOverdueClosing { get; set; }
+        public int RequestorImpromptuPermit { get; set; }
         public double SupervisorAverageResponseTime { get; set; } //in hours
         public double AssessorAverageResponseTime { get; set; } //in hours
         public int FOClosingApprove { get; set; }

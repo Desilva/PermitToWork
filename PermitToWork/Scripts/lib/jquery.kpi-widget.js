@@ -41,6 +41,7 @@
                 self.element.find('div[data-kpi-type=assessor-response-time]').html(kendo.toString(response.AssessorAverageResponseTime, 'n2') + ' hours');
                 self.element.find('div[data-kpi-type=fo-closing-permit]').html(response.FOClosingApprove);
                 self.element.find('div[data-kpi-type=fo-closing-time]').html(kendo.toString(response.FOAverageClosingTime, 'n2') + ' hours');
+                self.element.find('div[data-kpi-type=requestor-impromptu]').html(response.RequestorImpromptuPermit);
 
                 self._finishReload();
             }, 'json')

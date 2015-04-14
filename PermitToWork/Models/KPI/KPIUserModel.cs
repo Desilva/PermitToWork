@@ -85,7 +85,24 @@ namespace PermitToWork.Models.KPI
 
         public int CalculateRequestorImpromptuPermit()
         {
-            return 0;
+            //kamus
+            string strUserId = UserId.ToString();
+            int count;
+
+            //algoritma
+            var query =
+                from permit in db.permit_to_work
+                where permit.acc_ptw_requestor == strUserId && 
+                    (permit.create_date.Value.Year == permit.validity_period_start.Value.Year &&
+                    permit.create_date.Value.Month == permit.validity_period_start.Value.Month &&
+                    permit.create_date.Value.Day == permit.validity_period_start.Value.Day)
+                select permit;
+
+            if (Year != null)
+                query = query.Where(m => m.create_date.Value.Year == Year);
+            count = query.Count();
+
+            return count;
         }
 
         #endregion
