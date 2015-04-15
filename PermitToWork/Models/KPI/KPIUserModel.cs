@@ -118,14 +118,29 @@ namespace PermitToWork.Models.KPI
             int lastPermitId = 0;
             KPIMaster.AppState state = KPIMaster.AppState.EMPTY;
             DateTime startTime = DateTime.Now, finishTime = DateTime.Now;
-            List<permit_log> permitList;
+            List<permit_log> permitLogList;
+            IQueryable<int> innerQuery;
 
             //algoritma
-            var innerQuery = 
-                from permit in db.permit_log
-                where permit.user_id == UserId && permit.permit_type == 0 && 
-                    (permit.status == KPIMaster.SupervisorApprove || permit.status == KPIMaster.SupervisorReject)
-                select permit.id_permit.Value;
+            if (Year == null)
+            {
+                innerQuery =
+                    from log in db.permit_log
+                    where log.user_id == UserId && log.permit_type == 0 &&
+                        (log.status == KPIMaster.SupervisorApprove || log.status == KPIMaster.SupervisorReject)
+                    select log.id_permit.Value;
+            }
+            else
+            {
+                innerQuery =
+                    from log in db.permit_log
+                    join ptw in db.permit_to_work on log.id_permit equals ptw.id
+                    where log.user_id == UserId && log.permit_type == 0 &&
+                        (log.status == KPIMaster.SupervisorApprove || log.status == KPIMaster.SupervisorReject) &&
+                        ptw.validity_period_end.Value.Year == Year
+                    select log.id_permit.Value;
+            }
+
             var query =
                 from permit in db.permit_log
                 where innerQuery.Distinct().Contains(permit.id_permit.Value) &&
@@ -136,12 +151,12 @@ namespace PermitToWork.Models.KPI
                 select permit
             ;
 
-            if (Year != null)
-                query = query.Where(m => m.datetime.Value.Year == Year);
+            //if (Year != null)
+            //    query = query.Where(m => m.datetime.Value.Year == Year);
             query = query.OrderBy(m => m.id_permit).ThenBy(m => m.datetime);
 
-            permitList = query.ToList();
-            foreach (permit_log log in permitList)
+            permitLogList = query.ToList();
+            foreach (permit_log log in permitLogList)
             {
                 if (state == KPIMaster.AppState.EMPTY)
                 {
@@ -197,13 +212,28 @@ namespace PermitToWork.Models.KPI
             KPIMaster.AppState state = KPIMaster.AppState.EMPTY;
             DateTime startTime = DateTime.Now, finishTime = DateTime.Now;
             List<permit_log> permitList;
+            IQueryable<int> innerQuery;
 
             //algoritma
-            var innerQuery =
-                from permit in db.permit_log
-                where permit.user_id == UserId && permit.permit_type == 0 &&
-                    (permit.status == KPIMaster.AssessorReject || permit.status == KPIMaster.AssessorApprove)
-                select permit.id_permit.Value;
+            if (Year == null)
+            {
+                innerQuery =
+                    from log in db.permit_log
+                    where log.user_id == UserId && log.permit_type == 0 &&
+                        (log.status == KPIMaster.AssessorReject || log.status == KPIMaster.AssessorApprove)
+                    select log.id_permit.Value;
+            }
+            else
+            {
+                innerQuery =
+                    from log in db.permit_log
+                    join ptw in db.permit_to_work on log.id_permit equals ptw.id
+                    where log.user_id == UserId && log.permit_type == 0 &&
+                        (log.status == KPIMaster.AssessorReject || log.status == KPIMaster.AssessorApprove) &&
+                        ptw.validity_period_end.Value.Year == Year
+                    select log.id_permit.Value;
+            }
+
             var query =
                 from permit in db.permit_log
                 where innerQuery.Distinct().Contains(permit.id_permit.Value) &&
@@ -213,8 +243,6 @@ namespace PermitToWork.Models.KPI
                 select permit
             ;
 
-            if (Year != null)
-                query = query.Where(m => m.datetime.Value.Year == Year);
             query = query.OrderBy(m => m.id_permit).ThenBy(m => m.datetime);
 
             permitList = query.ToList();
@@ -275,13 +303,13 @@ namespace PermitToWork.Models.KPI
             int count;
 
             //algoritma
-            var query = db.permit_log
-                .Where(m => m.user_id == UserId && m.status == KPIMaster.FOClosingApprove && m.permit_type == 0);
+            var query = db.permit_to_work
+                .Where(m => m.acc_fo == strUserId && m.status == 11);
 
             if (Year != null)
-                query = query.Where(m => m.datetime.Value.Year == Year);
+                query = query.Where(m => m.validity_period_end.Value.Year == Year);
 
-            count = query.GroupBy(m => m.id_permit).Count();
+            count = query.Count();
 
             return count;
         }
@@ -302,13 +330,37 @@ namespace PermitToWork.Models.KPI
             KPIMaster.AppState state = KPIMaster.AppState.EMPTY;
             DateTime startTime = DateTime.Now, finishTime = DateTime.Now;
             List<permit_log> permitList;
+            IQueryable<int> innerQuery;
 
             //algoritma
-            var innerQuery =
-                from permit in db.permit_log
-                where permit.user_id == UserId && permit.permit_type == 0 &&
-                    (permit.status == KPIMaster.FOClosingApprove || permit.status == KPIMaster.FOClosingReject)
-                select permit.id_permit.Value;
+            if (Year == null)
+            {
+                //innerQuery =
+                //    from log in db.permit_log
+                //    where log.user_id == UserId && log.permit_type == 0 &&
+                //        (log.status == KPIMaster.FOClosingApprove || log.status == KPIMaster.FOClosingReject)
+                //    select log.id_permit.Value;
+
+                innerQuery =
+                    from ptw in db.permit_to_work
+                    where ptw.acc_fo == strUserId && ptw.status == 11
+                    select ptw.id;
+            }
+            else
+            {
+                //innerQuery =
+                //    from log in db.permit_log
+                //    join ptw in db.permit_to_work on log.id_permit equals ptw.id
+                //    where log.user_id == UserId && log.permit_type == 0 &&
+                //        (log.status == KPIMaster.FOClosingApprove || log.status == KPIMaster.FOClosingReject) &&
+                //        ptw.validity_period_end.Value.Year == Year
+                //    select log.id_permit.Value;
+                innerQuery =
+                    from ptw in db.permit_to_work
+                    where ptw.acc_fo == strUserId && ptw.status == 11 &&
+                        ptw.validity_period_end.Value.Year == Year
+                    select ptw.id;
+            }
             var query =
                 from permit in db.permit_log
                 where innerQuery.Distinct().Contains(permit.id_permit.Value) &&
@@ -318,8 +370,6 @@ namespace PermitToWork.Models.KPI
                 select permit
             ;
 
-            if (Year != null)
-                query = query.Where(m => m.datetime.Value.Year == Year);
             query = query.OrderBy(m => m.id_permit).ThenBy(m => m.datetime);
 
             permitList = query.ToList();

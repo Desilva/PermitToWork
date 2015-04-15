@@ -265,6 +265,7 @@ textarea
 /* --------------------BEGIN KPI    ------------------- */
 
 #home-kpi {  }
+    #home-kpi .widget-box { margin-bottom: 0; }
     #home-kpi form { margin-bottom: 15px; }
 
 /* --------------------END KPI      ------------------- */

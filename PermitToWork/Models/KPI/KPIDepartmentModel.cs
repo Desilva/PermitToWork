@@ -42,7 +42,7 @@ namespace PermitToWork.Models.KPI
                 .Where(m => m.status == 11);
 
             if (Year != null)
-                query = query.Where(m => m.validity_period_start.Value.Year == Year);
+                query = query.Where(m => m.validity_period_end.Value.Year == Year);
 
             Departments = query.GroupBy(m => m.ptw_no.Substring(0, (SqlFunctions.CharIndex("-", m.ptw_no).Value - 1)))
                 .Select(m => new DepartmentEntity { DepartmentName = m.Key, TotalClosing = m.Count() }).ToList();
