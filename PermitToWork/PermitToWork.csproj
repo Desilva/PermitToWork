@@ -1221,7 +1221,7 @@
     <Content Include="Views\MasterDisposalLocation\Index.cshtml" />
     <Content Include="Views\KPI\Index.cshtml" />
     <Content Include="Views\MasterEnviroOfficer\Index.cshtml" />
-    <None Include="Views\Excavation\Create.cshtml.bak" />
+    <Content Include="Views\Workflow\ExcavationDisposalMoved.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

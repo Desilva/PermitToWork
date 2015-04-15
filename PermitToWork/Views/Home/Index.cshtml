@@ -140,6 +140,10 @@
      @{ Html.RenderPartial("~/Views/Workflow/Excavation.cshtml"); }
 </script>
     
+<script id="workflow-excavation-disposal-moved-template" type="text/x-kendo-template">
+     @{ Html.RenderPartial("~/Views/Workflow/ExcavationDisposalMoved.cshtml"); }
+</script>
+    
 <script id="workflow-radiography-template" type="text/x-kendo-template">
      @{ Html.RenderPartial("~/Views/Workflow/Radiography.cshtml"); }
 </script>
@@ -152,6 +156,7 @@
     var isNeedClose = "";
     var day = new Date();
     day.setDate(day.getDate() + 1);
+
     $(document).ready(function () {
         var crudServiceBaseUrl = "Home",
             dataSourceIn = new kendo.data.DataSource({
@@ -464,17 +469,26 @@
     //excavation workflow
     function showWorkflowExcavation(id, num) {
         var workflowObject = $('#workflow-excavation');
+        var template = '';
 
         if (!workflowObject.length) { //create element if not exist
             workflowObject = $(document.createElement('div')).attr('id', 'workflow-excavation').appendTo('body');
             workflowObject.workflowDiagram({
-                template: kendo.template($("#workflow-excavation-template").html()),
                 url: '@Url.Action("Excavation", "Workflow")',
             });
         }
 
-        workflowObject.workflowDiagram('reload', id, num);
-        workflowObject.workflowDiagram('show');
+        $.post('@Url.Action("IsExcavationDisposalMoved", "Workflow")', { id: id}, function (isDisposalMoved) {
+            if (isDisposalMoved === 'True') {
+                template = kendo.template($('#workflow-excavation-disposal-moved-template').html());
+            } else {
+                template = kendo.template($("#workflow-excavation-template").html());
+            }
+            workflowObject.workflowDiagram('changeTemplate', template);
+
+            workflowObject.workflowDiagram('reload', id, num);
+            workflowObject.workflowDiagram('show');
+        })
     }
 
     //radiography workflow

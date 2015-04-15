@@ -1,0 +1,238 @@
+﻿@{
+    string top = "";
+    string left = "";
+    string style = "";
+}
+<div class="workflow-container workflow-row-3">
+    @{
+        top = "48px";
+        style = string.Format("top: {0};", top);
+    }
+    <div data-node-name="REQUESTOR_INPUT" class="workflow-node workflow-col-1" style="@style">
+	    <div class="workflow-box">
+            <div class="workflow-text">Requestor Creation</div>
+	    </div>
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+        </div>
+    </div>
+
+    <div data-node-name="SUPERVISOR_APPROVE" class="workflow-node workflow-col-2" style="@style">
+	    <div class="workflow-box">
+            <div class="workflow-text">Supervisor Approve</div>
+        </div>
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-horizontal.svg")))
+        </div>
+    </div>
+
+    <!-- START PARALLEL -->
+
+    @{
+        top = "26px";
+        left = "504px";
+        style = string.Format("top: {0}; left: {1};", top, left);
+    }
+    <div class="workflow-bridge" style="@style">
+        @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-vertical.svg")))
+    </div>
+    
+    @{
+        style = string.Format("left: {0};", left);
+    }
+    <div data-node-name="EANDI_APPROVE" class="workflow-node" style="@style">
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+        </div>
+	    <div class="workflow-box">
+            <div class="workflow-text">E&I Approve</div>
+        </div>
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-horizontal.svg")))
+        </div>
+    </div>
+    
+    @{
+        top = "102px";
+        style = string.Format("top: {0}; left: {1};", top, left);
+    }
+    <div data-node-name="CIVIL_APPROVE" class="workflow-node workflow-col-4" style="@style">
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+        </div>
+	    <div class="workflow-box">
+            <div class="workflow-text">Civil Approve</div>
+        </div>
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-horizontal.svg")))
+        </div>
+    </div>
+
+    @{
+        top = "26px";
+        left = "856px";
+        style = string.Format("top: {0}; left: {1};", top, left);
+    }
+    <div class="workflow-bridge" style="@style">
+        @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-vertical.svg")))
+    </div>
+
+    <!-- END PARALLEL -->
+    
+    @{
+        top = "48px";
+        left = "856px";
+        style = string.Format("left: {0}; top: {1};", left, top);
+    }
+    <div data-node-name="ENVIRO_APPROVE" class="workflow-node" style="@style">
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+        </div>
+	    <div class="workflow-box">
+            <div class="workflow-text">Environmental Officer Approve</div>
+        </div>
+        <div class="workflow-line">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+        </div>
+    </div>
+    
+    @{
+        left = "1208px";
+        style = string.Format("left: {0}; top: {1};", left, top);
+    }
+    <div data-node-name="REQUESTOR_APPROVE" class="workflow-node" style="@style">
+	    <div class="workflow-box">
+            <div class="workflow-text">Requestor Approve</div>
+        </div>
+    </div>
+
+    @{
+        left = "1268px";
+        top = "100px";
+        style = string.Format("left: {0}; top: {1};", left, top);
+    }    
+    <div class="workflow-bridge" style="@style">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/down-arrow.svg")))
+    </div>
+
+    @{
+        left = "1208px";
+        top = "200px";
+        style = string.Format("left: {0}; top: {1};", left, top);
+    }
+    <div data-node-name="FACILITY_OWNER_APPROVE" class="workflow-node" style="@style">
+	    <div class="workflow-box">
+            <div class="workflow-text">Facility Owner Approve</div>
+        </div>
+    </div>
+</div>
+
+<!-- CANCELLATION WORKFLOW -->
+<div class="workflow-cancellation">
+    <hr />
+    <h3>Cancellation</h3>
+        
+    <div class="workflow-container workflow-row-2">
+        @{
+            top = "48px";
+            style = string.Format("top: {0};", top);
+        }
+        <div data-node-name="CANCELLATION_REQUESTOR" class="workflow-node workflow-col-1" style="@style">
+	        <div class="workflow-box">
+                <div class="workflow-text">Requestor Approve</div>
+	        </div>
+            <div class="workflow-line">
+                @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+            </div>
+        </div>
+
+        <div data-node-name="CANCELLATION_SUPERVISOR" class="workflow-node workflow-col-2" style="@style">
+	        <div class="workflow-box">
+                <div class="workflow-text">Supervisor Approve</div>
+            </div>
+            <div class="workflow-line">
+                @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-horizontal.svg")))
+            </div>
+        </div>
+
+        <!-- START PARALLEL -->
+
+        @{
+            top = "26px";
+            left = "504px";
+            style = string.Format("top: {0}; left: {1};", top, left);
+        }
+        <div class="workflow-bridge" style="@style">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-vertical.svg")))
+        </div>
+    
+        @{
+            style = string.Format("left: {0};", left);
+        }
+        <div data-node-name="CANCELLATION_EANDI" class="workflow-node" style="@style">
+            <div class="workflow-line">
+                @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+            </div>
+	        <div class="workflow-box">
+                <div class="workflow-text">E&I Approve</div>
+            </div>
+            <div class="workflow-line">
+                @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-horizontal.svg")))
+            </div>
+        </div>
+    
+        @{
+            top = "102px";
+            style = string.Format("top: {0}; left: {1};", top, left);
+        }
+        <div data-node-name="CANCELLATION_CIVIL" class="workflow-node workflow-col-4" style="@style">
+            <div class="workflow-line">
+                @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+            </div>
+	        <div class="workflow-box">
+                <div class="workflow-text">Civil Approve</div>
+            </div>
+            <div class="workflow-line">
+                @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-horizontal.svg")))
+            </div>
+        </div>
+
+        @{
+            top = "26px";
+            left = "856px";
+            style = string.Format("top: {0}; left: {1};", top, left);
+        }
+        <div class="workflow-bridge" style="@style">
+            @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/line-vertical.svg")))
+        </div>
+
+        <!-- END PARALLEL -->
+    
+        @{
+            top = "48px";
+            left = "856px";
+            style = string.Format("left: {0}; top: {1};", left, top);
+        }
+        <div data-node-name="CANCELLATION_ENVIRO" class="workflow-node" style="@style">
+            <div class="workflow-line">
+                @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+            </div>
+	        <div class="workflow-box">
+                <div class="workflow-text">Environmental Officer Approve</div>
+            </div>
+            <div class="workflow-line">
+                @Html.Raw(File.ReadAllText(Server.MapPath("~/Content/svg/right-arrow.svg")))
+            </div>
+        </div>
+    
+        @{
+            left = "1208px";
+            style = string.Format("left: {0}; top: {1};", left, top);
+        }
+        <div data-node-name="CANCELLATION_FACILITY_OWNER" class="workflow-node" style="@style">
+	        <div class="workflow-box">
+                <div class="workflow-text">Facility Owner Approve</div>
+            </div>
+        </div>
+    </div>
+</div>

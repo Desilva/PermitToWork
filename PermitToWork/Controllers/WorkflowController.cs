@@ -44,7 +44,12 @@ namespace PermitToWork.Controllers
 
         public string Excavation(int id)
         {
-            ExcavationModel model = new ExcavationModel(new workflow_node().FindAllNode(id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString()));
+            bool isDisposalMoved = false;
+            excavation excavation = db.excavations.Where(m => m.id == id).FirstOrDefault();
+            if (excavation != null)
+                isDisposalMoved = excavation.IsDisposalMoved();
+
+            ExcavationModel model = new ExcavationModel(new workflow_node().FindAllNode(id, WorkflowNodeServiceModel.DocumentType.EXCAVATION.ToString()), isDisposalMoved);
 
             return new JavaScriptSerializer().Serialize(model.NodeList);
         }
@@ -83,6 +88,17 @@ namespace PermitToWork.Controllers
 
             return wh.isNeedInspector();
             //return false;
+        }
+
+        [HttpPost]
+        public bool IsExcavationDisposalMoved(int id)
+        {
+            bool isDisposalMoved = false;
+            excavation excavation = db.excavations.Where(m => m.id == id).FirstOrDefault();
+            if (excavation != null)
+                isDisposalMoved = excavation.IsDisposalMoved();
+
+            return isDisposalMoved;
         }
     }
 }

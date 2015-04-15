@@ -32,19 +32,7 @@
             //    '</div>'
             //);
 
-            //window
-            self.element.kendoWindow({
-                title: self.options.title,
-                width: 1500,
-                height: 500,
-                visible: false,
-                modal: true,
-                content: {
-                    //url: self.options.bindingUrl,
-                    //dataType: 'json',
-                    template: self.options.template,
-                }
-            });
+            self._initWindow();
         },
 		
         _init: function(){
@@ -54,11 +42,37 @@
             $.Widget.prototype.destroy.call(this);
         },
 
+        _initWindow: function () {
+            var self = this;
+
+            if (self.options.template !== '') {
+                self.element.kendoWindow({
+                    title: self.options.title,
+                    width: 1500,
+                    height: 500,
+                    visible: false,
+                    modal: true,
+                    content: {
+                        //url: self.options.bindingUrl,
+                        //dataType: 'json',
+                        template: self.options.template,
+                    }
+                });
+            }
+        },
+
         //menampilkan popup window berisi gambar workflow
         show: function () {
             var self = this;
 
             self.element.data('kendoWindow').center().open();
+        },
+
+        changeTemplate: function (template) {
+            var self = this;
+
+            self.options.template = template;
+            self._initWindow();
         },
 
         //reload data untuk gambar workflow

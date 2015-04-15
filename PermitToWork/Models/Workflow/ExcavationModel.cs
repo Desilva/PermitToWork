@@ -8,16 +8,17 @@ namespace PermitToWork.Models.Workflow
     public class ExcavationModel
     {
         //urutan tidak boleh diganti
-        private List<string> NodeNameList = new List<string> { "REQUESTOR_INPUT", "SUPERVISOR_APPROVE", "EANDI_APPROVE", "CIVIL_APPROVE", "REQUESTOR_APPROVE", "FACILITY_OWNER_APPROVE", "DEPT_HEAD_FO_APPROVE" };
-        private List<string> CancellationNodeNameList = new List<string> { "CANCELLATION_REQUESTOR", "CANCELLATION_SUPERVISOR", "CANCELLATION_EANDI", "CANCELLATION_CIVIL", "CANCELLATION_FACILITY_OWNER" };
+        private List<string> NodeNameList = new List<string> { "REQUESTOR_INPUT", "SUPERVISOR_APPROVE", "EANDI_APPROVE", "CIVIL_APPROVE", "ENVIRO_APPROVE", "REQUESTOR_APPROVE", "FACILITY_OWNER_APPROVE", "DEPT_HEAD_FO_APPROVE" };
+        private List<string> CancellationNodeNameList = new List<string> { "CANCELLATION_REQUESTOR", "CANCELLATION_SUPERVISOR", "CANCELLATION_EANDI", "CANCELLATION_CIVIL", "CANCELLATION_ENVIRO", "CANCELLATION_FACILITY_OWNER" };
         
         public List<WorkflowNodePresentationStub> NodeList { get; set; }
+        private bool IsDisposalMoved { get; set; }
 
         /// <summary>
         /// parsing nodes dari service ke dalam NodeList
         /// </summary>
         /// <param name="nodes"></param>
-        public ExcavationModel(List<workflow_node> signals)
+        public ExcavationModel(List<workflow_node> signals, bool isDisposalMoved = false)
         {
             //kamus lokal
             List<WorkflowNodePresentationStub> cancellationNodes;
@@ -25,6 +26,13 @@ namespace PermitToWork.Models.Workflow
             WorkflowHelper helper = new WorkflowHelper();
 
             //algoritma
+            IsDisposalMoved = isDisposalMoved;
+            if (!IsDisposalMoved)
+            {
+                NodeNameList.Remove(WorkflowNodeServiceModel.ExcavationNodeName.ENVIRO_APPROVE.ToString());
+                CancellationNodeNameList.Remove(WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_ENVIRO.ToString());
+            }
+
             NodeList = ProcessExcavationNodes(signals.Where(m => NodeNameList.Contains(m.node_name)).ToList(), NodeNameList);
 
             cancellationSignals = signals.Where(m => CancellationNodeNameList.Contains(m.node_name)).ToList();
@@ -37,11 +45,17 @@ namespace PermitToWork.Models.Workflow
 
         /// <summary>
         /// memproses list of signals
-        /// kasus
+        /// kasus (!IsDisposalMoved)
         ///     supervisor approve ->  EI & civil ongoing
         ///     EI & civil approve -> requestor approve ongoing
         ///     EI reject / civil reject -> supervisor approve ongoing
         ///     requestor reject -> EI & civil ongoing
+        /// kasus (IsEnviro)
+        ///     supervisor approve ->  EI & civil ongoing
+        ///     EI & civil approve          -> enviro approve ongoing
+        ///     EI reject / civil reject    -> supervisor approve ongoing
+        ///     enviro approve              -> requestor approve ongoing
+        ///     enviro reject -> EI & civil ongoing
         /// </summary>
         /// <param name="signals"></param>
         /// <param name="nodeNames"></param>
@@ -94,6 +108,18 @@ namespace PermitToWork.Models.Workflow
                         }
                         else if (node.node_name == WorkflowNodeServiceModel.ExcavationNodeName.REQUESTOR_APPROVE.ToString())
                         {
+                            if (!IsDisposalMoved)
+                            {
+                                nodeNamesToBeDeleted.Add(WorkflowNodeServiceModel.ExcavationNodeName.EANDI_APPROVE.ToString());
+                                nodeNamesToBeDeleted.Add(WorkflowNodeServiceModel.ExcavationNodeName.CIVIL_APPROVE.ToString());
+                            }
+                            else
+                            {
+                                nodeNamesToBeDeleted.Add(WorkflowNodeServiceModel.ExcavationNodeName.ENVIRO_APPROVE.ToString());
+                            }
+                        }
+                        else if (node.node_name == WorkflowNodeServiceModel.ExcavationNodeName.ENVIRO_APPROVE.ToString())
+                        {
                             nodeNamesToBeDeleted.Add(WorkflowNodeServiceModel.ExcavationNodeName.EANDI_APPROVE.ToString());
                             nodeNamesToBeDeleted.Add(WorkflowNodeServiceModel.ExcavationNodeName.CIVIL_APPROVE.ToString());
                         }
@@ -143,11 +169,17 @@ namespace PermitToWork.Models.Workflow
 
         /// <summary>
         /// memproses list of signals kasus cancellation
-        /// kasus
+        /// kasus (!IsDisposalMoved)
         ///     supervisor approve ->  EI & civil ongoing
         ///     EI & civil approve -> requestor approve ongoing
         ///     EI reject / civil reject -> supervisor approve ongoing
         ///     requestor reject -> EI & civil ongoing
+        /// kasus (IsDisposalMoved)
+        ///     supervisor approve          ->  EI & civil ongoing
+        ///     EI & civil approve          -> enviro approve ongoing
+        ///     EI reject / civil reject    -> supervisor approve ongoing
+        ///     enviro approve              -> fo approve ongoing
+        ///     enviro reject               -> EI & civil ongoing
         /// </summary>
         /// <param name="signals"></param>
         /// <param name="nodeNames"></param>
@@ -199,6 +231,18 @@ namespace PermitToWork.Models.Workflow
                             nodeNamesToBeDeleted.Add(WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_SUPERVISOR.ToString());
                         }
                         else if (node.node_name == WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_FACILITY_OWNER.ToString())
+                        {
+                            if (!IsDisposalMoved)
+                            {
+                                nodeNamesToBeDeleted.Add(WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_EANDI.ToString());
+                                nodeNamesToBeDeleted.Add(WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_CIVIL.ToString());
+                            }
+                            else
+                            {
+                                nodeNamesToBeDeleted.Add(WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_ENVIRO.ToString());
+                            }
+                        }
+                        else if (node.node_name == WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_ENVIRO.ToString())
                         {
                             nodeNamesToBeDeleted.Add(WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_EANDI.ToString());
                             nodeNamesToBeDeleted.Add(WorkflowNodeServiceModel.ExcavationNodeName.CANCELLATION_CIVIL.ToString());
