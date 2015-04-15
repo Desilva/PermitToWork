@@ -56,6 +56,7 @@ namespace PermitToWork.Models.KPI
             KPIMaster.AppState state = KPIMaster.AppState.EMPTY;
             DateTime startTime = DateTime.Now, finishTime = DateTime.Now;
             List<permit_log> permitList;
+            IQueryable<int> innerQuery;
 
             //algoritma
             foreach (DepartmentEntity dept in Departments)
@@ -64,10 +65,22 @@ namespace PermitToWork.Models.KPI
                 sumHours = 0; averageHours = 0;
                 lastPermitId = 0;
 
-                var innerQuery =
-                    from ptw in db.permit_to_work
-                    where ptw.status == 11 && ptw.ptw_no.StartsWith(dept.DepartmentName)
-                    select ptw.id;
+                if (Year == null)
+                {
+                    innerQuery =
+                        from ptw in db.permit_to_work
+                        where ptw.status == 11 && ptw.ptw_no.StartsWith(dept.DepartmentName)
+                        select ptw.id;
+                }
+                else
+                {
+                    innerQuery =
+                        from ptw in db.permit_to_work
+                        where ptw.status == 11 && ptw.ptw_no.StartsWith(dept.DepartmentName) &&
+                            ptw.validity_period_end.Value.Year == Year
+                        select ptw.id;
+                }
+
                 var query =
                     from log in db.permit_log
                     where innerQuery.Distinct().Contains(log.id_permit.Value) &&
@@ -77,8 +90,6 @@ namespace PermitToWork.Models.KPI
                     select log
                 ;
 
-                if (Year != null)
-                    query = query.Where(m => m.datetime.Value.Year == Year);
                 query = query.OrderBy(m => m.id_permit).ThenBy(m => m.datetime);
 
                 permitList = query.ToList();
