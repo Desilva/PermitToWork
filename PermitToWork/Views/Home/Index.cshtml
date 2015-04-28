@@ -116,9 +116,8 @@
 
 @section scripts
 {
-<script src="@Url.Content("~/Scripts/lib/jquery.workflow-diagram.js")"></script>
-
 <script src="@Url.Content("~/Scripts/lib/jquery.kpi-widget.js")"></script>
+<script src="@Url.Content("~/Scripts/lib/jquery.workflow-diagram.js")"></script>
 
 <script id="workflow-csep-template" type="text/x-kendo-template">
      @{ Html.RenderPartial("~/Views/Workflow/CSEP.cshtml"); }
@@ -474,6 +473,7 @@
         if (!workflowObject.length) { //create element if not exist
             workflowObject = $(document.createElement('div')).attr('id', 'workflow-excavation').appendTo('body');
             workflowObject.workflowDiagram({
+                template : kendo.template($("#workflow-excavation-template").html()),
                 url: '@Url.Action("Excavation", "Workflow")',
             });
         }
