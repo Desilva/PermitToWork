@@ -285,7 +285,8 @@
 
             if (values.who == "4") {
                 if (values.pre_screening_spv.indexOf("2") < 0 && values.pre_screening_spv.indexOf("1") < 0) {
-                    r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                    alert("Pre Job Screening value cannot be all 'N/A'! Please check the pre job screening section.");
+                    return;
                 }
                 if (r) {
                     if (values.pre_screening_spv.indexOf("2") >= 0) {
@@ -302,7 +303,8 @@
                 }
             } else if (values.who == "3") {
                 if (values.pre_screening_rad.indexOf("2") < 0 && values.pre_screening_rad.indexOf("1") < 0) {
-                    r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                    alert("Pre Job Screening value cannot be all 'N/A'! Please check the pre job screening section.");
+                    return;
                 }
                 if (r) {
                     if (values.pre_screening_rad.indexOf("2") >= 0) {
@@ -320,7 +322,8 @@
                 }
             } else if (values.who == "6") {
                 if (values.pre_screening_fo.indexOf("2") < 0 && values.pre_screening_fo.indexOf("1") < 0) {
-                    r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                    alert("Pre Job Screening value cannot be all 'N/A'! Please check the pre job screening section.");
+                    return;
                 }
                 if (r) {
                     if (values.pre_screening_fo.indexOf("2") >= 0) {
@@ -385,7 +388,8 @@
 
             if (who == "4") {
                 if (values.can_screening_spv.indexOf("2") < 0 && values.can_screening_spv.indexOf("1") < 0) {
-                    r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                    alert("Cancellation Screening value cannot be all 'N/A'! Please check the cancellation screening section.");
+                    return;
                 }
                 if (r) {
                     if (values.can_screening_spv.indexOf("2") >= 0) {
@@ -402,7 +406,8 @@
                 }
             } else if (who == "3") {
                 if (values.can_screening_rad.indexOf("2") < 0 && values.can_screening_rad.indexOf("1") < 0) {
-                    r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                    alert("Cancellation Screening value cannot be all 'N/A'! Please check the cancellation screening section.");
+                    return;
                 }
                 if (r) {
                     if (values.can_screening_rad.indexOf("2") >= 0) {
@@ -420,7 +425,8 @@
                 }
             } else if (who == "6") {
                 if (values.can_screening_fo.indexOf("2") < 0 && values.can_screening_fo.indexOf("1") < 0) {
-                    r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                    alert("Cancellation Screening value cannot be all 'N/A'! Please check the cancellation screening section.");
+                    return;
                 }
                 if (r) {
                     if (values.can_screening_fo.indexOf("2") >= 0) {

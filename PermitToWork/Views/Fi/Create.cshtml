@@ -60,9 +60,10 @@
                         $('#screening_spv_5').val() + "#" + $('#screening_spv_6').val();
 
             var r = true;
-            if (values.who == "2") {
+            if (values.who == "3") {
                 if (values.screening_spv.indexOf("2") < 0 && values.screening_spv.indexOf("1") < 0) {
-                    r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                    alert("Pre Job Screening value cannot be all 'N/A'! Please check the pre job screening section.");
+                    return;
                 }
                 if (r) {
                     if (values.screening_spv.indexOf("2") >= 0) {
@@ -77,9 +78,10 @@
                 } else {
                     return;
                 }
-            } else if (values.who == "3") {
+            } else if (values.who == "4") {
                 if (values.screening_so.indexOf("2") < 0 && values.screening_so.indexOf("1") < 0) {
-                    r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                    alert("Pre Job Screening value cannot be all 'N/A'! Please check the pre job screening section.");
+                    return;
                 }
                 if (r) {
                     if (values.screening_so.indexOf("2") >= 0) {
@@ -95,9 +97,10 @@
                 } else {
                     return;
                 }
-            } else if (values.who == "4") {
+            } else if (values.who == "5") {
                 if (values.screening_fo.indexOf("2") < 0 && values.screening_fo.indexOf("1") < 0) {
-                    r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                    alert("Pre Job Screening value cannot be all 'N/A'! Please check the pre job screening section.");
+                    return;
                 }
                 if (r) {
                     if (values.screening_fo.indexOf("2") >= 0) {
@@ -243,6 +246,63 @@
                         $('#can_screening_so_3').val();
             values.cancel_spv = $('#can_screening_spv_1').val() + "#" + $('#can_screening_spv_2').val() + "#" +
                         $('#can_screening_spv_3').val();
+
+            if (values.who == "3") {
+                if (values.cancel_spv.indexOf("2") < 0 && values.cancel_spv.indexOf("1") < 0) {
+                    alert("Cancellation Screening value cannot be all 'N/A'! Please check the cancellation screening section.");
+                    return;
+                }
+                if (r) {
+                    if (values.cancel_spv.indexOf("2") >= 0) {
+                        if (values.cancel_remark.indexOf("Spv:") < 0) {
+                            alert('Screening contains one or more \'no\'. Please add Notes start with \'Spv:\'');
+                            $('#cancel_remark_required').show();
+                            $('#cancel_remark_required').html('Notes must be added. Start with \'Spv:\'');
+
+                            return;
+                        }
+                    }
+                } else {
+                    return;
+                }
+            } else if (values.who == "4") {
+                if (values.cancel_so.indexOf("2") < 0 && values.cancel_so.indexOf("1") < 0) {
+                    alert("Cancellation Screening value cannot be all 'N/A'! Please check the cancellation screening section.");
+                    return;
+                }
+                if (r) {
+                    if (values.cancel_so.indexOf("2") >= 0) {
+                        if (values.cancel_remark.indexOf("SO:") < 0) {
+                            alert('Screening contains one or more \'no\'. Please add Notes start with \'SO:\'');
+                            $('#cancel_remark_required').show();
+                            $('#cancel_remark_required').html('Notes must be added. Start with \'SO:\'');
+
+                            return;
+                        }
+                    }
+                } else {
+                    return;
+                }
+            } else if (values.who == "5") {
+                if (values.cancel_fo.indexOf("2") < 0 && values.cancel_fo.indexOf("1") < 0) {
+                    alert("Pre Job Screening value cannot be all 'N/A'! Please check the pre job screening section.");
+                    return;
+                }
+                if (r) {
+                    if (values.cancel_fo.indexOf("2") >= 0) {
+                        if (values.cancel_remark.indexOf("FO:") < 0) {
+                            alert('Screening contains one or more \'no\'. Please add Notes start with \'FO:\'');
+                            $('#cancel_remark_required').show();
+                            $('#cancel_remark_required').html('Notes must be added. Start with \'FO:\'');
+
+                            return;
+                        }
+                    }
+                } else {
+                    return;
+                }
+            }
+
             $('#loading_gif').show();
             $(this).attr('disabled', 'disabled');
             $('#save-as-draft').attr('disabled', 'disabled');
@@ -910,6 +970,7 @@
         </tbody>
     </table>
     <h6>Remark : <small><i>(write any consent related fire impairment, start with 'Spv:' for Supervisor, start with 'SO:' for SO, and start with 'FO:' for FO)</i></small></h6>
+    <span id="cancel_remark_required" style="display:none;color:red"></span>
     <textarea class="table-textarea" id="cancel_remark" @(isCanEdit[10] || isCanEdit[11] || isCanEdit[12] ? "" : "disabled")>@(isCanEdit[10] ? Model.cancel_remark + "\nSpv: " : (isCanEdit[11] ? Model.cancel_remark + "\nSO: " : (isCanEdit[12] ? Model.cancel_remark + "\nFO: " : Model.cancel_remark)))</textarea>
     <br /><br />
 
