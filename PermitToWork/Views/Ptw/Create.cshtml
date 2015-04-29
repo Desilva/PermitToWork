@@ -268,7 +268,8 @@
                 var r = true;
                 if (val.pre_job_1_spv == "0" && val.pre_job_2_spv == "0" && val.pre_job_3_spv == "0" && val.pre_job_4_spv == "0" &&
                     val.pre_job_5_spv == "0" && val.pre_job_6_spv == "0" && val.pre_job_7_spv == "0") {
-                    r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                    alert("Pre Job Screening value cannot be all 'N/A'! Please check the pre job screening section.");
+                    return;
                 }
                 if (r) {
                     $('#supervisor_acc').attr('disabled', 'disabled');
@@ -441,7 +442,8 @@
                 var s = true;
                 if (val.pre_job_1_fo == "0" && val.pre_job_2_fo == "0" && val.pre_job_3_fo == "0" && val.pre_job_4_fo == "0" &&
                     val.pre_job_5_fo == "0" && val.pre_job_6_fo == "0" && val.pre_job_7_fo == "0") {
-                    r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                    alert("Pre Job Screening value cannot be all 'N/A'! Please check the pre job screening section.");
+                    return;
                 }
 
                 if (r && val.validity_period_start == val.proposed_period_start.split(' ')[0] &&
@@ -515,7 +517,8 @@
                 var r = true;
                 if (val.cancel_1_spv == "0" && val.cancel_2_spv == "0" && val.cancel_3_spv == "0" && val.cancel_4_spv == "0" &&
                     val.cancel_5_spv == "0" && val.cancel_6_spv == "0" && val.cancel_7_spv == "0") {
-                    r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                    alert("Cancellation Screening value cannot be all 'N/A'! Please check the cancellation screening section.");
+                    return;
                 }
                 if (r) {
                     $('#supervisor_can').attr('disabled', 'disabled');
@@ -562,7 +565,8 @@
                 var r = true;
                 if (val.cancel_1_fo == "0" && val.cancel_2_fo == "0" && val.cancel_3_fo == "0" && val.cancel_4_fo == "0" &&
                     val.cancel_5_fo == "0" && val.cancel_6_fo == "0" && val.cancel_7_fo == "0") {
-                    r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                    alert("Cancellation Screening value cannot be all 'N/A'! Please check the cancellation screening section.");
+                    return;
                 }
                 if (r) {
                     $('#fo_can').attr('disabled', 'disabled');

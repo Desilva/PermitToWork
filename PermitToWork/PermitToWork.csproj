@@ -772,7 +772,11 @@
     <Compile Include="Utilities\Base64.cs" />
     <Compile Include="Utilities\CapturingResponseFilter.cs" />
     <Compile Include="Utilities\DownloadFileActionResult.cs" />
+    <Compile Include="Utilities\DynamicQueryable.cs" />
     <Compile Include="Utilities\ExcelReader.cs" />
+    <Compile Include="Utilities\FilterInfo.cs" />
+    <Compile Include="Utilities\GridHelper.cs" />
+    <Compile Include="Utilities\GridRequestParameters.cs" />
     <Compile Include="Utilities\LogActionFilter.cs" />
     <Compile Include="Utilities\ModelUtilization.cs" />
     <Compile Include="Utilities\PdfGenerator\BinaryContentResult.cs" />
@@ -814,6 +818,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>StarEnergyPTW.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Utilities\SortingInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-responsive.css" />

@@ -78,16 +78,51 @@ namespace PermitToWork.Controllers
         [HttpPost]
         public string Binding(int type = 0)
         {
+            GridRequestParameters param = GridRequestParameters.Current;
+            int total = 0;
             UserEntity user = Session["user"] as UserEntity;
             var result = new List<PtwEntity>();
             if (user.id != 1)
             {
-                ListPtw listPtw = new ListPtw();
-                result = listPtw.listPtwByUser(user, type, HttpContext.Application["ListUser"] as ListUser);
+                if (Session["ListPtwByUser"] != null)
+                {
+                    int? types = Session["ListPtwType"] as int?;
+                    if (types == type)
+                    {
+                        DateTime? LastListUserDate = Session["ListPtwDate"] as DateTime?;
+                        if (DateTime.Now.Subtract(LastListUserDate.Value).TotalMinutes <= 30)
+                        {
+                            result = Session["ListPtwByUser"] as List<PtwEntity>;
+                            total = result.Count;
+                            result = result.Skip(param.Skip.Value).Take(param.Take.Value).ToList();
+                        }
+                        else
+                        {
+                            ListPtw listPtw = new ListPtw();
+                            result = listPtw.listPtwByUser(user, type, HttpContext.Application["ListUser"] as ListUser);
+                            total = result.Count;
+                            result = result.Skip(param.Skip.Value).Take(param.Take.Value).ToList();
+                        }
+                    }
+                    else
+                    {
+                        ListPtw listPtw = new ListPtw();
+                        result = listPtw.listPtwByUser(user, type, HttpContext.Application["ListUser"] as ListUser);
+                        total = result.Count;
+                        result = result.Skip(param.Skip.Value).Take(param.Take.Value).ToList();
+                    }
+                }
+                else
+                {
+                    ListPtw listPtw = new ListPtw();
+                    result = listPtw.listPtwByUser(user, type, HttpContext.Application["ListUser"] as ListUser);
+                    total = result.Count;
+                    result = result.Skip(param.Skip.Value).Take(param.Take.Value).ToList();
+                }
             }
             var serializer = new JavaScriptSerializer();
             serializer.MaxJsonLength = Int32.MaxValue;
-            return serializer.Serialize(result);
+            return serializer.Serialize(new { total = total, data = result });
         }
 
         [HttpPost]

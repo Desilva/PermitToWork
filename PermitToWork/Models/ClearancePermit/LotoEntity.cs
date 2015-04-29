@@ -82,6 +82,8 @@ namespace PermitToWork.Models.ClearancePermit
 
         private star_energy_ptwEntities db;
 
+
+        #region constructor
         public LotoEntity() : base()
         {
             this.db = new star_energy_ptwEntities();
@@ -233,95 +235,95 @@ namespace PermitToWork.Models.ClearancePermit
             this.listDocumentUploaded.Add("ATTACHMENT", Files.Select(p => p.Name).ToList());
         }
 
-        public LotoEntity(int id, UserEntity user, string ptw_requestor_id, ListUser listUser)
-            : this()
-        {
-            loto_permit loto = this.db.loto_permit.Find(id);
-            // this.ptw = new PtwEntity(fi.id_ptw.Value);
-            ModelUtilization.Clone(loto, this);
-            this.lotoPoint = new LotoPointEntity().getList(user, this.id);
-            this.lotoComingHolder = new LotoComingHolderEntity().getList(user, this.id, listUser);
-            this.work_description = "";
-            foreach (loto_permit_to_work permit in loto.loto_permit_to_work)
-            {
-                this.work_description += permit.permit_to_work.work_description + ", ";
-            }
-            if (this.work_description.Length != 0)
-            {
-                this.work_description = this.work_description.Substring(0, this.work_description.Length - 2);
-            }
-            if (this.supervisor != null)
-            {
-                this.supervisorUser = listUser.listUser.Find(p => p.id == Int32.Parse(this.supervisor));
-            }
+        //public LotoEntity(int id, UserEntity user, string ptw_requestor_id, ListUser listUser)
+        //    : this()
+        //{
+        //    loto_permit loto = this.db.loto_permit.Find(id);
+        //    // this.ptw = new PtwEntity(fi.id_ptw.Value);
+        //    ModelUtilization.Clone(loto, this);
+        //    this.lotoPoint = new LotoPointEntity().getList(user, this.id);
+        //    this.lotoComingHolder = new LotoComingHolderEntity().getList(user, this.id, listUser);
+        //    this.work_description = "";
+        //    foreach (loto_permit_to_work permit in loto.loto_permit_to_work)
+        //    {
+        //        this.work_description += permit.permit_to_work.work_description + ", ";
+        //    }
+        //    if (this.work_description.Length != 0)
+        //    {
+        //        this.work_description = this.work_description.Substring(0, this.work_description.Length - 2);
+        //    }
+        //    if (this.supervisor != null)
+        //    {
+        //        this.supervisorUser = listUser.listUser.Find(p => p.id == Int32.Parse(this.supervisor));
+        //    }
 
-            this.lotoSuspension = new LotoSuspensionEntity().getList(user, this.id);
-            getUserInLOTO(user,listUser);
+        //    this.lotoSuspension = new LotoSuspensionEntity().getList(user, this.id);
+        //    getUserInLOTO(user,listUser);
 
-            if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER2.ToString()] != null && this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER2.ToString()].id.ToString() == ptw_requestor_id)
-            {
-                this.id_glarf = this.holder_2_glarf;
-            }
+        //    if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER2.ToString()] != null && this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER2.ToString()].id.ToString() == ptw_requestor_id)
+        //    {
+        //        this.id_glarf = this.holder_2_glarf;
+        //    }
 
-            if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER3.ToString()] != null && this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER3.ToString()].id.ToString() == ptw_requestor_id)
-            {
-                this.id_glarf = this.holder_3_glarf;
-            }
+        //    if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER3.ToString()] != null && this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER3.ToString()].id.ToString() == ptw_requestor_id)
+        //    {
+        //        this.id_glarf = this.holder_3_glarf;
+        //    }
 
-            if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER4.ToString()] != null && this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER4.ToString()].id.ToString() == ptw_requestor_id)
-            {
-                this.id_glarf = this.holder_4_glarf;
-            }
+        //    if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER4.ToString()] != null && this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER4.ToString()].id.ToString() == ptw_requestor_id)
+        //    {
+        //        this.id_glarf = this.holder_4_glarf;
+        //    }
 
-            if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER5.ToString()] != null && this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER5.ToString()].id.ToString() == ptw_requestor_id)
-            {
-                this.id_glarf = this.holder_5_glarf;
-            }
+        //    if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER5.ToString()] != null && this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER5.ToString()].id.ToString() == ptw_requestor_id)
+        //    {
+        //        this.id_glarf = this.holder_5_glarf;
+        //    }
 
-            if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER6.ToString()] != null && this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER6.ToString()].id.ToString() == ptw_requestor_id)
-            {
-                this.id_glarf = this.holder_6_glarf;
-            }
+        //    if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER6.ToString()] != null && this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER6.ToString()].id.ToString() == ptw_requestor_id)
+        //    {
+        //        this.id_glarf = this.holder_6_glarf;
+        //    }
 
-            if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER7.ToString()] != null && this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER7.ToString()].id.ToString() == ptw_requestor_id)
-            {
-                this.id_glarf = this.holder_7_glarf;
-            }
+        //    if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER7.ToString()] != null && this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER7.ToString()].id.ToString() == ptw_requestor_id)
+        //    {
+        //        this.id_glarf = this.holder_7_glarf;
+        //    }
 
-            string path = HttpContext.Current.Server.MapPath("~/Upload/Loto/Attachment/" + this.id + "");
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-            DirectoryInfo d = new DirectoryInfo(path);//Assuming Test is your Folder
-            FileInfo[] Files = d.GetFiles(); //Getting Text files
+        //    string path = HttpContext.Current.Server.MapPath("~/Upload/Loto/Attachment/" + this.id + "");
+        //    if (!Directory.Exists(path))
+        //    {
+        //        Directory.CreateDirectory(path);
+        //    }
+        //    DirectoryInfo d = new DirectoryInfo(path);//Assuming Test is your Folder
+        //    FileInfo[] Files = d.GetFiles(); //Getting Text files
 
-            this.listDocumentUploaded.Add("ATTACHMENT", Files.Select(p => p.Name).ToList());
-        }
+        //    this.listDocumentUploaded.Add("ATTACHMENT", Files.Select(p => p.Name).ToList());
+        //}
 
-        public LotoEntity(loto_permit loto, UserEntity user, string ptw_requestor_id, ListUser listUser)
-            : this()
-        {
-            // this.ptw = new PtwEntity(fi.id_ptw.Value);
-            ModelUtilization.Clone(loto, this);
-            this.lotoComingHolder = new LotoComingHolderEntity().getList(user, this.id);
-            this.work_description = "";
-            if (this.supervisor != null)
-            {
-                this.supervisorUser = new UserEntity(Int32.Parse(this.supervisor), user.token, user);
-            }
-            getUserInLOTO(user, listUser);
+        //public LotoEntity(loto_permit loto, UserEntity user, string ptw_requestor_id, ListUser listUser)
+        //    : this()
+        //{
+        //    // this.ptw = new PtwEntity(fi.id_ptw.Value);
+        //    ModelUtilization.Clone(loto, this);
+        //    this.lotoComingHolder = new LotoComingHolderEntity().getList(user, this.id);
+        //    this.work_description = "";
+        //    if (this.supervisor != null)
+        //    {
+        //        this.supervisorUser = new UserEntity(Int32.Parse(this.supervisor), user.token, user);
+        //    }
+        //    getUserInLOTO(user, listUser);
 
-            string path = HttpContext.Current.Server.MapPath("~/Upload/Loto/Attachment/" + this.id + "");
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-            DirectoryInfo d = new DirectoryInfo(path);//Assuming Test is your Folder
-            FileInfo[] Files = d.GetFiles(); //Getting Text files
+        //    string path = HttpContext.Current.Server.MapPath("~/Upload/Loto/Attachment/" + this.id + "");
+        //    if (!Directory.Exists(path))
+        //    {
+        //        Directory.CreateDirectory(path);
+        //    }
+        //    DirectoryInfo d = new DirectoryInfo(path);//Assuming Test is your Folder
+        //    FileInfo[] Files = d.GetFiles(); //Getting Text files
 
-            this.listDocumentUploaded.Add("ATTACHMENT", Files.Select(p => p.Name).ToList());
-        }
+        //    this.listDocumentUploaded.Add("ATTACHMENT", Files.Select(p => p.Name).ToList());
+        //}
 
         public LotoEntity(string requestor, string work_location, int id_glarf, string acc_spv = null, string acc_fo = null)
             : this()
@@ -343,12 +345,18 @@ namespace PermitToWork.Models.ClearancePermit
             this.new_coming_holder = user.id.ToString();
         }
 
+        #endregion
+
+        #region main function
+
         public void ForList(int id, ListUser listUser)
         {
             loto_permit loto = this.db.loto_permit.Find(id);
             //// this.ptw = new PtwEntity(fi.id_ptw.Value);
             //ModelUtilization.Clone(loto, this);
             this.id = id;
+            this.loto_no = loto.loto_no;
+            this.supervisorUser = listUser.listUser.Find(p => p.id.ToString() == loto.supervisor);
             this.work_description = "";
             foreach (loto_permit_to_work permit in loto.loto_permit_to_work)
             {
@@ -1553,6 +1561,7 @@ namespace PermitToWork.Models.ClearancePermit
             return retVal;
         }
 
+        #endregion
 
         #region internal function
 
@@ -1694,6 +1703,8 @@ namespace PermitToWork.Models.ClearancePermit
         }
         #endregion
 
+        #region send email
+
         public string sendEmailFO(List<UserEntity> listFO, string serverUrl, string token, UserEntity user, int stat)
         {
             string salt = "susahbangetmencarisaltyangpalingbaikdanbenar";
@@ -1742,6 +1753,8 @@ namespace PermitToWork.Models.ClearancePermit
 
             return retVal;
         }
+
+        #endregion
 
         #region is Can Edit
 
@@ -2052,34 +2065,51 @@ namespace PermitToWork.Models.ClearancePermit
         public bool isCanSuspend(UserEntity user) {
             if (this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()] != null)
             {
-                bool isCan = false;
-                if ((user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].employee_delegate) && this.status != (int)LOTOStatus.FOSIGN)
+                bool isExistCancelUser = this.cancellation_supervisor_signature != null;
+                foreach (LotoComingHolderEntity comingHolder in this.lotoComingHolder)
                 {
-                    isCan = false;
-                }
-                else if ((user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].employee_delegate) && this.status == (int)LOTOStatus.FOSIGN && this.cancellation_supervisor_signature == null)
-                {
-                    isCan = true;
-                }
-                else if (this.status == (int)LOTOStatus.LOTOSUSPENSION)
-                {
-                    isCan = false;
-                }
-                else
-                {
-                    foreach (LotoComingHolderEntity comingHolder in this.lotoComingHolder)
+                    if (comingHolder.isApprove() && comingHolder.isCancel())
                     {
-                        if ((user.id == comingHolder.userEntity.id || user.id == comingHolder.userEntity.employee_delegate) && comingHolder.isApprove() && !comingHolder.isCancel())
-                        {
-                            isCan = true;
-                        }
-                        else
-                        {
-                            isCan = false;
-                        }
+                        isExistCancelUser = true;
                     }
                 }
-                return isCan;
+
+                if (!isExistCancelUser)
+                {
+
+                    bool isCan = false;
+                    if ((user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].employee_delegate) && this.status != (int)LOTOStatus.FOSIGN)
+                    {
+                        isCan = false;
+                    }
+                    else if ((user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].employee_delegate) && this.status == (int)LOTOStatus.FOSIGN && this.cancellation_supervisor_signature == null)
+                    {
+                        isCan = true;
+                    }
+                    else if (this.status == (int)LOTOStatus.LOTOSUSPENSION)
+                    {
+                        isCan = false;
+                    }
+                    else
+                    {
+                        if (this.status == (int)LOTOStatus.FOSIGN)
+                        {
+                            foreach (LotoComingHolderEntity comingHolder in this.lotoComingHolder)
+                            {
+                                if ((user.id == comingHolder.userEntity.id || user.id == comingHolder.userEntity.employee_delegate) && comingHolder.isApprove() && !comingHolder.isCancel())
+                                {
+                                    isCan = true;
+                                }
+                                else
+                                {
+                                    isCan = false;
+                                }
+                            }
+                        }
+                    }
+                    return isCan;
+                }
+                return false;
             }
             return false;
         }
@@ -2425,7 +2455,12 @@ namespace PermitToWork.Models.ClearancePermit
                     LotoComingHolderEntity comingHolder = enume.Current;
                     if ((user.id == comingHolder.userEntity.id || user.id == comingHolder.userEntity.employee_delegate) && !comingHolder.isCancel())
                     {
-                        found = true;
+                        loto_permit loto = db.loto_permit.Find(this.id);
+                        loto_permit_to_work lotoPtw = loto.loto_permit_to_work.Where(p => p.holder_no == comingHolder.no_holder).FirstOrDefault();
+                        if (lotoPtw != null)
+                        {
+                            found = lotoPtw.permit_to_work.status == (int)PtwEntity.statusPtw.ACCFO;
+                        }
                     }
                 }
                 return found;

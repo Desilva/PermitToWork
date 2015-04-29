@@ -155,7 +155,7 @@
     var isNeedClose = "";
     var day = new Date();
     day.setDate(day.getDate() + 1);
-
+    var type = 1;
     $(document).ready(function () {
         var crudServiceBaseUrl = "Home",
             dataSourceIn = new kendo.data.DataSource({
@@ -175,15 +175,18 @@
                             }
                         }
                     },
-                    //parameterMap: function (options, operation) {
-                    //    if (operation !== "read" && options.models) {
-                    //        return { models: kendo.stringify(options.models) };
-                    //    }
-                    //}
+                    parameterMap: function (options, operation) {
+                        if (operation === "read") {
+                            options.type = type;
+                        }
+                        return options;
+                    }
                 },
                 batch: true,
                 pageSize: 30,
                 schema: {
+                    data: "data",
+                    total: "total",
                     model: {
                         id: "id",
                         fields: {
@@ -202,7 +205,10 @@
                         }
                     }
                 },
-                pageSize: 10
+                pageSize: 10,
+                serverPaging: true,
+                serverFiltering: true,
+                serverSorting: true,
             });
 
         $("#grid-ptw").kendoGrid({
@@ -377,24 +383,28 @@
     function seeMyPermit() {
         $('.permit-filter').removeClass('active');
         $('#see-my-permit').addClass('active');
+        type = "3";
         $("#grid-ptw").data('kendoGrid').dataSource.read({ type: "3" });
     }
 
     function seeActivePermit() {
         $('.permit-filter').removeClass('active');
         $('#see-active-permit').addClass('active');
+        type = "1";
         $("#grid-ptw").data('kendoGrid').dataSource.read({ type : "1" });
     }
 
     function seeOverduePermit() {
         $('.permit-filter').removeClass('active');
         $('#see-overdue-permit').addClass('active');
+        type = "2";
         $("#grid-ptw").data("kendoGrid").dataSource.read({ type: "2" });
     }
 
     function seeAllPermit() {
         $('.permit-filter').removeClass('active');
         $('#see-all-permit').addClass('active');
+        type = "0";
         $("#grid-ptw").data("kendoGrid").dataSource.read({ type: "0" });
     }
 

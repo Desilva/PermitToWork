@@ -83,7 +83,7 @@ namespace PermitToWork.Utilities
             _sink.Flush();
 
             string content = GetContents(new UTF8Encoding(false));
-            if (content != "" && content.First() == '{' && !controllerName.Contains("Master") && !actionName.Contains("LockBox"))
+            if (content != "" && content.First() == '{' && !controllerName.Contains("Master") && !actionName.Contains("LockBox") && !controllerName.Contains("Home"))
             {
                 Dictionary<string, string> dic = JsonConvert.DeserializeObject<Dictionary<string, string>>(content);
                 string status = dic["status"];

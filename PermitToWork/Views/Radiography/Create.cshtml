@@ -385,8 +385,8 @@
             values.who = $(this).data('who');
             values = getCancelScreeningValues(values, values.who);
             var r = true;
-
-            if (who == "4") {
+            console.log(who);
+            if (values.who == "4") {
                 if (values.can_screening_spv.indexOf("2") < 0 && values.can_screening_spv.indexOf("1") < 0) {
                     alert("Cancellation Screening value cannot be all 'N/A'! Please check the cancellation screening section.");
                     return;
@@ -404,7 +404,7 @@
                 } else {
                     return;
                 }
-            } else if (who == "3") {
+            } else if (values.who == "3") {
                 if (values.can_screening_rad.indexOf("2") < 0 && values.can_screening_rad.indexOf("1") < 0) {
                     alert("Cancellation Screening value cannot be all 'N/A'! Please check the cancellation screening section.");
                     return;
@@ -423,7 +423,7 @@
                 } else {
                     return;
                 }
-            } else if (who == "6") {
+            } else if (values.who == "6") {
                 if (values.can_screening_fo.indexOf("2") < 0 && values.can_screening_fo.indexOf("1") < 0) {
                     alert("Cancellation Screening value cannot be all 'N/A'! Please check the cancellation screening section.");
                     return;

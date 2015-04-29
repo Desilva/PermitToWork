@@ -54,6 +54,7 @@ namespace PermitToWork.Models.Ptw
             {
                 admin = true;
             }
+
             if (type == 1)
             {
                 result = result.Where(p => DateTime.Today.CompareTo(p.validity_period_end != null ? p.validity_period_end : p.proposed_period_end.Value) <= 0 && p.status < (int)PtwEntity.statusPtw.CANFO).ToList();
@@ -62,19 +63,15 @@ namespace PermitToWork.Models.Ptw
             {
                 result = result.Where(p => DateTime.Today.CompareTo(p.validity_period_end != null ? p.validity_period_end : p.proposed_period_end.Value) > 0 && p.status < (int)PtwEntity.statusPtw.CANFO).ToList();
             }
+
             foreach (var a in result)
             {
-                Debug.WriteLine("a = " + DateTime.Now.TimeOfDay.TotalMilliseconds);
-                PtwEntity ptw = new PtwEntity(a, user, listUser);
-
-                Debug.WriteLine("b = " + DateTime.Now.TimeOfDay.TotalMilliseconds);
-                state = false;
                 bool find = false;
-                if (type == 1 && ptw.proposed_period_end != null && DateTime.Today.CompareTo(ptw.validity_period_end != null ? ptw.validity_period_end : ptw.proposed_period_end.Value) <= 0 && ptw.status < (int)PtwEntity.statusPtw.CANFO)
+                if (type == 1 && a.proposed_period_end != null && DateTime.Today.CompareTo(a.validity_period_end != null ? a.validity_period_end : a.proposed_period_end.Value) <= 0 && a.status < (int)PtwEntity.statusPtw.CANFO)
                 {
                     find = true;
                 }
-                else if (type == 2 && ptw.proposed_period_end != null && DateTime.Today.CompareTo(ptw.validity_period_end != null ? ptw.validity_period_end : ptw.proposed_period_end.Value) > 0 && ptw.status < (int)PtwEntity.statusPtw.CANFO)
+                else if (type == 2 && a.proposed_period_end != null && DateTime.Today.CompareTo(a.validity_period_end != null ? a.validity_period_end : a.proposed_period_end.Value) > 0 && a.status < (int)PtwEntity.statusPtw.CANFO)
                 {
                     find = true;
                 }
@@ -83,12 +80,13 @@ namespace PermitToWork.Models.Ptw
                     find = true;
                 }
 
-                if (ptw.id == 241)
-                {
-                    state = false;
-                }
+                //if (ptw.id == 241)
+                //{
+                //    state = false;
+                //}
 
                 if (find) {
+                    PtwEntity ptw = new PtwEntity(a, user, listUser);
                     if ((type != 3 && admin) || ptw.isUserPtw || ptw.isUserInPtw(user, this.listUser))
                     {
                         listPtwUser.Add(ptw);
@@ -138,6 +136,9 @@ namespace PermitToWork.Models.Ptw
                 }
             }
 
+            HttpContext.Current.Session["ListPtwByUser"] = listPtwUser;
+            HttpContext.Current.Session["ListPtwType"] = type;
+            HttpContext.Current.Session["ListPtwDate"] = DateTime.Now;
             return listPtwUser;
         }
 

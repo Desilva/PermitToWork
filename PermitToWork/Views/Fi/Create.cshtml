@@ -246,7 +246,7 @@
                         $('#can_screening_so_3').val();
             values.cancel_spv = $('#can_screening_spv_1').val() + "#" + $('#can_screening_spv_2').val() + "#" +
                         $('#can_screening_spv_3').val();
-
+            var r = true;
             if (values.who == "3") {
                 if (values.cancel_spv.indexOf("2") < 0 && values.cancel_spv.indexOf("1") < 0) {
                     alert("Cancellation Screening value cannot be all 'N/A'! Please check the cancellation screening section.");

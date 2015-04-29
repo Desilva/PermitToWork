@@ -1218,6 +1218,26 @@
                 qty_pad_lock_usage: $('#pad-lock-usage').val(),
                 balance: $('#balance').val(),
             }
+            if ($('.k-grid-edit-row').length > 0) {
+                alert('You have some point that haven\'t been saved yet. Please click "Update" to save that point');
+                return;
+            }
+
+            var dataSource = $('#grid-loto-point').data('kendoGrid').dataSource.data();
+            var isAllPointCompleted = true;
+            for(var i = 0; i < dataSource.length && isAllPointCompleted; i++) {
+                var data = dataSource[i];
+                if (data.is_set_empty != 1 && data.is_removed != 1) {
+                    if (data.loto_point_agreed == null && data.applied_by == null && data.applied_by_time == null) {
+                        isAllPointCompleted = false;
+                    }
+                }
+                console.log(dataSource[i]);
+            }
+            if (!isAllPointCompleted) {
+                alert('You have some point that haven\'t been set agreed and applied. Please check the LOTO Point again.');
+                return;
+            }
 
             $('#loading').show();
             $.post('@Url.Action("SaveAndInspect", "Loto")', values, function (resp) {
