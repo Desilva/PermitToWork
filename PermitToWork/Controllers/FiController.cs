@@ -87,6 +87,10 @@ namespace PermitToWork.Controllers
             }
             ViewBag.listDeptHead = listDeptHead;
             ViewBag.ptwStatus = entity.ptw_status;
+            if (Session["ListPtwType"] as int? == 1)
+            {
+                Session["ListPtwDate"] = DateTime.Now.AddMinutes(-30);
+            }
             return PartialView("create", entity);
         }
 

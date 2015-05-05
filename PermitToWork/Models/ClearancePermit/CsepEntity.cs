@@ -125,6 +125,7 @@ namespace PermitToWork.Models.ClearancePermit
             this.screening_7_arr = this.screening_7.Split('#');
 
             this.is_guest = csep.permit_to_work.is_guest == 1;
+            this.status = csep.status;
 
             this.statusText = getStatus();
 

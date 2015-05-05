@@ -421,7 +421,7 @@ namespace PermitToWork.Models.Ptw
             {
                 IClearancePermitEntity hw = (IClearancePermitEntity)new HwEntity(ptw.hot_work.ElementAt(0));
                 hw.ids = this.hw_id.Value;
-                hw.statusText = ((HwEntity)hw).getStatus();
+                //hw.statusText = ((HwEntity)hw).getStatus();
                 this.cPermit.Add(clearancePermit.HOTWORK.ToString(), hw);
                 this.hw_no = ptw.hot_work.ElementAt(0).hw_no;
                 this.has_clearance = true;
@@ -432,7 +432,7 @@ namespace PermitToWork.Models.Ptw
                 IClearancePermitEntity fi = (IClearancePermitEntity)new FIEntity(ptw.fire_impairment.ElementAt(0), listUser, user);
                 fi.ids = this.fi_id.Value;
                 this.isUserPtw = this.isUserPtw || fi.isUser;
-                fi.statusText = ((FIEntity)fi).getStatus();
+                //fi.statusText = ((FIEntity)fi).getStatus();
                 this.cPermit.Add(clearancePermit.FIREIMPAIRMENT.ToString(), fi);
                 this.fi_no = ptw.fire_impairment.ElementAt(0).fi_no;
                 this.has_clearance = true;

@@ -83,6 +83,10 @@ namespace PermitToWork.Controllers
             ViewBag.position = "Edit";
             ViewBag.listUser = listUser;
             ViewBag.listGasTester = listUser.GetHotWorkGasTester();
+            if (Session["ListPtwType"] as int? == 1)
+            {
+                Session["ListPtwDate"] = DateTime.Now.AddMinutes(-30);
+            }
             return PartialView("create", entity);
         }
 

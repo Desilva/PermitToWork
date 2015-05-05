@@ -112,7 +112,10 @@ namespace PermitToWork.Controllers
                 });
             }
             ViewBag.listTotalCrew = listTotalCrew;
-
+            if (Session["ListPtwType"] as int? == 1)
+            {
+                Session["ListPtwDate"] = DateTime.Now.AddMinutes(-30);
+            }
             //ViewBag.ptwStatus = new PtwEntity(entity.id_ptw.Value, user).status;
             return PartialView("create", entity);
         }

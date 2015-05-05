@@ -100,6 +100,11 @@ namespace PermitToWork.Controllers
             string lastPtwNo = listPtw.getLastPtw();
             entity.generatePtwNumber(lastPtwNo != null ? lastPtwNo : "");
 
+            if (Session["ListPtwType"] as int? == 1)
+            {
+                Session["ListPtwDate"] = DateTime.Now.AddMinutes(-30);
+            }
+
             return PartialView(entity);
         }
 
