@@ -140,7 +140,8 @@
             var r = true;
             if (values.who == "2") {
                 if (values.pre_screening_spv.indexOf("2") < 0 && values.pre_screening_spv.indexOf("1") < 0) {
-                    r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                    alert("Pre Job Screening value cannot be all 'N/A'! Please check the pre job screening section.");
+                    return;
                 }
                 if (r) {
                     if (values.pre_screening_spv.indexOf("2") >= 0) {
@@ -157,7 +158,8 @@
                 }
             } else if (values.who == "4") {
                 if (values.pre_screening_fac.indexOf("2") < 0 && values.pre_screening_fac.indexOf("1") < 0) {
-                    r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                    alert("Pre Job Screening value cannot be all 'N/A'! Please check the pre job screening section.");
+                    return;
                 }
                 if (r) {
                     if (values.pre_screening_fac.indexOf("2") >= 0) {
@@ -174,7 +176,8 @@
                 }
             } else if (values.who == "5") {
                 if (values.pre_screening_ei.indexOf("2") < 0 && values.pre_screening_ei.indexOf("1") < 0) {
-                    r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                    alert("Pre Job Screening value cannot be all 'N/A'! Please check the pre job screening section.");
+                    return;
                 }
                 if (r) {
                     if (values.pre_screening_ei.indexOf("2") >= 0) {
@@ -191,7 +194,8 @@
                 }
             } else if (values.who == "7") {
                 if (values.pre_screening_fo.indexOf("2") < 0 && values.pre_screening_fo.indexOf("1") < 0) {
-                    r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                    alert("Pre Job Screening value cannot be all 'N/A'! Please check the pre job screening section.");
+                    return;
                 }
                 if (r) {
                     if (values.pre_screening_fo.indexOf("2") >= 0) {

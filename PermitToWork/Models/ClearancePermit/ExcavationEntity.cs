@@ -109,10 +109,10 @@ namespace PermitToWork.Models.ClearancePermit
 
             this.is_guest = ex.permit_to_work.is_guest == null ? false : ex.permit_to_work.is_guest == 1;
 
-            this.pre_screening_fo_arr = this.pre_screening_fo.Split('#');
-            this.pre_screening_spv_arr = this.pre_screening_spv.Split('#');
-            this.pre_screening_fac_arr = this.pre_screening_fac.Split('#');
-            this.pre_screening_ei_arr = this.pre_screening_ei.Split('#');
+            this.pre_screening_fo_arr = this.pre_screening_fo != null ? this.pre_screening_fo.Split('#') : new string[11];
+            this.pre_screening_spv_arr = this.pre_screening_spv != null ? this.pre_screening_spv.Split('#') : new string[11];
+            this.pre_screening_fac_arr = this.pre_screening_fac != null ? this.pre_screening_fac.Split('#') : new string[11];
+            this.pre_screening_ei_arr = this.pre_screening_ei != null ? this.pre_screening_ei.Split('#') : new string[11];
 
             int userId = 0;
 
@@ -143,10 +143,10 @@ namespace PermitToWork.Models.ClearancePermit
 
             this.is_guest = ex.permit_to_work.is_guest == null ? false : ex.permit_to_work.is_guest == 1;
 
-            this.pre_screening_fo_arr = this.pre_screening_fo.Split('#');
-            this.pre_screening_spv_arr = this.pre_screening_spv.Split('#');
-            this.pre_screening_fac_arr = this.pre_screening_fac.Split('#');
-            this.pre_screening_ei_arr = this.pre_screening_ei.Split('#'); ;
+            this.pre_screening_fo_arr = this.pre_screening_fo != null ? this.pre_screening_fo.Split('#') : new string[11];
+            this.pre_screening_spv_arr = this.pre_screening_spv != null ? this.pre_screening_spv.Split('#') : new string[11];
+            this.pre_screening_fac_arr = this.pre_screening_fac != null ? this.pre_screening_fac.Split('#') : new string[11];
+            this.pre_screening_ei_arr = this.pre_screening_ei != null ? this.pre_screening_ei.Split('#') : new string[11];
 
             int userId = 0;
 
@@ -173,10 +173,10 @@ namespace PermitToWork.Models.ClearancePermit
             // this.ptw = new PtwEntity(fi.id_ptw.Value);
             ModelUtilization.Clone(ex, this);
 
-            this.pre_screening_fo_arr = this.pre_screening_fo.Split('#');
-            this.pre_screening_spv_arr = this.pre_screening_spv.Split('#');
-            this.pre_screening_fac_arr = this.pre_screening_fac.Split('#');
-            this.pre_screening_ei_arr = this.pre_screening_ei.Split('#');
+            this.pre_screening_fo_arr = this.pre_screening_fo != null ? this.pre_screening_fo.Split('#') : new string[11];
+            this.pre_screening_spv_arr = this.pre_screening_spv != null ? this.pre_screening_spv.Split('#') : new string[11];
+            this.pre_screening_fac_arr = this.pre_screening_fac != null ? this.pre_screening_fac.Split('#') : new string[11];
+            this.pre_screening_ei_arr = this.pre_screening_ei != null ? this.pre_screening_ei.Split('#') : new string[11];
 
             this.is_guest = ex.permit_to_work.is_guest == 1;
             this.isUser = false;

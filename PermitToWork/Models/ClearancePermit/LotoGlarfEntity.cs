@@ -332,7 +332,7 @@ namespace PermitToWork.Models.ClearancePermit
                         {
                             if (loto_ptw.holder_no == 1)
                             {
-                                PtwEntity ptwE = new PtwEntity(ptw.id, user);
+                                PtwEntity ptwE = new PtwEntity(loto_ptw.id_permit, user);
                                 ptwE.checkLotoCancellationComplete(user, listUser);
                             }
                         }
@@ -369,7 +369,7 @@ namespace PermitToWork.Models.ClearancePermit
                         {
                             if (loto_ptw.holder_no == holderNo)
                             {
-                                PtwEntity ptwE = new PtwEntity(ptw.id, user);
+                                PtwEntity ptwE = new PtwEntity(loto_ptw.id_permit, user);
                                 ptwE.checkLotoCancellationComplete(user, listUser);
                             }
                         }

@@ -777,8 +777,13 @@
             }
 
             var r = true;
+
             if ('@(Model.status == (int)PermitToWork.Models.Hw.HwEntity.statusHW.SPVSCREENING)' == 'True' && screening_fo_db.indexOf("2") < 0 && screening_fo_db.indexOf("1") < 0) {
-                r = confirm("Are you sure that all pre job screening values are 'N/A'? Please change the value if it's not true.");
+                alert("Pre Job Screening value cannot be all 'N/A'! Please check the pre job screening section.");
+                return;
+            } else if ('@(Model.status == (int)PermitToWork.Models.Hw.HwEntity.statusHW.CREATE)' == 'True' && '@(user_hw[1])' == 'True' && screening_spv_db.indexOf("2") < 0 && screening_spv_db.indexOf("1") < 0) {
+                alert("Pre Job Screening value cannot be all 'N/A'! Please check the pre job screening section.");
+                return;
             }
 
             if (r) {
