@@ -83,7 +83,7 @@ namespace PermitToWork.Controllers
                 {
                     listRadiographer2.Add(new SelectListItem
                     {
-                        Text = rad.user.alpha_name,
+                        Text = (rad.user != null ? rad.user.alpha_name : ""),
                         Value = rad.id.ToString(),
                         Selected = entity.radiographer_2 == rad.id.ToString() ? true : false,
                     });
