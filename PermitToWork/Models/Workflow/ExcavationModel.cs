@@ -18,7 +18,7 @@ namespace PermitToWork.Models.Workflow
         /// parsing nodes dari service ke dalam NodeList
         /// </summary>
         /// <param name="nodes"></param>
-        public ExcavationModel(List<workflow_node> signals, bool isDisposalMoved = false)
+        public ExcavationModel(List<workflow_node> signals, bool isDisposalMoved)
         {
             //kamus lokal
             List<WorkflowNodePresentationStub> cancellationNodes;
