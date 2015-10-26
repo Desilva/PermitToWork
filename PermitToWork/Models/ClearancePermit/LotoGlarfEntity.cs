@@ -259,13 +259,13 @@ namespace PermitToWork.Models.ClearancePermit
             if (glarf != null)
             {
                 bool isComplete = true;
-                foreach (LotoGlarfUserEntity lg in listGlarfUser)
-                {
-                    if (lg.user_cancellation_signature == null)
-                    {
-                        isComplete = false;
-                    }
-                }
+                //foreach (LotoGlarfUserEntity lg in listGlarfUser)
+                //{
+                //    if (lg.user_cancellation_signature == null)
+                //    {
+                //        isComplete = false;
+                //    }
+                //}
                 if (isComplete)
                 {
                     glarf.status = (int)GlarfStatus.CANCELLATIONSIGNCOMPLETE;

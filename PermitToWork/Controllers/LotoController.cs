@@ -506,14 +506,14 @@ namespace PermitToWork.Controllers
         //}
 
         [HttpPost]
-        public JsonResult cancelLoto(int id)
+        public JsonResult cancelLoto(int id, int idPtw)
         {
             UserEntity user = Session["user"] as UserEntity;
             ListUser listUser = new ListUser(user.token, user.id);
             LotoEntity loto = new LotoEntity(id, user);
             int retVal = 1;
             int loto_glarf = 0;
-            retVal = loto.lotoCancel(user, listUser, out loto_glarf);
+            retVal = loto.lotoCancel(user, listUser, idPtw, out loto_glarf);
             return Json(new { status = retVal == 2 ? "202" : (retVal > 0 ? "200" : "404"), id_glarf = loto_glarf });
         }
 

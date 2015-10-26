@@ -37,7 +37,7 @@
             $('#prev-history').val($('#history').val());
             $('#history').val('@Url.Action("Index","Loto", new { id = Model.id })');
 
-            $.post('@Url.Action("CancelLoto","Loto")', { id: $(this).data('id') }, function (resp) {
+            $.post('@Url.Action("CancelLoto","Loto")', { id: $(this).data('id'), idPtw: '@Model.id' }, function (resp) {
                 if (resp.status == "202") {
                     alert('Loto cancellation has been requested. You may sign LOTO Cancellation.');
                     $('#content').load('@Url.Action("Edit","Loto")/' + $(this).data('id') + '?id_loto=' + '@Model.id');

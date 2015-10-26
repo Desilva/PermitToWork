@@ -1392,61 +1392,111 @@ namespace PermitToWork.Models.ClearancePermit
             return retVal;
         }
 
-        public int lotoCancel(UserEntity user, ListUser listUser, out int loto_glarf)
+        public int lotoCancel(UserEntity user, ListUser listUser, int idPtw, out int loto_glarf)
         {
             int retVal = 0;
             loto_glarf = 0;
             loto_permit loto = this.db.loto_permit.Find(this.id);
-            if (loto != null)
+            loto_permit_to_work lotoPtw = loto.loto_permit_to_work.Where(p => p.id_permit == idPtw).FirstOrDefault();
+            if (loto != null && lotoPtw != null)
             {
-                if (user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].employee_delegate)
+                if (lotoPtw.holder_no == 1)
                 {
                     loto_glarf = this.id_glarf.Value;
                     LotoGlarfEntity glarf = new LotoGlarfEntity(this.id_glarf.Value, user, listUser);
                     retVal = glarf.setCancel();
                 }
 
-                if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER2.ToString()] != null && (user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER2.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER2.ToString()].employee_delegate))
+                if (lotoPtw.holder_no == 2)
                 {
                     loto_glarf = this.holder_2_glarf.Value;
                     LotoGlarfEntity glarf = new LotoGlarfEntity(this.holder_2_glarf.Value, user, listUser);
                     retVal = glarf.setCancel();
                 }
 
-                if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER3.ToString()] != null && (user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER3.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER3.ToString()].employee_delegate))
+                if (lotoPtw.holder_no == 3)
                 {
                     loto_glarf = this.holder_3_glarf.Value;
                     LotoGlarfEntity glarf = new LotoGlarfEntity(this.holder_3_glarf.Value, user, listUser);
                     retVal = glarf.setCancel();
                 }
 
-                if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER4.ToString()] != null && (user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER4.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER4.ToString()].employee_delegate))
+                if (lotoPtw.holder_no == 4)
                 {
                     loto_glarf = this.holder_4_glarf.Value;
                     LotoGlarfEntity glarf = new LotoGlarfEntity(this.holder_4_glarf.Value, user, listUser);
                     retVal = glarf.setCancel();
                 }
 
-                if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER5.ToString()] != null && (user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER5.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER5.ToString()].employee_delegate))
+                if (lotoPtw.holder_no == 5)
                 {
                     loto_glarf = this.holder_5_glarf.Value;
                     LotoGlarfEntity glarf = new LotoGlarfEntity(this.holder_5_glarf.Value, user, listUser);
                     retVal = glarf.setCancel();
                 }
 
-                if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER6.ToString()] != null && (user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER6.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER6.ToString()].employee_delegate))
+                if (lotoPtw.holder_no == 6)
                 {
                     loto_glarf = this.holder_6_glarf.Value;
                     LotoGlarfEntity glarf = new LotoGlarfEntity(this.holder_6_glarf.Value, user, listUser);
                     retVal = glarf.setCancel();
                 }
 
-                if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER7.ToString()] != null && (user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER7.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER7.ToString()].employee_delegate))
+                if (lotoPtw.holder_no == 7)
                 {
                     loto_glarf = this.holder_7_glarf.Value;
                     LotoGlarfEntity glarf = new LotoGlarfEntity(this.holder_7_glarf.Value, user, listUser);
                     retVal = glarf.setCancel();
                 }
+
+                //if (user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.SUPERVISOR.ToString()].employee_delegate)
+                //{
+                //    loto_glarf = this.id_glarf.Value;
+                //    LotoGlarfEntity glarf = new LotoGlarfEntity(this.id_glarf.Value, user, listUser);
+                //    retVal = glarf.setCancel();
+                //}
+
+                //if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER2.ToString()] != null && (user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER2.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER2.ToString()].employee_delegate))
+                //{
+                //    loto_glarf = this.holder_2_glarf.Value;
+                //    LotoGlarfEntity glarf = new LotoGlarfEntity(this.holder_2_glarf.Value, user, listUser);
+                //    retVal = glarf.setCancel();
+                //}
+
+                //if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER3.ToString()] != null && (user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER3.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER3.ToString()].employee_delegate))
+                //{
+                //    loto_glarf = this.holder_3_glarf.Value;
+                //    LotoGlarfEntity glarf = new LotoGlarfEntity(this.holder_3_glarf.Value, user, listUser);
+                //    retVal = glarf.setCancel();
+                //}
+
+                //if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER4.ToString()] != null && (user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER4.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER4.ToString()].employee_delegate))
+                //{
+                //    loto_glarf = this.holder_4_glarf.Value;
+                //    LotoGlarfEntity glarf = new LotoGlarfEntity(this.holder_4_glarf.Value, user, listUser);
+                //    retVal = glarf.setCancel();
+                //}
+
+                //if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER5.ToString()] != null && (user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER5.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER5.ToString()].employee_delegate))
+                //{
+                //    loto_glarf = this.holder_5_glarf.Value;
+                //    LotoGlarfEntity glarf = new LotoGlarfEntity(this.holder_5_glarf.Value, user, listUser);
+                //    retVal = glarf.setCancel();
+                //}
+
+                //if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER6.ToString()] != null && (user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER6.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER6.ToString()].employee_delegate))
+                //{
+                //    loto_glarf = this.holder_6_glarf.Value;
+                //    LotoGlarfEntity glarf = new LotoGlarfEntity(this.holder_6_glarf.Value, user, listUser);
+                //    retVal = glarf.setCancel();
+                //}
+
+                //if (this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER7.ToString()] != null && (user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER7.ToString()].id || user.id == this.listUserInLOTO[userInLOTO.ONCOMINGHOLDER7.ToString()].employee_delegate))
+                //{
+                //    loto_glarf = this.holder_7_glarf.Value;
+                //    LotoGlarfEntity glarf = new LotoGlarfEntity(this.holder_7_glarf.Value, user, listUser);
+                //    retVal = glarf.setCancel();
+                //}
             }
             return retVal;
         }
